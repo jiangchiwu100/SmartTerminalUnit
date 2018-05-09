@@ -1,0 +1,1514 @@
+/**
+  *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
+  * @file:      load_switch_ctrl.c
+  * @brief:     The switch protect logic.
+  * @version:   V1.0.0
+  * @author:    J.Lee
+  * @date:      2017.09.05
+  * @update:    [2017-12-07][Lexun][make the code cleanup]
+  */
+
+
+/* INCLUDES ------------------------------------------------------------------*/
+#include "load_switch_ctrl.h"
+#include "load_switch_interface.h"
+
+
+/* PRIVATE VARIABLES --------------------------------------------------------*/
+static uint32_t s_timers[LOAD_DEVMAXNUM][LOAD_MAXTIMERS];   //0x80000000使能位
+
+static ComProSts s_ComProSts[LOAD_DEVMAXNUM];
+
+static RestSts s_Rest[LOAD_DEVMAXNUM];
+static StateJudgeSts s_stateJudge[LOAD_DEVMAXNUM];
+static OvercurI0Sts s_OvercurI0[LOAD_DEVMAXNUM];
+static LossTripSts s_LossTrip[LOAD_DEVMAXNUM];
+static GetVolCloseSts s_GetVolClose[LOAD_DEVMAXNUM];
+static OpenCloseLockingSts s_OpenCloseLocking[LOAD_DEVMAXNUM];
+static FewVolLockSts s_FewVolLock[LOAD_DEVMAXNUM];
+static DoubleVolSts s_DoubleVol[LOAD_DEVMAXNUM];
+static SingleLossCloseSts s_SingleLossClose[LOAD_DEVMAXNUM];
+
+
+/* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
+/**
+  * @Description: 申请定时器.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static uint8_t addtimers(uint8_t pdrv,uint32_t **dev)
+{
+    uint8_t res = LOAD_FALSE;
+
+    static uint8_t i[LOAD_DEVMAXNUM]={0};
+
+    if (i[pdrv] < LOAD_MAXTIMERS)
+    {
+        *dev = &s_timers[pdrv][i[pdrv]++];
+        s_timers[pdrv][i[pdrv]] = 0;
+        res = LOAD_TRUE;
+    }
+    return(res);
+}
+
+/**
+  * @Description: 生成SOE及变位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void addSOE(ComProSts *comProSts,STelesignalStr *telesignal,uint8_t value)
+{
+    if(*(telesignal->value) != value)
+    {
+        comProSts->outputSoe(telesignal->addr,value);
+        if(value == ON)
+        {
+            comProSts->outputFevent(telesignal->addr,comProSts->fevent_yc_addr,8);
+        }
+    }
+}
+
+/**
+  * @Description: 复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void rest_ctrl(uint8_t pdrv,ComProSts *comProSts,RestSts *restSts)
+{
+    static uint64_t temp[LOAD_DEVMAXNUM];
+    uint64_t tempk;
+
+    //自动复归
+    if(*(restSts->parastr.pSwitch)==SWITCH_ON)
+    {
+        tempk = temp[pdrv];
+        temp[pdrv] = 0;
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.StateJudgeflag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.overcurI0flag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.lossTripflag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.getVolCloseflag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.openCloseLockingflag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.fewVolLockflag)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.doubleVol)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|(*(restSts->valstr.SingleLossClose)&RESETFLAG);
+        temp[pdrv] = (temp[pdrv]>>1)|((*(comProSts->yx.closingLocked.value)&ON)||\
+                          (*(comProSts->yx.openingLocked.value)&ON)||\
+                          (*(comProSts->yx.shortCircuitFault.value)&ON)||\
+                          (*(comProSts->yx.earthingFault.value)&ON)||\
+                          (*(comProSts->yx.protectionAct.value)&ON)||\
+                          (*(comProSts->yx.protectionClock.value)&ON)||\
+                          (*(comProSts->yx.lossTrip.value)&ON)||\
+                          (*(comProSts->yx.getClossing.value)&ON)||\
+                          (*(comProSts->yx.failAfterClosing.value)&ON)||\
+                          (*(comProSts->yx.earthingFaultTripU0.value)&ON)||\
+                          (*(comProSts->yx.remainClockClossing.value)&ON)||\
+                          (*(comProSts->yx.doubleProhibitClossing.value)&ON)||\
+                          (*(comProSts->yx.singleLossClosing.value)&ON));
+
+        if(tempk != temp[pdrv] )
+        {
+            *(restSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时器
+        }
+
+        if((*(restSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(restSts->parastr.pTime)*1000))
+        {
+            restSts->valstr.flag |= SETRESETFLAG;
+            *(restSts->valstr.gTime) = 0;
+            temp[pdrv] = 0;
+        }
+    }
+    else
+    {
+        *(restSts->valstr.gTime) = 0;
+        temp[pdrv] = 0;
+    }
+
+    //手动复归
+    if(restSts->valstr.flag&MANRESETFLAG)
+    {
+        restSts->valstr.flag = SETRESETFLAG;
+        *(restSts->valstr.gTime) = 0;
+        temp[pdrv] = 0;
+    }
+}
+
+/**
+  * @Description: 状态判断.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void state_judge(ComProSts *comProSts,StateJudgeSts *stateJudegeSts)
+{
+    uint8_t i;
+    const float factor = 0.95;
+
+    //相间过流
+    if((*(stateJudegeSts->parastr.pSwitchOvercur[0])==SWITCH_ON)||\
+            (*(stateJudegeSts->parastr.pSwitchOvercur[1])==SWITCH_ON)||\
+            (*(stateJudegeSts->parastr.pSwitchOvercur[2])==SWITCH_ON))//过流未投
+    {
+        stateJudegeSts->valstr.flag &= ~STATEOVERCURNOSW;
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag |= STATEOVERCURNOSW;
+    }
+
+    if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//合位
+    {
+        if(stateJudegeSts->valstr.flag&STATEOVERCURSTA2)//过流后合闸//复位状态量
+        {
+            stateJudegeSts->valstr.flag &= ~STATEOVERCURSTA2;
+            *(stateJudegeSts->valstr.gTimeOvercur[0]) = 0;
+            *(stateJudegeSts->valstr.gTimeOvercur[1]) = 0;
+            *(stateJudegeSts->valstr.gTimeOvercur[2]) = 0;
+            for(i=0; i<3; i++)
+            {
+                addSOE(comProSts,&comProSts->yx.overcurrentIa[i],OFF);
+                addSOE(comProSts,&comProSts->yx.overcurrentIb[i],OFF);
+                addSOE(comProSts,&comProSts->yx.overcurrentIc[i],OFF);
+                stateJudegeSts->valstr.flag &= ~(STATEOVERCUR1<<i);
+            }
+            addSOE(comProSts,&comProSts->yx.shortCircuitFault,OFF);
+        }
+
+        for(i=0; i<3; i++) //检测过流
+        {
+            if(((*(stateJudegeSts->parastr.pSwitchOvercur[i])==SWITCH_ON)&&\
+                (!(stateJudegeSts->valstr.flag&(STATEOVERCUR1<<i))))&&\
+                    ((*(comProSts->yc.Ia)>*(stateJudegeSts->parastr.pValueOvercur[i]))||\
+                     (*(comProSts->yc.Ib)>*(stateJudegeSts->parastr.pValueOvercur[i]))||\
+                     (*(comProSts->yc.Ic)>*(stateJudegeSts->parastr.pValueOvercur[i]))))//过流
+            {
+
+                if(!(*(stateJudegeSts->valstr.gTimeOvercur[i])&LOAD_ENTIMERS))
+                {
+                    *(stateJudegeSts->valstr.gTimeOvercur[i]) = LOAD_ENTIMERS;//启动定时
+                }
+                if((*(stateJudegeSts->valstr.gTimeOvercur[i])&LOAD_TITIMERS)>=(uint32_t)(*(stateJudegeSts->parastr.pTimeOvercur[i])*1000))
+                {
+                    stateJudegeSts->valstr.flag |= (STATEOVERCUR1<<i)|STATEOVERCURSTA1;
+                    stateJudegeSts->valstr.flag |= RESETFLAG;
+                    if(*(comProSts->yc.Ia)>*(stateJudegeSts->parastr.pValueOvercur[i]))
+                    {
+                        //SOE
+                        addSOE(comProSts,&comProSts->yx.overcurrentIa[i],OFF);
+                        addSOE(comProSts,&comProSts->yx.overcurrentIa[i],ON);
+                    }
+                    if(*(comProSts->yc.Ib)>*(stateJudegeSts->parastr.pValueOvercur[i]))
+                    {
+                        //SOE
+                        addSOE(comProSts,&comProSts->yx.overcurrentIb[i],OFF);
+                        addSOE(comProSts,&comProSts->yx.overcurrentIb[i],ON);
+                    }
+                    if(*(comProSts->yc.Ic)>*(stateJudegeSts->parastr.pValueOvercur[i]))
+                    {
+                        //SOE
+                        addSOE(comProSts,&comProSts->yx.overcurrentIc[i],OFF);
+                        addSOE(comProSts,&comProSts->yx.overcurrentIc[i],ON);
+                    }
+                    addSOE(comProSts,&comProSts->yx.shortCircuitFault,OFF);
+                    addSOE(comProSts,&comProSts->yx.shortCircuitFault,ON);
+                }
+            }
+            else//不过流
+            {
+                *(stateJudegeSts->valstr.gTimeOvercur[i]) = 0;
+                if(((*(stateJudegeSts->parastr.pSwitchOvercur[i])==SWITCH_ON)&&\
+                        (stateJudegeSts->valstr.flag&(STATEOVERCUR1<<i)))&&\
+                        ((*(comProSts->yc.Ia)<*(stateJudegeSts->parastr.pValueOvercur[i])*factor)&&\
+                         (*(comProSts->yc.Ib)<*(stateJudegeSts->parastr.pValueOvercur[i])*factor)&&\
+                         (*(comProSts->yc.Ic)<*(stateJudegeSts->parastr.pValueOvercur[i])*factor)))
+                {
+                    stateJudegeSts->valstr.flag &= ~(STATEOVERCUR1<<i);
+                }
+            }
+        }
+    }
+    else if(stateJudegeSts->valstr.flag&STATEOVERCURSTA1)//分位//过流后分闸
+    {
+        stateJudegeSts->valstr.flag &= (~STATEOVERCURSTA1);
+        stateJudegeSts->valstr.flag |= STATEOVERCURSTA2;
+    }
+    
+    if(stateJudegeSts->valstr.flag&(STATEOVERCUR1|STATEOVERCUR2|STATEOVERCUR3))
+    {
+        stateJudegeSts->valstr.flag |= STATEOVERCUR;
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag &= ~STATEOVERCUR;
+    }
+
+    //零序过流
+    if(((*(stateJudegeSts->parastr.pSwitchOvercurI0[0])==SWITCH_ON)||(*(stateJudegeSts->parastr.pSwitchOvercurI0[0])==SWITCH_ALARM))||\
+            ((*(stateJudegeSts->parastr.pSwitchOvercurI0[1])==SWITCH_ON)||(*(stateJudegeSts->parastr.pSwitchOvercurI0[1])==SWITCH_ALARM)))//零序过流未投
+    {
+        stateJudegeSts->valstr.flag &= ~STATEOVERCURI0NOSW;
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag |= STATEOVERCURI0NOSW;
+    }
+
+    if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//合位//无涌流抑制
+    {
+        if(stateJudegeSts->valstr.flag&STATEOVERCURI0STA2)//过流后合闸//复位状态量
+        {
+            stateJudegeSts->valstr.flag &= ~STATEOVERCURI0STA2;
+            *(stateJudegeSts->valstr.gTimeOvercurI0[0]) = 0;
+            *(stateJudegeSts->valstr.gTimeOvercurI0[1]) = 0;
+            for(i=0; i<2; i++)
+            {
+                addSOE(comProSts,&comProSts->yx.overcurrentI0[i],OFF);
+            }
+            addSOE(comProSts,&comProSts->yx.earthingFault,OFF);
+        }
+
+        for(i=0; i<2; i++) //检测过流
+        {
+            if((((*(stateJudegeSts->parastr.pSwitchOvercurI0[i])==SWITCH_ON)||(*(stateJudegeSts->parastr.pSwitchOvercurI0[i])==SWITCH_ALARM))&&\
+                (!(stateJudegeSts->valstr.flag&(STATEOVERCURI01<<i))))&&(*(comProSts->yc.I0)>*(stateJudegeSts->parastr.pValueOvercurI0[i])))//过流
+            {
+                if(!(*(stateJudegeSts->valstr.gTimeOvercurI0[i])&LOAD_ENTIMERS))
+                {
+                    *(stateJudegeSts->valstr.gTimeOvercurI0[i]) = LOAD_ENTIMERS;//启动定时
+                }
+                if((*(stateJudegeSts->valstr.gTimeOvercurI0[i])&LOAD_TITIMERS)>=(uint32_t)(*(stateJudegeSts->parastr.pTimeOvercurI0[i])*1000))
+                {
+                    stateJudegeSts->valstr.flag |= (STATEOVERCURI01<<i)|STATEOVERCURI0STA1;
+                    stateJudegeSts->valstr.flag |= RESETFLAG;
+                    if(*(comProSts->yc.I0)>*(stateJudegeSts->parastr.pValueOvercurI0[i]))
+                    {
+                        //SOE
+                        addSOE(comProSts,&comProSts->yx.overcurrentI0[i],OFF);
+                        addSOE(comProSts,&comProSts->yx.overcurrentI0[i],ON);
+                    }
+                    addSOE(comProSts,&comProSts->yx.earthingFault,OFF);
+                    addSOE(comProSts,&comProSts->yx.earthingFault,ON);
+                }
+            }
+            else
+            {
+                *(stateJudegeSts->valstr.gTimeOvercurI0[i]) = 0;
+                if(((*(stateJudegeSts->parastr.pSwitchOvercurI0[i])==SWITCH_ON)&&(stateJudegeSts->valstr.flag&STATEOVERCURI0))&&\
+                        (*(comProSts->yc.I0)<*(stateJudegeSts->parastr.pValueOvercurI0[i])*factor))//过流
+                {
+                    stateJudegeSts->valstr.flag &= ~(STATEOVERCURI01<<i);
+                }
+            }
+        }
+    }
+    else if(stateJudegeSts->valstr.flag&STATEOVERCURI0STA1)//分闸//过流后分闸
+    {
+        stateJudegeSts->valstr.flag &= (~STATEOVERCURI0STA1);
+        stateJudegeSts->valstr.flag |= STATEOVERCURI0STA2;
+    }
+
+    if(stateJudegeSts->valstr.flag&(STATEOVERCURI01|STATEOVERCURI02))
+    {
+        stateJudegeSts->valstr.flag |= STATEOVERCURI0;
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag &= ~STATEOVERCURI0;
+    }
+    
+    //相间非遮断
+    if(*(stateJudegeSts->parastr.pSwitchBreakcur)==SWITCH_ON)
+    {
+        if((*(comProSts->yc.Ia)>*(stateJudegeSts->parastr.pValueBreakcur))||\
+                (*(comProSts->yc.Ib)>*(stateJudegeSts->parastr.pValueBreakcur))||\
+                (*(comProSts->yc.Ic)>*(stateJudegeSts->parastr.pValueBreakcur))||\
+                (*(comProSts->yc.I0)>*(stateJudegeSts->parastr.pValueBreakcur)))
+        {
+            stateJudegeSts->valstr.flag |= STATEUNBLOCKED;
+            addSOE(comProSts,&comProSts->yx.breakingCurrent,ON);
+        }
+        else if((*(comProSts->yc.Ia)<*(stateJudegeSts->parastr.pValueBreakcur)*factor)&&\
+                (*(comProSts->yc.Ib)<*(stateJudegeSts->parastr.pValueBreakcur)*factor)&&\
+                (*(comProSts->yc.Ic)<*(stateJudegeSts->parastr.pValueBreakcur)*factor)&&\
+                (*(comProSts->yc.I0)<*(stateJudegeSts->parastr.pValueBreakcur)*factor))
+        {
+            stateJudegeSts->valstr.flag &= ~STATEUNBLOCKED;
+            addSOE(comProSts,&comProSts->yx.breakingCurrent,OFF);
+        }
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag &= ~STATEUNBLOCKED;
+        addSOE(comProSts,&comProSts->yx.breakingCurrent,OFF);
+    }
+
+    //零序电压保护
+    if(*(stateJudegeSts->parastr.pSwitchVoltageU0)==SWITCH_ON)
+    {
+        if(*(comProSts->yc.U0)>*(stateJudegeSts->parastr.pValueVoltageU0))
+        {
+            stateJudegeSts->valstr.flag |= STATEOVERVOLTAGEU0;
+            addSOE(comProSts,&comProSts->yx.earthingFaultTripU0,ON);
+        }
+        else if(*(comProSts->yc.U0)<*(stateJudegeSts->parastr.pValueVoltageU0)*factor)
+        {
+            stateJudegeSts->valstr.flag &= ~STATEOVERVOLTAGEU0;
+            addSOE(comProSts,&comProSts->yx.earthingFaultTripU0,OFF);
+        }
+    }
+    else
+    {
+        stateJudegeSts->valstr.flag &= ~STATEOVERVOLTAGEU0;
+        addSOE(comProSts,&comProSts->yx.earthingFaultTripU0,OFF);
+    }
+    
+    //无压
+    if((*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol)*factor)&&\
+            (*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)*factor))
+    {
+        stateJudegeSts->valstr.flag |= STATENOVOLTAGE;
+        stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGEGET;
+		stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGELOSS;
+        stateJudegeSts->valstr.flag &= ~STATEDOUBLEVOLTAGE;
+    }
+    else
+    {
+        if((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValueLossvol))&&\
+                (*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValueLossvol)))//双侧有压
+        {
+            stateJudegeSts->valstr.flag |= STATEDOUBLEVOLTAGE;
+            stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGEGET;
+			stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGELOSS;
+            stateJudegeSts->valstr.flag &= ~STATENOVOLTAGE;
+        }
+        else if(((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValueLossvol))&&(*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)*factor))||\
+                ((*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValueLossvol))&&(*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol)*factor)))//单侧有压
+        {
+			if(stateJudegeSts->valstr.flag & STATEDOUBLEVOLTAGE)
+			{
+				stateJudegeSts->valstr.flag |= STATESINGLEVOLTAGELOSS;
+				stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGEGET;
+			}
+			else if(stateJudegeSts->valstr.flag & STATENOVOLTAGE)
+			{				
+				stateJudegeSts->valstr.flag |= STATESINGLEVOLTAGEGET;
+				stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGELOSS;
+			}
+            stateJudegeSts->valstr.flag &= ~STATEDOUBLEVOLTAGE;
+            stateJudegeSts->valstr.flag &= ~STATENOVOLTAGE;
+        }
+    }
+
+    //无流
+    if((*(comProSts->yc.Ia)<=*(stateJudegeSts->parastr.pValueLosscur)*factor)&&\
+            (*(comProSts->yc.Ib)<=*(stateJudegeSts->parastr.pValueLosscur)*factor)&&\
+            (*(comProSts->yc.Ic)<=*(stateJudegeSts->parastr.pValueLosscur)*factor))
+    {
+        stateJudegeSts->valstr.flag |= STATENOCURRENT;
+    }
+    else if((*(comProSts->yc.Ia)>=*(stateJudegeSts->parastr.pValueLosscur))||\
+            (*(comProSts->yc.Ib)>=*(stateJudegeSts->parastr.pValueLosscur))||\
+            (*(comProSts->yc.Ic)>=*(stateJudegeSts->parastr.pValueLosscur)))
+    {
+        stateJudegeSts->valstr.flag &= ~STATENOCURRENT;
+    }
+    
+    //自动判别分段，联络
+    if((*(comProSts->pConnectSwitchRecognize) == SWITCH_ON)&&(*(comProSts->yx.breakContact.value) == OFF))
+    {
+        if((stateJudegeSts->valstr.flag&STATEDOUBLEVOLTAGE)&&\
+            ((*(comProSts->yx.switchClose.value) == OFF)&&(*(comProSts->yx.switchOpen.value) == ON)))//双侧有压,开关分位
+        {
+            if(!(*(stateJudegeSts->valstr.gTimeConnectSwitchRecognize)&LOAD_ENTIMERS))
+            {
+                *(stateJudegeSts->valstr.gTimeConnectSwitchRecognize) = LOAD_ENTIMERS;//启动定时
+            }
+            if((*(stateJudegeSts->valstr.gTimeConnectSwitchRecognize)&LOAD_TITIMERS)>=(uint32_t)(15*1000))
+            {
+                addSOE(comProSts,&comProSts->yx.breakContact,ON);
+                *(stateJudegeSts->valstr.gTimeConnectSwitchRecognize) = 0;
+            }
+        }  
+    }
+}
+
+/**
+* @Description: 状态判断复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void state_judge_rest(ComProSts *comProSts,StateJudgeSts *stateJudegeSts)
+{
+    uint8_t i;
+
+    if(*(stateJudegeSts->valstr.resetflag)&(1<<LOAD_STATEJUDGE))//复位
+    {
+        *(stateJudegeSts->valstr.resetflag) &= ~(1<<LOAD_STATEJUDGE);
+        stateJudegeSts->valstr.flag = (STATENOVOLTAGE|STATENOCURRENT);
+        *(stateJudegeSts->valstr.gTimeOvercur[0]) = 0;
+        *(stateJudegeSts->valstr.gTimeOvercur[1]) = 0;
+        *(stateJudegeSts->valstr.gTimeOvercur[2]) = 0;
+        for(i=0; i<3; i++)
+        {
+            addSOE(comProSts,&comProSts->yx.overcurrentIa[i],OFF);
+            addSOE(comProSts,&comProSts->yx.overcurrentIb[i],OFF);
+            addSOE(comProSts,&comProSts->yx.overcurrentIc[i],OFF);
+        }
+        addSOE(comProSts,&comProSts->yx.shortCircuitFault,OFF);
+        *(stateJudegeSts->valstr.gTimeOvercurI0[0]) = 0;
+        *(stateJudegeSts->valstr.gTimeOvercurI0[1]) = 0;
+        for(i=0; i<2; i++)
+        {
+            addSOE(comProSts,&comProSts->yx.overcurrentI0[i],OFF);
+        }
+        addSOE(comProSts,&comProSts->yx.earthingFault,OFF);
+    }
+}
+
+/**
+  * @Description: 零序过流.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
+{
+    if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//合位
+    {
+        if(overcurI0Sts->valstr.flag&OVERCURI0STA2)//过流后合闸//复位状态量
+        {
+            overcurI0Sts->valstr.flag = 0;
+            addSOE(comProSts,&comProSts->yx.protectionAct,OFF);
+        }
+        if((*(overcurI0Sts->valstr.stateJudgeflag)&STATEOVERCURI0)&&\
+                (!(overcurI0Sts->valstr.flag&OVERCURI0STA1))) //零序过流
+        {
+            if(!(*(overcurI0Sts->valstr.stateJudgeflag)&STATEUNBLOCKED)&&\
+                    (*(comProSts->yx.openingLocked.value) == OFF))//非遮断
+            {
+                comProSts->opening(DO_OPEN,LOGIC_ACT);
+                addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+                overcurI0Sts->valstr.flag |= OVERCURI0STA1|RESETFLAG;
+            }
+        }
+    }
+    else if(overcurI0Sts->valstr.flag&OVERCURI0STA1)//分闸//过流后分闸
+    {
+        overcurI0Sts->valstr.flag &= (~OVERCURI0STA1);
+        overcurI0Sts->valstr.flag |= OVERCURI0STA2;
+    }
+}
+
+/**
+  * @Description: 零序过流复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void overcurI0_rest(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
+{
+    if(*(overcurI0Sts->valstr.resetflag)&(1<<LOAD_OVERCURI0))//复位
+    {
+        *(overcurI0Sts->valstr.resetflag) &= ~(1<<LOAD_OVERCURI0);
+        overcurI0Sts->valstr.flag = 0;
+        addSOE(comProSts,&comProSts->yx.protectionAct,OFF);
+    }
+}
+
+/**
+  * @Descr b iption: 失压跳闸.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void lossTrip_ctrl(ComProSts *comProSts,LossTripSts *lossTripSts)
+{
+    if((*(comProSts->yx.switchClose.value)==ON)&&(*(comProSts->yx.switchOpen.value)==OFF))//合位
+    {
+        if(lossTripSts->valstr.flag&LOSSTRIPSTA2)//动作后合闸//复位状态量
+        {
+            lossTripSts->valstr.flag &= (~LOSSTRIPSTA2);
+			lossTripSts->valstr.flag &= (~LOSSTRIP);
+            *(lossTripSts->valstr.gTime) = 0;
+            addSOE(comProSts,&comProSts->yx.lossTrip,OFF);
+            addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+        }
+
+        if((*(lossTripSts->parastr.pSwitch)==SWITCH_ON)&&(!(lossTripSts->valstr.flag&LOSSTRIPSTA1)))
+        {
+            if((((*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCUR)||(*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCURI0))&&\
+                    (!(lossTripSts->valstr.flag&LOSSTRIPSTA3))))//过流后
+            {
+                if((comProSts->WorkMode == TYPE_BREAKER_CURCOUNT)||((comProSts->WorkMode == TYPE_LOADSWTICH_CURCOUNT)))//电流计数型
+                {
+                    if(!(lossTripSts->valstr.flag&LOSSTRIPSTA4))//第一次过流
+                    {
+                        lossTripSts->valstr.flag |= LOSSTRIPSTA4;
+                    }
+                    if(lossTripSts->valstr.flag&LOSSTRIPSTA5)//第二次过流
+                    {
+                        lossTripSts->valstr.flag |= LOSSTRIPSTA3;
+                    }
+                }
+                if(comProSts->WorkMode == TYPE_LOADSWTICH_DIVIDE)//负荷开关型
+                {
+                    lossTripSts->valstr.flag |= LOSSTRIPSTA3;
+                }
+            }
+
+            //无流计数
+            if((((!(*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCUR))&&(!(*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCURI0)))||\
+                    ((*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCURNOSW)&&(*(lossTripSts->valstr.stateJudgeflag)&STATEOVERCURI0NOSW)))&&\
+                    (lossTripSts->valstr.flag&LOSSTRIPSTA4)&&(!(lossTripSts->valstr.flag&LOSSTRIPSTA5)))//第一次过流后
+            {
+                lossTripSts->valstr.flag |= LOSSTRIPSTA5;
+            }
+
+            //无压无流//电流计数型需判断2次电流
+            if((*(lossTripSts->valstr.stateJudgeflag)&STATENOVOLTAGE)&&(*(lossTripSts->valstr.stateJudgeflag)&STATENOCURRENT)&&(*(comProSts->yx.openingLocked.value)==OFF)&&\
+                (((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME)||(comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))||\
+                (((comProSts->WorkMode == TYPE_BREAKER_CURCOUNT)||(comProSts->WorkMode == TYPE_LOADSWTICH_CURCOUNT)||(comProSts->WorkMode == TYPE_LOADSWTICH_DIVIDE))&&(lossTripSts->valstr.flag&LOSSTRIPSTA3))))//无压无流
+            {
+                if(!(*(lossTripSts->valstr.gTime)&LOAD_ENTIMERS))
+                {
+                    *(lossTripSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+                }
+                if((*(lossTripSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(lossTripSts->parastr.pTime)*1000))
+                {
+                    comProSts->opening(DO_OPEN,LOGIC_ACT);
+                    lossTripSts->valstr.flag |= LOSSTRIP|LOSSTRIPSTA1|RESETFLAG;
+                    addSOE(comProSts,&comProSts->yx.lossTrip,ON);
+                    if((lossTripSts->valstr.flag&LOSSTRIPSTA3)||(*(lossTripSts->valstr.openCloseLockingflag)&JUDGRFLAG))
+                    {
+                        addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                    }
+                }
+            }
+            else
+            {
+                *(lossTripSts->valstr.gTime) = 0;
+            }
+        }
+        else
+        {
+            *(lossTripSts->valstr.gTime) = 0;
+            lossTripSts->valstr.flag &= ~LOSSTRIPSTA3;
+        }
+    }
+    else if(lossTripSts->valstr.flag&(LOSSTRIPSTA1|LOSSTRIPSTA4|LOSSTRIPSTA3|LOSSTRIPSTA5))//分位//过流后
+    {
+        lossTripSts->valstr.flag &= (~LOSSTRIPSTA1);
+        lossTripSts->valstr.flag |= LOSSTRIPSTA2;
+    }
+    else
+    {
+        *(lossTripSts->valstr.gTime) = 0;
+    }
+}
+
+/**
+  * @Descr b iption: 失压跳闸复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void lossTrip_rest(ComProSts *comProSts,LossTripSts *lossTripSts)
+{
+    if(*(lossTripSts->valstr.resetflag)&(1<<LOAD_LOSSTRIP))//复位
+    {
+        *(lossTripSts->valstr.resetflag) &= ~(1<<LOAD_LOSSTRIP);
+        lossTripSts->valstr.flag = 0;
+        *(lossTripSts->valstr.gTime) = 0;
+        addSOE(comProSts,&comProSts->yx.lossTrip,OFF);
+    }
+}
+
+/**
+  * @Description: 得电合闸.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void getVolClose_ctrl(ComProSts *comProSts,GetVolCloseSts *getVolCloseSts)
+{
+    if((*(comProSts->yx.switchOpen.value)==ON)&&(*(comProSts->yx.switchClose.value)==OFF))//分位
+    {
+        if(getVolCloseSts->valstr.flag&GETVOLCLOSESTA2)//动作后合闸//复位状态量
+        {
+            getVolCloseSts->valstr.flag = 0;
+            *(getVolCloseSts->valstr.gTime) = 0;
+            addSOE(comProSts,&comProSts->yx.getClossing,OFF);
+        }
+
+        if((*(getVolCloseSts->parastr.pSwitch)==SWITCH_ON)&&(*(comProSts->yx.closingLocked.value)==OFF)&&\
+                (*(getVolCloseSts->valstr.stateJudgeflag)&STATESINGLEVOLTAGEGET)&&\
+                (!(getVolCloseSts->valstr.flag&GETVOLCLOSESTA1)))//单侧有压
+        {
+            if(!(*(getVolCloseSts->valstr.gTime)&LOAD_ENTIMERS))
+            {
+                *(getVolCloseSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+            }
+            if((*(getVolCloseSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(getVolCloseSts->parastr.pXTime))*1000)
+            {
+                comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                getVolCloseSts->valstr.flag |= GETVOLCLOSE|GETVOLCLOSESTA1|RESETFLAG;
+                addSOE(comProSts,&comProSts->yx.getClossing,ON);
+            } 
+			 			 
+        }
+        else
+        {
+		  #ifdef GETPOWERLOSSVOLTAGELOCKCLOSE
+			 if((*(getVolCloseSts->valstr.gTime)&LOAD_ENTIMERS) && (*(getVolCloseSts->valstr.stateJudgeflag)&STATENOVOLTAGE))
+			 {
+				 addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+				 getVolCloseSts->valstr.flag |= GETVOLCLOSESTA3;
+			 }
+		  #endif 			 
+            *(getVolCloseSts->valstr.gTime) = 0;
+        }  				        
+    }
+    else if(getVolCloseSts->valstr.flag&GETVOLCLOSESTA1)//分位//过流后
+    {
+        getVolCloseSts->valstr.flag &= (~GETVOLCLOSESTA1);
+        getVolCloseSts->valstr.flag |= GETVOLCLOSESTA2;
+    }
+	
+  #ifdef GETPOWERLOSSVOLTAGELOCKCLOSE
+	if((*(comProSts->yx.switchOpen.value)==OFF)&&(*(comProSts->yx.switchClose.value)==ON))//合位
+	{
+		if(getVolCloseSts->valstr.flag&GETVOLCLOSESTA3)
+		{
+			addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+			getVolCloseSts->valstr.flag &= (~GETVOLCLOSESTA3);
+		}
+	}
+  #endif
+}
+
+/**
+  * @Description: 得电合闸复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void getVolClose_rest(ComProSts *comProSts,GetVolCloseSts *getVolCloseSts)
+{
+    if(*(getVolCloseSts->valstr.resetflag)&(1<<LOAD_GETVOLCLOSE))//复位
+    {
+        *(getVolCloseSts->valstr.resetflag) &= ~(1<<LOAD_GETVOLCLOSE);
+        getVolCloseSts->valstr.flag = 0;
+        *(getVolCloseSts->valstr.gTime) = 0;
+        addSOE(comProSts,&comProSts->yx.getClossing,OFF);
+	  #ifdef GETPOWERLOSSVOLTAGELOCKCLOSE
+		addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+	  #endif
+    }
+}
+
+/**
+  * @Description: 分合闸闭锁.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *openCloseLockingSts)
+{
+    if((*(comProSts->yx.switchOpen.value)==ON)&&(*(comProSts->yx.switchClose.value)==OFF))//分位
+    {
+		if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA10)//由合到分
+		{
+			addSOE(comProSts,&comProSts->yx.openingLocked,OFF);
+            *(openCloseLockingSts->valstr.gTime) = 0;
+			openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA10;
+		}
+		
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA8)//手动分闸
+        {
+            if(!((*(openCloseLockingSts->valstr.lossTripflag)&LOSSTRIP)||\
+                (*(comProSts->yx.protectionAct.value)==ON)))//手动分闸或摇杆分闸闭锁合闸
+            {
+                addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA8;
+            }
+        }
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA1)//刚合闸标志
+        {
+            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA1;
+        }
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA5)//分闸闭锁计时标志
+        {
+            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA5;
+            addSOE(comProSts,&comProSts->yx.openingLocked,OFF);
+        }
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA4)//分闸标志
+        {
+            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA4;
+            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGCLOSELOCK;
+            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA6;
+        }
+    }
+    else if((*(comProSts->yx.switchOpen.value)==OFF)&&(*(comProSts->yx.switchClose.value)==ON))//合位
+    {
+		if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA10))//由分到合
+		{
+			addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+			openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA10;
+		}
+		
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA6)//分闸后复位标志
+        {
+            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA6;
+            addSOE(comProSts,&comProSts->yx.failAfterClosing,OFF);
+            addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+            addSOE(comProSts,&comProSts->yx.protectionAct,OFF);
+        }
+        
+        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA8;
+
+        if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA1))//刚合闸后
+        {
+            if(!(*(openCloseLockingSts->valstr.gTime)&LOAD_ENTIMERS))
+            {
+                *(openCloseLockingSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+            }
+            if((*(openCloseLockingSts->valstr.gTime)&LOAD_TITIMERS)<(uint32_t)(*(openCloseLockingSts->parastr.pYTime))*1000)
+            {
+                //Y时间内            if(!(*(overcurI0Sts->valstr.stateJudgeflag)&STATEUNBLOCKED)&&\
+                    (*(comProSts->yx.openingLocked.value) == OFF))//非遮断
+                if((((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME))&&(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE))||\
+                        ((((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))||\
+                    (comProSts->WorkMode == TYPE_LOADSWTICH_DIVIDE))&&((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||\
+                        (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0))&&(*(comProSts->yx.openingLocked.value) == OFF))||\
+                    ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)))//电压时间判断无压//电压电流分界负荷开关判断过流//任意模式零序过电压保护
+                {
+                    openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1|OPENCLOSELOCKINGSTA2;
+                    openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA11;
+                    addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
+                    *(openCloseLockingSts->valstr.gTime) = 0;
+                }
+            }
+            else
+            {
+                //Y时间外
+                openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1|OPENCLOSELOCKINGSTA3;
+                *(openCloseLockingSts->valstr.gTime) = 0;
+            }
+        }
+//        if(*(openCloseLockingSts->parastr.pSwitchClose) == SWITCH_ON)//合闸闭锁
+        {
+            if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA2)//Y时间内
+            {
+                if((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME))//电压时间型
+                {
+                    if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA11))
+                    {
+                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA11;
+                        if((!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))&&\
+                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0))//无遮断//过零序电压
+                        {
+                            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+                            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+                            openCloseLockingSts->valstr.flag |= RESETFLAG;
+                            comProSts->opening(DO_OPEN,LOGIC_ACT);
+                            addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+                            addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                        }
+                    }
+                    if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)//无压
+                    {
+                        openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+                        openCloseLockingSts->valstr.flag |= RESETFLAG;
+                        if((*(openCloseLockingSts->valstr.getVolCloseflag)&JUDGRFLAG)||\
+                                (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
+                        {
+                            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGCLOSELOCK;
+                        }
+                    }
+                }
+                else if((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))//电压电流型
+                {
+                    if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA11))
+                    {
+                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA11;
+                        if((!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))&&\
+                            ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)||\
+                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||\
+                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0)))//无遮断//过零序电压或过流
+                        {
+                            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+                            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+                            openCloseLockingSts->valstr.flag |= RESETFLAG;
+                            comProSts->opening(DO_OPEN,LOGIC_ACT);
+                            addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+                            addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                        }
+                    }
+                    if((*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)&&\
+                            ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOCURRENT)))//无压无流
+                    {
+                        openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+                        openCloseLockingSts->valstr.flag |= RESETFLAG;
+                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGCLOSELOCK;
+                    }
+                }
+                else//其他模式
+                {
+                    openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+                    openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+                }
+            }
+        }
+//        else
+//        {
+//            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+//        }
+//        if(*(openCloseLockingSts->parastr.pSwitchOpen) == SWITCH_ON)//分闸闭锁
+        {
+            if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA3)//Y时间外
+            {
+                openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA3;
+                openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA5;
+                addSOE(comProSts,&comProSts->yx.openingLocked,ON);
+            }
+        }
+//        else
+//        {
+//            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA3;
+//        }
+        if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA5)//分闸闭锁计时
+        {
+            if(!(*(openCloseLockingSts->valstr.gTime)&LOAD_ENTIMERS))
+            {
+                *(openCloseLockingSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+            }
+            if((*(openCloseLockingSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(openCloseLockingSts->parastr.pOpenLockTime))*1000)
+            {
+                openCloseLockingSts->valstr.flag = OPENCLOSELOCKINGSTA1;//非刚合闸状态
+                *(openCloseLockingSts->valstr.gTime) = 0;
+                addSOE(comProSts,&comProSts->yx.openingLocked,OFF);
+            }
+        }
+    }
+}
+
+/**
+  * @Description: 分合闸闭锁复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void openCloseLocking_rest(ComProSts *comProSts,OpenCloseLockingSts *openCloseLockingSts)
+{
+    if(*(openCloseLockingSts->valstr.resetflag)&(1<<LOAD_OPENCLOSELOCK))//复位
+    {
+        *(openCloseLockingSts->valstr.resetflag) &= ~(1<<LOAD_OPENCLOSELOCK);
+        openCloseLockingSts->valstr.flag = OPENCLOSELOCKINGSTA1;//非刚合闸状态
+        *(openCloseLockingSts->valstr.gTime) = 0;
+        addSOE(comProSts,&comProSts->yx.failAfterClosing,OFF);
+        addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+        addSOE(comProSts,&comProSts->yx.openingLocked,OFF);
+        addSOE(comProSts,&comProSts->yx.protectionAct,OFF);
+    }
+}
+
+/**
+  * @Description: 残压闭锁.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void fewVolLock_ctrl(ComProSts *comProSts,FewVolLockSts *fewVolLockSts)
+{
+    if((*(comProSts->yx.switchOpen.value)==ON)&&(*(comProSts->yx.switchClose.value)==OFF))//分位
+    {
+        if(*(fewVolLockSts->parastr.pSwitch) == SWITCH_ON)
+        {
+            //Uab侧
+            if((!(fewVolLockSts->valstr.flag&FEWVOLLOCKUABSTA1))&&\
+                    (*(comProSts->yc.Uab)<*(fewVolLockSts->parastr.pValue)))//小于残压
+            {
+                fewVolLockSts->valstr.flag |= FEWVOLLOCKUABSTA1;
+            }
+
+            if((!(fewVolLockSts->valstr.flag&FEWVOLLOCKUABSTA3))&&(fewVolLockSts->valstr.flag&FEWVOLLOCKUABSTA1)&&\
+                    ((*(comProSts->yc.Uab)>*(fewVolLockSts->parastr.pValue))))//检测到残压
+            {
+                fewVolLockSts->valstr.flag |= FEWVOLLOCKUABSTA3;
+            }
+            if((!(fewVolLockSts->valstr.flag&(FEWVOLLOCKUABSTA2|FEWVOLLOCKUABSTA4)))&&(fewVolLockSts->valstr.flag&FEWVOLLOCKUABSTA3))
+            {
+                if(!(*(fewVolLockSts->valstr.gUabTime)&LOAD_ENTIMERS))
+                {
+                    *(fewVolLockSts->valstr.gUabTime) = LOAD_ENTIMERS;//启动定时
+                }
+                //分断X时间，联络XL时间
+                if(((*(comProSts->yx.breakContact.value)==OFF)&&((*(fewVolLockSts->valstr.gUabTime)&LOAD_TITIMERS)<(uint32_t)(*(fewVolLockSts->parastr.pXTime))*1000))||\
+                        ((*(comProSts->yx.breakContact.value)==ON)&&((*(fewVolLockSts->valstr.gUabTime)&LOAD_TITIMERS)<(uint32_t)(*(fewVolLockSts->parastr.pXLTime))*1000)))
+                {
+                    //时间内
+                    if(*(comProSts->yc.Uab)<*(fewVolLockSts->parastr.pValue))//小于残压
+                    {
+                        fewVolLockSts->valstr.flag |= FEWVOLLOCKUABSTA4;
+                        fewVolLockSts->valstr.flag |= RESETFLAG;
+                        addSOE(comProSts,&comProSts->yx.remainClockClossing,ON);
+                        addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                        *(fewVolLockSts->valstr.gUabTime) = 0;
+                    }
+                }
+                else
+                {
+                    //时间外
+                    fewVolLockSts->valstr.flag |= FEWVOLLOCKUABSTA2;
+                    *(fewVolLockSts->valstr.gUabTime) = 0;
+                }
+            }
+            if((fewVolLockSts->valstr.flag&FEWVOLLOCKUABSTA2)&&\
+                    (*(comProSts->yc.Uab)<*(fewVolLockSts->parastr.pValue)))//无压复位
+            {
+                fewVolLockSts->valstr.flag &= ~(FEWVOLLOCKUABSTA1|FEWVOLLOCKUABSTA2|FEWVOLLOCKUABSTA3|FEWVOLLOCKUABSTA4);
+                *(fewVolLockSts->valstr.gUabTime) = 0;
+            }
+
+            //Ucb侧
+            if((!(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA1))&&\
+                    (*(comProSts->yc.Ucb)<*(fewVolLockSts->parastr.pValue)))//小于残压
+            {
+                fewVolLockSts->valstr.flag |= FEWVOLLOCKUCBSTA1;
+            }
+
+            if((!(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA3))&&(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA1)&&\
+                    ((*(comProSts->yc.Ucb)>*(fewVolLockSts->parastr.pValue))))//检测到残压
+            {
+                fewVolLockSts->valstr.flag |= FEWVOLLOCKUCBSTA3;
+            }
+
+            if((!(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA4))&&(!(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA2))&&(fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA3))
+            {
+                if(!(*(fewVolLockSts->valstr.gUcbTime)&LOAD_ENTIMERS))
+                {
+                    *(fewVolLockSts->valstr.gUcbTime) = LOAD_ENTIMERS;//启动定时
+                }
+                //分断X时间，联络XL时间
+                if(((*(comProSts->yx.breakContact.value)==OFF)&&((*(fewVolLockSts->valstr.gUcbTime)&LOAD_TITIMERS)<(uint32_t)(*(fewVolLockSts->parastr.pXTime))*1000))||\
+                        ((*(comProSts->yx.breakContact.value)==ON)&&((*(fewVolLockSts->valstr.gUcbTime)&LOAD_TITIMERS)<(uint32_t)(*(fewVolLockSts->parastr.pXLTime))*1000)))
+                {
+                    //时间内
+                    if(*(comProSts->yc.Ucb)<*(fewVolLockSts->parastr.pValue))//小于残压
+                    {
+                        fewVolLockSts->valstr.flag |= FEWVOLLOCKUCBSTA4;
+                        fewVolLockSts->valstr.flag |= RESETFLAG;
+                        addSOE(comProSts,&comProSts->yx.remainClockClossing,ON);
+                        addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                        *(fewVolLockSts->valstr.gUcbTime) = 0;
+                    }
+                }
+                else
+                {
+                    //时间外
+                    fewVolLockSts->valstr.flag |= FEWVOLLOCKUCBSTA2;
+                    *(fewVolLockSts->valstr.gUcbTime) = 0;
+                }
+            }
+            if((fewVolLockSts->valstr.flag&FEWVOLLOCKUCBSTA2)&&\
+                    (*(comProSts->yc.Ucb)<*(fewVolLockSts->parastr.pValue)))//无压复位
+            {
+                fewVolLockSts->valstr.flag &= ~(FEWVOLLOCKUCBSTA1|FEWVOLLOCKUCBSTA2|FEWVOLLOCKUCBSTA3|FEWVOLLOCKUCBSTA4);
+                *(fewVolLockSts->valstr.gUcbTime) = 0;
+            }
+        }
+    }
+    else
+    {
+        fewVolLockSts->valstr.flag = 0;
+        *(fewVolLockSts->valstr.gUabTime) = 0;
+        *(fewVolLockSts->valstr.gUcbTime) = 0;
+        addSOE(comProSts,&comProSts->yx.remainClockClossing,OFF);
+    }
+}
+
+/**
+  * @Description: 残压闭锁复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void fewVolLock_rest(ComProSts *comProSts,FewVolLockSts *fewVolLockSts)
+{
+    if(*(fewVolLockSts->valstr.resetflag)&(1<<LOAD_FEWVOLLOCK))//复位
+    {
+        *(fewVolLockSts->valstr.resetflag) &= ~(1<<LOAD_FEWVOLLOCK);
+        fewVolLockSts->valstr.flag = 0;
+        *(fewVolLockSts->valstr.gUabTime) = 0;
+        *(fewVolLockSts->valstr.gUcbTime) = 0;
+        addSOE(comProSts,&comProSts->yx.remainClockClossing,OFF);
+        addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+    }
+}
+
+/**
+  * @Description: 双侧有压禁止合闸.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void doubleVol_ctrl(ComProSts *comProSts,DoubleVolSts *doubleVolSts)
+{
+    if((*(comProSts->yx.switchOpen.value)==ON)&&(*(comProSts->yx.switchClose.value)==OFF))//分位
+    {
+        if((*(doubleVolSts->valstr.stateJudgeflag)&STATEDOUBLEVOLTAGE)&&(*(doubleVolSts->parastr.pSwitch) == SWITCH_ON))
+        {
+            addSOE(comProSts,&comProSts->yx.doubleProhibitClossing,ON);
+            addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+            doubleVolSts->valstr.flag = DOUBLEVOLSTA1;
+        }
+        else if(doubleVolSts->valstr.flag&DOUBLEVOLSTA1)
+        {
+            doubleVolSts->valstr.flag = 0;
+            addSOE(comProSts,&comProSts->yx.doubleProhibitClossing,OFF);
+            addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+        }
+    }
+    else if((*(comProSts->yx.switchOpen.value)==OFF)&&(*(comProSts->yx.switchClose.value)==ON))//合位
+    {
+        if(doubleVolSts->valstr.flag&DOUBLEVOLSTA1)
+        {
+            doubleVolSts->valstr.flag = 0;
+            addSOE(comProSts,&comProSts->yx.doubleProhibitClossing,OFF);
+            addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+        }
+    }
+}
+
+/**
+  * @Description: 双侧有压禁止合闸复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void doubleVol_rest(ComProSts *comProSts,DoubleVolSts *doubleVolSts)
+{
+    if(*(doubleVolSts->valstr.resetflag)&(1<<LOAD_DOUBLEVOL))//复位
+    {
+        *(doubleVolSts->valstr.resetflag) &= ~(1<<LOAD_DOUBLEVOL);
+        doubleVolSts->valstr.flag = 0;
+        addSOE(comProSts,&comProSts->yx.remainClockClossing,OFF);
+        addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+    }
+}
+
+/**
+  * @Description: 单侧失压合闸.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void SingleLossClose_ctrl(ComProSts *comProSts,SingleLossCloseSts *singleLossCloseSts)
+{
+
+    if(((*(singleLossCloseSts->parastr.pSwitch) == SWITCH_ON)||(*(singleLossCloseSts->parastr.pSwitch) == SWITCH_ALARM))&&\
+            ((*(comProSts->yx.switchClose.value)==OFF)&&(*(comProSts->yx.switchOpen.value)==ON)))//分位
+    {
+        if(singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA4)
+        {
+            singleLossCloseSts->valstr.flag = 0;
+        }
+        if(((!(singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA1))||(singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA2))&&\
+                (*(singleLossCloseSts->valstr.stateJudgeflag)&STATEDOUBLEVOLTAGE))
+        {
+            if(singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA2)//复位双侧有压后单侧有压
+            {
+                singleLossCloseSts->valstr.flag = 0;
+                *(singleLossCloseSts->valstr.gTime) = 0;
+            }
+            if(!(*(singleLossCloseSts->valstr.gTime)&LOAD_ENTIMERS))
+            {
+                *(singleLossCloseSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+            }
+            if((*(singleLossCloseSts->valstr.gTime)&LOAD_TITIMERS)>SINGELELOSSCLOSETIME)
+            {
+                singleLossCloseSts->valstr.flag |= SINGELELOSSCLOSESTA1;//双侧有压固有时间以上
+                *(singleLossCloseSts->valstr.gTime) = 0;
+            }
+        }
+        else if((singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA1)&&(*(comProSts->yx.closingLocked.value)==OFF))
+        {
+            if(*(singleLossCloseSts->valstr.stateJudgeflag)&STATESINGLEVOLTAGELOSS)
+            {
+                singleLossCloseSts->valstr.flag |= SINGELELOSSCLOSESTA2;//双侧有压后单侧有压
+                if(!(*(singleLossCloseSts->valstr.gTime)&LOAD_ENTIMERS))
+                {
+                    *(singleLossCloseSts->valstr.gTime) = LOAD_ENTIMERS;//启动定时
+                }
+                if((*(singleLossCloseSts->valstr.gTime)&LOAD_TITIMERS)>(uint32_t)(*(singleLossCloseSts->parastr.pTime))*1000)
+                {
+                    singleLossCloseSts->valstr.flag |= SINGELELOSSCLOSE|SINGELELOSSCLOSESTA3|RESETFLAG;
+                    if(*(singleLossCloseSts->parastr.pSwitch) == SWITCH_ON)
+                    {
+                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                    }
+                    addSOE(comProSts,&comProSts->yx.singleLossClosing,ON);
+                }
+            }
+            else if(!(*(singleLossCloseSts->valstr.stateJudgeflag)&STATEDOUBLEVOLTAGE))
+            {
+                singleLossCloseSts->valstr.flag = 0;
+                *(singleLossCloseSts->valstr.gTime) = 0;
+            }
+        }
+    }
+    else
+    {
+        if(singleLossCloseSts->valstr.flag&SINGELELOSSCLOSESTA3)
+        {
+            singleLossCloseSts->valstr.flag |= SINGELELOSSCLOSESTA4;
+        }
+        else
+        {
+            singleLossCloseSts->valstr.flag = 0;
+            *(singleLossCloseSts->valstr.gTime) = 0;
+            addSOE(comProSts,&comProSts->yx.singleLossClosing,OFF);
+        }
+    }
+}
+
+/**
+  * @Description: 单侧失压合闸复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void SingleLossClose_rest(ComProSts *comProSts,SingleLossCloseSts *singleLossCloseSts)
+{
+    if (*(singleLossCloseSts->valstr.resetflag)&(1<<LOAD_SINGELELOSSCLOSE))//复位
+    {
+        *(singleLossCloseSts->valstr.resetflag) &= ~(1<<LOAD_SINGELELOSSCLOSE);
+        singleLossCloseSts->valstr.flag = 0;
+        *(singleLossCloseSts->valstr.gTime) = 0;
+        addSOE(comProSts,&comProSts->yx.singleLossClosing,OFF);
+    }
+}
+
+
+/* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
+/**
+  * @Description: 初始化.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void LoadSwitchCtrlInit(void)
+{
+    uint8_t pdrv;
+
+    for(pdrv=0; pdrv<LOAD_DEVMAXNUM; pdrv++)
+    {
+        switch(pdrv)
+        {
+        case LOAD_DEV0:
+            //通用
+			s_ComProSts[pdrv].pSwitchType = &g_ParameterDB.Data.runPara.Str.switchType;
+			s_ComProSts[pdrv].pBreakWorkMode = &g_ParameterDB.Data.runPara.Str.breakWorkMode;
+			s_ComProSts[pdrv].pLoadWorkMode = &g_ParameterDB.Data.runPara.Str.loadWorkMode;
+            s_ComProSts[pdrv].pConnectSwitchRecognize = &g_ParameterDB.Data.runPara.Str.connectSwitchRecognize;
+            s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB.Str.switchOpen;
+            s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB.Str.switchClose;
+            s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB.Str.functionHardStrap;
+            s_ComProSts[pdrv].yx.FA_HardStrap.value = &g_TelesignalDB.Str.FA.faHardStrap;
+
+            s_ComProSts[pdrv].yx.breakContact.addr =  ADDR_BREAK_CONTACT;
+            s_ComProSts[pdrv].yx.closingLocked.addr = ADDR_CLOSING_CLOCK;
+            s_ComProSts[pdrv].yx.openingLocked.addr = ADDR_OPENING_CLOCK;
+            s_ComProSts[pdrv].yx.shortCircuitFault.addr = ADDR_SHORT_CIRCUIT_FAULT;
+            s_ComProSts[pdrv].yx.earthingFault.addr = ADDR_EARTHING_FAULT;
+            s_ComProSts[pdrv].yx.protectionAct.addr = ADDR_PROTECTION_ACT;
+            s_ComProSts[pdrv].yx.protectionClock.addr = ADDR_PROTECTION_CLOCK;
+            s_ComProSts[pdrv].yx.overcurrentIa[0].addr = ADDR_OVERCURRENT_IA_1;
+            s_ComProSts[pdrv].yx.overcurrentIb[0].addr = ADDR_OVERCURRENT_IB_1;
+            s_ComProSts[pdrv].yx.overcurrentIc[0].addr = ADDR_OVERCURRENT_IC_1;
+            s_ComProSts[pdrv].yx.overcurrentIa[1].addr = ADDR_OVERCURRENT_IA_2;
+            s_ComProSts[pdrv].yx.overcurrentIb[1].addr = ADDR_OVERCURRENT_IB_2;
+            s_ComProSts[pdrv].yx.overcurrentIc[1].addr = ADDR_OVERCURRENT_IC_2;
+            s_ComProSts[pdrv].yx.overcurrentIa[2].addr = ADDR_OVERCURRENT_IA_3;
+            s_ComProSts[pdrv].yx.overcurrentIb[2].addr = ADDR_OVERCURRENT_IB_3;
+            s_ComProSts[pdrv].yx.overcurrentIc[2].addr = ADDR_OVERCURRENT_IC_3;
+            s_ComProSts[pdrv].yx.overcurrentI0[0].addr = ADDR_OVERCURRENT_I0_1;
+            s_ComProSts[pdrv].yx.overcurrentI0[1].addr = ADDR_OVERCURRENT_I0_2;
+            s_ComProSts[pdrv].yx.lossTrip.addr = ADDR_LOSS_TRIP;
+            s_ComProSts[pdrv].yx.getClossing.addr = ADDR_GET_CLOSSING_EVENT;
+            s_ComProSts[pdrv].yx.failAfterClosing.addr = ADDR_CLOSING_FAULT;
+            s_ComProSts[pdrv].yx.earthingFaultTripU0.addr = ADDR_U0_EARTHING_FAULT_TRIP;
+            s_ComProSts[pdrv].yx.remainClockClossing.addr = ADDR_REMAIN_CLOCK_CLOSSING;
+            s_ComProSts[pdrv].yx.doubleProhibitClossing.addr = ADDR_DOUBLE_PROHIBIT_CLOSSING;
+            s_ComProSts[pdrv].yx.singleLossClosing.addr = ADDR_SINGLE_LOSS_CLOSING_EVENT;
+            s_ComProSts[pdrv].yx.breakingCurrent.addr = ADDR_BREAKINGCURRENT;
+
+            s_ComProSts[pdrv].yx.breakContact.value =  &g_TelesignalDB.Str.breakContact;
+            s_ComProSts[pdrv].yx.closingLocked.value = &g_TelesignalDB.Str.closingLocked;
+            s_ComProSts[pdrv].yx.openingLocked.value = &g_TelesignalDB.Str.openingLockedEvent;
+            s_ComProSts[pdrv].yx.shortCircuitFault.value = &g_TelesignalDB.Str.shortCircuitFault;
+            s_ComProSts[pdrv].yx.earthingFault.value = &g_TelesignalDB.Str.earthingFault;
+            s_ComProSts[pdrv].yx.protectionAct.value = &g_TelesignalDB.Str.protectionAct;
+            s_ComProSts[pdrv].yx.protectionClock.value = &g_TelesignalDB.Str.protectionLock;
+            s_ComProSts[pdrv].yx.overcurrentIa[0].value = &g_TelesignalDB.Str.overcurrentIa1;
+            s_ComProSts[pdrv].yx.overcurrentIb[0].value = &g_TelesignalDB.Str.overcurrentIb1;
+            s_ComProSts[pdrv].yx.overcurrentIc[0].value = &g_TelesignalDB.Str.overcurrentIc1;
+            s_ComProSts[pdrv].yx.overcurrentIa[1].value = &g_TelesignalDB.Str.overcurrentIa2;
+            s_ComProSts[pdrv].yx.overcurrentIb[1].value = &g_TelesignalDB.Str.overcurrentIb2;
+            s_ComProSts[pdrv].yx.overcurrentIc[1].value = &g_TelesignalDB.Str.overcurrentIc2;
+            s_ComProSts[pdrv].yx.overcurrentIa[2].value = &g_TelesignalDB.Str.overcurrentIa3;
+            s_ComProSts[pdrv].yx.overcurrentIb[2].value = &g_TelesignalDB.Str.overcurrentIb3;
+            s_ComProSts[pdrv].yx.overcurrentIc[2].value = &g_TelesignalDB.Str.overcurrentIc3;
+            s_ComProSts[pdrv].yx.overcurrentI0[0].value = &g_TelesignalDB.Str.overcurrentI01;
+            s_ComProSts[pdrv].yx.overcurrentI0[1].value = &g_TelesignalDB.Str.overcurrentI02;
+            s_ComProSts[pdrv].yx.lossTrip.value = &g_TelesignalDB.Str.lossTrip;
+            s_ComProSts[pdrv].yx.getClossing.value = &g_TelesignalDB.Str.getClossingEvent;
+            s_ComProSts[pdrv].yx.failAfterClosing.value = &g_TelesignalDB.Str.closingFaultEvent;
+            s_ComProSts[pdrv].yx.earthingFaultTripU0.value = &g_TelesignalDB.Str.earthingFaultTripU0;
+            s_ComProSts[pdrv].yx.remainClockClossing.value = &g_TelesignalDB.Str.remainClockClossing;
+            s_ComProSts[pdrv].yx.doubleProhibitClossing.value = &g_TelesignalDB.Str.doubleProhibitClossing;
+            s_ComProSts[pdrv].yx.singleLossClosing.value = &g_TelesignalDB.Str.singleLossClosingEvent;
+            s_ComProSts[pdrv].yx.breakingCurrent.value = &g_TelesignalDB.Str.breakingCurrent;
+
+            s_ComProSts[pdrv].yc.Ia = &g_TelemetryDB.Str.Ia;
+            s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB.Str.Ib;
+            s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB.Str.Ic;
+            s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB.Str.I0;
+            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB.Str.Uab;
+            s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB.Str.UBC;
+            s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB.Str.U0;
+            
+            s_ComProSts[pdrv].fevent_yc_addr[0] = ADDR_IA;
+            s_ComProSts[pdrv].fevent_yc_addr[1] = ADDR_IB;
+            s_ComProSts[pdrv].fevent_yc_addr[2] = ADDR_IC;
+            s_ComProSts[pdrv].fevent_yc_addr[3] = ADDR_I0;
+            s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;
+            s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UBC;
+            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uac;
+            s_ComProSts[pdrv].fevent_yc_addr[7] = ADDR_U0;
+
+            s_ComProSts[pdrv].opening = &rt_hw_do_operate;
+            s_ComProSts[pdrv].closing = &rt_hw_do_operate;
+            s_ComProSts[pdrv].outputSoe = &DBWriteSOE;
+            s_ComProSts[pdrv].outputFevent = &DBWriteFEVENT;
+            
+            //复位
+            s_Rest[pdrv].valstr.flag = 0;
+            addtimers(pdrv,&s_Rest[pdrv].valstr.gTime);
+            s_Rest[pdrv].valstr.StateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.lossTripflag = &s_LossTrip[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.getVolCloseflag = &s_GetVolClose[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.openCloseLockingflag = &s_OpenCloseLocking[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.fewVolLockflag = &s_FewVolLock[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.doubleVol = &s_DoubleVol[pdrv].valstr.flag;
+            s_Rest[pdrv].valstr.SingleLossClose = &s_SingleLossClose[pdrv].valstr.flag;
+            s_Rest[pdrv].parastr.pSwitch = &g_pFixedValue->Data.publicValue.Str.automaticResetEnable;
+            s_Rest[pdrv].parastr.pTime = &g_pFixedValue->Data.publicValue.Str.automaticResetTime;
+            //状态标志
+            s_stateJudge[pdrv].valstr.flag = 0;
+            s_stateJudge[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeOvercur[0]);
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeOvercur[1]);
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeOvercur[2]);
+            s_stateJudge[pdrv].parastr.pSwitchOvercur[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch1;
+            s_stateJudge[pdrv].parastr.pSwitchOvercur[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch2;
+            s_stateJudge[pdrv].parastr.pSwitchOvercur[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch3;
+            s_stateJudge[pdrv].parastr.pValueOvercur[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue1;
+            s_stateJudge[pdrv].parastr.pValueOvercur[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue2;
+            s_stateJudge[pdrv].parastr.pValueOvercur[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue3;
+            s_stateJudge[pdrv].parastr.pTimeOvercur[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime1;
+            s_stateJudge[pdrv].parastr.pTimeOvercur[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime2;
+            s_stateJudge[pdrv].parastr.pTimeOvercur[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime3;
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeOvercurI0[0]);
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeOvercurI0[1]);
+            s_stateJudge[pdrv].parastr.pSwitchOvercurI0[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Switch1;
+            s_stateJudge[pdrv].parastr.pSwitchOvercurI0[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Switch2;
+            s_stateJudge[pdrv].parastr.pValueOvercurI0[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Value1;
+            s_stateJudge[pdrv].parastr.pValueOvercurI0[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Value2;
+            s_stateJudge[pdrv].parastr.pTimeOvercurI0[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Time1;
+            s_stateJudge[pdrv].parastr.pTimeOvercurI0[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Time2;
+            s_stateJudge[pdrv].parastr.pValueLossvol = &g_pFixedValue->Data.loadSwitchValue.Str.voltageValue;
+            s_stateJudge[pdrv].parastr.pValueLosscur = &g_pFixedValue->Data.loadSwitchValue.Str.currentValue;
+            s_stateJudge[pdrv].parastr.pSwitchBreakcur = &g_pFixedValue->Data.loadSwitchValue.Str.breakingCurrentSwitch;
+            s_stateJudge[pdrv].parastr.pValueBreakcur = &g_pFixedValue->Data.loadSwitchValue.Str.breakingCurrentValue;
+            s_stateJudge[pdrv].parastr.pSwitchVoltageU0 = &g_pFixedValue->Data.loadSwitchValue.Str.voltageU0Switch;
+            s_stateJudge[pdrv].parastr.pValueVoltageU0 = &g_pFixedValue->Data.loadSwitchValue.Str.voltageU0Value;
+            addtimers(pdrv,&s_stateJudge[pdrv].valstr.gTimeConnectSwitchRecognize);  
+			s_stateJudge[pdrv].valstr.flag = (STATENOVOLTAGE|STATENOCURRENT);
+            //零序过流
+            s_OvercurI0[pdrv].valstr.flag = 0;
+            s_OvercurI0[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_OvercurI0[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            //失电分闸
+            s_LossTrip[pdrv].valstr.flag = 0;
+            s_LossTrip[pdrv].valstr.openCloseLockingflag = &s_OpenCloseLocking[pdrv].valstr.flag;
+            s_LossTrip[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_LossTrip[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_LossTrip[pdrv].valstr.gTime);
+            s_LossTrip[pdrv].parastr.pSwitch = &g_pFixedValue->Data.loadSwitchValue.Str.lossElectricitySwitch;
+            s_LossTrip[pdrv].parastr.pTime = &g_pFixedValue->Data.loadSwitchValue.Str.lossOpeningTime;
+            //得电合闸
+            s_GetVolClose[pdrv].valstr.flag = 0;
+            s_GetVolClose[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_GetVolClose[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_GetVolClose[pdrv].valstr.gTime);
+            s_GetVolClose[pdrv].parastr.pSwitch = &g_pFixedValue->Data.loadSwitchValue.Str.getVoltageClossingSwitch;
+            s_GetVolClose[pdrv].parastr.pXTime = &g_pFixedValue->Data.loadSwitchValue.Str.getVoltageClossingXTime;
+            //合分闸闭锁
+            s_OpenCloseLocking[pdrv].valstr.flag = 0;
+            s_OpenCloseLocking[pdrv].valstr.getVolCloseflag = &s_GetVolClose[pdrv].valstr.flag;
+            s_OpenCloseLocking[pdrv].valstr.singleLossCloseflag = &s_SingleLossClose[pdrv].valstr.flag;
+            s_OpenCloseLocking[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
+            s_OpenCloseLocking[pdrv].valstr.lossTripflag = &s_LossTrip[pdrv].valstr.flag;
+            s_OpenCloseLocking[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_OpenCloseLocking[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_OpenCloseLocking[pdrv].valstr.gTime);
+//            s_OpenCloseLocking[pdrv].parastr.pSwitchClose = &pValueParaDB->Data.loadSwitchValue.Str.clossingLockedSwitch;
+//            s_OpenCloseLocking[pdrv].parastr.pSwitchOpen = &pValueParaDB->Data.loadSwitchValue.Str.openingLockedSwitch;
+            s_OpenCloseLocking[pdrv].parastr.pYTime = &g_pFixedValue->Data.loadSwitchValue.Str.faultCheckYTime;
+            s_OpenCloseLocking[pdrv].parastr.pOpenLockTime = &g_pFixedValue->Data.loadSwitchValue.Str.shortLockedOpeningTime;
+            //残压闭锁
+            s_FewVolLock[pdrv].valstr.flag = 0;
+            s_FewVolLock[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_FewVolLock[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_FewVolLock[pdrv].valstr.gUabTime);
+            addtimers(pdrv,&s_FewVolLock[pdrv].valstr.gUcbTime);
+            s_FewVolLock[pdrv].parastr.pSwitch = &g_pFixedValue->Data.loadSwitchValue.Str.remainVoltageSwitch;
+            s_FewVolLock[pdrv].parastr.pValue = &g_pFixedValue->Data.loadSwitchValue.Str.remainVoltageValue;
+            s_FewVolLock[pdrv].parastr.pXTime = &g_pFixedValue->Data.loadSwitchValue.Str.getVoltageClossingXTime;
+            s_FewVolLock[pdrv].parastr.pXLTime = &g_pFixedValue->Data.loadSwitchValue.Str.singleLossVoltageXLTime;
+            //双侧有压
+            s_DoubleVol[pdrv].valstr.flag = 0;
+            s_DoubleVol[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_DoubleVol[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            s_DoubleVol[pdrv].parastr.pSwitch = &g_pFixedValue->Data.loadSwitchValue.Str.doubleVoltageSwitch;
+            //单侧失电合闸
+            s_SingleLossClose[pdrv].valstr.flag = 0;
+            s_SingleLossClose[pdrv].valstr.stateJudgeflag = &s_stateJudge[pdrv].valstr.flag;
+            s_SingleLossClose[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
+            addtimers(pdrv,&s_SingleLossClose[pdrv].valstr.gTime);
+            s_SingleLossClose[pdrv].parastr.pSwitch = &g_pFixedValue->Data.loadSwitchValue.Str.singleLossVoltageSwitch;
+            s_SingleLossClose[pdrv].parastr.pTime = &g_pFixedValue->Data.loadSwitchValue.Str.singleLossVoltageXLTime;
+			//初始闭锁清除
+			addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.openingLocked,OFF);
+            break;
+        }
+    }
+}
+
+/**
+  * @Description: 主保护程序.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void LoadSwitchCtrlClock(void)
+{
+    uint8_t i=0;
+    uint8_t pdrv;
+
+    for(pdrv=0; pdrv<LOAD_DEVMAXNUM; pdrv++)
+    {
+        for(i=0; i<LOAD_MAXTIMERS; i++) //定时增加
+        {
+            if(s_timers[pdrv][i]&LOAD_ENTIMERS)
+            {
+                s_timers[pdrv][i]++;
+            }
+        }
+
+		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
+		{
+			s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+		}
+		else
+		{
+			s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+		}
+		
+        switch(pdrv)
+        {
+        case LOAD_DEV0:
+			if((!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON))&&\
+				(!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_NONE))&&\
+				(!(s_ComProSts[pdrv].WorkMode == TYPE_LOADSWTICH_NONE)))
+			{
+				if(*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)//保护压板
+				{
+					state_judge(&s_ComProSts[pdrv],&s_stateJudge[pdrv]);//状态判断
+				  #ifdef FAPROTECTIONENABLING
+					if(*(s_ComProSts[pdrv].yx.FA_HardStrap.value)==ON)//FA保护压板
+				  #endif
+					{
+						if(s_ComProSts[pdrv].WorkMode==TYPE_LOADSWTICH_DIVIDE)//分界负荷开关
+						{
+							overcurI0_ctrl(&s_ComProSts[pdrv],&s_OvercurI0[pdrv]);//零序过流
+							getVolClose_ctrl(&s_ComProSts[pdrv],&s_GetVolClose[pdrv]);//得电合闸
+							openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+							lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+							fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+						}
+						else if((s_ComProSts[pdrv].WorkMode==TYPE_BREAKER_CURCOUNT)||(s_ComProSts[pdrv].WorkMode==TYPE_LOADSWTICH_CURCOUNT))//电流计数型
+						{
+							overcurI0_ctrl(&s_ComProSts[pdrv],&s_OvercurI0[pdrv]);//零序过流
+							getVolClose_ctrl(&s_ComProSts[pdrv],&s_GetVolClose[pdrv]);//得电合闸
+							openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+							lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+							fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+						}
+						else
+						{
+							if(*(s_ComProSts[pdrv].yx.breakContact.value)==OFF)//分断
+							{
+								getVolClose_ctrl(&s_ComProSts[pdrv],&s_GetVolClose[pdrv]);//得电合闸
+								openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+								lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+								fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+							}
+							else//联络
+							{
+								SingleLossClose_ctrl(&s_ComProSts[pdrv],&s_SingleLossClose[pdrv]);//单侧失压合闸
+								openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+								lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+								fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+								doubleVol_ctrl(&s_ComProSts[pdrv],&s_DoubleVol[pdrv]);//双侧有压禁止合闸
+							}
+						}
+					}
+				}
+			}
+            rest_ctrl(pdrv,&s_ComProSts[pdrv],&s_Rest[pdrv]);//复位
+            state_judge_rest(&s_ComProSts[pdrv],&s_stateJudge[pdrv]);//状态复位
+            overcurI0_rest(&s_ComProSts[pdrv],&s_OvercurI0[pdrv]);//零序过流
+            lossTrip_rest(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+            getVolClose_rest(&s_ComProSts[pdrv],&s_GetVolClose[pdrv]);//得电合闸
+            openCloseLocking_rest(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+            fewVolLock_rest(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+            doubleVol_rest(&s_ComProSts[pdrv],&s_DoubleVol[pdrv]);//双侧有压禁止合闸
+            fewVolLock_rest(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+            SingleLossClose_rest(&s_ComProSts[pdrv],&s_SingleLossClose[pdrv]);//单侧失压合闸
+            break;
+        }
+    }
+}
+
+/**
+  * @Description: 手动复位.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void LoadSwitchCtrlReset(uint8_t pdrv)
+{
+    s_Rest[pdrv].valstr.flag |= MANRESETFLAG;//复位标志
+}
+
+
+/* END OF FILE ---------------------------------------------------------------*/
+
