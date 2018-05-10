@@ -1,84 +1,84 @@
-# struct2json API ÎÄµµ
+# struct2json API æ–‡æ¡£
 
 ---
 
-ËùÓĞÖ§³ÖµÄAPI½Ó¿Ú¶¼ÔÚ `\struct2json\inc\s2j.h` ÖĞÉùÃ÷¡£ÒÔÏÂÄÚÈİ½Ï¶à£¬½¨ÒéÊ¹ÓÃ CTRL+F ËÑË÷¡£
+æ‰€æœ‰æ”¯æŒçš„APIæ¥å£éƒ½åœ¨ `\struct2json\inc\s2j.h` ä¸­å£°æ˜ã€‚ä»¥ä¸‹å†…å®¹è¾ƒå¤šï¼Œå»ºè®®ä½¿ç”¨ CTRL+F æœç´¢ã€‚
 
-## 1¡¢ÓÃ»§Ê¹ÓÃ½Ó¿Ú
+## 1ã€ç”¨æˆ·ä½¿ç”¨æ¥å£
 
-### 1.1 ³õÊ¼»¯
+### 1.1 åˆå§‹åŒ–
 
-³õÊ¼»¯µÄstruct2json¿â¡£
+åˆå§‹åŒ–çš„struct2jsonåº“ã€‚
 
-> ×¢£ºÄ¿Ç°Ö÷Òª³õÊ¼»¯¸Ã¿â¼°cJSON¿âËùĞèµÄÄÚ´æ¹ÜÀí·½·¨¡£Ä¬ÈÏÊ¹ÓÃµÄ `malloc` ¼° `free` ×÷ÎªÄÚ´æ¹ÜÀí·½·¨£¬Èç¹ûÊ¹ÓÃÄ¬ÈÏÄÚ´æ¹ÜÀí·½Ê½£¬ÔòÎŞĞè³õÊ¼»¯¡£
+> æ³¨ï¼šç›®å‰ä¸»è¦åˆå§‹åŒ–è¯¥åº“åŠcJSONåº“æ‰€éœ€çš„å†…å­˜ç®¡ç†æ–¹æ³•ã€‚é»˜è®¤ä½¿ç”¨çš„ `malloc` åŠ `free` ä½œä¸ºå†…å­˜ç®¡ç†æ–¹æ³•ï¼Œå¦‚æœä½¿ç”¨é»˜è®¤å†…å­˜ç®¡ç†æ–¹å¼ï¼Œåˆ™æ— éœ€åˆå§‹åŒ–ã€‚
 
 ```C
 void s2j_init(S2jHook *hook)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|hook                                    |Ö¸¶¨µÄÄÚ´æ¹ÜÀí·½·¨|
+|hook                                    |æŒ‡å®šçš„å†…å­˜ç®¡ç†æ–¹æ³•|
 
-### 1.2 ½«½á¹¹Ìå¶ÔÏó×ª»»£¨ĞòÁĞ»¯£©ÎªJSON¶ÔÏó
+### 1.2 å°†ç»“æ„ä½“å¯¹è±¡è½¬æ¢ï¼ˆåºåˆ—åŒ–ï¼‰ä¸ºJSONå¯¹è±¡
 
-×¢Òâ£ºÒÔÏÂAPI¾ù²ÉÓÃºê¶¨Òå·½Ê½£¬ÔÚÊ¹ÓÃÊ±Óë³£ÓÃAPI·½·¨ĞÎÊ½ÂÔÓĞ²»Í¬£¬Çë×¢Òâ²é¿´Demo¡£
+æ³¨æ„ï¼šä»¥ä¸‹APIå‡é‡‡ç”¨å®å®šä¹‰æ–¹å¼ï¼Œåœ¨ä½¿ç”¨æ—¶ä¸å¸¸ç”¨APIæ–¹æ³•å½¢å¼ç•¥æœ‰ä¸åŒï¼Œè¯·æ³¨æ„æŸ¥çœ‹Demoã€‚
 
-#### 1.2.1 ´´½¨JSON¶ÔÏó
+#### 1.2.1 åˆ›å»ºJSONå¯¹è±¡
 
 ```C
 s2j_create_json_obj(json_obj)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|json_obj                                |JSON¶ÔÏó|
+|json_obj                                |JSONå¯¹è±¡|
 
-#### 1.2.2 ×ª»»»ù±¾ÀàĞÍÔªËØ
+#### 1.2.2 è½¬æ¢åŸºæœ¬ç±»å‹å…ƒç´ 
 
-×¢Òâ£ºÕâÀïµÄ½á¹¹ÌåÔªËØ»ù±¾ÀàĞÍÖ»Ö§³Ö `int` ¡¢ `string` ¼° `double` £¬ÆäËûÀàĞÍ×ª»»Ê±Ó¦¿¼ÂÇÑ¡È¡ÈıÕßÖĞµÄÆäÖĞÒ»ÖÖ×÷Ä¿±êÀàĞÍ£¬Ñ¡Ôñ±ê×¼ÎªÁ½ÕßÀàĞÍ¼ä¿É±»ÎŞËğÏà»¥×ª»»¡£ÀıÈç£º½á¹¹ÌåÔªËØÀàĞÍÎª `uint8_t` ¡¢`uint16_t` ¡¢`int16_t` ¡¢ `size_t` ¡¢`Ä³Ö¸ÕëµØÖ·` µÈÀàĞÍ¿ÉÒÔÑ¡Ôñ `int` ×÷ÎªÈë²Î¡£
+æ³¨æ„ï¼šè¿™é‡Œçš„ç»“æ„ä½“å…ƒç´ åŸºæœ¬ç±»å‹åªæ”¯æŒ `int` ã€ `string` åŠ `double` ï¼Œå…¶ä»–ç±»å‹è½¬æ¢æ—¶åº”è€ƒè™‘é€‰å–ä¸‰è€…ä¸­çš„å…¶ä¸­ä¸€ç§ä½œç›®æ ‡ç±»å‹ï¼Œé€‰æ‹©æ ‡å‡†ä¸ºä¸¤è€…ç±»å‹é—´å¯è¢«æ— æŸç›¸äº’è½¬æ¢ã€‚ä¾‹å¦‚ï¼šç»“æ„ä½“å…ƒç´ ç±»å‹ä¸º `uint8_t` ã€`uint16_t` ã€`int16_t` ã€ `size_t` ã€`æŸæŒ‡é’ˆåœ°å€` ç­‰ç±»å‹å¯ä»¥é€‰æ‹© `int` ä½œä¸ºå…¥å‚ã€‚
 
 ```C
 s2j_json_set_basic_element(to_json, from_struct, type, element)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|to_json                                 |Ä¿±êJSON¶ÔÏó|
-|from_struct                             |Ô´½á¹¹Ìå¶ÔÏó|
-|type                                    |Ô´½á¹¹Ìå¶ÔÏóÔªËØÀàĞÍ£¬ÕâÀïÖ»Ö§³Öint¡¢string¡¢double|
-|element                                 |Ô´½á¹¹Ìå¶ÔÏóÔªËØ|
+|to_json                                 |ç›®æ ‡JSONå¯¹è±¡|
+|from_struct                             |æºç»“æ„ä½“å¯¹è±¡|
+|type                                    |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ ç±»å‹ï¼Œè¿™é‡Œåªæ”¯æŒintã€stringã€double|
+|element                                 |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ |
 
-#### 1.2.3 ×ª»»Êı×éÀàĞÍÔªËØ
+#### 1.2.3 è½¬æ¢æ•°ç»„ç±»å‹å…ƒç´ 
 
 ```C
 s2j_json_set_array_element(to_json, from_struct, type, element, size)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|to_json                                 |Ä¿±êJSON¶ÔÏó|
-|from_struct                             |Ô´½á¹¹Ìå¶ÔÏó|
-|type                                    |Ô´½á¹¹Ìå¶ÔÏóÔªËØµÄ»ù±¾ÀàĞÍ¡£²Î¿¼1.2.2ÖĞ¶Ô»ù±¾ÀàĞÍµÄÒªÇó|
-|element                                 |Ô´½á¹¹Ìå¶ÔÏóÔªËØ|
-|size                                    |Ô´½á¹¹Ìå¶ÔÏóÊı×éÔªËØµÄ³¤¶È|
+|to_json                                 |ç›®æ ‡JSONå¯¹è±¡|
+|from_struct                             |æºç»“æ„ä½“å¯¹è±¡|
+|type                                    |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ çš„åŸºæœ¬ç±»å‹ã€‚å‚è€ƒ1.2.2ä¸­å¯¹åŸºæœ¬ç±»å‹çš„è¦æ±‚|
+|element                                 |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ |
+|size                                    |æºç»“æ„ä½“å¯¹è±¡æ•°ç»„å…ƒç´ çš„é•¿åº¦|
 
-#### 1.2.4 ×ª»»½á¹¹ÌåÀàĞÍÔªËØ£¨¼´×Ó½á¹¹Ìå£©
+#### 1.2.4 è½¬æ¢ç»“æ„ä½“ç±»å‹å…ƒç´ ï¼ˆå³å­ç»“æ„ä½“ï¼‰
 
 ```C
 s2j_json_set_struct_element(child_json, to_json, child_struct, from_struct, type, element)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|child_json                              |Ä¿±êJSON¶ÔÏóµÄ×ÓJSON¶ÔÏó|
-|to_json                                 |Ä¿±êJSON¶ÔÏó|
-|child_struct                            |Ô´½á¹¹Ìå¶ÔÏóµÄ×Ó½á¹¹Ìå¶ÔÏó|
-|from_struct                             |Ô´½á¹¹Ìå¶ÔÏó|
-|type                                    |Ô´½á¹¹Ìå¶ÔÏóÔªËØ£¨×Ó½á¹¹Ìå£©ÀàĞÍ|
-|element                                 |Ô´½á¹¹Ìå¶ÔÏóÔªËØ|
+|child_json                              |ç›®æ ‡JSONå¯¹è±¡çš„å­JSONå¯¹è±¡|
+|to_json                                 |ç›®æ ‡JSONå¯¹è±¡|
+|child_struct                            |æºç»“æ„ä½“å¯¹è±¡çš„å­ç»“æ„ä½“å¯¹è±¡|
+|from_struct                             |æºç»“æ„ä½“å¯¹è±¡|
+|type                                    |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ ï¼ˆå­ç»“æ„ä½“ï¼‰ç±»å‹|
+|element                                 |æºç»“æ„ä½“å¯¹è±¡å…ƒç´ |
 
-Àı×Ó£º
+ä¾‹å­ï¼š
 ```C
 typedef struct {
     char name[16];
@@ -96,73 +96,73 @@ Student orignal_struct_student = {
         .hometown.name = "China",
 }
 Student *struct_student = &orignal_struct_student;
-/* ´´½¨¿ÕStudent JSON¶ÔÏó */
+/* åˆ›å»ºç©ºStudent JSONå¯¹è±¡ */
 s2j_create_json_obj(json_student);
-/* ĞòÁĞ»¯£¨×ª»»£©Student½á¹¹ÌåµÄidÔªËØ */
+/* åºåˆ—åŒ–ï¼ˆè½¬æ¢ï¼‰Studentç»“æ„ä½“çš„idå…ƒç´  */
 s2j_json_set_basic_element(json_student, struct_student, int, id);
-/* ĞòÁĞ»¯Student½á¹¹ÌåµÄnameÔªËØ */
+/* åºåˆ—åŒ–Studentç»“æ„ä½“çš„nameå…ƒç´  */
 s2j_json_set_basic_element(json_student, struct_student, string, name);
-/* ĞòÁĞ»¯Student½á¹¹ÌåµÄ×Ó½á¹¹ÌåhometownÔªËØ */
+/* åºåˆ—åŒ–Studentç»“æ„ä½“çš„å­ç»“æ„ä½“hometownå…ƒç´  */
 s2j_json_set_struct_element(json_hometown, json_student, struct_hometown, struct_student, Hometown, hometown);
-/* ĞòÁĞ»¯Hometown½á¹¹ÌåµÄnameÔªËØ */
+/* åºåˆ—åŒ–Hometownç»“æ„ä½“çš„nameå…ƒç´  */
 s2j_json_set_basic_element(json_hometown, struct_hometown, string, name);
 ```
 
-### 1.3 ½«JSON¶ÔÏó×ª»»£¨·´ĞòÁĞ»¯£©Îª½á¹¹Ìå¶ÔÏó
+### 1.3 å°†JSONå¯¹è±¡è½¬æ¢ï¼ˆååºåˆ—åŒ–ï¼‰ä¸ºç»“æ„ä½“å¯¹è±¡
 
-#### 1.3.1 ´´½¨½á¹¹Ìå¶ÔÏó
+#### 1.3.1 åˆ›å»ºç»“æ„ä½“å¯¹è±¡
 
 ```C
 s2j_create_struct_obj(struct_obj, type)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|struct_obj                              |½á¹¹Ìå¶ÔÏó|
-|type                                    |½á¹¹ÌåÀàĞÍ|
+|struct_obj                              |ç»“æ„ä½“å¯¹è±¡|
+|type                                    |ç»“æ„ä½“ç±»å‹|
 
-#### 1.3.2 ×ª»»»ù±¾ÀàĞÍÔªËØ
+#### 1.3.2 è½¬æ¢åŸºæœ¬ç±»å‹å…ƒç´ 
 
 ```C
 s2j_struct_get_basic_element(to_struct, from_json, type, element)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|to_struct                               |Ä¿±ê½á¹¹Ìå¶ÔÏó|
-|from_json                               |Ô´JSON¶ÔÏó|
-|type                                    |Ä¿±ê½á¹¹Ìå¶ÔÏóÔªËØÀàĞÍ¡£²Î¿¼1.2.2ÖĞ¶Ô»ù±¾ÀàĞÍµÄÒªÇó|
-|element                                 |Ä¿±ê½á¹¹Ìå¶ÔÏóÔªËØ|
+|to_struct                               |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡|
+|from_json                               |æºJSONå¯¹è±¡|
+|type                                    |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡å…ƒç´ ç±»å‹ã€‚å‚è€ƒ1.2.2ä¸­å¯¹åŸºæœ¬ç±»å‹çš„è¦æ±‚|
+|element                                 |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡å…ƒç´ |
 
-#### 1.3.3 ×ª»»Êı×éÀàĞÍÔªËØ
+#### 1.3.3 è½¬æ¢æ•°ç»„ç±»å‹å…ƒç´ 
 
 ```C
 s2j_struct_get_array_element(to_struct, from_json, type, element)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|to_struct                               |Ä¿±ê½á¹¹Ìå¶ÔÏó|
-|from_json                               |Ô´JSON¶ÔÏó|
-|type                                    |Ä¿±ê½á¹¹Ìå¶ÔÏóÔªËØÀàĞÍ¡£²Î¿¼1.2.2ÖĞ¶Ô»ù±¾ÀàĞÍµÄÒªÇó|
-|element                                 |Ä¿±ê½á¹¹Ìå¶ÔÏóÔªËØ|
+|to_struct                               |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡|
+|from_json                               |æºJSONå¯¹è±¡|
+|type                                    |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡å…ƒç´ ç±»å‹ã€‚å‚è€ƒ1.2.2ä¸­å¯¹åŸºæœ¬ç±»å‹çš„è¦æ±‚|
+|element                                 |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡å…ƒç´ |
 
-#### 1.3.4 ×ª»»½á¹¹ÌåÀàĞÍÔªËØ£¨¼´×ÓJSON£©
+#### 1.3.4 è½¬æ¢ç»“æ„ä½“ç±»å‹å…ƒç´ ï¼ˆå³å­JSONï¼‰
 
 ```C
 s2j_struct_get_struct_element(child_struct, to_struct, child_json, from_json, type, element)
 ```
 
-|²ÎÊı                                    |ÃèÊö|
+|å‚æ•°                                    |æè¿°|
 |:-----                                  |:----|
-|child_struct                            |Ä¿±ê½á¹¹Ìå¶ÔÏóµÄ×Ó½á¹¹Ìå¶ÔÏó|
-|to_struct                               |Ä¿±ê½á¹¹Ìå¶ÔÏó|
-|child_json                              |Ô´JSON¶ÔÏóµÄ×ÓJSON¶ÔÏó|
-|from_json                               |Ô´JSON¶ÔÏó|
-|type                                    |Ô´JSON¶ÔÏóÔªËØ£¨×ÓJSON£©ÀàĞÍ|
-|element                                 |Ô´JSON¶ÔÏóÔªËØ|
+|child_struct                            |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡çš„å­ç»“æ„ä½“å¯¹è±¡|
+|to_struct                               |ç›®æ ‡ç»“æ„ä½“å¯¹è±¡|
+|child_json                              |æºJSONå¯¹è±¡çš„å­JSONå¯¹è±¡|
+|from_json                               |æºJSONå¯¹è±¡|
+|type                                    |æºJSONå¯¹è±¡å…ƒç´ ï¼ˆå­JSONï¼‰ç±»å‹|
+|element                                 |æºJSONå¯¹è±¡å…ƒç´ |
 
-Àı×Ó£º
+ä¾‹å­ï¼š
 ```C
 typedef struct {
     char name[16];
@@ -175,20 +175,20 @@ typedef struct {
 } Student;
 
 char orignal_json_string_student[] = "{\"id\":24, \"name\":\"armink\", \"hometown\":{\"name\":\"China\"}}";
-/* ´´½¨Student JSON¶ÔÏó */
+/* åˆ›å»ºStudent JSONå¯¹è±¡ */
 cJSON *json_student = cJSON_Parse(orignal_json_string_student);
-/* ´´½¨¿ÕStudent½á¹¹Ìå¶ÔÏó */
+/* åˆ›å»ºç©ºStudentç»“æ„ä½“å¯¹è±¡ */
 s2j_create_struct_obj(struct_student, Student);
-/* ·´ĞòÁĞ»¯Student½á¹¹ÌåµÄidÔªËØ */
+/* ååºåˆ—åŒ–Studentç»“æ„ä½“çš„idå…ƒç´  */
 s2j_struct_get_basic_element(struct_student, json_student, int, id);
-/* ·´ĞòÁĞ»¯Student½á¹¹ÌåµÄnameÔªËØ */
+/* ååºåˆ—åŒ–Studentç»“æ„ä½“çš„nameå…ƒç´  */
 s2j_struct_get_basic_element(struct_student, json_student, string, name);
-/* ·´ĞòÁĞ»¯Student½á¹¹ÌåµÄ×Ó½á¹¹ÌåhometownÔªËØ */
+/* ååºåˆ—åŒ–Studentç»“æ„ä½“çš„å­ç»“æ„ä½“hometownå…ƒç´  */
 s2j_struct_get_struct_element(struct_hometown, struct_student, json_hometown, json_student, Hometown, hometown);
-/* ·´ĞòÁĞ»¯Hometown½á¹¹ÌåµÄnameÔªËØ */
+/* ååºåˆ—åŒ–Hometownç»“æ„ä½“çš„nameå…ƒç´  */
 s2j_struct_get_basic_element(struct_hometown, json_hometown, string, name);
 ```
 
-## 2¡¢×¢Òâ
+## 2ã€æ³¨æ„
 
-- ¸Ã¿âÖ»ÊÊÓÃÓÚC99¼°ÆäÒÔÉÏ±ê×¼±àÒëÆ÷
+- è¯¥åº“åªé€‚ç”¨äºC99åŠå…¶ä»¥ä¸Šæ ‡å‡†ç¼–è¯‘å™¨

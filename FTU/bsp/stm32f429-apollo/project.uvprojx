@@ -10,7 +10,7 @@
       <TargetName>FTU_V03.020</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F429IGTx</Device>
@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32F429xx,ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc</IncludePath>
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1786,6 +1786,26 @@
               <FileName>malloc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\components\malloc\malloc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>struct2json</GroupName>
+          <Files>
+            <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\struct2json\src\cJSON.c</FilePath>
+            </File>
+            <File>
+              <FileName>s2j.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\struct2json\src\s2j.c</FilePath>
+            </File>
+            <File>
+              <FileName>Interface_S2J.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\user\Interface_S2J.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -25,8 +25,8 @@
  * Function: demo for this library.
  * Created on: 2015-10-14
  */
-
-#include "s2j.h"
+ 
+#include "struct2json/inc/s2j.h"
 #include <stdint.h>
 #include <stdio.h>
 
