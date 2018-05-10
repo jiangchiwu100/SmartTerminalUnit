@@ -599,8 +599,8 @@ void other_protect_init(void)
     OverLimitUab.delay = &g_pFixedValue->Data.publicValue.Str.overlimitTime;
     OverLimitUab.stateUp = &g_TelesignalDB.Str.overLimitUaUp;
     OverLimitUab.stateDown = &g_TelesignalDB.Str.overLimitUaDown;
-    OverLimitUab.soeAddrUp = ADDR_OVER_LIMIT_UA_UP;
-    OverLimitUab.soeAddrDown = ADDR_OVER_LIMIT_UA_DOWN;
+    OverLimitUab.soeAddrUp = ADDR_OVER_LIMIT_Uab_UP;
+    OverLimitUab.soeAddrDown = ADDR_OVER_LIMIT_Uab_DOWN;
     OverLimitUab.uplimit = &g_pFixedValue->Data.publicValue.Str.uplimitVoltageU;
     OverLimitUab.downlimit = &g_pFixedValue->Data.publicValue.Str.downlimitVoltageU;
     OverLimitUab.funSwitch = &g_pFixedValue->Data.publicValue.Str.overlimitAlarmSwitchUab;
@@ -615,8 +615,8 @@ void other_protect_init(void)
     OverLimitUBC.delay = &g_pFixedValue->Data.publicValue.Str.overlimitTime;
     OverLimitUBC.stateUp = &g_TelesignalDB.Str.overLimitUcUp;
     OverLimitUBC.stateDown = &g_TelesignalDB.Str.overLimitUcDown;
-    OverLimitUBC.soeAddrUp = ADDR_OVER_LIMIT_UC_UP;
-    OverLimitUBC.soeAddrDown = ADDR_OVER_LIMIT_UC_DOWN;
+    OverLimitUBC.soeAddrUp = ADDR_OVER_LIMIT_UBC_UP;
+    OverLimitUBC.soeAddrDown = ADDR_OVER_LIMIT_UBC_DOWN;
     OverLimitUBC.uplimit = &g_pFixedValue->Data.publicValue.Str.uplimitVoltageU;
     OverLimitUBC.downlimit = &g_pFixedValue->Data.publicValue.Str.downlimitVoltageU;
     OverLimitUBC.funSwitch = &g_pFixedValue->Data.publicValue.Str.overlimitAlarmSwitchUbc;
@@ -631,8 +631,8 @@ void other_protect_init(void)
     OverLimitUac.delay = &g_pFixedValue->Data.publicValue.Str.overlimitTime;
     OverLimitUac.stateUp = &g_TelesignalDB.Str.overLimitUbUp;
     OverLimitUac.stateDown = &g_TelesignalDB.Str.overLimitUbDown;
-    OverLimitUac.soeAddrUp = ADDR_OVER_LIMIT_UB_UP;
-    OverLimitUac.soeAddrDown = ADDR_OVER_LIMIT_UB_DOWN;
+    OverLimitUac.soeAddrUp = ADDR_OVER_LIMIT_Uca_UP;
+    OverLimitUac.soeAddrDown = ADDR_OVER_LIMIT_Uca_DOWN;
     OverLimitUac.uplimit = &g_pFixedValue->Data.publicValue.Str.uplimitVoltageU;
     OverLimitUac.downlimit = &g_pFixedValue->Data.publicValue.Str.downlimitVoltageU;
     OverLimitUac.funSwitch = &g_pFixedValue->Data.publicValue.Str.overlimitAlarmSwitchUac;

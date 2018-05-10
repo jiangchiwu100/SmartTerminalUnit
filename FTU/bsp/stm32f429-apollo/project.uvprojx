@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32F429xx,ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc</IncludePath>
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -398,6 +398,11 @@
               <FileName>common_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\applications\common_data\common_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>point_table_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\point_table_config\point_table_config.c</FilePath>
             </File>
             <File>
               <FileName>breaker_protect.c</FileName>
@@ -470,11 +475,6 @@
               <FilePath>drivers\drv_sdram.c</FilePath>
             </File>
             <File>
-              <FileName>drv_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>drivers\drv_rtc.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_mpu.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_mpu.c</FilePath>
@@ -500,11 +500,6 @@
               <FilePath>.\drivers\drv_sd2405.c</FilePath>
             </File>
             <File>
-              <FileName>drv_sdio_sd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>drivers\drv_sdio_sd.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_spi.c</FilePath>
@@ -518,11 +513,6 @@
               <FileName>drv_spi_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_spi_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_adc.c</FilePath>
             </File>
             <File>
               <FileName>drv_fm25vxx.c</FileName>

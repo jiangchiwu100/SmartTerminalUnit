@@ -32,13 +32,14 @@ uint16_t                            g_StartWave;
 struct ConfigurationSetDatabase     g_ConfigurationSetDB; // 系统配置结构
 struct SD2405Time                   g_SystemTime; // 系统时间
 TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
-														
+uint8_t								g_Telesignal[TELESIGNAL_NUM];						
  /* 新遥信点表映射 */
 List                                g_NewListTelesignal[TELESIGNAL_TOTAL_NUM];
 rt_uint16_t                         g_NewMaxNumTelesignal;
 rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_TOTAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 遥测缓存 */
+float                               g_Telemetry[TELEMETRY_NUM];
 TelemetryDatabase                   g_TelemetryDB;
 TelemetryDatabase                   g_TelemetryLastDB;
 float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
@@ -66,6 +67,12 @@ Parameter                           g_ParameterDB;
 FixedValue                          *g_pFixedValue;
 FixedValue                          g_FixedValueDB1;
 FixedValue                          g_FixedValueDB2;
+
+struct tagValueParaCfg          *g_pFixedValueDB;
+float                           g_FixedValue1[FIXED_VALUE_NUM];
+float                           g_FixedValue2[FIXED_VALUE_NUM];
+float                           g_Parameter[PARAMETER_NUM];
+float                           g_CalibrateFactor[CALIFACTOR_NUM];
 
 /* 定值操作信息 */
 struct ValueParameterOperate        g_ValueParaOperateInfo;
@@ -1686,11 +1693,13 @@ void rt_multi_common_data_config(void)
     if (g_ValueParaOperateInfo.currentSN == 2)
     {
         g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValueDB = &FixedValueCfg2[0];
     }
     else // 默认1区
     {
         g_ValueParaOperateInfo.currentSN = 1;
         g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValueDB = &FixedValueCfg1[0];
     }   
 		
     g_ParameterDB.Data.inherentPara.Str = FixedPara;

@@ -1551,12 +1551,12 @@ void DLT634_5101_SlaveTask(void)
     if(g_ComLed)
     {
         if(g_TelesignalDB.Str.communication != ON)
-        {DBWriteSOE(ADDR_CPMMUNICATION, ON);}
+        {DBWriteSOE(ADDR_COMMUNICATION, ON);}
     }
     else
     {
         if(g_TelesignalDB.Str.communication != OFF)
-        {DBWriteSOE(ADDR_CPMMUNICATION, OFF);}
+        {DBWriteSOE(ADDR_COMMUNICATION, OFF);}
     }      
 }
 

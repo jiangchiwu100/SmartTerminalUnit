@@ -219,22 +219,22 @@ static rt_uint16_t eMBRegHoldingReadFixedAndPara(UCHAR ucDataType)
 
     switch (ucDataType)
     {
-		case REG_RUN_PARA:
-			pSCoilFixedAndPara = g_ParameterDB.Data.runPara.buf;
-			usStartAddr = REG_RUNPARAMETER_START_ADDR;
-			break;
-		case REG_PUBLIC_FIXED:
-			pSCoilFixedAndPara = g_pFixedValue->Data.publicValue.buf;
-			usStartAddr = REG_PUBLIC_FIXED_START_ADDR;
-			break;
-		case REG_BREAKER_FIXED:
-			pSCoilFixedAndPara = g_pFixedValue->Data.breakerValue.buf;
-			usStartAddr = REG_BREAKER_FIXED_START_ADDR;
-			break;
-		case REG_LOAD_FIXED:
-			pSCoilFixedAndPara = g_pFixedValue->Data.loadSwitchValue.buf;
-			usStartAddr = REG_LOAD_FIXED_START_ADDR;
-			break;
+//		case REG_RUN_PARA:
+//			pSCoilFixedAndPara = g_ParameterDB.Data.runPara.buf;
+//			usStartAddr = REG_RUNPARAMETER_START_ADDR;
+//			break;
+//		case REG_PUBLIC_FIXED:
+//			pSCoilFixedAndPara = g_pFixedValue->Data.publicValue.buf;
+//			usStartAddr = REG_PUBLIC_FIXED_START_ADDR;
+//			break;
+//		case REG_BREAKER_FIXED:
+//			pSCoilFixedAndPara = g_pFixedValue->Data.breakerValue.buf;
+//			usStartAddr = REG_BREAKER_FIXED_START_ADDR;
+//			break;
+//		case REG_LOAD_FIXED:
+//			pSCoilFixedAndPara = g_pFixedValue->Data.loadSwitchValue.buf;
+//			usStartAddr = REG_LOAD_FIXED_START_ADDR;
+//			break;
 		default:
 			break;
     }
