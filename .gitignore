@@ -1,2 +1,7 @@
 /FTU/bsp/stm32f429-apollo/Objects
+<<<<<<< HEAD
 /FTU/bsp/stm32f429-apollo/project.uvguix.zhangxiaomou
+=======
+/FTU/bsp/stm32f429-apollo/*.TMP
+/FTU/bsp/stm32f429-apollo/applications/common_data/common_data.h~RF24d4bc68.TMP
+>>>>>>> master

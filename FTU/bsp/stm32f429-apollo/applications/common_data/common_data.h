@@ -17,6 +17,7 @@
 #include "stm32f4xx_hal.h"
 #include "single_list.h"
 #include "common_config.h"
+#include "point_table_config.h"
 
 /* COMMON --------------------------------------------------------------------*/
 #ifndef  FALSE
@@ -270,17 +271,6 @@ typedef struct
 #define DEVICE_FAULT_TIME             10000       // 装置故障时间
 #define LOOP_DISCONNECT_TIME          5000        // 控制回路断线时间
 
-#define RATIO0                        200 / 5
-#define RATIO1                        400 / 5
-#define RATIO2                        600 / 5
-#define RATIO3                        800 / 5
-#define RATIO4                        1000 / 5
-
-#define DEADZONE_U                    (20.0f)
-#define DEADZONE_U0                   (20.0f)
-#define DEADZONE_I                    (20.0f)
-#define DEADZONE_I0                   (20.0f)
-#define DEADZONE_P                    (20.0f)
 #define RATED_VALUE_U                 (100.0f)
 #define RATED_VALUE_U0                (57.74f)
 #define RATED_VALUE_I                 (5.0f)
@@ -382,7 +372,9 @@ struct RecordStateType
 /* database数据操作类型 */
 enum TelesignalAddr
 {
-    ADDR_CAP_UNDER_VOLTAGE = 0x03,                        // 电容欠压(储能开入)
+	ADDR_OPEN,	
+	ADDR_CLOSE,
+    ADDR_CAP_UNDER_VOLTAGE,                               // 电容欠压(储能开入)
     ADDR_LOW_PRESSURE,                                    // 低气压
     ADDR_POWERFAULTALARM,                                 // 电源故障告警
     ADDR_BATTERY_UNDERVOLTAGE_ALARM,                      // 电池欠压告警
@@ -402,7 +394,7 @@ enum TelesignalAddr
     ADDR_RECLOSE_CLOCK,                                   // 重合闸闭锁
     ADDR_DEVICE_FAULT,                                    // 装置故障
     ADDR_SELF_CHECK_ABNOMAL,                              // 自检异常
-    ADDR_CPMMUNICATION,                                   // 通讯 
+    ADDR_COMMUNICATION,                                   // 通讯 
     ADDR_SWTICHCLASS,                                     // 开关类型
     ADDR_BATTERY_FAULT_ALARM,                             // 电池故障告警
     ADDR_DOUBLE_SWITCH,                                   // 双点开关分合
@@ -448,12 +440,12 @@ enum TelesignalAddr
 	ADDR_OVER_FREQUEBNCY_PROTECTION,                      // 过频
     ADDR_DOWN_VOLTAGE_PROTECTION,                         // 低压保护
 	ADDR_DOWN_FREQUEBNCY_PROTECTION,                      // 低频		
-    ADDR_OVER_LIMIT_UA_UP,                                // A相电压越限
-    ADDR_OVER_LIMIT_UA_DOWN,                              // A相电压越限
-    ADDR_OVER_LIMIT_UB_UP,                                // B相电压越限
-    ADDR_OVER_LIMIT_UB_DOWN,                              // B相电压越限
-    ADDR_OVER_LIMIT_UC_UP,                                // C相电压越限
-    ADDR_OVER_LIMIT_UC_DOWN,                              // C相电压越限
+    ADDR_OVER_LIMIT_Uab_UP,                                // A相电压越限
+    ADDR_OVER_LIMIT_Uab_DOWN,                              // A相电压越限
+    ADDR_OVER_LIMIT_UBC_UP,                                // B相电压越限
+    ADDR_OVER_LIMIT_UBC_DOWN,                              // B相电压越限
+    ADDR_OVER_LIMIT_Uca_UP,                                // C相电压越限
+    ADDR_OVER_LIMIT_Uca_DOWN,                              // C相电压越限
     ADDR_OVER_LIMIT_U0_UP,                                // 零序电压越限
     ADDR_OVER_LIMIT_U0_DOWN,                              // 零序电压越限
     ADDR_OVER_LIMIT_IA_UP,                                // A相电流越限
@@ -469,6 +461,8 @@ enum TelesignalAddr
     ADDR_OVER_LIMIT_DC_I_UP,                              // 直流电流越限
     ADDR_OVER_LIMIT_DC_I_DOWN,                            // 直流电流越限
     ADDR_DEVICE_POWER_DOWN,                               // 装置掉电
+	
+	TELESIGNAL_NUM
 };
 
 /* 遥信数据 */
@@ -577,7 +571,8 @@ typedef union TagTelesignalDatabase
 
 enum TelemetryAddr
 {
-    ADDR_IA = 0x4002,
+	ADDR_F,
+    ADDR_IA,
     ADDR_IB,
     ADDR_IC,
     ADDR_I0,
@@ -587,6 +582,51 @@ enum TelemetryAddr
     ADDR_U0,
     ADDR_UAB,
     ADDR_UBC,
+	ADDR_P,
+    ADDR_Q,
+    ADDR_S,
+    ADDR_PF,
+    ADDR_AIPHY_U0_I0,
+    ADDR_ALPHY_Uab_UBC,
+    ADDR_DC1,
+    ADDR_DC2,
+    ADDR_T,
+	ADDR_Ia_ONCE,
+	ADDR_Ib_ONCE,
+	ADDR_Ic_ONCE,
+	ADDR_I0_ONCE,	
+    ADDR_Uab_ONCE,
+    ADDR_Ubc_ONCE,
+    ADDR_Uac_ONCE,
+    ADDR_U0_ONCE,
+    ADDR_UAB_ONCE,
+    ADDR_UBC_ONCE,
+	ADDR_P_ONCE,
+    ADDR_Q_ONCE,
+    ADDR_S_ONCE,
+    VOLTAGE_PASS_RATE,
+	THIRDHARMONIC_Uab,
+	THIRDHARMONIC_Ubc,
+	THIRDHARMONIC_Uca,
+	THIRDHARMONIC_U0,
+//	THIRDHARMONIC_UAB,
+//	THIRDHARMONIC_UBC,
+	THIRDHARMONIC_Ia,
+	THIRDHARMONIC_Ib,
+	THIRDHARMONIC_Ic,
+	THIRDHARMONIC_I0,
+	FIFTHHARMONIC_Uab,
+	FIFTHHARMONIC_Ubc,
+	FIFTHHARMONIC_Uca,
+	FIFTHHARMONIC_U0,
+//	FIFTHHARMONIC_UAB,
+//	FIFTHHARMONIC_UBC,
+	FIFTHHARMONIC_Ia,
+	FIFTHHARMONIC_Ib,
+	FIFTHHARMONIC_Ic,
+	FIFTHHARMONIC_I0,
+
+    TELEMETRY_NUM
 };
     
 /* 遥测数据 */
@@ -702,6 +742,69 @@ typedef union TagInherentPara
     char buf[sizeof(struct Inherent) / sizeof(char)];
 } InherentPara;
 
+enum AddrRunParameter
+{
+    OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
+	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
+	BREAK_WORK_MODE,                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
+	LOAD_WORK_MODE,                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
+	CONNECT_SWITCH_RECOGNIZE,             // 联络开关识别
+	OUTPUT_OVERTURN,                      // 永磁输出翻转
+	CAP_UNDERVOLTAGE_CLOSING,	          // 合闸电容欠压定值
+	CAP_UNDERVOLTAGE_OPENING,             // 分闸电容欠压定值
+	CAP_UNDERVOLTAGE_FACTOR,			  // 电容欠压返回系数
+	RATIO_U_ONE_TURN,                     // 电压变比一次	
+	RATIO_U_SECONDARY,                    // 电压变比二次
+	RATIO_U0_ONE_TURN,                    // 零序电压变比一次
+	RATIO_U0_SECONDARY,                   // 零序电压变比二次	
+	RATIO_I_ONE_TURN,                     // 电流变比一次	
+	RATIO_I_SECONDARY,                    // 电流变比二次
+	RATIO_I0_ONE_TURN,                    // 零序电流一次变比
+	RATIO_I0_SECONDARY,                   // 零序电流二次变比	
+    DI_SHAKING_TIME,                      // 开入采集防抖时间 
+    CLOSING_PULSE_TIME,                   // 合闸脉宽时间
+    OPENING_PULSE_TIME,			          // 分闸脉宽时间
+    REVERSE_TIME,                         // 反校时间
+    ZERODRIFT_F,                          // 频率零漂
+    ZERODRIFT_Ia,                         // A相电流零漂 
+    ZERODRIFT_Ib,                         // B相电流零漂
+    ZERODRIFT_Ic,                         // C相电流零漂
+    ZERODRIFT_I0,                         // 零序电流零漂
+    ZERODRIFT_Uab,                        // 线电压Uab零漂
+    ZERODRIFT_Ubc,                        // 线电压Ubc零漂
+    ZERODRIFT_Uac,                        // 线电压Uac零漂
+    ZERODRIFT_U0,                         // 零序电压零漂
+    ZERODRIFT_UAB,                        // 线电压Uab零漂
+    ZERODRIFT_UBC,                        // 线电压Ubc零漂
+    ZERODRIFT_P,                          // 有功功率零漂
+    ZERODRIFT_Q,                          // 无功功率零漂
+    ZERODRIFT_S,                          // 视在功率零漂
+    ZERODRIFT_PF,                         // 功率因数零漂	
+    ZERODRIFT_DC1,                        // 直流电压零漂	
+    ZERODRIFT_DC2,                        // 直流电压2零漂
+    ZERODRIFT_T,                          // 温度零漂	
+    DEADZONE_F,                           // 频率死区
+    DEADZONE_Ia,                          // A相电流死区
+    DEADZONE_Ib,                          // B相电流死区
+    DEADZONE_Ic,                          // C相电流死区
+    DEADZONE_I0,                          // 零序电流死区
+    DEADZONE_Uab,                         // 线电压Uab死区
+    DEADZONE_Ubc,                         // 线电压Ubc死区
+    DEADZONE_Uac,                         // 线电压Uac死区
+    DEADZONE_U0,                          // 零序电压死区
+    DEADZONE_UAB,                         // 线电压Ubc死区
+    DEADZONE_UBC,                         // 线电压Uac死区
+    DEADZONE_P,                           // 有功功率死区
+    DEADZONE_Q,                           // 无功功率死区
+    DEADZONE_S,                           // 视在功率死区
+    DEADZONE_PF,                          // 功率因数死区
+    DEADZONE_DC1,                         // 直流电压死区
+    DEADZONE_DC2,                         // 直流量2死区
+    DEADZONE_T,				              // 温度死区	
+	
+    PARAMETER_NUM,	                      // 运行参数数量
+};
+	
 // 运行参数
 typedef union TagRunParameter
 {
@@ -769,6 +872,36 @@ typedef union TagRunParameter
     float buf[sizeof(struct Run) / sizeof(float)];   // 终端运行参数存储区
 } RunParameter;
 
+enum AddrCalibrateFactor
+{
+    CALIFACTOR_F,                        // 频率校准系数
+	CALIFACTOR_Ia,                       // A相电流(Ia)校准系数
+	CALIFACTOR_Ib,                       // B相电流(Ib)校准系数
+    CALIFACTOR_Ic,                       // C相电流(Ic)校准系数
+	CALIFACTOR_I0,                       // 零序电流(I0)校准系数
+    CALIFACTOR_Uab,                      // 线电压(Uab)校准系数
+	CALIFACTOR_Ubc,                      // 线电压(Ubc)校准系数
+    CALIFACTOR_Uac,                      // 线电压(Uac)校准系数
+	CALIFACTOR_U0,                       // 零序电压(U0)校准系数
+    CALIFACTOR_UAB,                      // 线电压(Uab)校准系数
+	CALIFACTOR_UBC,                      // 线电压(Ubc)校准系数
+    CALIFACTOR_P,                        // 有功功率(p)校准系数（无效）
+	CALIFACTOR_Q,                        // 无功功率(Q)校准系数（无效）
+    CALIFACTOR_S,                        // 视在功率(S)校准系数（无效）
+	CALIFACTOR_PF,                       // 功率因数(Pf)校准系数（无效）
+    CALIFACTOR_L0,                       // 零序角度(L)校准系数（无效）   
+	CALIFACTOR_LU,                       // 电压角度(U)校准系数（无效）   		
+    CALIFACTOR_DC1,                      // 直流电压(V)校准系数
+	CALIFACTOR_DC2,                      // 直流电压(V)校准系数
+    CALIFACTOR_T,			             // 温度(T)校准系数
+	CALIFACTOR_ALPHA_UaIa,	             // 角UaIa校准系数
+	CALIFACTOR_ALPHA_UbIb,	             // 角UbIb校准系数
+	CALIFACTOR_ALPHA_UcIc,	             // 角UcIc校准系数
+	CALIFACTOR_ALPHA_U0I0,	             // 角U0I0校准系数
+	CALIFACTOR_ALPHA_UaUb,	             // 角UaUb校准系数		
+	
+	CALIFACTOR_NUM
+};
 // 校准系数
 typedef union TagCalibrateFactor
 {
@@ -805,7 +938,131 @@ typedef union TagCalibrateFactor
 
 } CalibrateFactor;
 
-
+enum AddrFixedValue
+{
+    OVER_CURRENT_SWITCH1,                // 过流1段投退 “1投入”、“0退出”
+    DIRE_CTIONLOCK_SWITCH1,              // 过流1段方向闭锁 “1投入”、“0退出”
+	OVER_CURRENT_VALUE1,                 // 过流1段电流 流定值，整定范围：00.00A~99.99A
+	OVER_CURRENT_TIME1,                  // 过流1段时间 时间定值，整定范围：00.00s~99.99s
+    OVER_CURRENT_SWITCH2,                // 过流2段投退 “1投入”、“0退出”
+    DIRE_CTIONLOCK_SWITCH2,              // 过流2段方向闭锁 “1投入”、“0退出”
+	OVER_CURRENT_VALUE2,                 // 过流2段电流 电流定值，整定范围：00.00A~99.99A
+	OVER_CURRENT_TIME2,                  // 过流2段时间 时间定值，整定范围：00.00s~99.99s    
+	OVER_CURRENT_SWITCH3,                // 过流3段投退 “1投入”、“0退出”
+    DIRE_CTIONLOCK_SWITCH3,              // 过流3段方向闭锁 “1投入”、“0退出”
+	OVER_CURRENT_VALUE3,                 // 过流3段电流 电流定值，整定范围：00.00A~99.99A
+	OVER_CURRENT_TIME3,                  // 过流3段时间 时间定值，整定范围：00.00s~99.99s	
+    OVER_CURRENTI0_SWITCH1,              // 零序过流1段投退 “1投入”、“0退出”
+	OVER_CURRENTI0_VALUE1,               // 零序过流1段电流 流定值，整定范围：00.00A~99.99A
+	OVER_CURRENTI0_TIME1,                // 零序过流1段时间 时间定值，整定范围：00.00s~99.99s	
+    OVER_CURRENTI0_SWITCH2,              // 零序过流2段投退 “1投入”、“0退出”
+	OVER_CURRENTI0_VALUE2,               // 零序过流2段时间 时间定值，整定范围：00.00s~99.99s
+	OVER_CURRENTI0_TIME2,                // 零序过流2段时间 时间定值，整定范围：00.00s~99.99s		
+	OVERLIMIT_SWITCH,                    // 越限报警功能投退
+	UPLIMIT_FACTOR,                      // 越限上限系数
+	DOWNLIMIT_FACTOR,                    // 越限下限系数
+    OVERLIMIT_TIME,                      // 越限延时
+	OVERLIMIT_ALARM_SWITCH_Uab,          // Uab越限报警投退 
+	OVERLIMIT_ALARM_SWITCH_UBC,          // Ubc越限报警投退
+	OVERLIMIT_ALARM_SWITCH_Uac,          // Uac越限报警投退
+	UPLIMIT_VOLTAGE_U,                   // 电压上限定值
+	DOWNLIMIT_VOLTAGE_U,                 // 电压下限定值
+	OVERLIMIT_ALARM_SWITCH_IA,           // Ia越限报警投退
+	OVERLIMIT_ALARM_SWITCH_IB,           // Ib越限报警投退
+	OVERLIMIT_ALARM_SWITCH_IC,           // Ic越限报警投退
+	UPLIMIT_CURRENT_I,                   // 电流上限定值
+	DOWNLIMIT_CURRENT_I,                 // 电流下限定值	
+	OVERLIMIT_ALARM_SWITCH_U0,           // 零序电压越限投退	
+	UPLIMIT_VOLTAGE_U0,                  // 零序电压上限定值
+	DOWNLIMIT_VOLTAGE_U0,                // 零序电压下限定值
+	OVERLIMIT_ALARM_SWITCH_I0,           // 零序电流越限投退	
+	UPLIMIT_VOLTAGE_I0,                  // 零序电流上限定值
+	DOWNLIMIT_VOLTAGE_I0,                // 零序电流下限定值	
+	OVERLIMIT_ALARMSWITCH_DC_U,          // 直流电压越限投退
+	UPLIMIT_DC_VOLTAGE_U,                // 直流电压上限定值
+	DOWNLIMIT_DC_VOLTAGE_U,              // 直流电压下限定值
+	OVERLIMIT_ALARMSWITCH_DC_I,          // 直流电流越限投退
+	UPLIMIT_DC_CURRENT_I,                // 直流电流上限定值
+	DOWNLIMIT_DC_CURRENT_I,              // 直流电流下限定值	
+	HEAVY_OVERLOAD_SWITCH,               // 重过载保护投退
+	HEAVY_OVERLOAD_VALUE,                // 重过载定值
+	HEAVY_OVERLOAD_FACTOR,               // 重过载返回系数		
+	HEAVY_OVERLOAD_TIME,                 // 重过载延时	
+	OVERLOAD_SWITCH,                     // 过负荷保护投退
+	OVERLOAD_VALUE,                      // 过负荷定值
+	OVERLOAD_FACTOR,                     // 过负荷返回系数		
+	OVERLOAD_TIME,	                     // 过负荷延时
+    BATTERY_LOWVOLTAGE_ALARM_SWITCH,     // 蓄电池低压报警投退	
+	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
+	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
+	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
+    BATTERY_ACTIVE_SWITCH,               // 电池活化周期投退
+    BATTERY_ACTIVE_CYCLE,                // 电池活化周期(天)
+    BATTERY_ACTIVE_TIME,                 // 电池活化时间(h)
+    BATTERY_ACTIVE_FAULT_VOLTAGE,        // 电池活化故障电压
+    BATTERY_ACTIVE_FAULT_TIME,           // 电池活化故障延时
+	AUTOMATIC_RESET_SWITCH,              // 自动复归使能
+	AUTOMATIC_RESET_TIME,                // 自动复位时间
+	OVERVOLTAGE_SWITCH,                  // 过压投退
+	OVERVOLTAGE_VALUE,                   // 过压定值
+    OVERVOLTAGE_TIME,                    // 过压时间
+    OVERVOLTAGE_FACTOR,                  // 过压返回系数	
+	OVERFREQUENCY_SWITCH,                // 过频投退
+	OVERFREQUENCY_VALUE,                 // 过频定值
+    OVERFREQUENCY_TIME,                  // 过频时间
+    OVERFREQUENCY_FACTOR,                // 过频返回系数	
+	DOWNVOLTAGE_SWITCH,                  // 低压投退
+	DOWNVOLTAGE_VALUE,                   // 低压定值
+    DOWNVOLTAGE_TIME,                    // 低压时间
+    DOWNVOLTAGE_FACTOR,                  // 低压返回系数	
+	DOWNFREQUENCY_SWITCH,                // 低频投退
+	DOWNFREQUENCY_VALUE,                 // 低频定值
+    DOWNFREQUENCY_TIME,                  // 低频时间
+    DOWNFREQUENCY_FACTOR,                // 低频返回系数	
+    CLOSING_LOOP_SWITCH,                 // 合环功能投退
+    VOLTAGE_DIFFERENCE,                  // 两侧压差	
+	PHASEANGLE_DIFFERENCE,				 // 相角差
+    CONTROL_LOOP_ANOMALY_ENABLE,         // 控制回路异常使能	
+	INVERSE_SWITCH,                      // 反时限投退
+	INVERSE_CURRENT_VALUE,               // 反时限保护电流值
+	INVERSE_TIME,                        // 反时限保护延时
+	IACC_SWITCH,                         // 后加速投退 软压板定值，可以选择“投入”、“退出"
+	IACC_CURRENT_VALUE,                  // 后加速电流 电流定值，整定范围：00.00s~99.99A
+	IACC_TIME,                           // 后加速时间 时间定值，整定范围：00.00s~99.99s	
+	INRUSH_SWITCH,                       // 涌流抑制投退 软压板定值，可以选择“投入”、“退出”
+	INRUSH_TIME,                         // 涌流抑制时间 时间定值，整定范围：0000~9999ms
+	SECONDARY_RECLOSE_LOCK_SWITCH,       // 二次重合闸闭锁投退
+	SECONDARY_RECLOSE_LOCK_TIME,         // 闭锁二次重合闸时间 时间定值，整定范围：00.00s~99.99
+	RECLOSE_TIMES_I,                     // 重合闸次数 可以选择：0，1，2，3，4
+	RECLOSE_TIMES_I0,                    // 零序重合闸次数 可以选择：0，1，2
+	RECLOSE_TIMER1,                      // 1次重合闸时间 时间定值，整定范围：00.00s~99.99s
+	RECLOSE_TIMER2,                      // 2次重合闸时间 时间定值，整定范围：00.00s~99.99s
+	RECLOSE_TIMER3,                      // 3次重合闸时间 时间定值，整定范围：00.00s~99.99s
+	RECLOSE_TIMER4,                      // 4次重合闸时间 时间定值，整定范围：00.00s~99.99s	
+	RE_RESET_TIME,						 // 重合闸复位时间
+	RE_CHARGE_TIME,						 // 重合闸充电时间
+	CURRENT_VALUE,                       // 电流定值
+	VOLTAGE_VALUE,                       // 电压定值
+	FAULT_CHECK_Y_TIME,                  // 故障检测Y时间
+	SHORT_LOCKED_OPENING_TIME,           // 短时闭锁分闸时间
+	LOSS_ELECTRICITY_SWITCH,             // 失电分闸投退 “1投入”、“0退出”
+	LOSS_OPENING_TIME,                   // 分闸时间
+	GET_VOLTAGE_CLOSSING_SWITCH,         // 得电合闸投退
+	GET_VOLTAGE_CLOSSING_X_TIME,         // 得电延时合闸X时间
+	SINGLE_LOSS_VOLTAGE_SWITCH,          // 单侧失压延时合闸
+	SINGLE_LOSS_VOLTAGE_TIME,            // 单侧失压延时XL时间
+	DOUBLE_VOLTAGE_SWITCH,               // 双侧有压禁止合闸投退
+	REMAIN_VOLTAGE_SWITCH,               // 残压脉冲投退
+	REMAIN_VOLTAGE_VALUE,                // 残压定值
+	VOLTAGE_U0_SWITCH,                   // 零序电压保护投退
+	VOLTAGE_U0_VALUE,                    // 零序电压值
+	VOLTAGE_U0_TIME,                     // 零序电压延时
+	BREAKING_CURRENT_SWITCH,             // 非遮断电流投退
+	BREAKING_CURRENT_VALUE,        		 // 非遮断电流
+	
+	
+	FIXED_VALUE_NUM                      // 定值数量
+};
 // 公共定值
 typedef union TagPublicValue
 {
@@ -1227,13 +1484,14 @@ extern struct SD2405Time g_SystemTime;
 
 /* 遥信缓存 */
 extern TelesignalDatabase   g_TelesignalDB;
-
+extern uint8_t				g_Telesignal[TELESIGNAL_NUM];	
 /* 新遥信点表映射 */
 //extern List NewList_Telesignal[TELESIGNAL_TOTAL_NUM];
 extern rt_uint16_t g_NewMaxNumTelesignal;
 extern rt_uint16_t g_NewToOldTelesignal[];//新点表映射
 
 /* 遥测缓存 */
+extern float                g_Telemetry[TELEMETRY_NUM];
 extern TelemetryDatabase    g_TelemetryDB;
 extern TelemetryDatabase    g_TelemetryLastDB;
 extern float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
@@ -1262,6 +1520,11 @@ extern Parameter g_ParameterDB;
 extern FixedValue *g_pFixedValue;
 extern FixedValue g_FixedValueDB1;
 extern FixedValue g_FixedValueDB2;
+extern struct tagValueParaCfg  *g_pFixedValueDB;
+extern float     g_FixedValue1[FIXED_VALUE_NUM];
+extern float     g_FixedValue2[FIXED_VALUE_NUM];
+extern float     g_Parameter[PARAMETER_NUM];
+extern float     g_CalibrateFactor[CALIFACTOR_NUM];
 
 /* 定值操作信息 */
 extern struct ValueParameterOperate g_ValueParaOperateInfo;

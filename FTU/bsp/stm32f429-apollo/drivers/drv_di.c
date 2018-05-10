@@ -59,7 +59,7 @@ static void rt_hw_double_point_check(float shaking_time)
     g_DiCollect.doubleState = g_DiCollect.state & 0x03;
 
     if ((g_DiCollect.doubleState == 0x00 || g_DiCollect.doubleState == 0x03))
-    {
+    {		
         if (g_pFixedValue->Data.publicValue.Str.controlloopAnomalyEnable == SWITCH_OFF)
         {
             return;
