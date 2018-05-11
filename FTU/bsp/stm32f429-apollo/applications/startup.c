@@ -16,6 +16,9 @@
 #include "stm32f4xx.h"
 #include "board.h"
 
+#include "file_operate.h"
+
+#include "Interface_S2J.h"
 
 /* PUBLIC FUNCTION -----------------------------------------------------------*/
 extern int rt_application_init(void);
@@ -112,7 +115,7 @@ int main(void)
 
     /* startup RT-Thread RTOS */
     rtthread_startup();
-	
+
     return(0);
 }
 

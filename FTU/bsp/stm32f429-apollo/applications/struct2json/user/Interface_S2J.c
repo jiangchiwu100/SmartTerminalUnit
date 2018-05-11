@@ -139,9 +139,9 @@ cJSON *CalibrateFactorCfg_StructToJson(struct tagCalibrateFactor* struct_obj)
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);				//使能
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);			//名称
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, Val, );			//值
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);		    //使能
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);	    //名称
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, Val);			//值
 
 	/* return Student JSON object pointer */
 	return json_obj;
@@ -191,7 +191,7 @@ cJSON *ParameterCfg_StructToJson(struct tagValueParaCfg* struct_obj)
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMin);		//下限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, dataType);		//数据类型
-	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, 5);	//数据显示内容
+	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, struct_obj->dataType);	//数据显示内容
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pNote);		//备注
 
 	/* return Student JSON object pointer */
@@ -236,7 +236,7 @@ struct tagValueParaCfg *ParameterCfg_JsonToStruct(cJSON* json_obj)
 cJSON *FixedValueCfg1_StructToJson(struct tagValueParaCfg* struct_obj)
 {
 	struct tagValueParaCfg *fixedValueCfg1 = struct_obj;
-
+    
 	/* create Student JSON object */
 	s2j_create_json_obj(json_obj);
 
@@ -249,10 +249,10 @@ cJSON *FixedValueCfg1_StructToJson(struct tagValueParaCfg* struct_obj)
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMin);		//下限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, dataType);		//数据类型
-	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, 5);	//数据显示内容
+	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, struct_obj->dataType);	//数据显示内容
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pNote);		//备注
 
-																				/* return Student JSON object pointer */
+	/* return Student JSON object pointer */
 	return json_obj;
 }
 
@@ -293,22 +293,22 @@ struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
 */
 cJSON *FixedValueCfg2_StructToJson(struct tagValueParaCfg* struct_obj)
 {
-	struct tagValueParaCfg *fixedValueCfg1 = struct_obj;
+	struct tagValueParaCfg *fixedValueCfg2 = struct_obj;
 
 	/* create Student JSON object */
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);			//使能
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, menuNum);			//菜单编号
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);		//名称
-	s2j_json_set_array_element(json_obj, fixedValueCfg1, double, pVal, 1);		//值    使用数组思想
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pUnit);		//单位
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMax);		//上限值
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMin);		//下限值
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, dataType);		//数据类型
-	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, 5);	//数据显示内容
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pNote);		//备注
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, int, enable);			//使能
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, int, menuNum);			//菜单编号
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, pName);		//名称
+	s2j_json_set_array_element(json_obj, fixedValueCfg2, double, pVal, 1);		//值    使用数组思想
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, pUnit);		//单位
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, double, valMax);		//上限值
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, double, valMin);		//下限值
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, int, dataType);		//数据类型
+	s2j_json_set_array_element(json_obj, fixedValueCfg2, string, pContent, struct_obj->dataType);	//数据显示内容
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, pNote);		//备注
 
 																				/* return Student JSON object pointer */
 	return json_obj;
@@ -366,7 +366,5 @@ inline char* rt_Print_cJSON(cJSON *item)
 {
     return cJSON_Print(item);
 }
-
-
 
 

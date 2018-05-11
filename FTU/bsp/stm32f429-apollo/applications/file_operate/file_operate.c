@@ -15,6 +15,10 @@
 #include "common_data.h"
 #include "wave_recording.h"
 #include <dfs_posix.h>
+
+#include "Interface_S2J.h"
+#include "point_table_config.h"
+#include "drv_wdg.h"
 	
 	
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
@@ -1357,12 +1361,68 @@ void file_operate_Init(void)
         FILE_PRINTF("spi flash mount to /spi failed!\n");  
         file_operate_Format();        
     }
-	
+    
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
+    
+	    
+	rt_s2j_init();
+    
+    CreateJsonFile();
+    
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
 
 
+
+void CreateJsonFile(void)
+{
+    //TERMINAL_PRODUCT_SERIAL_NUMBER
+    char* string;
+    char configBuffer[256] = {"Product Serial Number: "};
+    
+    strcat(configBuffer, TERMINAL_PRODUCT_SERIAL_NUMBER);
+    
+    char readBuffer[256];
+    
+	memset(DirName,0,sizeof(DirName));
+	strcpy(DirName,"/sojo");
+	strcat(DirName,"/HISTORY/Config");//建立SOE文件目录
+	mkdir(DirName,0);//建立目录
+	
+    strcpy(FileName,"/sojo");
+    strcat(FileName,"/HISTORY/Config");
+    strcat(FileName,"/FixedValueCfg2.json");	
+    
+//    unlink(FileName);   //删除该文件
+    
+    MyFile = open(FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
+    
+    read(MyFile, readBuffer, strlen(configBuffer));
+    
+    if((strcmp(configBuffer, readBuffer)) == 0) //两个字符串相等
+    {
+        close(MyFile);
+        return;
+    }
+    
+    write(MyFile, configBuffer, strlen(configBuffer));  //将硬件版本号写入到config文件中
+    write(MyFile, "\n", 1);  //写入文件
+    
+    for(uint16_t i = 0; i < g_FixedValueCfg2_Len; i++)
+    {
+        cJSON *struct_json = FixedValueCfg2_StructToJson(&FixedValueCfg2[i]);
+        
+        string = rt_Print_cJSON(struct_json);
+
+        write(MyFile, string, strlen(string));  //写入文件
+        
+        write(MyFile, "\n", 1);  //写入文件
+        
+        s2j_delete_json_obj(struct_json);       //删除该json
+    }
+    
+	close(MyFile);
+}
 

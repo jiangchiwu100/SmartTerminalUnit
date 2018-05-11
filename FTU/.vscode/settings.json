@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "interface_s2j.h": "c",
+        "algorithm": "c",
+        "fstream": "c",
+        "string": "c",
+        "xstring": "c",
+        "s2j.h": "c"
+    }
+}

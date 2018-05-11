@@ -34,3 +34,4 @@ extern struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj);    
 extern cJSON* rt_Get_cJSON(const char *value);  //从字符串中获得json
 extern char* rt_Print_cJSON(cJSON *item);       //将json打印到字符串中
 
+#define FixedValueCfg1_LEN  (sizeof FixedValueCfg1/(sizeof tagValueParaCfg))

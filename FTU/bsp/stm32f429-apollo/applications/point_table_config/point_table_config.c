@@ -275,23 +275,18 @@ struct tagValueParaCfg FixedValueCfg1[] =
     { 1,      1,      "过流一段投退",    &g_FixedValue1[OVER_CURRENT_SWITCH1],          "-",       1,           0,     2,     {"退", "投"        },   " "   },    
     { 1,      1,      "过流一段电流",    &g_FixedValue1[OVER_CURRENT_VALUE1],           "A",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   }, 
     { 1,      1,      "过流一段时间",    &g_FixedValue1[OVER_CURRENT_TIME1],            "S",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   },	
-
     { 1,      1,      "过流二段投退",    &g_FixedValue1[OVER_CURRENT_SWITCH2],          "-",       1,           0,     2,     {"退", "投"        },   " "   },    
     { 1,      1,      "过流二段电流",    &g_FixedValue1[OVER_CURRENT_VALUE2],           "A",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   }, 
     { 1,      1,      "过流二段时间",    &g_FixedValue1[OVER_CURRENT_TIME2],            "S",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   },	
-
     { 1,      1,      "过流三段投退",    &g_FixedValue1[OVER_CURRENT_SWITCH3],          "-",       1,           0,     2,     {"退", "投"        },   " "   },    
     { 1,      1,      "过流三段电流",    &g_FixedValue1[OVER_CURRENT_VALUE3],           "A",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   }, 
     { 1,      1,      "过流三段时间",    &g_FixedValue1[OVER_CURRENT_TIME3],            "S",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   },	
-
     { 1,      2,      "零序一段投退",    &g_FixedValue1[OVER_CURRENTI0_SWITCH1],        "-",       1,           0,     3,     {"退", "投", "告警"},   " "   },    
     { 1,      2,      "零序一段电流",    &g_FixedValue1[OVER_CURRENTI0_VALUE1],         "A",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   }, 
     { 1,      2,      "零序一段时间",    &g_FixedValue1[OVER_CURRENTI0_TIME1],          "S",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "   },	
-    
     { 1,      2,      "零序二段投退",    &g_FixedValue1[OVER_CURRENTI0_SWITCH2],        " ",       1,           0,     3,     {"退", "投", "告警"},   " "    },    
     { 1,      2,      "零序二段电流",    &g_FixedValue1[OVER_CURRENTI0_VALUE2],         "A",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "    }, 
     { 1,      2,      "零序二段时间",    &g_FixedValue1[OVER_CURRENTI0_TIME2],          "S",     100.00f,     0.00f,   0,     {"-",  "-"         },   " "    },	
-
     { 1,      5,      "越限告警投退",    &g_FixedValue1[OVERLIMIT_SWITCH],              "-",       1,           0,     2,     {"退", "投"        },   " "    },
     { 1,      5,      "越限上限系数",    &g_FixedValue1[UPLIMIT_FACTOR],                "-",     1.00f,       0.00f,   0,     {"-",  "-"         },   " "    },	
     { 1,      5,      "越限下限系数",    &g_FixedValue1[DOWNLIMIT_FACTOR],              "-",     2.00f,       1.00f,   0,     {"-",  "-"         },   " "    },
@@ -375,11 +370,12 @@ struct tagValueParaCfg FixedValueCfg1[] =
     { 1,      3,      "四次重合时间",    &g_FixedValue1[RECLOSE_TIMER4],                "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },	
     { 1,      3,      "重合复位时间",    &g_FixedValue1[RE_RESET_TIME],                 "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },
     { 1,      3,      "重合充电时间",    &g_FixedValue1[RE_CHARGE_TIME],                "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },
-
     { 1,      4,      "有流定值",        &g_FixedValue1[CURRENT_VALUE],                 "I",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },
     { 1,      4,      "有压定值",        &g_FixedValue1[VOLTAGE_VALUE],                 "V",     9999.99f,    0.00f,   0,     {"-",  "-"         },   " "   },	
     { 1,      4,      "Y时限",           &g_FixedValue1[FAULT_CHECK_Y_TIME],            "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },
     { 1,      4,      "闭锁分闸时间",    &g_FixedValue1[SHORT_LOCKED_OPENING_TIME],     "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },
+    
+
     { 1,      4,      "失电分闸投退",    &g_FixedValue1[LOSS_ELECTRICITY_SWITCH],       "-",       1,           0,     2,     {"退", "投"        },   " "   },    
     { 1,      4,      "失电分闸时间",    &g_FixedValue1[LOSS_OPENING_TIME],             "S",      99.99f,     0.00f,   0,     {"-",  "-"         },   " "   },		
     { 1,      4,      "得电合闸投退",    &g_FixedValue1[GET_VOLTAGE_CLOSSING_SWITCH],   "-",       1,           0,     2,     {"退", "投"        },   " "   },    
@@ -523,6 +519,14 @@ struct tagValueParaCfg FixedValueCfg2[] =
     { 1,      4,      "非遮断投退",      &g_FixedValue2[BREAKING_CURRENT_SWITCH],       "-",       1,           0,     2,     {"退", "投",       },   " "    },	
     { 1,      4,      "非遮断电流",      &g_FixedValue2[BREAKING_CURRENT_VALUE],        "I",     999.99f,     0.00f,   0,     {"-",  "-"         },   " "    },		
 }; 
+
+
+unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0]);
+unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
+unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0]);
+unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
+unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
+unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
 
 /* END OF FILE ---------------------------------------------------------------*/
 
