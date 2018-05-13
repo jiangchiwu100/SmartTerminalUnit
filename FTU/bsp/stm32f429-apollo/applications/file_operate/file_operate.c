@@ -41,7 +41,7 @@ static struct READ_DIR Read_Dir[DEV_MAX_NUM];
 static struct READ_FILE Read_File[DEV_MAX_NUM];
 static struct WRITE_FILE Write_File[DEV_MAX_NUM];
 	
-	
+static void CreateSetDatabaseCfgJsonFile(void);
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
   * @brief : Scan_Files.
@@ -1370,6 +1370,8 @@ void file_operate_Init(void)
     
     CreateJsonFile();
     
+    CreateSetDatabaseCfgJsonFile();
+    
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
@@ -1425,4 +1427,38 @@ void CreateJsonFile(void)
     
 	close(MyFile);
 }
+
+void CreateSetDatabaseCfgJsonFile(void)
+{
+    //TERMINAL_PRODUCT_SERIAL_NUMBER
+    char* string;
+    
+	memset(DirName,0,sizeof(DirName));
+	strcpy(DirName,"/sojo");
+	strcat(DirName,"/HISTORY/Config");//建立SOE文件目录
+	mkdir(DirName,0);//建立目录
+	
+    strcpy(FileName,"/sojo");
+    strcat(FileName,"/HISTORY/Config");
+    strcat(FileName,"/SetDatabaseCfg.json");	
+    
+    MyFile = open(FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
+
+    for(uint16_t i = 0; i < g_SetDatabaseCfg_Len; i++)
+    {
+        cJSON *struct_json = SetDatabaseCfg_StructToJson(&SetDatabaseCfg[i]);
+        
+        string = rt_Print_cJSON(struct_json);
+
+        write(MyFile, string, strlen(string));  //写入文件
+        
+        write(MyFile, "\n", 1);  //写入文件
+        
+        s2j_delete_json_obj(struct_json);       //删除该json
+
+    }
+    
+	close(MyFile);
+}
+
 

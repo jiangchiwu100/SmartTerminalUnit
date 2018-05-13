@@ -1419,12 +1419,14 @@ struct ConfigurationSetDatabase
 //YC设置
     uint16_t YCAddr[50];//值
     uint16_t YCProperty[50];//属性
+    //beilv  float[50]   //100
 //YK设置
     uint16_t YKAddr[10];//值
     uint16_t YKProperty[10];//属性
 //ID设置
     uint16_t ID_Value[12];//值
 };
+
 
 /* 属性值 */
 #define NEWJUDG_AND 0x2

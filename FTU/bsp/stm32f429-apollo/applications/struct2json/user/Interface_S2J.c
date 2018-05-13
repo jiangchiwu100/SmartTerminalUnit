@@ -343,6 +343,49 @@ struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
 }
 
 /**
+* @fn FixedValueCfg2_StructToJson
+* @brief 实现定值二区结构体的struct转json
+* @param struct_obj 指向结构体的指针
+* @return 返回指向转换后的json指针
+*
+*/
+cJSON *SetDatabaseCfg_StructToJson(ConfigurationSetDatabaseToJson* struct_obj)
+{
+	ConfigurationSetDatabaseToJson *fixedValueCfg2 = struct_obj;
+
+	/* create Student JSON object */
+	s2j_create_json_obj(json_obj);
+
+	/* serialize data to Student JSON object. */
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, int, dataLen);			//菜单编号
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, name);		//名称
+	s2j_json_set_array_element(json_obj, fixedValueCfg2, double, value, fixedValueCfg2->dataLen);		//值    使用数组思想
+																				/* return Student JSON object pointer */
+	return json_obj;
+}
+
+/**
+* @fn FixedValueCfg2_JsonToStruct
+* @brief 实现定值二区结构体的json转struct
+* @param json_obj 指向json的指针
+* @return 返回指向转换后的结构体指针
+*
+*/
+ConfigurationSetDatabaseToJson *SetDatabaseCfg_JsonToStruct(cJSON* json_obj)
+{
+	/* create Student structure object */
+	s2j_create_struct_obj(struct_obj, ConfigurationSetDatabaseToJson);
+
+	/* deserialize data to Student structure object. */
+	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataLen);		//使能
+	s2j_struct_get_basic_element(struct_obj, json_obj, string, name);		//名称
+	s2j_struct_get_array_element(struct_obj, json_obj, double, value);		//值
+
+																			/* return Student structure object pointer */
+	return struct_obj;
+}
+
+/**
  * @fn rt_Get_cJSON
  * @brief 获取json，重新封装cJSON_Parse函数
  * @param value 指向要转换为json结构的字符串

@@ -30,6 +30,8 @@ extern cJSON *FixedValueCfg1_StructToJson(struct tagValueParaCfg* struct_obj);  
 extern struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj);          //实现定值一区结构体的json转struct
 extern cJSON *FixedValueCfg2_StructToJson(struct tagValueParaCfg* struct_obj);        //实现定值二区结构体的struct转json
 extern struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj);          //实现定值二区结构体的json转struct
+extern cJSON *SetDatabaseCfg_StructToJson(ConfigurationSetDatabaseToJson* struct_obj);  //实现配置信息结构体的json转struct
+extern ConfigurationSetDatabaseToJson *SetDatabaseCfg_JsonToStruct(cJSON* json_obj);    //实现配置信息结构体的struct转json
 
 extern cJSON* rt_Get_cJSON(const char *value);  //从字符串中获得json
 extern char* rt_Print_cJSON(cJSON *item);       //将json打印到字符串中

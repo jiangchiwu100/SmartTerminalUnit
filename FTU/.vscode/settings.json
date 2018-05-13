@@ -5,6 +5,9 @@
         "fstream": "c",
         "string": "c",
         "xstring": "c",
-        "s2j.h": "c"
+        "s2j.h": "c",
+        "system_error": "cpp",
+        "xtr1common": "cpp",
+        "xlocale": "c"
     }
 }
