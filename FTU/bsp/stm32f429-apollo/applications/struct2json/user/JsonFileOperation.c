@@ -24,7 +24,7 @@ static char Json_FileName[255]; /* File Name */
 static char Json_DirName[255]; /* Dir Name */
 
 static void Struct_To_Json(uint16_t length, uint8_t name, int file);
-static void *Json_To_Struct(char *value, uint8_t name);
+static void *Json_To_Struct(char *value, uint8_t name, cJSON *struct_json);
 
 
 /**
@@ -192,9 +192,8 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
  * @return 返回转换后的结构体指针
  * 
  */
-static void *Json_To_Struct(char *value, uint8_t name)
+static void *Json_To_Struct(char *value, uint8_t name, cJSON *struct_json)
 {
-    cJSON *struct_json = rt_Get_cJSON(value);   //将获取到的字符串转换为json
     switch(name)
     {
         case _CFG_SET_DATA_BASE:
@@ -234,5 +233,30 @@ static void *Json_To_Struct(char *value, uint8_t name)
 }
 
 
+void GetJsonForFile(char* fileName, uint16_t length, uint8_t name)
+{
+    //TERMINAL_PRODUCT_SERIAL_NUMBER
+    char* string;
+    
+    char readBuffer[256];
+    
+	memset(Json_DirName,0,sizeof(Json_DirName));
+	strcpy(Json_DirName,"/sojo");
+	strcat(Json_DirName,"/HISTORY/Config");//建立JSON文件目录
+	mkdir(Json_DirName,0);//建立目录
+	
+    strcpy(Json_FileName,"/sojo");
+    strcat(Json_FileName,"/HISTORY/Config/");
+    strcat(Json_FileName, fileName);	
+    strcat(Json_FileName, ".json");	
+
+    Json_MyFile = open(Json_FileName,  O_RDONLY, 0);  //打开文件
+
+    //增加动态内存获取，大小为结构体大小
+    //获取文件内容
+    //转换，根据电脑端demo
+
+	close(Json_MyFile);
+}
 
 
