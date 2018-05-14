@@ -31,7 +31,9 @@
 #include "dlt634_5104slave_disk.h"
 #include "tcp_server.h"
 #include "file_operate.h"
-
+#include "gui_common.h"
+#include "gui_101_cmd.h"
+#include "hmi_101_disk.h"
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
@@ -221,7 +223,7 @@ static void rt_protect_thread_entry(void *param)
         {
 			g_ThreadRunSta |= THREAD_RUN_PROTECT;
 			
-            if (g_ParameterDB.Data.runPara.Str.switchType == SWITCH_OFF)
+            if (g_Parameter[SWITCH_TYPE] == SWITCH_OFF)
             {
                 DBWriteSOE(ADDR_SWTICHCLASS, TYPE_BREAKER);
             }
@@ -229,7 +231,7 @@ static void rt_protect_thread_entry(void *param)
             {
                 DBWriteSOE(ADDR_SWTICHCLASS, TYPE_LOADSWTICH);
             }
-            //if (g_ParameterDB.Data.runPara.Str.workMode == TYPE_BREAKER_COMMON) 
+            //if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
             {
                 /* 断路器主保护逻辑 */ 					
                 BreakerCtrlClock();	  					    
@@ -267,6 +269,8 @@ static void rt_slave101_thread_entry(void *param)
 			g_ThreadRunSta |= THREAD_RUN_SLAVE101;
 			
             DLT634_5101_SlaveTask();
+			
+			DLT634_HMI_SlaveTask();
         } 		
     }    
 }
@@ -307,16 +311,15 @@ static void rt_slave104_thread_entry(void *param)
   */
 #if RT_USING_HMICOM
 static void rt_hmicom_thread_entry(void *param)
-{ 
-    eMBInit(MB_RTU, SLAVE_ADDR, 6, 9600,  MB_PAR_NONE);
-    eMBEnable();  
-    
+{
+    time_static_init();
+	
     for (;;)
     { 				
-        eMBPoll();   
-		
+   
+		TestMain();
 //		g_ThreadRunSta |= THREAD_RUN_HMI;
-//        rt_thread_delay(10);		
+        rt_thread_delay(20);		
     }    
 }
 #endif /* RT_USING_HMICOM */

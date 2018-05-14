@@ -175,16 +175,15 @@ __packed struct CP56Time2a_t
 #define TELEMETRY_TOTAL_NUM         (sizeof(TelemetryDatabase) / sizeof(float))    // 遥测总数	
 #define REMOTE_TOTAL_NUM             10    // 遥控总数	
 #define INHERENT_PARAMETER_NUM      (sizeof(InherentPara) / sizeof(char) / 24)          // 终端固有参数数量
-#define RUN_PARAMETER_NUM     		(sizeof(RunParameter) / sizeof(float))         // 终端运行参数数量
-#define CALIBRATE_FACTOR_NUM        (sizeof(CalibrateFactor) / sizeof(float))      // 校准系数数量
-#define PUBLIC_VALUE_NUM            (sizeof(PublicValue) / sizeof(float))          // 公共定值数量
-#define BREAKER_VALUE_NUM           (sizeof(BreakerValue) / sizeof(float))         // 断路器定值数量
-#define LOAD_SWITCH_VALUE_NUM       (sizeof(LoadSwitchValue) / sizeof(float))      // 负荷开关定值数量
-#define VALUE_PARAMETER_TOTAL_NUM   (INHERENT_PARAMETER_NUM+RUN_PARAMETER_NUM+CALIBRATE_FACTOR_NUM+\
-                                     PUBLIC_VALUE_NUM+BREAKER_VALUE_NUM+LOAD_SWITCH_VALUE_NUM)
-#define DB_SN0_SIZE                 (sizeof(InherentPara) + sizeof(RunParameter) + sizeof(CalibrateFactor))
-#define DB_SN1_SIZE                 (sizeof(PublicValue) + sizeof(BreakerValue) + sizeof(LoadSwitchValue))
-#define DB_SN2_SIZE                 (sizeof(PublicValue) + sizeof(BreakerValue) + sizeof(LoadSwitchValue))
+//#define RUN_PARAMETER_NUM     		(sizeof(RunParameter) / sizeof(float))         // 终端运行参数数量
+///#define CALIBRATE_FACTOR_NUM        (sizeof(CalibrateFactor) / sizeof(float))      // 校准系数数量
+//#define PUBLIC_VALUE_NUM            (sizeof(PublicValue) / sizeof(float))          // 公共定值数量
+//#define BREAKER_VALUE_NUM           (sizeof(BreakerValue) / sizeof(float))         // 断路器定值数量
+//#define LOAD_SWITCH_VALUE_NUM       (sizeof(LoadSwitchValue) / sizeof(float))      // 负荷开关定值数量
+#define VALUE_PARAMETER_TOTAL_NUM   (RUN_PARAMETER_NUM+FIXED_VALUE_NUM)
+//#define DB_SN0_SIZE                 (sizeof(g_Parameter))
+//#define DB_SN1_SIZE                 (sizeof(PublicValue) + sizeof(BreakerValue) + sizeof(LoadSwitchValue))
+//#define DB_SN2_SIZE                 (sizeof(PublicValue) + sizeof(BreakerValue) + sizeof(LoadSwitchValue))
     
 /* SAMPLE ----------------------------------------------------------------------*/
 #define ADC_SAMPLE_NUM                       48     // 采样半波点数
@@ -236,9 +235,7 @@ typedef struct
 #define RUNPARAMETER_START_ADDR       0x8101      // 终端运行参数起始地址
 #define CALIBRATE_FACTOR_START_ADDR   0x8201    	// 校准系数起始地址
 #define CALIBRATE_VALUE_START_ADDR    0x8240    	// 校准值起始地址
-#define PUBLIC_VALUE_START_ADDR       0x8301	    // 终端保护公共定值起始地址
-#define BREAKER_VALUE_START_ADDR      0x8401    	// 终端保护断路器定值起始地址
-#define LOAD_SWITCH_VALUE_START_ADDR  0x8501  	  // 终端保护负荷开关定值起始地址
+#define FIXED_VALUE_START_ADDR         0x8301	    // 终端保护定值起始地址
 
 
 #define DISTANT_REMOTE_ADDR           0x6001      // 远方操作
@@ -313,27 +310,29 @@ enum ActReasion
 };
 
 /* FRAM----------------------------------------------------------------------*/
-#define ADDR_FRAM_AREA0_INHERENT        0x00001	 // FRAM参数存储起始地址 0区固有参数
-#define ADDR_FRAM_AREA0_RUN             0x00100	 // FRAM参数存储起始地址 运行参数0区
-#define ADDR_FRAM_AREA1		            0x00350	 // FRAM参数存储起始地址	定值区一    
-#define ADDR_FRAM_AREA2		            0x00600	 // FRAM参数存储起始地址	定值区二     0x250
-#define ADDR_FRAM_SOE                   0x00850  // FRAM参数存储起始地址 SOE  // 0xA00
-#define ADDR_FRAM_FEVENT                0x01250  // 故障事件起始地址 0x500
-#define ADDR_FRAM_CO                    0x01750  // 操作记录起始地址 0x300
-#define ADDR_FRAM_LOG                   0x01A50  // 日志起始地址 0x1000
-#define ADDR_FRAM_MEMORY                0x02A50  // 日志起始地址 0x100
+#define ADDR_FRAM_MONITOR               0x00000  // FRAM自检
+#define ADDR_FRAM_UPDATE                0x00001  // 在线更新 2字节
+#define ADDR_FRAM_START_NUM             0x00003  // 开机次数一个字节
+#define ADDR_FRAM_CURRENT_SN            0x00004  // 当前定值区号 1个字节
 
-#define ADDR_FRAM_TELISIGNAL            0x02B50  // 遥信起始地址   0x50
-#define ADDR_FRAM_CONFIG                0x02C00  // 配置起始地址   0x400
+#define ADDR_FRAM_CALI_FACTOR           0x00050  // 校准系数存储起始地址 0x50
+#define ADDR_FRAM_AREA0                 0x00100	 // FRAM参数存储起始地址 运行参数0区     0x200
+#define ADDR_FRAM_AREA1		            0x00300	 // FRAM参数存储起始地址	定值区一     0x300
+#define ADDR_FRAM_AREA2		            0x00600	 // FRAM参数存储起始地址	定值区二     0x300
+#define ADDR_FRAM_SOE                   0x00900  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_SOE_NEW               0x01D00  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_FEVENT                0x03100  // 故障事件起始地址 0x500
+#define ADDR_FRAM_CO                    0x03600  // 操作记录起始地址 0x300
+#define ADDR_FRAM_LOG                   0x03900  // 日志起始地址 0x1000
+#define ADDR_FRAM_MEMORY                0x04900  // 日志起始地址 0x100
+#define ADDR_FRAM_TELISIGNAL            0x05000  // 遥信起始地址 0x100
 
-#define ADDR_FRAM_SOE_NEW               0x03000  // FRAM参数存储起始地址 SOE  // 0x300
+#define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x400
+
+
 /* flag */                                        
 
-#define ADDR_FRAM_UPDATE                0x03FF0  // 在线更新 2字节
-#define ADDR_FRAM_START_NUM             0x03FF2  // 开机次数一个字节
 
-#define ADDR_FRAM_CURRENT_SN            0x03FF5  // 当前定值区号
-#define ADDR_FRAM_MONITOR               0x03FFE  // FRAM自检
 
 /* FRAM区域枚举 */
 enum FramArea
@@ -374,24 +373,24 @@ enum TelesignalAddr
 {
 	ADDR_OPEN,	
 	ADDR_CLOSE,
-    ADDR_CAP_UNDER_VOLTAGE,                               // 电容欠压(储能开入)
+    ADDR_OPERATING_MECHANISM,                             // 电容欠压(储能开入)
     ADDR_LOW_PRESSURE,                                    // 低气压
     ADDR_POWERFAULTALARM,                                 // 电源故障告警
     ADDR_BATTERY_UNDERVOLTAGE_ALARM,                      // 电池欠压告警
     ADDR_BATTERYACTIVATIONSTATUS,                         // 电池活化状态
     ADDR_BATTERY_LOSS_ALARM,                              // 电池失电告警
     ADDR_BREAK_CONTACT,                                   // 分断/联络
-    ADDR_RECLOSEHARDSTRAP,                                // 重合硬压板
+    ADDR_RECLOSE_FA_STRAP,                                // 重合硬/FA压板
     ADDR_FUNCTION_HARDSTRAP,                              // 功能投退硬压板
     ADDR_REMOTE_EARTH,                                    // 远方/就地
     ADDR_SHORT_CIRCUIT_FAULT,                             // 短路故障/过流保护
     ADDR_EARTHING_FAULT,                                  // 接地故障/零序保护
     ADDR_PROTECTION_ACT,                                  // 保护动作
-    ADDR_PROTECTION_CLOCK,                                // 保护闭锁
-    ADDR_CLOSING_CLOCK,                                   // 合闸闭锁
-    ADDR_OPENING_CLOCK,                                   // 分闸闭锁    
+    ADDR_PROTECTION_LOCK,                                 // 保护闭锁
+    ADDR_CLOSING_LOCK,                                    // 合闸闭锁
+    ADDR_OPENING_LOCK,                                    // 分闸闭锁    
     ADDR_RECLOSE_ACT,                                     // 重合动作
-    ADDR_RECLOSE_CLOCK,                                   // 重合闸闭锁
+    ADDR_RECLOSE_LOCK,                                    // 重合闸闭锁
     ADDR_DEVICE_FAULT,                                    // 装置故障
     ADDR_SELF_CHECK_ABNOMAL,                              // 自检异常
     ADDR_COMMUNICATION,                                   // 通讯 
@@ -440,26 +439,26 @@ enum TelesignalAddr
 	ADDR_OVER_FREQUEBNCY_PROTECTION,                      // 过频
     ADDR_DOWN_VOLTAGE_PROTECTION,                         // 低压保护
 	ADDR_DOWN_FREQUEBNCY_PROTECTION,                      // 低频		
-    ADDR_OVER_LIMIT_Uab_UP,                                // A相电压越限
-    ADDR_OVER_LIMIT_Uab_DOWN,                              // A相电压越限
-    ADDR_OVER_LIMIT_UBC_UP,                                // B相电压越限
-    ADDR_OVER_LIMIT_UBC_DOWN,                              // B相电压越限
-    ADDR_OVER_LIMIT_Uca_UP,                                // C相电压越限
-    ADDR_OVER_LIMIT_Uca_DOWN,                              // C相电压越限
-    ADDR_OVER_LIMIT_U0_UP,                                // 零序电压越限
-    ADDR_OVER_LIMIT_U0_DOWN,                              // 零序电压越限
-    ADDR_OVER_LIMIT_IA_UP,                                // A相电流越限
-    ADDR_OVER_LIMIT_IA_DOWN,                              // A相电流越限
-    ADDR_OVER_LIMIT_IB_UP,                                // B相电流越限
-    ADDR_OVER_LIMIT_IB_DOWN,                              // B相电流越限
-    ADDR_OVER_LIMIT_IC_UP,                                // C相电流越限
-    ADDR_OVER_LIMIT_IC_DOWN,                              // C相电流越限
-    ADDR_OVER_LIMIT_I0_UP,                                // 零序电流越限
-    ADDR_OVER_LIMIT_I0_DOWN,                              // 零序电流越限
-    ADDR_OVER_LIMIT_DC_U_UP,                              // 直流电压越限
-    ADDR_OVER_LIMIT_DC_U_DOWN,                            // 直流电压越限
-    ADDR_OVER_LIMIT_DC_I_UP,                              // 直流电流越限
-    ADDR_OVER_LIMIT_DC_I_DOWN,                            // 直流电流越限
+    ADDR_OVERLIMIT_Uab_UP,                                // A相电压越限
+    ADDR_OVERLIMIT_Uab_DOWN,                              // A相电压越限
+    ADDR_OVERLIMIT_UBC_UP,                                // B相电压越限
+    ADDR_OVERLIMIT_UBC_DOWN,                              // B相电压越限
+    ADDR_OVERLIMIT_Uca_UP,                                // C相电压越限
+    ADDR_OVERLIMIT_Uca_DOWN,                              // C相电压越限
+    ADDR_OVERLIMIT_U0_UP,                                 // 零序电压越限
+    ADDR_OVERLIMIT_U0_DOWN,                               // 零序电压越限
+    ADDR_OVERLIMIT_IA_UP,                                 // A相电流越限
+    ADDR_OVERLIMIT_IA_DOWN,                               // A相电流越限
+    ADDR_OVERLIMIT_IB_UP,                                 // B相电流越限
+    ADDR_OVERLIMIT_IB_DOWN,                               // B相电流越限
+    ADDR_OVERLIMIT_IC_UP,                                 // C相电流越限
+    ADDR_OVERLIMIT_IC_DOWN,                               // C相电流越限
+    ADDR_OVERLIMIT_I0_UP,                                 // 零序电流越限
+    ADDR_OVERLIMIT_I0_DOWN,                               // 零序电流越限
+    ADDR_OVERLIMIT_DC_U_UP,                               // 直流电压越限
+    ADDR_OVERLIMIT_DC_U_DOWN,                             // 直流电压越限
+    ADDR_OVERLIMIT_DC_I_UP,                               // 直流电流越限
+    ADDR_OVERLIMIT_DC_I_DOWN,                             // 直流电流越限
     ADDR_DEVICE_POWER_DOWN,                               // 装置掉电
 	
 	TELESIGNAL_NUM
@@ -578,7 +577,7 @@ enum TelemetryAddr
     ADDR_I0,
     ADDR_Uab,
     ADDR_Ubc,
-    ADDR_Uac,
+    ADDR_Uca,
     ADDR_U0,
     ADDR_UAB,
     ADDR_UBC,
@@ -597,7 +596,7 @@ enum TelemetryAddr
 	ADDR_I0_ONCE,	
     ADDR_Uab_ONCE,
     ADDR_Ubc_ONCE,
-    ADDR_Uac_ONCE,
+    ADDR_Uca_ONCE,
     ADDR_U0_ONCE,
     ADDR_UAB_ONCE,
     ADDR_UBC_ONCE,
@@ -772,7 +771,7 @@ enum AddrRunParameter
     ZERODRIFT_I0,                         // 零序电流零漂
     ZERODRIFT_Uab,                        // 线电压Uab零漂
     ZERODRIFT_Ubc,                        // 线电压Ubc零漂
-    ZERODRIFT_Uac,                        // 线电压Uac零漂
+    ZERODRIFT_Uca,                        // 线电压Uac零漂
     ZERODRIFT_U0,                         // 零序电压零漂
     ZERODRIFT_UAB,                        // 线电压Uab零漂
     ZERODRIFT_UBC,                        // 线电压Ubc零漂
@@ -790,7 +789,7 @@ enum AddrRunParameter
     DEADZONE_I0,                          // 零序电流死区
     DEADZONE_Uab,                         // 线电压Uab死区
     DEADZONE_Ubc,                         // 线电压Ubc死区
-    DEADZONE_Uac,                         // 线电压Uac死区
+    DEADZONE_Uca,                         // 线电压Uac死区
     DEADZONE_U0,                          // 零序电压死区
     DEADZONE_UAB,                         // 线电压Ubc死区
     DEADZONE_UBC,                         // 线电压Uac死区
@@ -802,7 +801,7 @@ enum AddrRunParameter
     DEADZONE_DC2,                         // 直流量2死区
     DEADZONE_T,				              // 温度死区	
 	
-    PARAMETER_NUM,	                      // 运行参数数量
+    RUN_PARAMETER_NUM,	                  // 运行参数数量
 };
 	
 // 运行参数
@@ -881,7 +880,7 @@ enum AddrCalibrateFactor
 	CALIFACTOR_I0,                       // 零序电流(I0)校准系数
     CALIFACTOR_Uab,                      // 线电压(Uab)校准系数
 	CALIFACTOR_Ubc,                      // 线电压(Ubc)校准系数
-    CALIFACTOR_Uac,                      // 线电压(Uac)校准系数
+    CALIFACTOR_Uca,                      // 线电压(Uca)校准系数
 	CALIFACTOR_U0,                       // 零序电压(U0)校准系数
     CALIFACTOR_UAB,                      // 线电压(Uab)校准系数
 	CALIFACTOR_UBC,                      // 线电压(Ubc)校准系数
@@ -964,7 +963,7 @@ enum AddrFixedValue
     OVERLIMIT_TIME,                      // 越限延时
 	OVERLIMIT_ALARM_SWITCH_Uab,          // Uab越限报警投退 
 	OVERLIMIT_ALARM_SWITCH_UBC,          // Ubc越限报警投退
-	OVERLIMIT_ALARM_SWITCH_Uac,          // Uac越限报警投退
+	OVERLIMIT_ALARM_SWITCH_Uca,          // Uac越限报警投退
 	UPLIMIT_VOLTAGE_U,                   // 电压上限定值
 	DOWNLIMIT_VOLTAGE_U,                 // 电压下限定值
 	OVERLIMIT_ALARM_SWITCH_IA,           // Ia越限报警投退
@@ -996,7 +995,7 @@ enum AddrFixedValue
 	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
 	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
 	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
-    BATTERY_ACTIVE_SWITCH,               // 电池活化周期投退
+    BATTERY_ACTIVE_SWITCH,               // 电池活化投退
     BATTERY_ACTIVE_CYCLE,                // 电池活化周期(天)
     BATTERY_ACTIVE_TIME,                 // 电池活化时间(h)
     BATTERY_ACTIVE_FAULT_VOLTAGE,        // 电池活化故障电压
@@ -1022,7 +1021,7 @@ enum AddrFixedValue
     CLOSING_LOOP_SWITCH,                 // 合环功能投退
     VOLTAGE_DIFFERENCE,                  // 两侧压差	
 	PHASEANGLE_DIFFERENCE,				 // 相角差
-    CONTROL_LOOP_ANOMALY_ENABLE,         // 控制回路异常使能	
+    CONTROL_LOOP_ABNOMAL_ENABLE,         // 控制回路异常使能	
 	INVERSE_SWITCH,                      // 反时限投退
 	INVERSE_CURRENT_VALUE,               // 反时限保护电流值
 	INVERSE_TIME,                        // 反时限保护延时
@@ -1050,7 +1049,7 @@ enum AddrFixedValue
 	GET_VOLTAGE_CLOSSING_SWITCH,         // 得电合闸投退
 	GET_VOLTAGE_CLOSSING_X_TIME,         // 得电延时合闸X时间
 	SINGLE_LOSS_VOLTAGE_SWITCH,          // 单侧失压延时合闸
-	SINGLE_LOSS_VOLTAGE_TIME,            // 单侧失压延时XL时间
+	SINGLE_LOSS_VOLTAGE_XLTIME,            // 单侧失压延时XL时间
 	DOUBLE_VOLTAGE_SWITCH,               // 双侧有压禁止合闸投退
 	REMAIN_VOLTAGE_SWITCH,               // 残压脉冲投退
 	REMAIN_VOLTAGE_VALUE,                // 残压定值
@@ -1222,17 +1221,17 @@ struct CommonInfo
 };
 
 /* 定值数据结构体 */
-typedef union TagParameter
-{
-    struct SN0
-    {
-        InherentPara inherentPara;         // 终端固有参数存储区
-        RunParameter runPara;              // 终端运行参数存储区
-        CalibrateFactor calibrateFactor;   // 校准系数     
-    }Data;       
+//typedef union TagParameter
+//{
+//    struct SN0
+//    {
+//        InherentPara inherentPara;         // 终端固有参数存储区
+//        RunParameter runPara;              // 终端运行参数存储区
+//        CalibrateFactor calibrateFactor;   // 校准系数     
+//    }Data;       
 
-    //float value[sizeof(struct SN0) / sizeof(float)];
-}Parameter;
+//    //float value[sizeof(struct SN0) / sizeof(float)];
+//}Parameter;
 
 typedef union TagFixedValue
 {
@@ -1483,17 +1482,15 @@ extern struct ConfigurationSetDatabase g_ConfigurationSetDB;
 extern struct SD2405Time g_SystemTime;
 
 /* 遥信缓存 */
-extern TelesignalDatabase   g_TelesignalDB;
-extern uint8_t				g_Telesignal[TELESIGNAL_NUM];	
+extern uint8_t				g_TelesignalDB[TELESIGNAL_NUM];	
 /* 新遥信点表映射 */
 //extern List NewList_Telesignal[TELESIGNAL_TOTAL_NUM];
 extern rt_uint16_t g_NewMaxNumTelesignal;
 extern rt_uint16_t g_NewToOldTelesignal[];//新点表映射
 
 /* 遥测缓存 */
-extern float                g_Telemetry[TELEMETRY_NUM];
-extern TelemetryDatabase    g_TelemetryDB;
-extern TelemetryDatabase    g_TelemetryLastDB;
+extern float g_TelemetryDB[TELEMETRY_NUM];
+extern float g_TelemetryLastDB[TELEMETRY_NUM];
 extern float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 #if RT_USING_TELEMETRY_SET
 extern TelemetryDatabase    g_TelemetrySetEnable;
@@ -1515,16 +1512,18 @@ extern rt_uint16_t g_NewToOldPropertyRemote[REMOTE_TOTAL_NUM];//新点表属性
 extern rt_uint32_t g_CommunicatFlag[COM_MAX];
 
 /* 定值和参数缓存 */
-extern Parameter g_ParameterDB;
 
-extern FixedValue *g_pFixedValue;
+//extern FixedValue *g_pFixedValue;
+extern struct Inherent  g_InherentPara;
 extern FixedValue g_FixedValueDB1;
 extern FixedValue g_FixedValueDB2;
-extern struct tagValueParaCfg  *g_pFixedValueDB;
+extern float    *g_pFixedValue;
 extern float     g_FixedValue1[FIXED_VALUE_NUM];
 extern float     g_FixedValue2[FIXED_VALUE_NUM];
-extern float     g_Parameter[PARAMETER_NUM];
+
+extern float     g_Parameter[RUN_PARAMETER_NUM];
 extern float     g_CalibrateFactor[CALIFACTOR_NUM];
+extern struct    tagValueParaCfg  *g_pFixedValueCfg;
 
 /* 定值操作信息 */
 extern struct ValueParameterOperate g_ValueParaOperateInfo;

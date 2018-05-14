@@ -57,7 +57,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     static uint32_t s_close_shake_timer = 0;
     static uint32_t s_reserve_time;
 
-    if (g_TelesignalDB.Str.remoteEarth == OFF) // Local mode does not allow operation
+    if (g_TelesignalDB[ADDR_REMOTE_EARTH] == OFF) // Local mode does not allow operation
     {
         return;
     }
@@ -71,12 +71,12 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     if (pin_status[INDEX_HANDHELD_OPEN_PRESET].status)
     {
         s_close_shake_timer = 0;
-        s_open_shake_timer / clock >= g_ParameterDB.Data.runPara.Str.diShakingTime ? s_open_shake_timer = 0, Handheld.openPresetFlag = 1 : s_open_shake_timer++;
+        s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, Handheld.openPresetFlag = 1 : s_open_shake_timer++;
     }
     else if (pin_status[INDEX_HANDHELD_CLOSE_PRESET].status)
     {
         s_open_shake_timer = 0;
-        s_close_shake_timer / clock >= g_ParameterDB.Data.runPara.Str.diShakingTime ? s_close_shake_timer = 0, Handheld.closePresetFlag = 1 : s_close_shake_timer++;
+        s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, Handheld.closePresetFlag = 1 : s_close_shake_timer++;
     }
 
     /* open execute */
@@ -84,7 +84,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     {
         // Preset timeout count
         Handheld.openPresetTimeOut++;
-        s_reserve_time = g_ParameterDB.Data.runPara.Str.reverseTime > 0 ? FloatToBin(g_ParameterDB.Data.runPara.Str.reverseTime) : 3000;
+        s_reserve_time = g_Parameter[REVERSE_TIME] > 0 ? FloatToBin(g_Parameter[REVERSE_TIME]) : 3000;
 
         if (Handheld.openPresetTimeOut >= s_reserve_time / clock)
         {
@@ -94,7 +94,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_OPEN_EXECUTE].status)
             {
-                s_open_shake_timer / clock >= g_ParameterDB.Data.runPara.Str.diShakingTime ? s_open_shake_timer = 0, rt_hw_do_operate(DO_OPEN, REMOTE) : s_open_shake_timer++;
+                s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, rt_hw_do_operate(DO_OPEN, REMOTE) : s_open_shake_timer++;
             }
         }
     }
@@ -108,7 +108,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     {
         // Preset timeout count
         Handheld.closePresetTimeOut++;
-        s_reserve_time = g_ParameterDB.Data.runPara.Str.reverseTime > 0 ? FloatToBin(g_ParameterDB.Data.runPara.Str.reverseTime) : 3000;
+        s_reserve_time = g_Parameter[REVERSE_TIME] > 0 ? FloatToBin(g_Parameter[REVERSE_TIME]) : 3000;
 
         if (Handheld.closePresetTimeOut >= s_reserve_time / clock)
         {
@@ -118,7 +118,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_CLOSE_EXECUTE].status)
             {
-                s_close_shake_timer / clock >= g_ParameterDB.Data.runPara.Str.diShakingTime ? s_close_shake_timer = 0, rt_hw_do_operate(DO_CLOSE, REMOTE) : s_close_shake_timer++;
+                s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, rt_hw_do_operate(DO_CLOSE, REMOTE) : s_close_shake_timer++;
             }
         }
     }

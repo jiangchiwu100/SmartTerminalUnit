@@ -60,12 +60,12 @@ static void rt_hw_double_point_check(float shaking_time)
 
     if ((g_DiCollect.doubleState == 0x00 || g_DiCollect.doubleState == 0x03))
     {		
-        if (g_pFixedValue->Data.publicValue.Str.controlloopAnomalyEnable == SWITCH_OFF)
+        if (g_pFixedValue[CONTROL_LOOP_ABNOMAL_ENABLE] == SWITCH_OFF)
         {
             return;
         }
             
-        if (g_TelesignalDB.Str.deviceFault == OFF && g_DiCollect.doubleState == 0x00)
+        if (g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF && g_DiCollect.doubleState == 0x00)
         {
             /* 进入装置故障判断 */
             g_DiCollect.deviceFalutCounter++;
@@ -78,7 +78,7 @@ static void rt_hw_double_point_check(float shaking_time)
             }
         }
 
-        if (g_DiCollect.doubleState == 0x03 && g_TelesignalDB.Str.controlLoopDisconnection == OFF)
+        if (g_DiCollect.doubleState == 0x03 && g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] == OFF)
         {
             /* 控制回路断线 */
             g_DiCollect.disconnectCounter++;
@@ -94,12 +94,12 @@ static void rt_hw_double_point_check(float shaking_time)
     }
     else if (g_DiCollect.doubleState == 0x01 || g_DiCollect.doubleState == 0x02)
     {
-        if (g_TelesignalDB.Str.controlLoopDisconnection == ON)
+        if (g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] == ON)
         {
             DBWriteSOE(ADDR_CONTROL_LOOP_DISCONNECTION, OFF);
         }
 
-        g_TelesignalDB.Str.controlLoopDisconnection = OFF;
+        g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] = OFF;
 
         if (g_DiCollect.doubleState != g_DiCollect.doubleStateLast)
         {
@@ -137,14 +137,14 @@ void rt_hw_di_check_task(rt_uint8_t clock)
                         pin_status[INDEX_LOW_PRESSURE_DI].status << 3 | pin_status[INDEX_POWER_FAILURE_ALARM_DI].status << 4 | pin_status[INDEX_BETTERY_UNDERVOLTAGE_DI].status << 5 | \
                         pin_status[INDEX_BATTERYA_CTIVATE_DI].status << 6 | (!pin_status[INDEX_BATTERY_LOSS_ALARM_DI].status) << 7;
 	
-    s_shaking_time = (uint32_t)g_ParameterDB.Data.runPara.Str.diShakingTime / clock;
+    s_shaking_time = (uint32_t)g_Parameter[DI_SHAKING_TIME] / clock;
 
     for (i = 0; i < DI_NUM; i++)
     {
         if ((g_DiCollect.state & (0x01 << i)) == (g_DiCollect.stateLast & (0x01 << i)))
         {
             g_DiCollect.counter[i] = 0;
-            g_TelesignalDB.buf[i] = (g_DiCollect.state >> i) & 0x01 ? OFF : ON;
+            g_TelesignalDB[i] = (g_DiCollect.state >> i) & 0x01 ? OFF : ON;
         }
         else
         {

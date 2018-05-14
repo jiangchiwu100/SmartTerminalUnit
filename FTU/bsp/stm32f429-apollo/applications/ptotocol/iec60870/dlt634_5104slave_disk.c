@@ -225,11 +225,11 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchClose == ON && g_TelesignalDB.Str.switchOpen == OFF\
-                           && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))    				
+                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))    				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchClose == ON && g_TelesignalDB.Str.switchOpen == OFF\
-                           && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))    
+                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))    
 		      #endif 				                                
                 {
                     valuesuc = OFF;
@@ -248,13 +248,13 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON 
-                     && g_TelesignalDB.Str.switchClose == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB.Str.operatingMechanism == ON 
-                     && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))     				
+                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                     && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))     				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON 
-                     && g_TelesignalDB.Str.switchClose == OFF && g_TelesignalDB.Str.operatingMechanism == ON 
-                     && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))           
+                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                     && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))           
 		      #endif 				      
                 {
                     valuesuc = ON;
@@ -288,13 +288,13 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchClose == ON 
-                     && g_TelesignalDB.Str.switchOpen == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB.Str.deviceFault == OFF))||\
+                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
+                     && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))    				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchClose == ON 
-                     && g_TelesignalDB.Str.switchOpen == OFF && g_TelesignalDB.Str.deviceFault == OFF))||\
+                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
+                     && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))             
 		      #endif      
@@ -337,8 +337,8 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))  				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF\
-                          && g_TelesignalDB.Str.operatingMechanism == ON && g_TelesignalDB.Str.deviceFault == OFF))||\
+                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
+                          && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))             
 		      #endif   
@@ -505,13 +505,13 @@ void DLT634_5104_SLAVE_FixedParaProcess(uint8_t pdrv, uint8_t *pbuf)//定值操�
                 {
                             addr = INTRIPARAME_START_ADDR;
 //                            addr = RUNPARAMETER_START_ADDR;
-                            NUM_temp = INHERENT_PARAMETER_NUM+RUN_PARAMETER_NUM+CALIBRATE_FACTOR_NUM;
+                            NUM_temp = INHERENT_PARAMETER_NUM+RUN_PARAMETER_NUM;
 //                            NUM_temp = RUN_PARAMETER_NUM+CALIBRATE_FACTOR_NUM;
                 }
                 else
                 {
-                    addr = PUBLIC_VALUE_START_ADDR;
-                    NUM_temp = PUBLIC_VALUE_NUM+BREAKER_VALUE_NUM+LOAD_SWITCH_VALUE_NUM;
+                    addr = FIXED_VALUE_START_ADDR;
+                    NUM_temp = FIXED_VALUE_NUM;
                 }
             }
             else
@@ -551,18 +551,18 @@ void DLT634_5104_SLAVE_FixedParaProcess(uint8_t pdrv, uint8_t *pbuf)//定值操�
                             }
                             else
                             {
-                                if(++addr > LOAD_SWITCH_VALUE_START_ADDR+LOAD_SWITCH_VALUE_NUM)
+                                if(++addr > FIXED_VALUE_START_ADDR + FIXED_VALUE_NUM)
                                 {
                                     break;
                                 }
-                                else if(addr == BREAKER_VALUE_START_ADDR+BREAKER_VALUE_NUM)
-                                {
-                                    addr = LOAD_SWITCH_VALUE_START_ADDR;
-                                }
-                                else if(addr == PUBLIC_VALUE_START_ADDR+PUBLIC_VALUE_NUM)
-                                {
-                                    addr = BREAKER_VALUE_START_ADDR;
-                                }
+//                                else if(addr == BREAKER_VALUE_START_ADDR+BREAKER_VALUE_NUM)
+//                                {
+//                                    addr = LOAD_SWITCH_VALUE_START_ADDR;
+//                                }
+//                                else if(addr == PUBLIC_VALUE_START_ADDR+PUBLIC_VALUE_NUM)
+//                                {
+//                                    addr = BREAKER_VALUE_START_ADDR;
+//                                }
                             }
                         }
                     }
@@ -1070,7 +1070,7 @@ uint16_t DLT634_5104_SLAVE_ReadYxData(uint8_t pdrv, uint16_t addr, uint16_t num,
         
         for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
         {
-            valuetemp = g_TelesignalDB.buf[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5104Slave_Pad[pdrv].YX_FirstAddr] - 1;
+            valuetemp = g_TelesignalDB[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5104Slave_Pad[pdrv].YX_FirstAddr] - 1;
             if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
             {
                 valuetemp = (~valuetemp)&0x01;                
@@ -1171,19 +1171,19 @@ uint16_t DLT634_5104_SLAVE_ReadYcData(uint8_t pdrv, uint16_t addr, uint16_t num,
         switch(Property)
         {
             case DLT634_5104SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(g_TelemetryDB.buf[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/10/\
+                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/10/\
                         (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)*32768);
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NB_1:
-                tempu = (int16_t)(g_TelemetryDB.buf[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
+                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
                         (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NC_1:
-                tempf = FloatToBin(g_TelemetryDB.buf[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
+                tempf = FloatToBin(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
                         (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
                 temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + sizeof(uint32_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + 11],&tempf,sizeof(uint32_t));   
@@ -1257,8 +1257,8 @@ void DLT634_5104_SLAVE_SoftwareUpdate(uint8_t pdrv, uint8_t *pbuf)//升级操作
                     if(pbuf[11]&0x80)
                     {
                         //启动升级
-                        psCoilTimeTelesignal->allFlag &= ~0x0C; 
-                        psCoilTimeTelesignal->allFlag |= REG_HAVEUPDATE;
+//                        psCoilTimeTelesignal->allFlag &= ~0x0C; 
+//                        psCoilTimeTelesignal->allFlag |= REG_HAVEUPDATE;
                     }
                     else
                     {
@@ -1270,13 +1270,13 @@ void DLT634_5104_SLAVE_SoftwareUpdate(uint8_t pdrv, uint8_t *pbuf)//升级操作
                 case 8:
                     temp_array[pdrv][4] = 9;
                     //升级过程中停止升级
-                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;           
+//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
+//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;           
                     break;
                 default:
                     temp_array[pdrv][4] = 47;
-                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;
+//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
+//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;
                     break;
             }
             break;

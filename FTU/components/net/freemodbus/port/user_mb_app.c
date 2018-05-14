@@ -373,9 +373,9 @@ static void eMBRegHoldingRead(UCHAR ucDataType, UCHAR * pucRegBuffer, USHORT usA
 				pucRegBuffer[2+4*i] = HIBYTE(LOWORD(FloatToBin(pSCoilTelemetry[(usAddress - REG_TELEMETRY_START_ADDR) / 2 + i])));
 				pucRegBuffer[3+4*i] = LOBYTE(LOWORD(FloatToBin(pSCoilTelemetry[(usAddress - REG_TELEMETRY_START_ADDR) / 2 + i])));
 			}
-			break;
+			break;  
 		case REG_INHERENT:
-			memcpy(pucRegBuffer, &g_ParameterDB.Data.inherentPara.buf[24 * (usAddress - REG_INHERENT_START_ADDR)], usNCoils * 2); 
+			memcpy(pucRegBuffer, &g_InherentPara[24 * (usAddress - REG_INHERENT_START_ADDR)], usNCoils * 2); 
 			break;
 		case REG_RUN_PARA:
 		case REG_PUBLIC_FIXED:
@@ -470,14 +470,14 @@ static void eMBRegCoilsWrite(USHORT usAddress)
 			DBWriteSOE(ADDR_REMOTE_EARTH, OFF);
 			break;
 		case BREAK:
-			if (g_TelesignalDB.Str.breakContact == OFF || g_ParameterDB.Data.runPara.Str.connectSwitchRecognize == 1)
+			if (g_TelesignalDB.Str.breakContact == OFF || g_Parameter[CONNECT_SWITCH_RECOGNIZE] == 1)
 			{
 				return;
 			}
 			DBWriteSOE(ADDR_BREAK_CONTACT, OFF);
 			break;
 		case CONNECT:
-			if (g_TelesignalDB.Str.breakContact == ON || g_ParameterDB.Data.runPara.Str.connectSwitchRecognize == 1)
+			if (g_TelesignalDB.Str.breakContact == ON || g_Parameter[CONNECT_SWITCH_RECOGNIZE] == 1)
 			{
 				return;
 			}
@@ -512,9 +512,9 @@ static void eMBRegHoldingWrite(UCHAR * pucRegBuffer, USHORT usAddress)
         temp = (int32_t)MAKEWORD(pucRegBuffer[3], pucRegBuffer[2]) << 16 | MAKEWORD(pucRegBuffer[1], pucRegBuffer[0]);
         g_TelemetryDB.Str.temprature = BinToFloat(temp);
 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorT != 0)
+        if (g_CalibrateFactor[CALIFACTOR_T] != 0)
 		{
-			g_TelemetryDB.Str.temprature *= g_ParameterDB.Data.calibrateFactor.Str.califactorT;
+			g_TelemetryDB.Str.temprature *= g_CalibrateFactor[CALIFACTOR_T];
 		}
     }
     else if (REG_RUNPARAMETER(usAddress) || REG_PUBLIC_FIXED(usAddress) || REG_BREAK_FIXED(usAddress) || REG_LOAD_FIXED(usAddress))

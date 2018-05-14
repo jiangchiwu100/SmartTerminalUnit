@@ -26,7 +26,7 @@
 #define FRAM_PRINTF(...)   
 #endif /* DEBUG */
 
-#define FM25V10_MAX_ADDR                0x3FFF   
+#define FM25V10_MAX_ADDR                0x1ffff   
 
 #define FRAM_WREN                       0x06     // Set write enable latch
 #define FRAM_WRDI                       0x04     // Write disable

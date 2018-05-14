@@ -446,49 +446,49 @@ void GetFrequency(void)
 	
 //    rt_enter_critical(); // 进入临界区
 
-    g_TelemetryDB.Str.frequency = g_FreGather.freValue; // 写入数据缓冲区
+    g_TelemetryDB[ADDR_F] = g_FreGather.freValue; // 写入数据缓冲区
 
-    if (g_ParameterDB.Data.calibrateFactor.Str.califactorF != 0)
+    if (g_CalibrateFactor[CALIFACTOR_F] != 0)
     {
-        g_TelemetryDB.Str.frequency *= g_ParameterDB.Data.calibrateFactor.Str.califactorF;
+        g_TelemetryDB[ADDR_F] *= g_CalibrateFactor[CALIFACTOR_F];
     }
     else
     {
-        g_TelemetryDB.Str.frequency += 0.001f;
+        g_TelemetryDB[ADDR_F] += 0.001f;
     }
 
-    if (g_TelemetryDB.Str.frequency < g_ParameterDB.Data.runPara.Str.zerodriftF)
+    if (g_TelemetryDB[ADDR_F] < g_Parameter[ZERODRIFT_F])
     {
-        g_TelemetryDB.Str.frequency = 0;
+        g_TelemetryDB[ADDR_F] = 0;
     }
 	
-	g_FreGather.freValueProtect = g_TelemetryDB.Str.frequency;
+	g_FreGather.freValueProtect = g_TelemetryDB[ADDR_F];
 	
-    if (g_TelemetryDB.Str.Uab <= 1)
+    if (g_TelemetryDB[ADDR_Uab] <= 1)
     {
         TIM5->ARR = 6250 - 1; // 若Uab未接入，设定采集PWM为初始值
 		g_FreGather.freValueProtect = 0;
 		
-        if (g_TelemetryDB.Str.UBC <= 1)
+        if (g_TelemetryDB[ADDR_UBC] <= 1)
         {
-            g_TelemetryDB.Str.frequency = 0;
+            g_TelemetryDB[ADDR_F] = 0;
         }
         else
         {
-            g_TelemetryDB.Str.frequency = 50.0f;
+            g_TelemetryDB[ADDR_F] = 50.0f;
         }
     }
     else
     {	
-        if (g_TelemetryDB.Str.frequency < 44.99f || g_TelemetryDB.Str.frequency > 55.01f)
+        if (g_TelemetryDB[ADDR_F] < 44.99f || g_TelemetryDB[ADDR_F] > 55.01f)
         {
-            g_TelemetryDB.Str.frequency = 50.0f;
+            g_TelemetryDB[ADDR_F] = 50.0f;
             arr = 6250 - 1; // 变频采集交流量
 			ccr1 = 1000;
         }
 		else
 		{
-			arr = (uint32_t)((float)312500.0f / (float)g_TelemetryDB.Str.frequency) - 1; // 变频采集交流量
+			arr = (uint32_t)((float)312500.0f / (float)g_TelemetryDB[ADDR_F]) - 1; // 变频采集交流量
 			ccr1 = arr / 2 ;
 		}
 		
