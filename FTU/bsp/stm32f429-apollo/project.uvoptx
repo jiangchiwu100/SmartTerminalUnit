@@ -480,7 +480,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3239,8 +3239,8 @@
   </Group>
 
   <Group>
-    <GroupName>FreeModbusSlave</GroupName>
-    <tvExp>0</tvExp>
+    <GroupName>lkdGui</GroupName>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3251,8 +3251,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\mb.c</PathWithFileName>
-      <FilenameWithoutPath>mb.c</FilenameWithoutPath>
+      <PathWithFileName>.\applications\lkdGui\protocol\hmi_101_app.c</PathWithFileName>
+      <FilenameWithoutPath>hmi_101_app.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -3263,8 +3263,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\port\port.c</PathWithFileName>
-      <FilenameWithoutPath>port.c</FilenameWithoutPath>
+      <PathWithFileName>.\applications\lkdGui\protocol\hmi_101_disk.c</PathWithFileName>
+      <FilenameWithoutPath>hmi_101_disk.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -3275,8 +3275,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\rtu\mbrtu.c</PathWithFileName>
-      <FilenameWithoutPath>mbrtu.c</FilenameWithoutPath>
+      <PathWithFileName>.\applications\lkdGui\gui\gui_101_cmd.c</PathWithFileName>
+      <FilenameWithoutPath>gui_101_cmd.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -3287,140 +3287,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\rtu\mbcrc.c</PathWithFileName>
-      <FilenameWithoutPath>mbcrc.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>242</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbutils.c</PathWithFileName>
-      <FilenameWithoutPath>mbutils.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>243</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\port\porttimer.c</PathWithFileName>
-      <FilenameWithoutPath>porttimer.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>244</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\port\portserial.c</PathWithFileName>
-      <FilenameWithoutPath>portserial.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>245</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\port\portevent.c</PathWithFileName>
-      <FilenameWithoutPath>portevent.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>246</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfuncdisc.c</PathWithFileName>
-      <FilenameWithoutPath>mbfuncdisc.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>247</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfuncdiag.c</PathWithFileName>
-      <FilenameWithoutPath>mbfuncdiag.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>248</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfunccoils.c</PathWithFileName>
-      <FilenameWithoutPath>mbfunccoils.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>249</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfuncinput.c</PathWithFileName>
-      <FilenameWithoutPath>mbfuncinput.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>250</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfuncother.c</PathWithFileName>
-      <FilenameWithoutPath>mbfuncother.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>251</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\modbus\functions\mbfuncholding.c</PathWithFileName>
-      <FilenameWithoutPath>mbfuncholding.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>252</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\components\net\freemodbus\port\user_mb_app.c</PathWithFileName>
-      <FilenameWithoutPath>user_mb_app.c</FilenameWithoutPath>
+      <PathWithFileName>.\applications\lkdGui\gui\gui_common.c</PathWithFileName>
+      <FilenameWithoutPath>gui_common.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -3434,7 +3302,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>253</FileNumber>
+      <FileNumber>242</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3446,7 +3314,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>254</FileNumber>
+      <FileNumber>243</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3458,7 +3326,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>255</FileNumber>
+      <FileNumber>244</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3470,7 +3338,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>256</FileNumber>
+      <FileNumber>245</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3482,7 +3350,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>257</FileNumber>
+      <FileNumber>246</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3494,7 +3362,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>258</FileNumber>
+      <FileNumber>247</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3506,7 +3374,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>259</FileNumber>
+      <FileNumber>248</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3526,7 +3394,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>13</GroupNumber>
-      <FileNumber>260</FileNumber>
+      <FileNumber>249</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3546,7 +3414,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>261</FileNumber>
+      <FileNumber>250</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3566,7 +3434,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>15</GroupNumber>
-      <FileNumber>262</FileNumber>
+      <FileNumber>251</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3586,7 +3454,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>16</GroupNumber>
-      <FileNumber>263</FileNumber>
+      <FileNumber>252</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3606,7 +3474,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>17</GroupNumber>
-      <FileNumber>264</FileNumber>
+      <FileNumber>253</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

@@ -334,7 +334,11 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32F429xx,ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
+<<<<<<< HEAD
               <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user</IncludePath>
+=======
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;..\..\components\net\freemodbus\modbus\include;..\..\components\net\freemodbus\port;..\..\components\net\freemodbus\modbus\rtu;..\..\components\net\freemodbus\modbus\functions;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol</IncludePath>
+>>>>>>> 4746a3dd9afd9324edade3bf671229fce8ed1734
             </VariousControls>
           </Cads>
           <Aads>
@@ -1610,82 +1614,27 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>FreeModbusSlave</GroupName>
+          <GroupName>lkdGui</GroupName>
           <Files>
             <File>
-              <FileName>mb.c</FileName>
+              <FileName>hmi_101_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\mb.c</FilePath>
+              <FilePath>.\applications\lkdGui\protocol\hmi_101_app.c</FilePath>
             </File>
             <File>
-              <FileName>port.c</FileName>
+              <FileName>hmi_101_disk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\port\port.c</FilePath>
+              <FilePath>.\applications\lkdGui\protocol\hmi_101_disk.c</FilePath>
             </File>
             <File>
-              <FileName>mbrtu.c</FileName>
+              <FileName>gui_101_cmd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\rtu\mbrtu.c</FilePath>
+              <FilePath>.\applications\lkdGui\gui\gui_101_cmd.c</FilePath>
             </File>
             <File>
-              <FileName>mbcrc.c</FileName>
+              <FileName>gui_common.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\rtu\mbcrc.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbutils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbutils.c</FilePath>
-            </File>
-            <File>
-              <FileName>porttimer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\port\porttimer.c</FilePath>
-            </File>
-            <File>
-              <FileName>portserial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\port\portserial.c</FilePath>
-            </File>
-            <File>
-              <FileName>portevent.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\port\portevent.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfuncdisc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfuncdisc.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfuncdiag.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfuncdiag.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfunccoils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfunccoils.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfuncinput.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfuncinput.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfuncother.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfuncother.c</FilePath>
-            </File>
-            <File>
-              <FileName>mbfuncholding.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\modbus\functions\mbfuncholding.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_mb_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\net\freemodbus\port\user_mb_app.c</FilePath>
+              <FilePath>.\applications\lkdGui\gui\gui_common.c</FilePath>
             </File>
           </Files>
         </Group>

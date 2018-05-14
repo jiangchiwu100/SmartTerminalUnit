@@ -52,13 +52,11 @@ INIT_DEVICE_EXPORT(rt_hw_do_init);
   */  
 static rt_uint8_t rt_hw_close_operate(void)
 {
-    if (g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF && !CLOSING && !OPENING && g_TelesignalDB.Str.deviceFault == OFF)
+    if (g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF && !CLOSING && !OPENING && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF)
     {
-		if (g_pFixedValue->Data.publicValue.Str.closingLoopSwitch && g_TelemetryDB.Str.Uab >= g_pFixedValue->Data.loadSwitchValue.Str.voltageValue
-			&& g_TelemetryDB.Str.UBC >= g_pFixedValue->Data.loadSwitchValue.Str.voltageValue)
+		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UBC] >= g_pFixedValue[VOLTAGE_VALUE])
 		{
-	        if (fabs(g_TelemetryDB.Str.AlphaU) > g_pFixedValue->Data.publicValue.Str.phaseAngleDifference 
-				|| fabs(g_TelemetryDB.Str.Uab - g_TelemetryDB.Str.UBC) > g_pFixedValue->Data.publicValue.Str.voltageDifference) 
+	        if (fabs(g_TelemetryDB[ADDR_ALPHY_Uab_UBC]) > g_pFixedValue[PHASEANGLE_DIFFERENCE] || fabs(g_TelemetryDB[ADDR_Uab] - g_TelemetryDB[ADDR_UBC]) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
 			{
 				switch (DoStr.actSource)
 				{
@@ -87,7 +85,7 @@ static rt_uint8_t rt_hw_close_operate(void)
       #ifdef LOGICLOCKINGMANUALREMOTECONTROL
 		else
 		{
-			if (g_TelesignalDB.Str.closingLocked == ON)
+			if (g_TelesignalDB[ADDR_CLOSING_CLOCK] == ON)
 			{
 			    return FALSE;
 			}			    
@@ -95,12 +93,12 @@ static rt_uint8_t rt_hw_close_operate(void)
       #endif  		
 		
         /* Permanent magnet mechanism */
-        if (g_ParameterDB.Data.runPara.Str.operatingMechanism == MAGNET && g_TelesignalDB.Str.operatingMechanism == OFF)
+        if (g_Parameter[OPERATING_MECHANISM] == MAGNET && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == OFF)
         {
             return FALSE;
         }
 
-        if (g_ParameterDB.Data.runPara.Str.outputOverturn == 0)
+        if (g_Parameter[OUTPUT_OVERTURN] == 0)
         { 
             pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;	
             pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
@@ -116,7 +114,7 @@ static rt_uint8_t rt_hw_close_operate(void)
         }            
 
         CLOSING = 1;
-        DoStr.closingDelay = g_ParameterDB.Data.runPara.Str.closingPulseTime <= 10 ? PULSE_TIME : g_ParameterDB.Data.runPara.Str.closingPulseTime;
+        DoStr.closingDelay = g_Parameter[CLOSING_PULSE_TIME] <= 10 ? PULSE_TIME : g_Parameter[CLOSING_PULSE_TIME];
         return TRUE;
     }
     else
@@ -141,7 +139,7 @@ static rt_uint8_t rt_hw_close_recovery(void)
         pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;
         pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
 		
-        if (g_TelesignalDB.Str.switchClose == ON) 
+        if (g_TelesignalDB[ADDR_CLOSE] == ON) 
         {			
             rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));
             rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));	
@@ -150,7 +148,7 @@ static rt_uint8_t rt_hw_close_recovery(void)
             s_fault_counter = 0;
             DoStr.closingDelay = 0;
 			
-			if (g_pFixedValue->Data.publicValue.Str.closingLoopSwitch)
+			if (g_pFixedValue[CLOSING_LOOP_SWITCH])
 			{
 			    rlt = CLOSE_LOOP_EXECUTE_SUCCESS;
 			}
@@ -174,8 +172,7 @@ static rt_uint8_t rt_hw_close_recovery(void)
             CLOSING = 0;
             s_fault_counter = 0;
             
-		    if (g_pFixedValue->Data.publicValue.Str.closingLoopSwitch && g_TelemetryDB.Str.Uab >= g_pFixedValue->Data.loadSwitchValue.Str.voltageValue
-			    && g_TelemetryDB.Str.UBC >= g_pFixedValue->Data.loadSwitchValue.Str.voltageValue)
+		    if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UBC] >= g_pFixedValue[VOLTAGE_VALUE])
 			{
 			    rlt = CLOSE_LOOP_EXECUTE_FAIL;
 			}
@@ -199,20 +196,20 @@ static rt_uint8_t rt_hw_close_recovery(void)
 static rt_uint8_t rt_hw_open_operate(void)
 {
   #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-    if (g_TelesignalDB.Str.switchClose == ON && g_TelesignalDB.Str.switchOpen == OFF && !CLOSING && !OPENING
-        && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB.Str.deviceFault == OFF) 				
+    if (g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF && !CLOSING && !OPENING
+        && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF) 				
   #else
-    if (g_TelesignalDB.Str.switchClose == ON && g_TelesignalDB.Str.switchOpen == OFF && !CLOSING && !OPENING 
-		&& g_TelesignalDB.Str.deviceFault == OFF)            
+    if (g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF && !CLOSING && !OPENING 
+		&& g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF)            
   #endif 	
     {
         /* Permanent magnet mechanism */
-        if (g_ParameterDB.Data.runPara.Str.operatingMechanism == MAGNET && g_TelesignalDB.Str.operatingMechanism == OFF)
+        if (g_Parameter[OPERATING_MECHANISM] == MAGNET && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == OFF)
         {
             return FALSE;
         }
 
-        if (g_ParameterDB.Data.runPara.Str.outputOverturn == 0)
+        if (g_Parameter[OUTPUT_OVERTURN] == 0)
         {
             pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
             pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
@@ -229,7 +226,7 @@ static rt_uint8_t rt_hw_open_operate(void)
         
         OPENBUSY = 1;
         OPENING = 1;
-        DoStr.openingDelay = g_ParameterDB.Data.runPara.Str.openingPulseTime <= 10 ? PULSE_TIME : g_ParameterDB.Data.runPara.Str.openingPulseTime;
+        DoStr.openingDelay = g_Parameter[OPENING_PULSE_TIME] <= 10 ? PULSE_TIME : g_Parameter[OPENING_PULSE_TIME];
         RELAY_OPEN = 1;
         return TRUE;
     }
@@ -255,7 +252,7 @@ static rt_uint8_t rt_hw_open_recovery(void)
         pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;
         pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
 		
-        if (g_TelesignalDB.Str.switchOpen == ON) 
+        if (g_TelesignalDB[ADDR_OPEN] == ON) 
         {
             rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));
             rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));	
@@ -294,9 +291,9 @@ static rt_uint8_t rt_hw_open_recovery(void)
   */
 static void rt_hw_coil_energy_storage(void)
 {
-    static uint16_t s_counter;
+//    static uint16_t s_counter;
 
-    if (g_TelesignalDB.Str.deviceFault == OFF && g_TelesignalDB.Str.operatingMechanism == OFF)// && s_counter < ENERGY_STORAGE_TIME) // 开始储能
+    if (g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == OFF)// && s_counter < ENERGY_STORAGE_TIME) // 开始储能
     {
         if (ENERGY_STORAGEING == 0)
         {
@@ -314,9 +311,9 @@ static void rt_hw_coil_energy_storage(void)
 //        ENERGY_STORAGEING = 0;
 //        //DBWriteSOE(ADDR_DEVICE_FAULT, ON);
 //    }
-    else if(g_TelesignalDB.Str.operatingMechanism == ON && ENERGY_STORAGEING == 1) // energy storage is completed
+    else if(g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON && ENERGY_STORAGEING == 1) // energy storage is completed
     {
-        s_counter = 0;
+//        s_counter = 0;
         pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_CLR;			
         rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));	
         ENERGY_STORAGEING = 0;
@@ -405,7 +402,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
 				
     case DO_COIL_ENERGY_STORAGE:
         /* Permanent magnet mechanism */
-        if (g_ParameterDB.Data.runPara.Str.operatingMechanism != MAGNET)
+        if (g_Parameter[OPERATING_MECHANISM] != MAGNET)
         {
             rt_hw_coil_energy_storage();
         }                
@@ -475,7 +472,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
     static rt_uint32_t s_fault_counter;
     static rt_uint32_t s_recover_counter;
     
-    if (g_TelesignalDB.Str.batteryActivationStatus == OFF)
+    if (g_TelesignalDB[ADDR_BATTERYACTIVATIONSTATUS] == OFF)
     {
         if (++s_recover_counter > 400)
         {
@@ -483,9 +480,9 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             rt_hw_do_operate(DO_BATTERY_ACTIVE_END_RECOVERY, 0);
         }         
         
-        if (g_pFixedValue->Data.publicValue.Str.batteryActiveSwitch)
+	 	if (g_pFixedValue[BATTERY_ACTIVE_SWITCH])
         {                       
-            if (s_cycle_counter >= g_pFixedValue->Data.publicValue.Str.batteryActiveCycle * 24 * 3600 * 1000 / clock) // 换算为小时
+            if (s_cycle_counter >= g_pFixedValue[BATTERY_ACTIVE_CYCLE] * 24 * 3600 * 1000 / clock) // 换算为小时
             {
                 s_cycle_counter = 0;
                 rt_hw_do_operate(DO_BATTERY_ACTIVE, 0);
@@ -502,9 +499,9 @@ void rt_hw_battery_activation(rt_uint8_t clock)
         s_recover_counter = 0;        
     }
 
-    if (g_TelesignalDB.Str.batteryActivationStatus == ON)
+    if (g_TelesignalDB[ADDR_BATTERYACTIVATIONSTATUS] == ON)
     {
-        if (s_fault_counter <= g_pFixedValue->Data.publicValue.Str.batteryActiveFaultTime + 1)
+        if (s_fault_counter <= g_pFixedValue[BATTERY_ACTIVE_FAULT_TIME] + 1)
         {
             s_fault_counter++;
         }
@@ -514,15 +511,13 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             rt_hw_do_operate(DO_BATTERY_ACTIVE_RECOVERY, 0);
         }
 
-        if ((g_TelemetryDB.Str.Uab < g_pFixedValue->Data.publicValue.Str.downlimitVoltageU
-            && g_TelemetryDB.Str.UBC < g_pFixedValue->Data.publicValue.Str.downlimitVoltageU))
+        if ((g_TelemetryDB[ADDR_Uab] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U] && g_TelemetryDB[ADDR_UBC] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U]))
         {
             /* AC disappeared, stop activation */
             rt_hw_do_operate(DO_BATTERY_ACTIVE_END, 0);                
         }
             
-        if (g_pFixedValue->Data.publicValue.Str.batteryActiveSwitch && 
-            s_act_counter >= g_pFixedValue->Data.publicValue.Str.batteryActiveTime * 60 * 1000)
+        if (g_pFixedValue[BATTERY_ACTIVE_SWITCH] && s_act_counter >= g_pFixedValue[BATTERY_ACTIVE_TIME] * 60 * 1000)
         {
             s_act_counter = 0;
 
@@ -534,9 +529,9 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             s_act_counter++;
             
             /* Battery voltage during activation is lower than the fault voltage and reported SOE*/           
-            if (s_fault_counter <= g_pFixedValue->Data.publicValue.Str.batteryActiveFaultTime)
+            if (s_fault_counter <= g_pFixedValue[BATTERY_ACTIVE_FAULT_TIME])
             {                
-                if (g_TelemetryDB.Str.DCVoltage < g_pFixedValue->Data.publicValue.Str.batteryActiveFaultVoltage)
+                if (g_TelemetryDB[ADDR_DC1] < g_pFixedValue[BATTERY_ACTIVE_FAULT_VOLTAGE])
                 {
                     s_fault_counter = 0;
                     /* stop activation */

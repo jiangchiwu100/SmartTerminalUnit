@@ -391,7 +391,7 @@ static void CalculateData(void)
         g_Alpha[1] = CalculateAngleU_I(FFT_InputBufUb[1][3], FFT_InputBufUb[1][2], FFT_InputBufIb[1][3], FFT_InputBufIb[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb;
         g_Alpha[2] = CalculateAngleU_I(FFT_InputBufUC[1][3], FFT_InputBufUC[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc;
         g_Alpha[3] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0;
-		g_Alpha[4] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaUb;
+		g_Alpha[4] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb];
     }
 
     Ua = CalcAverage(VUa, CALC_TIMES) * VOLTAGE_RADIO;
@@ -441,52 +441,52 @@ static void CalculateData(void)
 	Udc1 /= ADC_SAMPLE_NUM;
 	Udc2 /= ADC_SAMPLE_NUM;
 	
-    Ua = Ua * g_ParameterDB.Data.calibrateFactor.Str.califactorUab;
-    Ua3 = Ua3 * g_ParameterDB.Data.calibrateFactor.Str.califactorUab;
-    Ua5 = Ua5 * g_ParameterDB.Data.calibrateFactor.Str.califactorUab;
-    Ub = Ub * g_ParameterDB.Data.calibrateFactor.Str.califactorUac;
-    Ub3 = Ub3 * g_ParameterDB.Data.calibrateFactor.Str.califactorUac;
-    Ub5 = Ub5 * g_ParameterDB.Data.calibrateFactor.Str.califactorUac;    
-    Uc = Uc * g_ParameterDB.Data.calibrateFactor.Str.califactorUbc;
-    Uc3 = Uc3 * g_ParameterDB.Data.calibrateFactor.Str.califactorUbc;
-    Uc5 = Uc5 * g_ParameterDB.Data.calibrateFactor.Str.califactorUbc;    
-    U0 = U0 * g_ParameterDB.Data.calibrateFactor.Str.califactorU0;
-    U03 = U03 * g_ParameterDB.Data.calibrateFactor.Str.califactorU0;
-    U05 = U05 * g_ParameterDB.Data.calibrateFactor.Str.califactorU0;    
-    Ia = Ia * g_ParameterDB.Data.calibrateFactor.Str.califactorIa;
-	Ia2 = Ia2 * g_ParameterDB.Data.calibrateFactor.Str.califactorIa;
-    Ia3 = Ia3 * g_ParameterDB.Data.calibrateFactor.Str.califactorIa;
-    Ia5 = Ia5 * g_ParameterDB.Data.calibrateFactor.Str.califactorIa;    
-    Ib = Ib * g_ParameterDB.Data.calibrateFactor.Str.califactorIb;
-	Ib2 = Ib2 * g_ParameterDB.Data.calibrateFactor.Str.califactorIb;
-    Ib3 = Ib3 * g_ParameterDB.Data.calibrateFactor.Str.califactorIb;
-    Ib5 = Ib5 * g_ParameterDB.Data.calibrateFactor.Str.califactorIb;    
-    Ic = Ic * g_ParameterDB.Data.calibrateFactor.Str.califactorIc;
-	Ic2 = Ic2 * g_ParameterDB.Data.calibrateFactor.Str.califactorIc;
-    Ic3 = Ic3 * g_ParameterDB.Data.calibrateFactor.Str.califactorIc;
-    Ic5 = Ic5 * g_ParameterDB.Data.calibrateFactor.Str.califactorIc;    
-    I0 = I0 * g_ParameterDB.Data.calibrateFactor.Str.califactorI0;
-    I03 = I03 * g_ParameterDB.Data.calibrateFactor.Str.califactorI0;
-    I05 = I05 * g_ParameterDB.Data.calibrateFactor.Str.califactorI0;    
-    UA = UA * g_ParameterDB.Data.calibrateFactor.Str.califactorUAB;
-    UC = UC * g_ParameterDB.Data.calibrateFactor.Str.califactorUBC;   
-    Udc1 = Udc1 * g_ParameterDB.Data.calibrateFactor.Str.califactorDC;
-    Udc2 = Udc2 * g_ParameterDB.Data.calibrateFactor.Str.califactorDC2;  
+    Ua = Ua * g_CalibrateFactor[CALIFACTOR_Uab];
+    Ua3 = Ua3 * g_CalibrateFactor[CALIFACTOR_Uab];
+    Ua5 = Ua5 * g_CalibrateFactor[CALIFACTOR_Uab];
+    Ub = Ub * g_CalibrateFactor[CALIFACTOR_Uca];
+    Ub3 = Ub3 * g_CalibrateFactor[CALIFACTOR_Uca];
+    Ub5 = Ub5 * g_CalibrateFactor[CALIFACTOR_Uca];    
+    Uc = Uc * g_CalibrateFactor[CALIFACTOR_Ubc];
+    Uc3 = Uc3 * g_CalibrateFactor[CALIFACTOR_Ubc];
+    Uc5 = Uc5 * g_CalibrateFactor[CALIFACTOR_Ubc];    
+    U0 = U0 * g_CalibrateFactor[CALIFACTOR_U0];
+    U03 = U03 * g_CalibrateFactor[CALIFACTOR_U0];
+    U05 = U05 * g_CalibrateFactor[CALIFACTOR_U0];    
+    Ia = Ia * g_CalibrateFactor[CALIFACTOR_Ia];
+	Ia2 = Ia2 * g_CalibrateFactor[CALIFACTOR_Ia];
+    Ia3 = Ia3 * g_CalibrateFactor[CALIFACTOR_Ia];
+    Ia5 = Ia5 * g_CalibrateFactor[CALIFACTOR_Ia];    
+    Ib = Ib * g_CalibrateFactor[CALIFACTOR_Ib];
+	Ib2 = Ib2 * g_CalibrateFactor[CALIFACTOR_Ib];
+    Ib3 = Ib3 * g_CalibrateFactor[CALIFACTOR_Ib];
+    Ib5 = Ib5 * g_CalibrateFactor[CALIFACTOR_Ib];    
+    Ic = Ic * g_CalibrateFactor[CALIFACTOR_Ic];
+	Ic2 = Ic2 * g_CalibrateFactor[CALIFACTOR_Ic];
+    Ic3 = Ic3 * g_CalibrateFactor[CALIFACTOR_Ic];
+    Ic5 = Ic5 * g_CalibrateFactor[CALIFACTOR_Ic];    
+    I0 = I0 * g_CalibrateFactor[CALIFACTOR_I0];
+    I03 = I03 * g_CalibrateFactor[CALIFACTOR_I0];
+    I05 = I05 * g_CalibrateFactor[CALIFACTOR_I0];    
+    UA = UA * g_CalibrateFactor[CALIFACTOR_UAB];
+    UC = UC * g_CalibrateFactor[CALIFACTOR_UBC];   
+    Udc1 = Udc1 * g_CalibrateFactor[CALIFACTOR_DC1];
+    Udc2 = Udc2 * g_CalibrateFactor[CALIFACTOR_DC2];  
 
 //    ParameterCheck(ZERODRIFT);
 
-    if (Ua < g_ParameterDB.Data.runPara.Str.zerodriftUab)Ua = 0;
-    if (Ub < g_ParameterDB.Data.runPara.Str.zerodriftUac)Ub = 0;
-    if (Uc < g_ParameterDB.Data.runPara.Str.zerodriftUbc)Uc = 0;
-    if (U0 < g_ParameterDB.Data.runPara.Str.zerodriftU0) U0 = 0;
-    if (Ia < g_ParameterDB.Data.runPara.Str.zerodriftIa) Ia = 0;
-    if (Ib < g_ParameterDB.Data.runPara.Str.zerodriftIb) Ib = 0;
-    if (Ic < g_ParameterDB.Data.runPara.Str.zerodriftIc) Ic = 0;
-    if (I0 < g_ParameterDB.Data.runPara.Str.zerodriftI0) I0 = 0;
-    if (UA < g_ParameterDB.Data.runPara.Str.zerodriftUAB)UA = 0;
-    if (UC < g_ParameterDB.Data.runPara.Str.zerodriftUBC)UC = 0;
-    if (Udc1 < g_ParameterDB.Data.runPara.Str.zerodriftDC)Udc1 = 0;
-    if (Udc2 < g_ParameterDB.Data.runPara.Str.zerodriftDC2)Udc2 = 0;
+    if (Ua < g_Parameter[ZERODRIFT_Uab])Ua = 0;
+    if (Ub < g_Parameter[ZERODRIFT_Uca])Ub = 0;
+    if (Uc < g_Parameter[ZERODRIFT_Ubc])Uc = 0;
+    if (U0 < g_Parameter[ZERODRIFT_U0]) U0 = 0;
+    if (Ia < g_Parameter[ZERODRIFT_Ia]) Ia = 0;
+    if (Ib < g_Parameter[ZERODRIFT_Ib]) Ib = 0;
+    if (Ic < g_Parameter[ZERODRIFT_Ic]) Ic = 0;
+    if (I0 < g_Parameter[ZERODRIFT_I0]) I0 = 0;
+    if (UA < g_Parameter[ZERODRIFT_UAB])UA = 0;
+    if (UC < g_Parameter[ZERODRIFT_UBC])UC = 0;
+    if (Udc1 < g_Parameter[ZERODRIFT_DC1])Udc1 = 0;
+    if (Udc2 < g_Parameter[ZERODRIFT_DC2])Udc2 = 0;
 
     Pa = Ua * Ia * cos(g_Alpha[0] * FACTOR_ANGLE_TO_RAD);
     Pb = 0; //Ub * Ib * cos(g_Alpha[1] * FACTOR_ANGLE_TO_RAD);
@@ -501,120 +501,120 @@ static void CalculateData(void)
     S = sqrt(P * P + Q * Q);
     F = P / S;
 
-    P = fabs(P) < g_ParameterDB.Data.runPara.Str.zerodriftP ? 0 : P;
-    Q = fabs(Q) < g_ParameterDB.Data.runPara.Str.zerodriftQ ? 0 : Q;
-    S = fabs(S) < g_ParameterDB.Data.runPara.Str.zerodriftS ? 0 : S;
+    P = fabs(P) < g_Parameter[ZERODRIFT_P] ? 0 : P;
+    Q = fabs(Q) < g_Parameter[ZERODRIFT_Q] ? 0 : Q;
+    S = fabs(S) < g_Parameter[ZERODRIFT_S] ? 0 : S;
 
-    g_TelemetryDB.Str.Uab = Ua;
-    g_TelemetryDB.Str.Ubc = Uc;
-    g_TelemetryDB.Str.Uac = Ub;
-    g_TelemetryDB.Str.U0 = U0;
+    g_TelemetryDB[ADDR_Uab]= Ua;
+    g_TelemetryDB[ADDR_Ubc] = Uc;
+    g_TelemetryDB[ADDR_Uca] = Ub;
+    g_TelemetryDB[ADDR_Uca] = U0;
 
-    g_TelemetryDB.Str.UAB = UA;
-    g_TelemetryDB.Str.UBC = UC;
+    g_TelemetryDB[ADDR_UAB] = UA;
+    g_TelemetryDB[ADDR_UBC] = UC;
     
-    g_TelemetryDB.Str.Ia = Ia;
-    g_TelemetryDB.Str.Ib = Ib;
-    g_TelemetryDB.Str.Ic = Ic;
-    g_TelemetryDB.Str.I0 = I0;
+    g_TelemetryDB[ADDR_IA] = Ia;
+    g_TelemetryDB[ADDR_IB] = Ib;
+    g_TelemetryDB[ADDR_IC] = Ic;
+    g_TelemetryDB[ADDR_I0] = I0;
 
-    g_TelemetryDB.Str.P = P;
-    g_TelemetryDB.Str.Q = Q;
-    g_TelemetryDB.Str.S = S;
-    g_TelemetryDB.Str.pf = F;
+    g_TelemetryDB[ADDR_P] = P;
+    g_TelemetryDB[ADDR_Q] = Q;
+    g_TelemetryDB[ADDR_S] = S;
+    g_TelemetryDB[ADDR_PF] = F;
 
-	g_TelemetryDB.Str.DCVoltage = Udc1;
-	g_TelemetryDB.Str.DCSpare = Udc2;
+	g_TelemetryDB[ADDR_DC1] = Udc1;
+	g_TelemetryDB[ADDR_DC2] = Udc2;
 	
-    if((g_TelemetryDB.Str.U0 == 0)||(g_TelemetryDB.Str.I0 == 0))
-    {g_TelemetryDB.Str.Alpha0 = 0;}
+    if((g_TelemetryDB[ADDR_U0] == 0)||(g_TelemetryDB[ADDR_I0] == 0))
+    {g_TelemetryDB[ADDR_AIPHY_U0_I0] = 0;}
     else       
     {
 //        while(g_Alpha[3]<-180)
 //        {g_Alpha[3] += 360;}
 //        while(g_Alpha[3]>180)
 //        {g_Alpha[3] -= 360;}
-        g_TelemetryDB.Str.Alpha0 = g_Alpha[3];
+        g_TelemetryDB[ADDR_AIPHY_U0_I0] = g_Alpha[3];
     }
 
-	if((g_TelemetryDB.Str.Uab == 0)||(g_TelemetryDB.Str.UBC == 0))
-    {g_TelemetryDB.Str.AlphaU = 0;}
+	if((g_TelemetryDB[ADDR_Uab] == 0)||(g_TelemetryDB[ADDR_UBC] == 0))
+    {g_TelemetryDB[ADDR_ALPHY_Uab_UBC] = 0;}
     else       
     {
         if(g_Alpha[4]<-180)
         {g_Alpha[4] += 360;}
         if(g_Alpha[4]>180)
         {g_Alpha[4] -= 360;}
-        g_TelemetryDB.Str.AlphaU = g_Alpha[4];
+        g_TelemetryDB[ADDR_ALPHY_Uab_UBC] = g_Alpha[4];
     }
 	
-    g_TelemetryDB.Str.onceUab = Ua * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) / 1000.0f;
-    g_TelemetryDB.Str.onceUbc = Uc * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) / 1000.0f;
-    g_TelemetryDB.Str.onceUac = Ub * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) / 1000.0f;
-    g_TelemetryDB.Str.onceU0 = U0 * (g_ParameterDB.Data.runPara.Str.ratioU0OneTurn / g_ParameterDB.Data.runPara.Str.ratioU0Secondary) / 1000.0f;
-    g_TelemetryDB.Str.onceUBC = UC * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) / 1000.0f;
-    g_TelemetryDB.Str.onceUAB = UA * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) / 1000.0f;
+    g_TelemetryDB[ADDR_Uab_ONCE] = Ua * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[ADDR_Ubc_ONCE] = Uc * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[ADDR_Uca_ONCE] = Ub * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[ADDR_U0_ONCE] = U0 * (g_Parameter[RATIO_U0_ONE_TURN] / g_Parameter[RATIO_U0_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[ADDR_UBC_ONCE] = UC * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[ADDR_UAB_ONCE] = UA * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
 	
-    g_TelemetryDB.Str.onceIa = Ia * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);
-    g_TelemetryDB.Str.onceIb = Ib * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);    
-    g_TelemetryDB.Str.onceIc = Ic * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);
-    g_TelemetryDB.Str.onceI0 = I0 * (g_ParameterDB.Data.runPara.Str.ratioI0OneTurn / g_ParameterDB.Data.runPara.Str.ratioI0Secondary);
+    g_TelemetryDB[ADDR_Ia_ONCE] = Ia * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[ADDR_Ib_ONCE] = Ib * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);    
+    g_TelemetryDB[ADDR_Ic_ONCE] = Ic * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[ADDR_I0_ONCE] = I0 * (g_Parameter[RATIO_I0_ONE_TURN] / g_Parameter[RATIO_I0_SECONDARY]);
 
-    g_TelemetryDB.Str.onceP = P * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);
-    g_TelemetryDB.Str.onceQ = Q * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);
-    g_TelemetryDB.Str.onceS = S * (g_ParameterDB.Data.runPara.Str.ratioUOneTurn / g_ParameterDB.Data.runPara.Str.ratioUSecondary) * (g_ParameterDB.Data.runPara.Str.ratioIOneTurn / g_ParameterDB.Data.runPara.Str.ratioISecondary);
+    g_TelemetryDB[ADDR_P_ONCE] = P * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[ADDR_Q_ONCE] = Q * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[ADDR_S_ONCE] = S * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
 
-    if (Ua3 < g_ParameterDB.Data.runPara.Str.zerodriftUab)Ua3 = 0;
-    if (Ub3 < g_ParameterDB.Data.runPara.Str.zerodriftUac)Ub3 = 0;
-    if (Uc3 < g_ParameterDB.Data.runPara.Str.zerodriftUbc)Uc3 = 0;
-    if (U03 < g_ParameterDB.Data.runPara.Str.zerodriftU0) U03 = 0;
+    if (Ua3 < g_Parameter[ZERODRIFT_Uab])Ua3 = 0;
+    if (Ub3 < g_Parameter[ZERODRIFT_Uca])Ub3 = 0;
+    if (Uc3 < g_Parameter[ZERODRIFT_Ubc])Uc3 = 0;
+    if (U03 < g_Parameter[ZERODRIFT_U0]) U03 = 0;
 	
-	if (Ia2 < g_ParameterDB.Data.runPara.Str.zerodriftIa) Ia2 = 0;
-	if (Ib2 < g_ParameterDB.Data.runPara.Str.zerodriftIb) Ib2 = 0;
-	if (Ic2 < g_ParameterDB.Data.runPara.Str.zerodriftIc) Ic2 = 0;
+	if (Ia2 < g_Parameter[ZERODRIFT_Ia]) Ia2 = 0;
+	if (Ib2 < g_Parameter[ZERODRIFT_Ib]) Ib2 = 0;
+	if (Ic2 < g_Parameter[ZERODRIFT_Ic]) Ic2 = 0;
 	
-    if (Ia3 < g_ParameterDB.Data.runPara.Str.zerodriftIa) Ia3 = 0;
-    if (Ib3 < g_ParameterDB.Data.runPara.Str.zerodriftIb) Ib3 = 0;
-    if (Ic3 < g_ParameterDB.Data.runPara.Str.zerodriftIc) Ic3 = 0;
-    if (I03 < g_ParameterDB.Data.runPara.Str.zerodriftI0) I03 = 0;
+    if (Ia3 < g_Parameter[ZERODRIFT_Ia]) Ia3 = 0;
+    if (Ib3 < g_Parameter[ZERODRIFT_Ib]) Ib3 = 0;
+    if (Ic3 < g_Parameter[ZERODRIFT_Ic]) Ic3 = 0;
+    if (I03 < g_Parameter[ZERODRIFT_I0]) I03 = 0;
 
-    if (Ua5 < g_ParameterDB.Data.runPara.Str.zerodriftUab)Ua5 = 0;
-    if (Ub5 < g_ParameterDB.Data.runPara.Str.zerodriftUac)Ub5 = 0;
-    if (Uc5 < g_ParameterDB.Data.runPara.Str.zerodriftUbc)Uc5 = 0;
-    if (U05 < g_ParameterDB.Data.runPara.Str.zerodriftU0) U05 = 0;
-    if (Ia5 < g_ParameterDB.Data.runPara.Str.zerodriftIa) Ia5 = 0;
-    if (Ib5 < g_ParameterDB.Data.runPara.Str.zerodriftIb) Ib5 = 0;
-    if (Ic5 < g_ParameterDB.Data.runPara.Str.zerodriftIc) Ic5 = 0;
-    if (I05 < g_ParameterDB.Data.runPara.Str.zerodriftI0) I05 = 0;
+    if (Ua5 < g_Parameter[ZERODRIFT_Uab])Ua5 = 0;
+    if (Ub5 < g_Parameter[ZERODRIFT_Uca])Ub5 = 0;
+    if (Uc5 < g_Parameter[ZERODRIFT_Ubc])Uc5 = 0;
+    if (U05 < g_Parameter[ZERODRIFT_U0]) U05 = 0;
+    if (Ia5 < g_Parameter[ZERODRIFT_Ia]) Ia5 = 0;
+    if (Ib5 < g_Parameter[ZERODRIFT_Ib]) Ib5 = 0;
+    if (Ic5 < g_Parameter[ZERODRIFT_Ic]) Ic5 = 0;
+    if (I05 < g_Parameter[ZERODRIFT_I0]) I05 = 0;
 
     g_secondHarmonicIa = Ia2;
 	g_secondHarmonicIb = Ib2;
 	g_secondHarmonicIc = Ic2;
     
-	g_TelemetryDB.Str.thirdHarmonicUab = Ua3;    
-    g_TelemetryDB.Str.thirdHarmonicUbc = Uc3;
-    g_TelemetryDB.Str.thirdHarmonicUac = Ub3;
-    g_TelemetryDB.Str.thirdHarmonicU0 = U03;
-    g_TelemetryDB.Str.thirdHarmonicIa = Ia3;
-    g_TelemetryDB.Str.thirdHarmonicIb = Ib3;
-    g_TelemetryDB.Str.thirdHarmonicIc = Ic3;
-    g_TelemetryDB.Str.thirdHarmonicI0 = I03;
+	g_TelemetryDB[THIRDHARMONIC_Uab] = Ua3;    
+    g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc3;
+    g_TelemetryDB[THIRDHARMONIC_Uca] = Ub3;
+    g_TelemetryDB[THIRDHARMONIC_U0] = U03;
+    g_TelemetryDB[THIRDHARMONIC_Ia] = Ia3;
+    g_TelemetryDB[THIRDHARMONIC_Ib] = Ib3;
+    g_TelemetryDB[THIRDHARMONIC_Ic] = Ic3;
+    g_TelemetryDB[THIRDHARMONIC_I0] = I03;
 
-    g_TelemetryDB.Str.fifthHarmonicUab = Ua5;
-    g_TelemetryDB.Str.fifthHarmonicUbc = Uc5;
-    g_TelemetryDB.Str.fifthHarmonicUac = Ub5;
-    g_TelemetryDB.Str.fifthHarmonicU0 = U05;
-    g_TelemetryDB.Str.fifthHarmonicIa = Ia5;
-    g_TelemetryDB.Str.fifthHarmonicIb = Ib5;
-    g_TelemetryDB.Str.fifthHarmonicIc = Ic5;
-    g_TelemetryDB.Str.fifthHarmonicI0 = I05;
+    g_TelemetryDB[THIRDHARMONIC_Uab] = Ua5;
+    g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc5;
+    g_TelemetryDB[THIRDHARMONIC_Uca] = Ub5;
+    g_TelemetryDB[THIRDHARMONIC_U0] = U05;
+    g_TelemetryDB[THIRDHARMONIC_Ia] = Ia5;
+    g_TelemetryDB[THIRDHARMONIC_Ib] = Ib5;
+    g_TelemetryDB[THIRDHARMONIC_Ic] = Ic5;
+    g_TelemetryDB[THIRDHARMONIC_I0] = I05;
     
 #if RT_USING_TELEMETRY_SET    
     for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)
     {
         if (g_TelemetrySetEnable.buf[i] == SWITCH_ON)
         {
-            g_TelemetryDB.buf[i] = g_TelemetrySetValue.buf[i];
+            g_TelemetryDB[i] = g_TelemetrySetValue.buf[i];
         }
     }
 #endif /* RT_USING_TELEMETRY_SET */ 
@@ -646,7 +646,7 @@ void CalcultateTask(void)
     CalculateData();
 
     /* 系数校准 */
-    CalibrationFactorCal(CALIBRATE_FACTOR_NUM);
+    CalibrationFactorCal(CALIFACTOR_NUM);
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

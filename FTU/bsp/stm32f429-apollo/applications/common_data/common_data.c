@@ -31,17 +31,16 @@ uint16_t                            g_AddrCount;
 uint16_t                            g_StartWave;
 struct ConfigurationSetDatabase     g_ConfigurationSetDB; // 系统配置结构
 struct SD2405Time                   g_SystemTime; // 系统时间
-TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
-uint8_t								g_Telesignal[TELESIGNAL_NUM];						
+//TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
+uint8_t								g_TelesignalDB[TELESIGNAL_NUM];						
  /* 新遥信点表映射 */
 List                                g_NewListTelesignal[TELESIGNAL_TOTAL_NUM];
 rt_uint16_t                         g_NewMaxNumTelesignal;
 rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_TOTAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 遥测缓存 */
-float                               g_Telemetry[TELEMETRY_NUM];
-TelemetryDatabase                   g_TelemetryDB;
-TelemetryDatabase                   g_TelemetryLastDB;
+float                               g_TelemetryDB[TELEMETRY_NUM];
+float                               g_TelemetryLastDB[TELEMETRY_NUM];
 float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 
 #if RT_USING_TELEMETRY_SET
@@ -63,16 +62,15 @@ rt_uint16_t                         g_NewToOldPropertyRemote[REMOTE_TOTAL_NUM];/
 rt_uint32_t                         g_CommunicatFlag[COM_MAX]; // 通讯互锁标志
 
 /* 定值和参数缓存 */
-Parameter                           g_ParameterDB;
-FixedValue                          *g_pFixedValue;
-FixedValue                          g_FixedValueDB1;
-FixedValue                          g_FixedValueDB2;
-
-struct tagValueParaCfg          *g_pFixedValueDB;
+struct Inherent                 g_InherentPara = RT_SYS_CONFIG_DEFAULT;
+float                          *g_pFixedValue;
 float                           g_FixedValue1[FIXED_VALUE_NUM];
 float                           g_FixedValue2[FIXED_VALUE_NUM];
-float                           g_Parameter[PARAMETER_NUM];
+
+float                           g_Parameter[RUN_PARAMETER_NUM];
 float                           g_CalibrateFactor[CALIFACTOR_NUM];
+
+struct tagValueParaCfg         *g_pFixedValueCfg;
 
 /* 定值操作信息 */
 struct ValueParameterOperate        g_ValueParaOperateInfo;
@@ -214,52 +212,41 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
 {
     float* array;
     uint32_t offset;
-    FixedValue *g_pFixedValue;
+	float   *pFixedValue;
+
     
-    (sn == 2) ? (g_pFixedValue = &g_FixedValueDB2) : (g_pFixedValue = &g_FixedValueDB1);
+    (sn == 2) ? (pFixedValue = g_FixedValue2) : (pFixedValue = g_FixedValue1);
 
     if ((INTRIPARAME_START_ADDR <= addr)&&(addr < INTRIPARAME_START_ADDR + INHERENT_PARAMETER_NUM))
     {
         // intrinisic  para block 固有参数
-        array = (float *)g_ParameterDB.Data.inherentPara.buf;
+        array = (float *)g_InherentPara.terminalType;
         offset = (addr - INTRIPARAME_START_ADDR) * 24 / 4;
 
     }
     else if((RUNPARAMETER_START_ADDR <= addr) && (addr < (RUNPARAMETER_START_ADDR + RUN_PARAMETER_NUM)))
     {
         // running para block 运行参数
-        array = g_ParameterDB.Data.runPara.buf;
+        array = g_Parameter;
         offset = addr - RUNPARAMETER_START_ADDR;
     }
-    else if((CALIBRATE_FACTOR_START_ADDR <= addr) && ( addr < (CALIBRATE_FACTOR_START_ADDR + CALIBRATE_FACTOR_NUM)))
+    else if((CALIBRATE_FACTOR_START_ADDR <= addr) && ( addr < (CALIBRATE_FACTOR_START_ADDR + CALIFACTOR_NUM)))
     {
         // calibration para block 校准系数
-        array = g_ParameterDB.Data.calibrateFactor.buf;
+        array = g_CalibrateFactor;
         offset = addr - CALIBRATE_FACTOR_START_ADDR;
     }
-    else if (addr >= CALIBRATE_VALUE_START_ADDR && (addr <= (CALIBRATE_VALUE_START_ADDR + CALIBRATE_FACTOR_NUM)))
+    else if (addr >= CALIBRATE_VALUE_START_ADDR && (addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
     {
         // 校准值 不固化
         array = NULL;
         offset = 0;
     }
-    else if((PUBLIC_VALUE_START_ADDR <= addr) && ( addr < (PUBLIC_VALUE_START_ADDR + PUBLIC_VALUE_NUM)))
+    else if((FIXED_VALUE_START_ADDR <= addr) && ( addr < (FIXED_VALUE_START_ADDR + FIXED_VALUE_NUM)))
     {
         // public para block 定值公共信息
-        array = g_pFixedValue->Data.publicValue.buf;
-        offset = addr - PUBLIC_VALUE_START_ADDR;
-    }
-    else if((BREAKER_VALUE_START_ADDR <= addr) && ( addr <= (BREAKER_VALUE_START_ADDR + BREAKER_VALUE_NUM)))
-    {
-        // circuit breaker para block 断路器参数
-        array = g_pFixedValue->Data.breakerValue.buf;
-        offset = addr - BREAKER_VALUE_START_ADDR;
-    }
-    else if((LOAD_SWITCH_VALUE_START_ADDR <= addr) && ( addr < (LOAD_SWITCH_VALUE_START_ADDR + LOAD_SWITCH_VALUE_NUM)))
-    {
-        // load switch para block 负荷开关参数
-        array = g_pFixedValue->Data.loadSwitchValue.buf;
-        offset = addr - LOAD_SWITCH_VALUE_START_ADDR;
+        array = pFixedValue;
+        offset = addr - FIXED_VALUE_START_ADDR;
     }
     #if RT_USING_TELEMETRY_SET
     else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_TOTAL_NUM)))
@@ -294,144 +281,152 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
 void ParameterCheck(uint8_t type)
 {
     uint32_t i;
-    
+
+	for (i = 0; i < CALIFACTOR_NUM; i++)
+	{
+		if (CalibrateFactorCfg[i].calibrateVal > CalibrateFactorCfg[i].factorMax || CalibrateFactorCfg[i].calibrateVal < CalibrateFactorCfg[i].factorMin)
+		{
+		    CalibrateFactorCfg[i].calibrateVal = CalibrateFactorCfg[i].factorDefault; 
+		}
+	}
+
     switch (type)
     {
     case ZERODRIFT:
-        g_ParameterDB.Data.runPara.Str.zerodriftUab = g_ParameterDB.Data.runPara.Str.zerodriftUab > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUab : 0.1f;
-        g_ParameterDB.Data.runPara.Str.zerodriftUbc = g_ParameterDB.Data.runPara.Str.zerodriftUbc > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUbc : 0.1f;
-        g_ParameterDB.Data.runPara.Str.zerodriftUac = g_ParameterDB.Data.runPara.Str.zerodriftUac > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUac : 0.1f;
-        g_ParameterDB.Data.runPara.Str.zerodriftU0 = g_ParameterDB.Data.runPara.Str.zerodriftU0 > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftU0 : 0.1f;
+//        g_Parameter[ZERODRIFT_Uab] = g_Parameter[ZERODRIFT_Uab] > 0.1f ? g_Parameter[ZERODRIFT_Uab] : 0.1f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftUbc = g_ParameterDB.Data.runPara.Str.zerodriftUbc > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUbc : 0.1f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftUac = g_ParameterDB.Data.runPara.Str.zerodriftUac > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUac : 0.1f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftU0 = g_ParameterDB.Data.runPara.Str.zerodriftU0 > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftU0 : 0.1f;
 
-        g_ParameterDB.Data.runPara.Str.zerodriftUAB = g_ParameterDB.Data.runPara.Str.zerodriftUAB > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUAB : 0.1f;
-        g_ParameterDB.Data.runPara.Str.zerodriftUBC = g_ParameterDB.Data.runPara.Str.zerodriftUBC > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUBC : 0.1f;
-    
-        g_ParameterDB.Data.runPara.Str.zerodriftIa = g_ParameterDB.Data.runPara.Str.zerodriftIa > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIa : 0.05f;
-        g_ParameterDB.Data.runPara.Str.zerodriftIb = g_ParameterDB.Data.runPara.Str.zerodriftIb > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIb : 0.05f;
-        g_ParameterDB.Data.runPara.Str.zerodriftIc = g_ParameterDB.Data.runPara.Str.zerodriftIc > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIc : 0.05f;
-        g_ParameterDB.Data.runPara.Str.zerodriftI0 = g_ParameterDB.Data.runPara.Str.zerodriftI0 > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftI0 : 0.05f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftUAB = g_ParameterDB.Data.runPara.Str.zerodriftUAB > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUAB : 0.1f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftUBC = g_ParameterDB.Data.runPara.Str.zerodriftUBC > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUBC : 0.1f;
+//    
+//        g_ParameterDB.Data.runPara.Str.zerodriftIa = g_ParameterDB.Data.runPara.Str.zerodriftIa > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIa : 0.05f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftIb = g_ParameterDB.Data.runPara.Str.zerodriftIb > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIb : 0.05f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftIc = g_ParameterDB.Data.runPara.Str.zerodriftIc > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIc : 0.05f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftI0 = g_ParameterDB.Data.runPara.Str.zerodriftI0 > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftI0 : 0.05f;
 
-        g_ParameterDB.Data.runPara.Str.zerodriftP = g_ParameterDB.Data.runPara.Str.zerodriftP > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftP : 0.0001f;
-        g_ParameterDB.Data.runPara.Str.zerodriftQ = g_ParameterDB.Data.runPara.Str.zerodriftQ > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftQ : 0.0001f;
-        g_ParameterDB.Data.runPara.Str.zerodriftS = g_ParameterDB.Data.runPara.Str.zerodriftS > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftS : 0.0001f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftP = g_ParameterDB.Data.runPara.Str.zerodriftP > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftP : 0.0001f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftQ = g_ParameterDB.Data.runPara.Str.zerodriftQ > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftQ : 0.0001f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftS = g_ParameterDB.Data.runPara.Str.zerodriftS > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftS : 0.0001f;
 
-        g_ParameterDB.Data.runPara.Str.zerodriftF = g_ParameterDB.Data.runPara.Str.zerodriftF > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftF : 0.1f;
-        g_ParameterDB.Data.runPara.Str.zerodriftPF = g_ParameterDB.Data.runPara.Str.zerodriftPF > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftPF : 0.001f;
-        g_ParameterDB.Data.runPara.Str.zerodriftDC = g_ParameterDB.Data.runPara.Str.zerodriftDC > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftDC : 0.001f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftF = g_ParameterDB.Data.runPara.Str.zerodriftF > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftF : 0.1f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftPF = g_ParameterDB.Data.runPara.Str.zerodriftPF > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftPF : 0.001f;
+//        g_ParameterDB.Data.runPara.Str.zerodriftDC = g_ParameterDB.Data.runPara.Str.zerodriftDC > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftDC : 0.001f;
         break;
 
     case DEADZONE:
-        for (i = 1; i <= ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneDC)) - ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF)); i++)
-        {
-            if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) > DEADZONE_UP)
-            {
-                *((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_UP;
-            }
-            if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) < DEADZONE_DOWN)
-            {
-                *((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_DOWN;
-            }            
-        }  
-        
-        g_ParameterDB.Data.runPara.Str.deadzoneDC = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC : 0.05f;
-        g_ParameterDB.Data.runPara.Str.deadzoneDC2 = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC2 > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC2 : 0.05f;
-        g_ParameterDB.Data.runPara.Str.deadzoneF = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneFrequency > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneFrequency : 1.0f;
-//        g_ParameterDB.Data.runPara.Str.deadzonePf = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzonePf > 0.05f ? pValueParaDB->Data.runPara.Str.deadzonePf : 1.0f;
-        g_ParameterDB.Data.runPara.Str.deadzoneT = 1000000.0f;//pValueParaDB->Data.runPara.Str.deadzoneT > 10.0f ? pValueParaDB->Data.runPara.Str.deadzoneT : 10.0f;
+//		for (i = 1; i <= ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneDC)) - ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF)); i++)
+//		{
+//			if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) > DEADZONE_UP)
+//			{
+//				*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_UP;
+//			}
+//			if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) < DEADZONE_DOWN)
+//			{
+//				*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_DOWN;
+//			}            
+//		}  
+//		
+//		g_ParameterDB.Data.runPara.Str.deadzoneDC = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC : 0.05f;
+//		g_ParameterDB.Data.runPara.Str.deadzoneDC2 = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC2 > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC2 : 0.05f;
+//		g_ParameterDB.Data.runPara.Str.deadzoneF = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneFrequency > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneFrequency : 1.0f;
+//	//        g_ParameterDB.Data.runPara.Str.deadzonePf = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzonePf > 0.05f ? pValueParaDB->Data.runPara.Str.deadzonePf : 1.0f;
+//		g_ParameterDB.Data.runPara.Str.deadzoneT = 1000000.0f;//pValueParaDB->Data.runPara.Str.deadzoneT > 10.0f ? pValueParaDB->Data.runPara.Str.deadzoneT : 10.0f;
         
         break;
         
     case CALIBRATE_FACTOR:
         
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIa > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIa < 0.0035f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorIa = 0.0043f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIb > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIb < 0.0035f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorIb = 0.0043f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIc > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIc < 0.0035f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorIc = 0.0043f;
-        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIa > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIa < 0.0035f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorIa = 0.0043f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIb > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIb < 0.0035f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorIb = 0.0043f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIc > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIc < 0.0035f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorIc = 0.0043f;
+//        } 
 
-	  #ifdef SYNTHESIS_I0_ENABLE		
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.0035f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0043f;			
-        }
-      #else		
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 10.0f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.00001f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0004f;			
-        } 
-      #endif		
+//	  #ifdef SYNTHESIS_I0_ENABLE		
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.0035f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0043f;			
+//        }
+//      #else		
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 10.0f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.00001f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0004f;			
+//        } 
+//      #endif		
 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUab > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUab < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorUab = 0.0095f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUac > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUac < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorUac = 0.0095f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUbc > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUbc < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorUbc = 0.0095f;
-        }   
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorU0 > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorU0 < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorU0 = 0.0095f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUAB > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUAB < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorUAB = 0.0095f;
-        }
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUBC > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUBC < 0.0065f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorUBC = 0.0095f;
-        }        
- 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorF > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorF < 0.8f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorF = 1.0f;
-        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUab > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUab < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorUab = 0.0095f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUac > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUac < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorUac = 0.0095f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUbc > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUbc < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorUbc = 0.0095f;
+//        }   
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorU0 > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorU0 < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorU0 = 0.0095f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUAB > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUAB < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorUAB = 0.0095f;
+//        }
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUBC > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUBC < 0.0065f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorUBC = 0.0095f;
+//        }        
+// 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorF > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorF < 0.8f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorF = 1.0f;
+//        } 
 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC <= 0.00f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorDC = 0.01f;
-        }    
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 <= 0.00f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 = 0.01f;
-        } 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorT > 5.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorT < 0.8f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorT = 1.0f;
-        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC <= 0.00f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorDC = 0.01f;
+//        }    
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 <= 0.00f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 = 0.01f;
+//        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorT > 5.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorT < 0.8f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorT = 1.0f;
+//        } 
 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
-        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
+//        } 
 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
-        } 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb <= 0.0f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb = 0.29f;
-        } 
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc <= 0.0f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc = 0.29f;
-        }  
-        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 <= 0.0f)
-        {
-            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 = 0.29f;
-        }		
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
+//        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb <= 0.0f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb = 0.29f;
+//        } 
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc <= 0.0f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc = 0.29f;
+//        }  
+//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 <= 0.0f)
+//        {
+//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 = 0.29f;
+//        }		
         
         break;
 
@@ -473,7 +468,7 @@ uint8_t DBWriteValue(uint8_t *pData, struct CommonInfo *pInfo)
             g_ValueParaOperateInfo.len += data[3]/sizeof(float);
             memcpy(&data, &data[sizeof(ValueParameterStr) + data[3]], 256);
 
-            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIBRATE_FACTOR_NUM)))
+            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
             {
                 g_ValueParaOperateInfo.calibratFlag = 1;
             }
@@ -600,7 +595,7 @@ uint8_t DBSwitchValueArea(uint8_t sn)
     }
     else
     {
-        (sn == 1) ? (g_pFixedValue = &g_FixedValueDB1) : (g_pFixedValue = &g_FixedValueDB2);
+        (sn == 1) ? (g_pFixedValue = g_FixedValue1) : (g_pFixedValue = g_FixedValue2);
         g_ValueParaOperateInfo.currentSN = sn;
         /* 存储当前定值区号 */
 		rt_multi_common_data_fram_record_write(CURRENT_SN, &g_ValueParaOperateInfo.currentSN, 1);
@@ -625,10 +620,10 @@ void CalibrationFactorCal(uint8_t num)
     {
         for (i = 0; i < num; i++)
         {
-            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIBRATE_FACTOR_NUM)))
+            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
             {
                 offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;
-                telemetry[offset] += g_TelemetryDB.buf[offset];
+                telemetry[offset] += g_TelemetryDB[offset];
                 counter[offset]++;
 
                 if (counter[offset] >= AVERAGE_TIMER)
@@ -636,13 +631,13 @@ void CalibrationFactorCal(uint8_t num)
                     counter[offset] = 0;
                     telemetry[offset] /= (float)AVERAGE_TIMER;
 
-                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + CALIBRATE_FACTOR_NUM - sizeof(g_Alpha)/sizeof(float))
+                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - sizeof(g_Alpha)/sizeof(float))
                     {
-                        g_ParameterDB.Data.calibrateFactor.buf[offset] -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + CALIBRATE_FACTOR_NUM - g_ValueParaPresetDB.property[i].addr)]);
+						*TelemetryCfg[offset].pCalifactor -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - g_ValueParaPresetDB.property[i].addr)]);
                     }
                     else
                     {
-                        g_ParameterDB.Data.calibrateFactor.buf[offset] *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
+                        *TelemetryCfg[offset].pCalifactor *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
                     }
 					
                     g_ValueParaOperateInfo.num = 0;
@@ -685,14 +680,19 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     
     if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_TOTAL_NUM)
     {
-        if (state == g_TelesignalDB.buf[addr - TELESIGNAL_START_ADDR])
+        if (state == g_TelesignalDB[addr - TELESIGNAL_START_ADDR])
         {
             return FALSE;
         }
-        g_TelesignalDB.buf[addr - TELESIGNAL_START_ADDR] = state;
+        g_TelesignalDB[addr - TELESIGNAL_START_ADDR] = state;
+        g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + 1;		
     }
+	else
+	{
+	    g_SOEDB[g_FlagDB.queue_soe.in].addr = addr;
+	}
 
-    g_SOEDB[g_FlagDB.queue_soe.in].addr = addr;
+
     g_SOEDB[g_FlagDB.queue_soe.in].value = state;
     g_SOEDB[g_FlagDB.queue_soe.in].time.year = g_SystemTime.year;
     g_SOEDB[g_FlagDB.queue_soe.in].time.month = g_SystemTime.month;
@@ -728,7 +728,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
             {
                 for(value=0,i=0;i<((((rt_uint16_t*)(element->data))[1])>>NEWONEYX_NUM);i++)
                 {
-                    valuetemp = g_TelesignalDB.buf[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - TELESIGNAL_START_ADDR] - 1;//单点
+                    valuetemp = g_TelesignalDB[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - TELESIGNAL_START_ADDR] - 1;//单点
                     if((((rt_uint16_t*)(element->data))[2+i]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
                     {
                         valuetemp = (~valuetemp)&0x01;                
@@ -864,7 +864,7 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_type = COMMON_DATA_M_DP_NA_1;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_num = 1;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].addr = yx_addr; 
-    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].value = g_TelesignalDB.buf[yx_addr - TELESIGNAL_START_ADDR];
+    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].value = g_TelesignalDB[yx_addr - TELESIGNAL_START_ADDR];
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.year = g_SystemTime.year;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.month = g_SystemTime.month;    
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.dayofWeek = g_SystemTime.day | g_SystemTime.week << 5;
@@ -877,8 +877,8 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
         
     for (i = 0; i < yc_num; i++)
     {
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i];
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB.buf[yc_addr[i] - TELEMETRY_START_ADDR];         
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i] - TELEMETRY_START_ADDR];         
     }
 
     if (++g_FlagDB.queue_fevent.in >= FEVENT_MAX_NUM)
@@ -931,9 +931,9 @@ void DBClearNVA(void)
 {
     uint8_t i;
     
-    for (i = 1; i <= ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneDC)) - ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF)); i++)
+    for (i = 1; i <= ((float *)&(g_Parameter[DEADZONE_DC1])) - ((float *)&(g_Parameter[DEADZONE_F])); i++)
     {
-        g_TelemetryLastDB.buf[i] = g_TelemetryDB.buf[i];  
+        g_TelemetryLastDB[i] = g_TelemetryDB[i];  
     }
 }
 
@@ -955,28 +955,28 @@ uint8_t DB_NVA_Check(void)
         s_Counter = 0;
 //        ParameterCheck(DEADZONE);
 
-        for (i = 1; i <= ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneDC)) - ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF)); i++)
+        for (i = 1; i <= ((float *)&(g_Parameter[DEADZONE_DC1])) - ((float *)&(g_Parameter[DEADZONE_F])); i++)
         {
-            if (fabsf((float)g_TelemetryDB.buf[i] - (float)g_TelemetryLastDB.buf[i]) > 
-                *((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) / 100.0f * RatedValue[i])
+            if (fabsf((float)g_TelemetryDB[i] - (float)g_TelemetryLastDB[i]) > 
+                *((float *)&(g_Parameter[DEADZONE_F]) + i) / 100.0f * RatedValue[i])
 //                g_ParameterDB.Data.runPara.buf[DEAD_ZONE_INDEX + i] / 100.0f * RatedValue[i])
             {
                 g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i;
-                g_NVADB[g_NVADBIn].value = g_TelemetryDB.buf[i];
+                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i];
 
                 if (++g_NVADBIn >= NVA_MAX_NUM)
                 {
                     g_NVADBIn = 0;
                 }
-                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i + (&g_TelemetryDB.Str.onceIa - &g_TelemetryDB.Str.Ia);
-                g_NVADB[g_NVADBIn].value = g_TelemetryDB.buf[i + (&g_TelemetryDB.Str.onceIa - &g_TelemetryDB.Str.Ia)];
+                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i + (&g_TelemetryDB[ADDR_Ia_ONCE] - &g_TelemetryDB[ADDR_IA]);
+                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i + (&g_TelemetryDB[ADDR_Ia_ONCE] - &g_TelemetryDB[ADDR_IA])];
 
                 if (++g_NVADBIn >= NVA_MAX_NUM)
                 {
                     g_NVADBIn = 0;
                 }
                 
-                g_TelemetryLastDB.buf[i] = g_TelemetryDB.buf[i];                
+                g_TelemetryLastDB[i] = g_TelemetryDB[i];                
             }
         }
     }
@@ -1029,7 +1029,7 @@ void DBWriteSystemTime(struct CP56Time2a_t *pTime)
   */
 void DBRevert(uint8_t act)
 {
-    if (g_TelesignalDB.Str.deviceFault == ON)
+    if (g_TelesignalDB[ADDR_DEVICE_FAULT] == ON)
     {
         DBWriteSOE(ADDR_DEVICE_FAULT, OFF);
     }
@@ -1083,19 +1083,19 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
     switch (sn)
     {
     case DB_SN0:
-        len = DB_SN0_SIZE - sizeof(InherentPara);
-        addr = ADDR_FRAM_AREA0_RUN;
+        len = sizeof(g_Parameter);
+        addr = ADDR_FRAM_AREA0;
         pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
         break;
     case DB_SN1:
-        len = DB_SN1_SIZE;
+        len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(PUBLIC_VALUE_START_ADDR, sn);
+        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
     case DB_SN2:
-        len = DB_SN2_SIZE;
+        len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(PUBLIC_VALUE_START_ADDR, sn);
+        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
     default:
         break;
@@ -1118,19 +1118,19 @@ void rt_multi_common_data_get_value_from_fram(uint8_t sn)
     switch (sn)
     {
     case DB_SN0:
-        len = DB_SN0_SIZE;
-        addr = ADDR_FRAM_AREA0_RUN;
+        len = sizeof(g_Parameter);
+        addr = ADDR_FRAM_AREA0;
         pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
         break;
-    case DB_SN1:
-        len = DB_SN1_SIZE;
+    case DB_SN1: 
+        len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(PUBLIC_VALUE_START_ADDR, sn);
+        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
     case DB_SN2:
-        len = DB_SN2_SIZE;
+        len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(PUBLIC_VALUE_START_ADDR, sn);
+        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
     default:
         break;
@@ -1376,7 +1376,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     
     for (i = 0; i < DI_NUM; i++)
     {
-        g_DiCollect.stateLast |= g_TelesignalDB.buf[i];   	
+        g_DiCollect.stateLast |= g_TelesignalDB[i];   	
     }
 
     /* 读取SOE */
@@ -1580,7 +1580,7 @@ void rt_multi_common_data_config(void)
     char buf1[8] = {0xB1, 0xB1, 0xBE, 0xA9, 0xCB, 0xAB, 0xBD, 0xDC};
     char tempstr[24];
 	
-    struct Inherent FixedPara = RT_SYS_CONFIG_DEFAULT;	  
+//    g_InherentPara = RT_SYS_CONFIG_DEFAULT;	  
 
     sprintf(tempstr,"%02X",(g_EthDP83848.mac[0]));
     strcpy(buf,tempstr);
@@ -1600,18 +1600,18 @@ void rt_multi_common_data_config(void)
     sprintf(tempstr,"%02X",(g_EthDP83848.mac[5]));
     strcat(buf,tempstr);
 
-    memcpy(&FixedPara.terminalID, &g_ConfigurationSetDB.ID_Value, sizeof(g_ConfigurationSetDB.ID_Value));   
-    memcpy(&FixedPara.terminalMAC, &buf, 17);
-    memcpy(&FixedPara.terminalManufacturer, &buf1, 8);  
+    memcpy(&g_InherentPara.terminalID, &g_ConfigurationSetDB.ID_Value, sizeof(g_ConfigurationSetDB.ID_Value));   
+    memcpy(&g_InherentPara.terminalMAC, &buf, 17);
+    memcpy(&g_InherentPara.terminalManufacturer, &buf1, 8);  
     
     memset(g_CommunicatFlag,0,sizeof(g_CommunicatFlag));//清除通讯互锁标志
     
     /* 遥信变双点 */
     for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)
     {
-        if (g_TelesignalDB.buf[i] != ON && g_TelesignalDB.buf[i] != OFF)
+        if (g_TelesignalDB[i] != ON && g_TelesignalDB[i] != OFF)
         {
-            g_TelesignalDB.buf[i] = OFF;
+            g_TelesignalDB[i] = OFF;
         }
     }	
     
@@ -1621,7 +1621,7 @@ void rt_multi_common_data_config(void)
     {
         for(j=0,value=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            value |= (g_TelesignalDB.buf[((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR]-1);//单点
+            value |= (g_TelesignalDB[((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR]-1);//单点
         }
         value = value + 1;//双点
         g_NewToOldTelesignal[temp2] = (value<<NEWONEYX_VAULE)|((i+TELESIGNAL_START_ADDR)<<NEWONEYX_ADDR);
@@ -1692,17 +1692,17 @@ void rt_multi_common_data_config(void)
     /* 读取当前定值区号 */
     if (g_ValueParaOperateInfo.currentSN == 2)
     {
-        g_pFixedValue = &g_FixedValueDB2;
-		g_pFixedValueDB = &FixedValueCfg2[0];
+        //g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValue = g_FixedValue2; 
+		g_pFixedValueCfg = FixedValueCfg2;
     }
     else // 默认1区
     {
         g_ValueParaOperateInfo.currentSN = 1;
-        g_pFixedValue = &g_FixedValueDB1;
-		g_pFixedValueDB = &FixedValueCfg1[0];
+        //g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValue = g_FixedValue1;
+		g_pFixedValueCfg = FixedValueCfg1;
     }   
-		
-    g_ParameterDB.Data.inherentPara.Str = FixedPara;
 		
     memset(&g_TelemetryDB, 0, sizeof(TelemetryDatabase));
     memset(&g_TelemetryLastDB, 0, sizeof(TelemetryDatabase));

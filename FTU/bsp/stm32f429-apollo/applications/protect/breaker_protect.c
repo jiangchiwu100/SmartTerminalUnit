@@ -953,20 +953,20 @@ void BreakerCtrlInit(void)
         {
         case BRE_DEV0:
             //通用
-			s_ComProSts[pdrv].pSwitchType = &g_ParameterDB.Data.runPara.Str.switchType;
-			s_ComProSts[pdrv].pBreakWorkMode = &g_ParameterDB.Data.runPara.Str.breakWorkMode;
-			s_ComProSts[pdrv].pLoadWorkMode = &g_ParameterDB.Data.runPara.Str.loadWorkMode;
-            s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB.Str.switchOpen;
-            s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB.Str.switchClose;
-            s_ComProSts[pdrv].yx.recloseHardStrap.value = &g_TelesignalDB.Str.FA.recloseHardStrap;
-            s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB.Str.functionHardStrap;
+			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
+			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
+			s_ComProSts[pdrv].pLoadWorkMode = &g_Parameter[LOAD_WORK_MODE];
+            s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[ADDR_OPEN];
+            s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[ADDR_CLOSE];
+            s_ComProSts[pdrv].yx.recloseHardStrap.value = &g_TelesignalDB[ADDR_RECLOSE_FA_STRAP];
+            s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP];
 
             s_ComProSts[pdrv].yx.shortCircuitFault.addr = ADDR_SHORT_CIRCUIT_FAULT;
             s_ComProSts[pdrv].yx.earthingFault.addr = ADDR_EARTHING_FAULT;
             s_ComProSts[pdrv].yx.protectionAct.addr = ADDR_PROTECTION_ACT;
-            s_ComProSts[pdrv].yx.protectionClock.addr = ADDR_PROTECTION_CLOCK;
+            s_ComProSts[pdrv].yx.protectionClock.addr = ADDR_PROTECTION_LOCK;
             s_ComProSts[pdrv].yx.recloseAct.addr = ADDR_RECLOSE_ACT;
-            s_ComProSts[pdrv].yx.recloseClock.addr = ADDR_RECLOSE_CLOCK;
+            s_ComProSts[pdrv].yx.recloseClock.addr = ADDR_RECLOSE_LOCK;
             s_ComProSts[pdrv].yx.overcurrentAccIa.addr = ADDR_OVERCURRENT_ACC_IA;
             s_ComProSts[pdrv].yx.overcurrentAccIb.addr = ADDR_OVERCURRENT_ACC_IB;
             s_ComProSts[pdrv].yx.overcurrentAccIc.addr = ADDR_OVERCURRENT_ACC_IC;
@@ -992,48 +992,48 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yx.zeroRecloseProtection[1].addr = ADDR_ZERO_RECLOSE_PROTECTION_2;
             s_ComProSts[pdrv].yx.clockSecondaryClose.addr = ADDR_CLOCK_SECONDARY_CLOSE;
 
-            s_ComProSts[pdrv].yx.shortCircuitFault.value = &g_TelesignalDB.Str.shortCircuitFault;
-            s_ComProSts[pdrv].yx.earthingFault.value = &g_TelesignalDB.Str.earthingFault;
-            s_ComProSts[pdrv].yx.protectionAct.value = &g_TelesignalDB.Str.protectionAct;
-            s_ComProSts[pdrv].yx.protectionClock.value = &g_TelesignalDB.Str.protectionLock;
-            s_ComProSts[pdrv].yx.recloseAct.value = &g_TelesignalDB.Str.recloseAct;
-            s_ComProSts[pdrv].yx.recloseClock.value = &g_TelesignalDB.Str.recloseLock;
-            s_ComProSts[pdrv].yx.overcurrentAccIa.value = &g_TelesignalDB.Str.overcurrentAccIa;
-            s_ComProSts[pdrv].yx.overcurrentAccIb.value = &g_TelesignalDB.Str.overcurrentAccIb;
-            s_ComProSts[pdrv].yx.overcurrentAccIc.value = &g_TelesignalDB.Str.overcurrentAccIc;
-            s_ComProSts[pdrv].yx.overcurrentInverseIa.value = &g_TelesignalDB.Str.overcurrentInverseIa;
-            s_ComProSts[pdrv].yx.overcurrentInverseIb.value = &g_TelesignalDB.Str.overcurrentInverseIb;
-            s_ComProSts[pdrv].yx.overcurrentInverseIc.value = &g_TelesignalDB.Str.overcurrentInverseIc;
-            s_ComProSts[pdrv].yx.overcurrentIa[0].value = &g_TelesignalDB.Str.overcurrentIa1;
-            s_ComProSts[pdrv].yx.overcurrentIb[0].value = &g_TelesignalDB.Str.overcurrentIb1;
-            s_ComProSts[pdrv].yx.overcurrentIc[0].value = &g_TelesignalDB.Str.overcurrentIc1;
-            s_ComProSts[pdrv].yx.overcurrentIa[1].value = &g_TelesignalDB.Str.overcurrentIa2;
-            s_ComProSts[pdrv].yx.overcurrentIb[1].value = &g_TelesignalDB.Str.overcurrentIb2;
-            s_ComProSts[pdrv].yx.overcurrentIc[1].value = &g_TelesignalDB.Str.overcurrentIc2;
-            s_ComProSts[pdrv].yx.overcurrentIa[2].value = &g_TelesignalDB.Str.overcurrentIa3;
-            s_ComProSts[pdrv].yx.overcurrentIb[2].value = &g_TelesignalDB.Str.overcurrentIb3;
-            s_ComProSts[pdrv].yx.overcurrentIc[2].value = &g_TelesignalDB.Str.overcurrentIc3;
-            s_ComProSts[pdrv].yx.overcurrentI0[0].value = &g_TelesignalDB.Str.overcurrentI01;
-            s_ComProSts[pdrv].yx.overcurrentI0[1].value = &g_TelesignalDB.Str.overcurrentI02;
-            s_ComProSts[pdrv].yx.recloseProtection[0].value = &g_TelesignalDB.Str.recloseProtection1;
-            s_ComProSts[pdrv].yx.recloseProtection[1].value = &g_TelesignalDB.Str.recloseProtection2;
-            s_ComProSts[pdrv].yx.recloseProtection[2].value = &g_TelesignalDB.Str.recloseProtection3;
-            s_ComProSts[pdrv].yx.recloseProtection[3].value = &g_TelesignalDB.Str.recloseProtection4;
-            s_ComProSts[pdrv].yx.zeroRecloseProtection[0].value = &g_TelesignalDB.Str.zeroRecloseProtection1;
-            s_ComProSts[pdrv].yx.zeroRecloseProtection[1].value = &g_TelesignalDB.Str.zeroRecloseProtection2;
-            s_ComProSts[pdrv].yx.clockSecondaryClose.value = &g_TelesignalDB.Str.clockSecondaryClose;
+            s_ComProSts[pdrv].yx.shortCircuitFault.value = &g_TelesignalDB[ADDR_SHORT_CIRCUIT_FAULT];
+            s_ComProSts[pdrv].yx.earthingFault.value = &g_TelesignalDB[ADDR_EARTHING_FAULT];
+            s_ComProSts[pdrv].yx.protectionAct.value = &g_TelesignalDB[ADDR_PROTECTION_ACT];
+            s_ComProSts[pdrv].yx.protectionClock.value = &g_TelesignalDB[ADDR_PROTECTION_LOCK];
+            s_ComProSts[pdrv].yx.recloseAct.value = &g_TelesignalDB[ADDR_RECLOSE_ACT];
+            s_ComProSts[pdrv].yx.recloseClock.value = &g_TelesignalDB[ADDR_RECLOSE_LOCK];
+            s_ComProSts[pdrv].yx.overcurrentAccIa.value = &g_TelesignalDB[ADDR_OVERCURRENT_ACC_IA];
+            s_ComProSts[pdrv].yx.overcurrentAccIb.value = &g_TelesignalDB[ADDR_OVERCURRENT_ACC_IB];
+            s_ComProSts[pdrv].yx.overcurrentAccIc.value = &g_TelesignalDB[ADDR_OVERCURRENT_ACC_IC];
+            s_ComProSts[pdrv].yx.overcurrentInverseIa.value = &g_TelesignalDB[ADDR_OVERCURRENT_INVERSE_IA];
+            s_ComProSts[pdrv].yx.overcurrentInverseIb.value = &g_TelesignalDB[ADDR_OVERCURRENT_INVERSE_IB];
+            s_ComProSts[pdrv].yx.overcurrentInverseIc.value = &g_TelesignalDB[ADDR_OVERCURRENT_INVERSE_IC];
+            s_ComProSts[pdrv].yx.overcurrentIa[0].value = &g_TelesignalDB[ADDR_OVERCURRENT_IA_1];
+            s_ComProSts[pdrv].yx.overcurrentIb[0].value = &g_TelesignalDB[ADDR_OVERCURRENT_IB_1];
+            s_ComProSts[pdrv].yx.overcurrentIc[0].value = &g_TelesignalDB[ADDR_OVERCURRENT_IC_1];
+            s_ComProSts[pdrv].yx.overcurrentIa[1].value = &g_TelesignalDB[ADDR_OVERCURRENT_IA_2];
+            s_ComProSts[pdrv].yx.overcurrentIb[1].value = &g_TelesignalDB[ADDR_OVERCURRENT_IB_2];
+            s_ComProSts[pdrv].yx.overcurrentIc[1].value = &g_TelesignalDB[ADDR_OVERCURRENT_IC_2];
+            s_ComProSts[pdrv].yx.overcurrentIa[2].value = &g_TelesignalDB[ADDR_OVERCURRENT_IA_3];
+            s_ComProSts[pdrv].yx.overcurrentIb[2].value = &g_TelesignalDB[ADDR_OVERCURRENT_IB_3];
+            s_ComProSts[pdrv].yx.overcurrentIc[2].value = &g_TelesignalDB[ADDR_OVERCURRENT_IC_3];
+            s_ComProSts[pdrv].yx.overcurrentI0[0].value = &g_TelesignalDB[ADDR_OVERCURRENT_I0_1];
+            s_ComProSts[pdrv].yx.overcurrentI0[1].value = &g_TelesignalDB[ADDR_OVERCURRENT_I0_2];
+            s_ComProSts[pdrv].yx.recloseProtection[0].value = &g_TelesignalDB[ADDR_RECLOSE_PROTECTION_1];
+            s_ComProSts[pdrv].yx.recloseProtection[1].value = &g_TelesignalDB[ADDR_RECLOSE_PROTECTION_2];
+            s_ComProSts[pdrv].yx.recloseProtection[2].value = &g_TelesignalDB[ADDR_RECLOSE_PROTECTION_3];
+            s_ComProSts[pdrv].yx.recloseProtection[3].value = &g_TelesignalDB[ADDR_RECLOSE_PROTECTION_4];
+            s_ComProSts[pdrv].yx.zeroRecloseProtection[0].value = &g_TelesignalDB[ADDR_ZERO_RECLOSE_PROTECTION_1];
+            s_ComProSts[pdrv].yx.zeroRecloseProtection[1].value = &g_TelesignalDB[ADDR_ZERO_RECLOSE_PROTECTION_2];
+            s_ComProSts[pdrv].yx.clockSecondaryClose.value = &g_TelesignalDB[ADDR_CLOCK_SECONDARY_CLOSE];
 
-            s_ComProSts[pdrv].yc.Ia = &g_TelemetryDB.Str.Ia;
-            s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB.Str.Ib;
-            s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB.Str.Ic;
+            s_ComProSts[pdrv].yc.Ia = &g_TelemetryDB[ADDR_IA];
+            s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB[ADDR_IB];
+            s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB[ADDR_IC];
 		 	s_ComProSts[pdrv].yc.Ia2 = &g_secondHarmonicIa;
             s_ComProSts[pdrv].yc.Ib2 = &g_secondHarmonicIb;
             s_ComProSts[pdrv].yc.Ic2 = &g_secondHarmonicIc;
-            s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB.Str.I0;
-            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB.Str.Uab;
-            s_ComProSts[pdrv].yc.Ubc = &g_TelemetryDB.Str.Ubc;
-            s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB.Str.Uac;
-            s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB.Str.U0;
+            s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[ADDR_I0];
+            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Uab];
+            s_ComProSts[pdrv].yc.Ubc = &g_TelemetryDB[ADDR_Ubc];
+            s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[ADDR_Uca];
+            s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[ADDR_U0];
             
             s_ComProSts[pdrv].fevent_yc_addr[0] = ADDR_IA;
             s_ComProSts[pdrv].fevent_yc_addr[1] = ADDR_IB;
@@ -1041,7 +1041,7 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].fevent_yc_addr[3] = ADDR_I0;
             s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;
             s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UBC;
-            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uac;
+            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uca;
             s_ComProSts[pdrv].fevent_yc_addr[7] = ADDR_U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
@@ -1058,13 +1058,13 @@ void BreakerCtrlInit(void)
             s_Rest[pdrv].valstr.recloseflag = &s_Reclose[pdrv].valstr.flag;
             s_Rest[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_Rest[pdrv].valstr.secondaryRecloseLockflag = &s_SecondaryRecloseLock[pdrv].valstr.flag;
-            s_Rest[pdrv].parastr.pSwitch = &g_pFixedValue->Data.publicValue.Str.automaticResetEnable;
-            s_Rest[pdrv].parastr.pTime = &g_pFixedValue->Data.publicValue.Str.automaticResetTime;
+            s_Rest[pdrv].parastr.pSwitch = &g_pFixedValue[AUTOMATIC_RESET_SWITCH];
+            s_Rest[pdrv].parastr.pTime = &g_pFixedValue[AUTOMATIC_RESET_TIME];
             //涌流抑制
             addtimers(pdrv,&s_Inrush[pdrv].valstr.gTime[0]);
 			addtimers(pdrv,&s_Inrush[pdrv].valstr.gTime[1]);
-            s_Inrush[pdrv].parastr.pSwitch = &g_pFixedValue->Data.breakerValue.Str.inrushSwitch;
-            s_Inrush[pdrv].parastr.pTime = &g_pFixedValue->Data.breakerValue.Str.inrushTime;
+            s_Inrush[pdrv].parastr.pSwitch = &g_pFixedValue[INRUSH_SWITCH];
+            s_Inrush[pdrv].parastr.pTime = &g_pFixedValue[INRUSH_TIME];
             //后加速
             s_IACC[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
@@ -1073,9 +1073,9 @@ void BreakerCtrlInit(void)
             s_IACC[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_IACC[pdrv].valstr.gTime);
-            s_IACC[pdrv].parastr.pSwitch = &g_pFixedValue->Data.breakerValue.Str.iaccSwitch;
-            s_IACC[pdrv].parastr.pValue = &g_pFixedValue->Data.breakerValue.Str.iaccCurrentValue;
-            s_IACC[pdrv].parastr.pTime = &g_pFixedValue->Data.breakerValue.Str.iaccTime;
+            s_IACC[pdrv].parastr.pSwitch = &g_pFixedValue[IACC_SWITCH];
+            s_IACC[pdrv].parastr.pValue = &g_pFixedValue[IACC_CURRENT_VALUE];
+            s_IACC[pdrv].parastr.pTime = &g_pFixedValue[IACC_TIME];
             //反时限
             s_Inverse[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Inverse[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
@@ -1085,9 +1085,9 @@ void BreakerCtrlInit(void)
             s_Inverse[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_Inverse[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_Inverse[pdrv].valstr.gTime);
-            s_Inverse[pdrv].parastr.pSwitch = &g_pFixedValue->Data.breakerValue.Str.inverseSwitch;
-            s_Inverse[pdrv].parastr.pValue = &g_pFixedValue->Data.breakerValue.Str.inverseCurrentValue;
-            s_Inverse[pdrv].parastr.pTime = &g_pFixedValue->Data.breakerValue.Str.inverseTime;
+            s_Inverse[pdrv].parastr.pSwitch = &g_pFixedValue[INVERSE_SWITCH];
+            s_Inverse[pdrv].parastr.pValue = &g_pFixedValue[INVERSE_CURRENT_VALUE];
+            s_Inverse[pdrv].parastr.pTime = &g_pFixedValue[INVERSE_TIME];
             //过流
             s_Overcur[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Overcur[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
@@ -1099,15 +1099,15 @@ void BreakerCtrlInit(void)
             addtimers(pdrv,&s_Overcur[pdrv].valstr.gTime[0]);
             addtimers(pdrv,&s_Overcur[pdrv].valstr.gTime[1]);
             addtimers(pdrv,&s_Overcur[pdrv].valstr.gTime[2]);
-            s_Overcur[pdrv].parastr.pSwitch[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch1;
-            s_Overcur[pdrv].parastr.pSwitch[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch2;
-            s_Overcur[pdrv].parastr.pSwitch[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentSwitch3;
-            s_Overcur[pdrv].parastr.pValue[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue1;
-            s_Overcur[pdrv].parastr.pValue[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue2;
-            s_Overcur[pdrv].parastr.pValue[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentValue3;
-            s_Overcur[pdrv].parastr.pTime[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime1;
-            s_Overcur[pdrv].parastr.pTime[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime2;
-            s_Overcur[pdrv].parastr.pTime[2] = &g_pFixedValue->Data.publicValue.Str.overCurrentTime3;
+            s_Overcur[pdrv].parastr.pSwitch[0] = &g_pFixedValue[OVER_CURRENT_SWITCH1];
+            s_Overcur[pdrv].parastr.pSwitch[1] = &g_pFixedValue[OVER_CURRENT_SWITCH2];
+            s_Overcur[pdrv].parastr.pSwitch[2] = &g_pFixedValue[OVER_CURRENT_SWITCH3];
+            s_Overcur[pdrv].parastr.pValue[0] = &g_pFixedValue[OVER_CURRENT_VALUE1];
+            s_Overcur[pdrv].parastr.pValue[1] = &g_pFixedValue[OVER_CURRENT_VALUE2];
+            s_Overcur[pdrv].parastr.pValue[2] = &g_pFixedValue[OVER_CURRENT_VALUE3];
+            s_Overcur[pdrv].parastr.pTime[0] = &g_pFixedValue[OVER_CURRENT_TIME1];
+            s_Overcur[pdrv].parastr.pTime[1] = &g_pFixedValue[OVER_CURRENT_TIME2];
+            s_Overcur[pdrv].parastr.pTime[2] = &g_pFixedValue[OVER_CURRENT_TIME3];
             //零序过流
             s_OvercurI0[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_OvercurI0[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
@@ -1118,12 +1118,12 @@ void BreakerCtrlInit(void)
             s_OvercurI0[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_OvercurI0[pdrv].valstr.gTime[0]);
             addtimers(pdrv,&s_OvercurI0[pdrv].valstr.gTime[1]);
-            s_OvercurI0[pdrv].parastr.pSwitch[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Switch1;
-            s_OvercurI0[pdrv].parastr.pSwitch[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Switch2;
-            s_OvercurI0[pdrv].parastr.pValue[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Value1;
-            s_OvercurI0[pdrv].parastr.pValue[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Value2;
-            s_OvercurI0[pdrv].parastr.pTime[0] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Time1;
-            s_OvercurI0[pdrv].parastr.pTime[1] = &g_pFixedValue->Data.publicValue.Str.overCurrentI0Time2;
+            s_OvercurI0[pdrv].parastr.pSwitch[0] = &g_pFixedValue[OVER_CURRENTI0_SWITCH1];
+            s_OvercurI0[pdrv].parastr.pSwitch[1] = &g_pFixedValue[OVER_CURRENTI0_SWITCH2];
+            s_OvercurI0[pdrv].parastr.pValue[0] = &g_pFixedValue[OVER_CURRENTI0_VALUE1];
+            s_OvercurI0[pdrv].parastr.pValue[1] = &g_pFixedValue[OVER_CURRENTI0_VALUE2];
+            s_OvercurI0[pdrv].parastr.pTime[0] = &g_pFixedValue[OVER_CURRENTI0_TIME1];
+            s_OvercurI0[pdrv].parastr.pTime[1] = &g_pFixedValue[OVER_CURRENTI0_TIME2];
             // 二次重合闸闭锁
 			s_SecondaryRecloseLock[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_SecondaryRecloseLock[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
@@ -1133,8 +1133,8 @@ void BreakerCtrlInit(void)
             s_SecondaryRecloseLock[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_SecondaryRecloseLock[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_SecondaryRecloseLock[pdrv].valstr.gTime);
-            s_SecondaryRecloseLock[pdrv].parastr.pSwitch = &g_pFixedValue->Data.breakerValue.Str.secondaryRecloseLockSwitch;
-            s_SecondaryRecloseLock[pdrv].parastr.pTime = &g_pFixedValue->Data.breakerValue.Str.secondaryRecloseLockTime;
+            s_SecondaryRecloseLock[pdrv].parastr.pSwitch = &g_pFixedValue[OVER_CURRENTI0_TIME2];
+            s_SecondaryRecloseLock[pdrv].parastr.pTime = &g_pFixedValue[SECONDARY_RECLOSE_LOCK_TIME];
             // 过流重合闸
             s_Reclose[pdrv].valstr.secondaryRecloseLockflag = &s_SecondaryRecloseLock[pdrv].valstr.flag;
 			s_Reclose[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
@@ -1144,13 +1144,13 @@ void BreakerCtrlInit(void)
             s_Reclose[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_Reclose[pdrv].valstr.gTime[0]);
 			addtimers(pdrv,&s_Reclose[pdrv].valstr.gTime[1]);
-            s_Reclose[pdrv].parastr.pTimes = &g_pFixedValue->Data.breakerValue.Str.recloseTimesI;
-            s_Reclose[pdrv].parastr.pTime[0] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer1;
-            s_Reclose[pdrv].parastr.pTime[1] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer2;
-            s_Reclose[pdrv].parastr.pTime[2] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer3;
-            s_Reclose[pdrv].parastr.pTime[3] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer4;
-			s_Reclose[pdrv].parastr.pRechargeTime = &g_pFixedValue->Data.breakerValue.Str.rechargeTime;
-			s_Reclose[pdrv].parastr.pResetTime = &g_pFixedValue->Data.breakerValue.Str.reResetTime;
+            s_Reclose[pdrv].parastr.pTimes = &g_pFixedValue[RECLOSE_TIMES_I];
+            s_Reclose[pdrv].parastr.pTime[0] = &g_pFixedValue[RECLOSE_TIMER1];
+            s_Reclose[pdrv].parastr.pTime[1] = &g_pFixedValue[RECLOSE_TIMER2];
+            s_Reclose[pdrv].parastr.pTime[2] = &g_pFixedValue[RECLOSE_TIMER3];
+            s_Reclose[pdrv].parastr.pTime[3] = &g_pFixedValue[RECLOSE_TIMER4];
+			s_Reclose[pdrv].parastr.pRechargeTime = &g_pFixedValue[RE_CHARGE_TIME];
+			s_Reclose[pdrv].parastr.pResetTime = &g_pFixedValue[RE_RESET_TIME];
             //零序过流重合闸
             s_RecloseI0[pdrv].valstr.secondaryRecloseLockflag = &s_SecondaryRecloseLock[pdrv].valstr.flag;
 			s_RecloseI0[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
@@ -1160,11 +1160,11 @@ void BreakerCtrlInit(void)
             s_RecloseI0[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_RecloseI0[pdrv].valstr.gTime[0]);
 			addtimers(pdrv,&s_RecloseI0[pdrv].valstr.gTime[1]);
-            s_RecloseI0[pdrv].parastr.pTimes = &g_pFixedValue->Data.breakerValue.Str.recloseTimesI0;
-            s_RecloseI0[pdrv].parastr.pTime[0] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer1;
-            s_RecloseI0[pdrv].parastr.pTime[1] = &g_pFixedValue->Data.breakerValue.Str.recloseTimer2;
-			s_RecloseI0[pdrv].parastr.pRechargeTime = &g_pFixedValue->Data.breakerValue.Str.rechargeTime;
-			s_RecloseI0[pdrv].parastr.pResetTime = &g_pFixedValue->Data.breakerValue.Str.reResetTime;
+            s_RecloseI0[pdrv].parastr.pTimes = &g_pFixedValue[RECLOSE_TIMES_I0];
+            s_RecloseI0[pdrv].parastr.pTime[0] = &g_pFixedValue[RECLOSE_TIMER1];
+            s_RecloseI0[pdrv].parastr.pTime[1] = &g_pFixedValue[RECLOSE_TIMER2];
+			s_RecloseI0[pdrv].parastr.pRechargeTime = &g_pFixedValue[RE_CHARGE_TIME];
+			s_RecloseI0[pdrv].parastr.pResetTime = &g_pFixedValue[RE_RESET_TIME];
             //初始化清除SOE
             addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.shortCircuitFault,OFF);
             addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.earthingFault,OFF);

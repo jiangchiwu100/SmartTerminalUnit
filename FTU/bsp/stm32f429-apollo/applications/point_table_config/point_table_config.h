@@ -48,8 +48,11 @@ struct tagCalibrateFactor
 {
 	unsigned char enable;  // 使能
     char *pName;           // 名称
-    float Val;             // 值	
-//    char *pUnit;           // 单位
+    float calibrateVal;    // 校准值
+    float *factorVal;      // 系数值	
+    float factorMax;	   // 系数上限值	
+    float factorMin;       // 系数下限值
+    float factorDefault;   // 系数缺省值	
 };
 
 struct tagValueParaCfg
@@ -61,6 +64,7 @@ struct tagValueParaCfg
     char *pUnit;           // 单位
     float valMax;	       // 上限值	
     float valMin;          // 下限值
+    float defaultVal;      // 缺省值	
 	unsigned char dataType;// 数据类型
 	char *pContent[5];        // 数据显示内容
 	char *pNote;           // 备注

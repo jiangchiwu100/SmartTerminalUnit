@@ -292,14 +292,14 @@ char *CreatConfigurationHandler(char *firsttime, char *triggertime, int *configD
 	ConfigurationData->version = myversion;
 	ConfigurationData->ChannelsCount = ChannelsCount;
 
-	ConfigurationData->AnalogChannelData[0] = *InitAnalogChannelData("1", "IA", "A", "A", g_ParameterDB.Data.calibrateFactor.Str.califactorIa);
-	ConfigurationData->AnalogChannelData[1] = *InitAnalogChannelData("2", "IB", "B", "A", g_ParameterDB.Data.calibrateFactor.Str.califactorIb);
-	ConfigurationData->AnalogChannelData[2] = *InitAnalogChannelData("3", "IC", "C", "A", g_ParameterDB.Data.calibrateFactor.Str.califactorIc);
-	ConfigurationData->AnalogChannelData[3] = *InitAnalogChannelData("4", "IZ", "Z", "A", g_ParameterDB.Data.calibrateFactor.Str.califactorI0);
-	ConfigurationData->AnalogChannelData[4] = *InitAnalogChannelData("5", "UA", "A", "v", g_ParameterDB.Data.calibrateFactor.Str.califactorUab);
-	ConfigurationData->AnalogChannelData[5] = *InitAnalogChannelData("6", "UB", "B", "v", g_ParameterDB.Data.calibrateFactor.Str.califactorUbc);
-	ConfigurationData->AnalogChannelData[6] = *InitAnalogChannelData("7", "UC", "C", "v", g_ParameterDB.Data.calibrateFactor.Str.califactorUac);
-	ConfigurationData->AnalogChannelData[7] = *InitAnalogChannelData("8", "UZ", "Z", "v", g_ParameterDB.Data.calibrateFactor.Str.califactorU0);
+	ConfigurationData->AnalogChannelData[0] = *InitAnalogChannelData("1", "IA", "A", "A", g_CalibrateFactor[CALIFACTOR_Ia]);
+	ConfigurationData->AnalogChannelData[1] = *InitAnalogChannelData("2", "IB", "B", "A", g_CalibrateFactor[CALIFACTOR_Ib]);
+	ConfigurationData->AnalogChannelData[2] = *InitAnalogChannelData("3", "IC", "C", "A", g_CalibrateFactor[CALIFACTOR_Ic]);
+	ConfigurationData->AnalogChannelData[3] = *InitAnalogChannelData("4", "IZ", "Z", "A", g_CalibrateFactor[CALIFACTOR_I0]);
+	ConfigurationData->AnalogChannelData[4] = *InitAnalogChannelData("5", "UA", "A", "v", g_CalibrateFactor[CALIFACTOR_Uab]);
+	ConfigurationData->AnalogChannelData[5] = *InitAnalogChannelData("6", "UB", "B", "v", g_CalibrateFactor[CALIFACTOR_Uca]);
+	ConfigurationData->AnalogChannelData[6] = *InitAnalogChannelData("7", "UC", "C", "v", g_CalibrateFactor[CALIFACTOR_Ubc]);
+	ConfigurationData->AnalogChannelData[7] = *InitAnalogChannelData("8", "UZ", "Z", "v", g_CalibrateFactor[CALIFACTOR_U0]);
 
 	ConfigurationData->DigitalChannelData[0] = *InitDigitalChannelData("1", "KG", "0");
 	ConfigurationData->frequency = 50.00;
