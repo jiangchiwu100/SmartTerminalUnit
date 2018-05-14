@@ -585,11 +585,14 @@ enum TelemetryAddr
     ADDR_Q,
     ADDR_S,
     ADDR_PF,
-    ADDR_AIPHY_U0_I0,
-    ADDR_ALPHY_Uab_UBC,
     ADDR_DC1,
     ADDR_DC2,
     ADDR_T,
+	ADDR_AIPHY_Ua_Ia,
+	ADDR_AIPHY_Ub_Ib,
+	ADDR_AIPHY_UC_Ic,
+    ADDR_AIPHY_U0_I0,
+    ADDR_ALPHY_Uab_UBC,		
 	ADDR_Ia_ONCE,
 	ADDR_Ib_ONCE,
 	ADDR_Ic_ONCE,
@@ -887,15 +890,13 @@ enum AddrCalibrateFactor
     CALIFACTOR_P,                        // 有功功率(p)校准系数（无效）
 	CALIFACTOR_Q,                        // 无功功率(Q)校准系数（无效）
     CALIFACTOR_S,                        // 视在功率(S)校准系数（无效）
-	CALIFACTOR_PF,                       // 功率因数(Pf)校准系数（无效）
-    CALIFACTOR_L0,                       // 零序角度(L)校准系数（无效）   
-	CALIFACTOR_LU,                       // 电压角度(U)校准系数（无效）   		
+	CALIFACTOR_PF,                       // 功率因数(Pf)校准系数（无效） 		
     CALIFACTOR_DC1,                      // 直流电压(V)校准系数
 	CALIFACTOR_DC2,                      // 直流电压(V)校准系数
     CALIFACTOR_T,			             // 温度(T)校准系数
 	CALIFACTOR_ALPHA_UaIa,	             // 角UaIa校准系数
 	CALIFACTOR_ALPHA_UbIb,	             // 角UbIb校准系数
-	CALIFACTOR_ALPHA_UcIc,	             // 角UcIc校准系数
+	CALIFACTOR_ALPHA_UCIc,	             // 角UcIc校准系数
 	CALIFACTOR_ALPHA_U0I0,	             // 角U0I0校准系数
 	CALIFACTOR_ALPHA_UaUb,	             // 角UaUb校准系数		
 	
@@ -1570,6 +1571,7 @@ extern rt_uint32_t g_ComLed;
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
 extern void rt_multi_common_data_save_value_to_fram(uint8_t sn);
 extern void rt_multi_common_data_get_value_from_fram(uint8_t sn);
+extern void rt_common_data_save_value_default_to_fram(void);
 extern rt_uint16_t rt_multi_common_data_fram_record_write(uint8_t type, uint8_t *pBuf, uint32_t len);
 extern void rt_multi_common_data_fram_update_state_write(uint8_t type);
 extern void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf);
