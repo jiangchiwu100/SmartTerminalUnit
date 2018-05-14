@@ -274,11 +274,11 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
 
 /**
   * @brief: 参数监测.
-  * @param:  type-参数类型
+  * @param:  [none]
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void ParameterCheck(uint8_t type)
+void ParameterCheck(void)
 {
     uint32_t i;
 
@@ -370,9 +370,7 @@ uint8_t DBWriteValue(uint8_t *pData, struct CommonInfo *pInfo)
         }
 
         /* 固化到FRAM */
-        ParameterCheck(ZERODRIFT);    
-        ParameterCheck(DEADZONE); 
-        ParameterCheck(CALIBRATE_FACTOR);
+        ParameterCheck();
         rt_multi_common_data_save_value_to_fram(sn);
 
         g_ValueParaOperateInfo.num = 0;
@@ -467,7 +465,7 @@ uint8_t DBSwitchValueArea(uint8_t sn)
     }
     else
     {
-        (sn == 1) ? (g_pFixedValue = g_FixedValue1) : (g_pFixedValue = g_FixedValue2);
+        (sn == 1) ? (g_pFixedValue = g_FixedValue1, g_pFixedValueCfg = FixedValueCfg1) : (g_pFixedValue = g_FixedValue2, g_pFixedValueCfg = FixedValueCfg2);
         g_ValueParaOperateInfo.currentSN = sn;
         /* 存储当前定值区号 */
 		rt_multi_common_data_fram_record_write(CURRENT_SN, &g_ValueParaOperateInfo.currentSN, 1);
@@ -526,9 +524,9 @@ void CalibrationFactorCal(uint8_t num)
         {
             complate = 0;
             g_ValueParaOperateInfo.calibratFlag = 0;
-            ParameterCheck(CALIBRATE_FACTOR);
+            ParameterCheck();
             /* 固化到FRAM */            
-            rt_multi_common_data_save_value_to_fram(0);
+            rt_multi_common_data_save_value_to_fram(DB_CALI);
             
             memset(&g_ValueParaPresetDB, 0, sizeof(g_ValueParaPresetDB));
         }
@@ -970,6 +968,11 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
         addr = ADDR_FRAM_AREA2;
         pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
+    case DB_CALI:
+        len = sizeof(g_CalibrateFactor);
+        addr = ADDR_FRAM_CALI_FACTOR;
+        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        break;	
     default:
         break;
     }
@@ -1037,7 +1040,7 @@ void rt_common_data_save_value_default_to_fram(void)
 	    *FixedValueCfg1[i].pVal = g_pFixedValueCfg[i].defaultVal;
 	}	
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 4; i++)
 	{
 	    rt_multi_common_data_save_value_to_fram(i);
 	}   	
@@ -1370,14 +1373,12 @@ void rt_multi_common_data_read_config_from_fram(void)
     g_ValueParaOperateInfo.currentSN = sn;
     
     /* 读取定值 */
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 4; i++)
     {
         rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
     }
-    
-    ParameterCheck(ZERODRIFT);    
-    ParameterCheck(DEADZONE); 
-    ParameterCheck(CALIBRATE_FACTOR); 
+
+    ParameterCheck(); 
 }
 
 /**
@@ -1622,6 +1623,7 @@ void rt_multi_common_data_config(void)
 int rt_multi_common_data_init(void)
 {
     device_fram = rt_device_find(RT_SPI_FRAM_NAME);
+	
     if (device_fram == NULL)
     {
         THREAD_PRINTF("fram is not found! \r\n"); 		

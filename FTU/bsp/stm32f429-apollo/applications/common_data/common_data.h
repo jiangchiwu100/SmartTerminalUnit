@@ -714,6 +714,7 @@ typedef union TagTelemetryDatabase
 #define DB_SN0                        0           // 0区
 #define DB_SN1                        1           // 1区
 #define DB_SN2                        2           // 2区
+#define DB_CALI                       3           // 校准系数区
 
 enum ParameterType
 {
@@ -1582,7 +1583,7 @@ extern int rt_multi_common_data_init(void);
 extern float* GetValueArray(uint16_t addr, uint8_t sn);
 extern void DBRevert(uint8_t act);
 extern void DBClear(void);
-extern void ParameterCheck(uint8_t type);
+extern void ParameterCheck(void);
 
 extern uint8_t DBReadValueAreaSN(void);
 extern uint8_t DBSwitchValueArea(uint8_t sn);
