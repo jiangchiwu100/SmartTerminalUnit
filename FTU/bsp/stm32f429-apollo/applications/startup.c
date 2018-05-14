@@ -18,8 +18,6 @@
 
 #include "file_operate.h"
 
-#include "Interface_S2J.h"
-
 /* PUBLIC FUNCTION -----------------------------------------------------------*/
 extern int rt_application_init(void);
 

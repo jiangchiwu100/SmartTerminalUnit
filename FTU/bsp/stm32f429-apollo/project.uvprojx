@@ -1797,6 +1797,11 @@
               <FileType>1</FileType>
               <FilePath>.\applications\struct2json\user\Interface_S2J.c</FilePath>
             </File>
+            <File>
+              <FileName>JsonFileOperation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\user\JsonFileOperation.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

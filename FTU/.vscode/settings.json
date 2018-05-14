@@ -8,6 +8,17 @@
         "s2j.h": "c",
         "system_error": "cpp",
         "xtr1common": "cpp",
-        "xlocale": "c"
-    }
+        "xlocale": "c",
+        "jsonfileoperation.h": "c",
+        "file_operate.h": "c",
+        "dfs_posix.h": "c",
+        "common_data.h": "c",
+        "common_config.h": "c",
+        "point_table_config.h": "c",
+        "ostream": "c",
+        "string.h": "c",
+        "iosfwd": "c",
+        "rtthread.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

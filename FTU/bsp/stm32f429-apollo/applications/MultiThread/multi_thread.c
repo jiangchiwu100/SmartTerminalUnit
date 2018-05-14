@@ -32,8 +32,6 @@
 #include "tcp_server.h"
 #include "file_operate.h"
 
-#include "Interface_S2J.h"
-
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
 //static rt_uint8_t rt_thread_system_stack[INIT_THREAD_STACK_SIZE]; 

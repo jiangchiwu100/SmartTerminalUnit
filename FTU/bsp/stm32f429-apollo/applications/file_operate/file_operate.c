@@ -16,11 +16,12 @@
 #include "wave_recording.h"
 #include <dfs_posix.h>
 
-#include "Interface_S2J.h"
 #include "point_table_config.h"
 #include "drv_wdg.h"
 	
 	
+#include "JsonFileOperation.h"
+
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
 
 
@@ -41,7 +42,6 @@ static struct READ_DIR Read_Dir[DEV_MAX_NUM];
 static struct READ_FILE Read_File[DEV_MAX_NUM];
 static struct WRITE_FILE Write_File[DEV_MAX_NUM];
 	
-static void CreateSetDatabaseCfgJsonFile(void);
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
   * @brief : Scan_Files.
@@ -1368,97 +1368,9 @@ void file_operate_Init(void)
 	    
 	rt_s2j_init();
     
-    CreateJsonFile();
-    
-    CreateSetDatabaseCfgJsonFile();
+    Create_JsonFile("FixedValueCfg2.json", g_FixedValueCfg2_Len, _CFG_FIXED_VALUE_2);
     
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
-
-
-
-void CreateJsonFile(void)
-{
-    //TERMINAL_PRODUCT_SERIAL_NUMBER
-    char* string;
-    char configBuffer[256] = {"Product Serial Number: "};
-    
-    strcat(configBuffer, TERMINAL_PRODUCT_SERIAL_NUMBER);
-    
-    char readBuffer[256];
-    
-	memset(DirName,0,sizeof(DirName));
-	strcpy(DirName,"/sojo");
-	strcat(DirName,"/HISTORY/Config");//建立SOE文件目录
-	mkdir(DirName,0);//建立目录
-	
-    strcpy(FileName,"/sojo");
-    strcat(FileName,"/HISTORY/Config");
-    strcat(FileName,"/FixedValueCfg2.json");	
-    
-//    unlink(FileName);   //删除该文件
-    
-    MyFile = open(FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
-    
-    read(MyFile, readBuffer, strlen(configBuffer));
-    
-    if((strcmp(configBuffer, readBuffer)) == 0) //两个字符串相等
-    {
-        close(MyFile);
-        return;
-    }
-    
-    write(MyFile, configBuffer, strlen(configBuffer));  //将硬件版本号写入到config文件中
-    write(MyFile, "\n", 1);  //写入文件
-    
-    for(uint16_t i = 0; i < g_FixedValueCfg2_Len; i++)
-    {
-        cJSON *struct_json = FixedValueCfg2_StructToJson(&FixedValueCfg2[i]);
-        
-        string = rt_Print_cJSON(struct_json);
-
-        write(MyFile, string, strlen(string));  //写入文件
-        
-        write(MyFile, "\n", 1);  //写入文件
-        
-        s2j_delete_json_obj(struct_json);       //删除该json
-    }
-    
-	close(MyFile);
-}
-
-void CreateSetDatabaseCfgJsonFile(void)
-{
-    //TERMINAL_PRODUCT_SERIAL_NUMBER
-    char* string;
-    
-	memset(DirName,0,sizeof(DirName));
-	strcpy(DirName,"/sojo");
-	strcat(DirName,"/HISTORY/Config");//建立SOE文件目录
-	mkdir(DirName,0);//建立目录
-	
-    strcpy(FileName,"/sojo");
-    strcat(FileName,"/HISTORY/Config");
-    strcat(FileName,"/SetDatabaseCfg.json");	
-    
-    MyFile = open(FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
-
-    for(uint16_t i = 0; i < g_SetDatabaseCfg_Len; i++)
-    {
-        cJSON *struct_json = SetDatabaseCfg_StructToJson(&SetDatabaseCfg[i]);
-        
-        string = rt_Print_cJSON(struct_json);
-
-        write(MyFile, string, strlen(string));  //写入文件
-        
-        write(MyFile, "\n", 1);  //写入文件
-        
-        s2j_delete_json_obj(struct_json);       //删除该json
-
-    }
-    
-	close(MyFile);
-}
-
 
