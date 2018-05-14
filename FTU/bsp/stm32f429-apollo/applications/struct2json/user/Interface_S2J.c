@@ -188,10 +188,10 @@ cJSON *ParameterCfg_StructToJson(void* struct_obj)
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, ParameterCfg, int, enable);			//使能
-	s2j_json_set_basic_element(json_obj, ParameterCfg, int, menuNum);			//菜单编号
+	s2j_json_set_basic_element(json_obj, ParameterCfg, int, enable);		//使能
+	s2j_json_set_basic_element(json_obj, ParameterCfg, int, menuNum);		//菜单编号
 	s2j_json_set_basic_element(json_obj, ParameterCfg, string, pName);		//名称
-	s2j_json_set_array_element(json_obj, ParameterCfg, double, pVal, 1);		//值    使用数组思想
+	s2j_json_set_array_element(json_obj, ParameterCfg, double, pVal, 1);	//值    使用数组思想
 	s2j_json_set_basic_element(json_obj, ParameterCfg, string, pUnit);		//单位
 	s2j_json_set_basic_element(json_obj, ParameterCfg, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, ParameterCfg, double, valMin);		//下限值

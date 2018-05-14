@@ -31,12 +31,10 @@
 #include "dlt634_5104slave_disk.h"
 #include "tcp_server.h"
 #include "file_operate.h"
-<<<<<<< HEAD
-=======
+
 #include "gui_common.h"
 #include "gui_101_cmd.h"
 #include "hmi_101_disk.h"
->>>>>>> 4746a3dd9afd9324edade3bf671229fce8ed1734
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
