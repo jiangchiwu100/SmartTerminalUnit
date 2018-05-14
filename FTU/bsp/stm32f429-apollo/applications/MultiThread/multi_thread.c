@@ -258,6 +258,7 @@ static void rt_slave101_thread_entry(void *param)
 { 
     rt_err_t result;
     
+	  DLT634_HMI_SLAVE_INIT(); 
     DLT634_5101_SLAVE_INIT();
        
     for (;;)
@@ -266,11 +267,11 @@ static void rt_slave101_thread_entry(void *param)
         result = rt_event_recv(&slave101_event, EVENT_RUN, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, RT_NULL);              
         if (result == RT_EOK)  
         {
-			g_ThreadRunSta |= THREAD_RUN_SLAVE101;
+			      g_ThreadRunSta |= THREAD_RUN_SLAVE101;
 			
             DLT634_5101_SlaveTask();
 			
-			DLT634_HMI_SlaveTask();
+			      DLT634_HMI_SlaveTask();
         } 		
     }    
 }
@@ -312,15 +313,12 @@ static void rt_slave104_thread_entry(void *param)
 #if RT_USING_HMICOM
 static void rt_hmicom_thread_entry(void *param)
 {
-    time_static_init();
-	
-    for (;;)
-    { 				
-   
+  time_static_init();
+	for (;;)
+	{
 		TestMain();
-//		g_ThreadRunSta |= THREAD_RUN_HMI;
-        rt_thread_delay(20);		
-    }    
+		rt_thread_delay(20);		
+	}    
 }
 #endif /* RT_USING_HMICOM */
 
