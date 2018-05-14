@@ -289,150 +289,22 @@ void ParameterCheck(uint8_t type)
 		    CalibrateFactorCfg[i].calibrateVal = CalibrateFactorCfg[i].factorDefault; 
 		}
 	}
+	
+	for (i = 0; i < FIXED_VALUE_NUM; i++)
+	{
+		if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
+		{
+		    *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal; 
+		}
+	}	
 
-    switch (type)
-    {
-    case ZERODRIFT:
-//        g_Parameter[ZERODRIFT_Uab] = g_Parameter[ZERODRIFT_Uab] > 0.1f ? g_Parameter[ZERODRIFT_Uab] : 0.1f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftUbc = g_ParameterDB.Data.runPara.Str.zerodriftUbc > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUbc : 0.1f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftUac = g_ParameterDB.Data.runPara.Str.zerodriftUac > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUac : 0.1f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftU0 = g_ParameterDB.Data.runPara.Str.zerodriftU0 > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftU0 : 0.1f;
-
-//        g_ParameterDB.Data.runPara.Str.zerodriftUAB = g_ParameterDB.Data.runPara.Str.zerodriftUAB > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUAB : 0.1f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftUBC = g_ParameterDB.Data.runPara.Str.zerodriftUBC > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftUBC : 0.1f;
-//    
-//        g_ParameterDB.Data.runPara.Str.zerodriftIa = g_ParameterDB.Data.runPara.Str.zerodriftIa > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIa : 0.05f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftIb = g_ParameterDB.Data.runPara.Str.zerodriftIb > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIb : 0.05f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftIc = g_ParameterDB.Data.runPara.Str.zerodriftIc > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftIc : 0.05f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftI0 = g_ParameterDB.Data.runPara.Str.zerodriftI0 > 0.005f ? g_ParameterDB.Data.runPara.Str.zerodriftI0 : 0.05f;
-
-//        g_ParameterDB.Data.runPara.Str.zerodriftP = g_ParameterDB.Data.runPara.Str.zerodriftP > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftP : 0.0001f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftQ = g_ParameterDB.Data.runPara.Str.zerodriftQ > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftQ : 0.0001f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftS = g_ParameterDB.Data.runPara.Str.zerodriftS > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftS : 0.0001f;
-
-//        g_ParameterDB.Data.runPara.Str.zerodriftF = g_ParameterDB.Data.runPara.Str.zerodriftF > 0.1f ? g_ParameterDB.Data.runPara.Str.zerodriftF : 0.1f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftPF = g_ParameterDB.Data.runPara.Str.zerodriftPF > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftPF : 0.001f;
-//        g_ParameterDB.Data.runPara.Str.zerodriftDC = g_ParameterDB.Data.runPara.Str.zerodriftDC > 0.0001f ? g_ParameterDB.Data.runPara.Str.zerodriftDC : 0.001f;
-        break;
-
-    case DEADZONE:
-//		for (i = 1; i <= ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneDC)) - ((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF)); i++)
-//		{
-//			if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) > DEADZONE_UP)
-//			{
-//				*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_UP;
-//			}
-//			if (*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) < DEADZONE_DOWN)
-//			{
-//				*((float *)&(g_ParameterDB.Data.runPara.Str.deadzoneF) + i) = DEADZONE_DOWN;
-//			}            
-//		}  
-//		
-//		g_ParameterDB.Data.runPara.Str.deadzoneDC = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC : 0.05f;
-//		g_ParameterDB.Data.runPara.Str.deadzoneDC2 = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneDC2 > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneDC2 : 0.05f;
-//		g_ParameterDB.Data.runPara.Str.deadzoneF = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzoneFrequency > 0.05f ? pValueParaDB->Data.runPara.Str.deadzoneFrequency : 1.0f;
-//	//        g_ParameterDB.Data.runPara.Str.deadzonePf = 100000.0f;//pValueParaDB->Data.runPara.Str.deadzonePf > 0.05f ? pValueParaDB->Data.runPara.Str.deadzonePf : 1.0f;
-//		g_ParameterDB.Data.runPara.Str.deadzoneT = 1000000.0f;//pValueParaDB->Data.runPara.Str.deadzoneT > 10.0f ? pValueParaDB->Data.runPara.Str.deadzoneT : 10.0f;
-        
-        break;
-        
-    case CALIBRATE_FACTOR:
-        
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIa > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIa < 0.0035f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorIa = 0.0043f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIb > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIb < 0.0035f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorIb = 0.0043f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorIc > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorIc < 0.0035f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorIc = 0.0043f;
-//        } 
-
-//	  #ifdef SYNTHESIS_I0_ENABLE		
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 0.005f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.0035f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0043f;			
-//        }
-//      #else		
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorI0 > 10.0f || g_ParameterDB.Data.calibrateFactor.Str.califactorI0 < 0.00001f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorI0 = 0.0004f;			
-//        } 
-//      #endif		
-
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUab > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUab < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorUab = 0.0095f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUac > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUac < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorUac = 0.0095f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUbc > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUbc < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorUbc = 0.0095f;
-//        }   
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorU0 > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorU0 < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorU0 = 0.0095f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUAB > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUAB < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorUAB = 0.0095f;
-//        }
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorUBC > 0.02f || g_ParameterDB.Data.calibrateFactor.Str.califactorUBC < 0.0065f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorUBC = 0.0095f;
-//        }        
-// 
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorF > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorF < 0.8f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorF = 1.0f;
-//        } 
-
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC <= 0.00f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorDC = 0.01f;
-//        }    
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 > 0.5f || g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 <= 0.00f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorDC2 = 0.01f;
-//        } 
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorT > 5.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorT < 0.8f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorT = 1.0f;
-//        } 
-
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
-//        } 
-
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa <= 0.0f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa = 0.29f;
-//        } 
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb <= 0.0f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb = 0.29f;
-//        } 
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc <= 0.0f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc = 0.29f;
-//        }  
-//        if (g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 > 1.2f || g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 <= 0.0f)
-//        {
-//            g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0 = 0.29f;
-//        }		
-        
-        break;
-
-    default:
-        break;
-    }
+	for (i = 0; i < RUN_PARAMETER_NUM; i++)
+	{
+		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+		{
+		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+		}
+	}	
 }
 
 /**
@@ -623,7 +495,7 @@ void CalibrationFactorCal(uint8_t num)
             if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
             {
                 offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;
-                telemetry[offset] += g_TelemetryDB[offset];
+                telemetry[offset] += (*CalibrateFactorCfg[offset].telemetry);
                 counter[offset]++;
 
                 if (counter[offset] >= AVERAGE_TIMER)
@@ -633,11 +505,11 @@ void CalibrationFactorCal(uint8_t num)
 
                     if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - sizeof(g_Alpha)/sizeof(float))
                     {
-						*TelemetryCfg[offset].pCalifactor -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - g_ValueParaPresetDB.property[i].addr)]);
+						*CalibrateFactorCfg[offset].factorVal -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - g_ValueParaPresetDB.property[i].addr)]);
                     }
                     else
                     {
-                        *TelemetryCfg[offset].pCalifactor *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
+                        *CalibrateFactorCfg[offset].factorVal *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
                     }
 					
                     g_ValueParaOperateInfo.num = 0;
@@ -1080,6 +952,7 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
     uint32_t addr;
     uint32_t len;
     float *pInfo;
+	
     switch (sn)
     {
     case DB_SN0:
@@ -1100,6 +973,7 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
     default:
         break;
     }
+	
     rt_device_write(device_fram, addr, (uint8_t *)pInfo, len);
 }
 
@@ -1136,6 +1010,37 @@ void rt_multi_common_data_get_value_from_fram(uint8_t sn)
         break;
     }
     rt_device_read(device_fram, addr, (uint8_t *)pInfo, len);
+}
+
+/**
+  * @brief:  第一次上电向Fram存储缺省定值
+  * @param:  [none]
+  * @return: [none]
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void rt_common_data_save_value_default_to_fram(void)
+{
+	uint32_t i;
+	
+    for (i = 0; i < RUN_PARAMETER_NUM; i++)
+	{
+	    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal;
+	}
+	
+    for (i = 0; i < CALIFACTOR_NUM; i++)
+	{
+	    *CalibrateFactorCfg[i].factorVal = CalibrateFactorCfg[i].factorDefault;
+	}
+
+    for (i = 0; i < FIXED_VALUE_NUM; i++)
+	{
+	    *FixedValueCfg1[i].pVal = g_pFixedValueCfg[i].defaultVal;
+	}	
+
+	for (i = 0; i < 3; i++)
+	{
+	    rt_multi_common_data_save_value_to_fram(i);
+	}   	
 }
 
 /**

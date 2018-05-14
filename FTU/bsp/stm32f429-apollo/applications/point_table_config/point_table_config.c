@@ -127,11 +127,15 @@ struct tagTelemetryCfg TelemetryCfg[] =
     { 1,    "无功功率(Q)",      &g_TelemetryDB[ADDR_Q],               "kVar",     &g_CalibrateFactor[CALIFACTOR_Q],      &g_Parameter[ZERODRIFT_Q],      &g_Parameter[DEADZONE_Q]},
     { 1,    "视在功率(S)",      &g_TelemetryDB[ADDR_S],               "kVA",      &g_CalibrateFactor[CALIFACTOR_S],      &g_Parameter[ZERODRIFT_S],      &g_Parameter[DEADZONE_S]},
     { 1,    "功率因数(pf)",     &g_TelemetryDB[ADDR_PF],               "-",       &g_CalibrateFactor[CALIFACTOR_PF],     &g_Parameter[ZERODRIFT_PF],     &g_Parameter[DEADZONE_PF]},
-    { 1,    "∠U0_I0",          &g_TelemetryDB[ADDR_AIPHY_U0_I0],      "°",       &g_CalibrateFactor[CALIFACTOR_L0],     NULL,                            NULL},
-    { 1,    "∠Uab_UBC",        &g_TelemetryDB[ADDR_ALPHY_Uab_UBC],    "°",       &g_CalibrateFactor[CALIFACTOR_LU],     NULL,                            NULL},	
     { 1,    "直流电压1",        &g_TelemetryDB[ADDR_DC1],              "V",       &g_CalibrateFactor[CALIFACTOR_DC1],    &g_Parameter[ZERODRIFT_DC1],    &g_Parameter[DEADZONE_DC1]},
     { 1,    "直流电压2",        &g_TelemetryDB[ADDR_DC2],              "V",       &g_CalibrateFactor[CALIFACTOR_DC2],    &g_Parameter[ZERODRIFT_DC2],    &g_Parameter[DEADZONE_DC2]},
     { 1,    "温度(T)",          &g_TelemetryDB[ADDR_T],                "°C",      &g_CalibrateFactor[CALIFACTOR_T],      &g_Parameter[ZERODRIFT_T],      &g_Parameter[DEADZONE_T]},
+
+	{ 1,    "∠Ua_Ia",          &g_TelemetryDB[ADDR_AIPHY_Ua_Ia],      "°",       &g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa],     NULL,                            NULL},
+    { 1,    "∠Ub_Ib",          &g_TelemetryDB[ADDR_AIPHY_Ub_Ib],      "°",       &g_CalibrateFactor[CALIFACTOR_ALPHA_UbIb],     NULL,                            NULL},
+    { 1,    "∠UC_Ic",          &g_TelemetryDB[ADDR_AIPHY_UC_Ic],      "°",       &g_CalibrateFactor[CALIFACTOR_ALPHA_UCIc],     NULL,                            NULL},	
+    { 1,    "∠U0_I0",          &g_TelemetryDB[ADDR_AIPHY_U0_I0],      "°",       &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0],     NULL,                            NULL},
+    { 1,    "∠Uab_UBC",        &g_TelemetryDB[ADDR_ALPHY_Uab_UBC],    "°",       &g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb],     NULL,                            NULL},	
 	
     { 1,    "一次Ia",           &g_TelemetryDB[ADDR_Ia_ONCE],          "A",       NULL,                                  NULL,                           NULL},
     { 1,    "一次Ib",           &g_TelemetryDB[ADDR_Ib_ONCE],          "A",       NULL,                                  NULL,                           NULL},
@@ -174,38 +178,32 @@ struct tagTelemetryCfg TelemetryCfg[] =
 /* 校准系数 */
 struct tagCalibrateFactor CalibrateFactorCfg[] = 
 {
-//   使能          名称                  校准值	                系数值                            系数上限值       系数下限值      系数缺省值
-    { 1,    "频率(f)校准系数",           50.00f,         &g_CalibrateFactor[CALIFACTOR_F],          1.2f,            0.8f,           1.0f},
-    { 1,    "A相电流(Ia)校准系数",       5.00f,          &g_CalibrateFactor[CALIFACTOR_Ia],         0.005f,         0.0035f,         0.0043f},
-    { 1,    "B相电流(Ib)校准系数",       5.00f,          &g_CalibrateFactor[CALIFACTOR_Ib],         0.005f,         0.0035f,         0.0043f},
-    { 1,    "C相电流(Ic)校准系数",       5.00f,          &g_CalibrateFactor[CALIFACTOR_Ic],         0.005f,         0.0035f,         0.0043f},
+//   使能          名称                  校准值	                 遥测                             系数值                            系数上限值       系数下限值      系数缺省值
+    { 1,    "频率(f)校准系数",           50.00f,   &g_TelemetryDB[ADDR_F],                &g_CalibrateFactor[CALIFACTOR_F],          1.2f,            0.8f,           1.0f},
+    { 1,    "A相电流(Ia)校准系数",       5.00f,    &g_TelemetryDB[ADDR_IA],               &g_CalibrateFactor[CALIFACTOR_Ia],         0.005f,         0.0035f,         0.0043f},
+    { 1,    "B相电流(Ib)校准系数",       5.00f,    &g_TelemetryDB[ADDR_IB],               &g_CalibrateFactor[CALIFACTOR_Ib],         0.005f,         0.0035f,         0.0043f},
+    { 1,    "C相电流(Ic)校准系数",       5.00f,    &g_TelemetryDB[ADDR_IC],               &g_CalibrateFactor[CALIFACTOR_Ic],         0.005f,         0.0035f,         0.0043f},
   #ifdef SYNTHESIS_I0_ENABLE
-    { 1,    "零序电流(I0)校准系数",      1.00f,          &g_CalibrateFactor[CALIFACTOR_I0],         0.005f,         0.0035f,         0.0043f},
+    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryDB[ADDR_I0],               &g_CalibrateFactor[CALIFACTOR_I0],         0.005f,         0.0035f,         0.0043f},
   #else		
-    { 1,    "零序电流(I0)校准系数",      1.00f,          &g_CalibrateFactor[CALIFACTOR_I0],         10.0f,          0.0004f,         0.00001f}, 
+    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryDB[ADDR_I0],               &g_CalibrateFactor[CALIFACTOR_I0],         10.0f,          0.0004f,         0.00001f}, 
   #endif		
-    { 1,    "线电压(Uab)校准系数",       100.00f,        &g_CalibrateFactor[CALIFACTOR_Uab],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(Ubc)校准系数",       100.00f,        &g_CalibrateFactor[CALIFACTOR_Ubc],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(Uca)校准系数",       100.00f,        &g_CalibrateFactor[CALIFACTOR_Uca],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(U0)校准系数",        50.00f,         &g_CalibrateFactor[CALIFACTOR_U0],         0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(UAB)校准系数",       100.00f,        &g_CalibrateFactor[CALIFACTOR_UAB],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(UBC)校准系数",       100.00f,        &g_CalibrateFactor[CALIFACTOR_UBC],        0.02f,          0.0065f,         0.0095f},
-	
-    { 0,    "有功功率校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_P],          1.0f,           1.0f,            1.0f},
-    { 0,    "无功功率校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_Q],          1.0f,           1.0f,            1.0f},
-    { 0,    "视在功率校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_S],          1.0f,           1.0f,            1.0f},
-    { 0,    "功率因数校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_PF],         1.0f,           1.0f,            1.0f},
-    { 0,    "零序角度校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_L0],         1.0f,           1.0f,            1.0f},
-    { 0,    "电压角度校准系数(无效)",    1,              &g_CalibrateFactor[CALIFACTOR_LU],         1.0f,           1.0f,            1.0f},
+    { 1,    "线电压(Uab)校准系数",       100.00f,  &g_TelemetryDB[ADDR_Uab],              &g_CalibrateFactor[CALIFACTOR_Uab],        0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(Ubc)校准系数",       100.00f,  &g_TelemetryDB[ADDR_Ubc],              &g_CalibrateFactor[CALIFACTOR_Ubc],        0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(Uca)校准系数",       100.00f,  &g_TelemetryDB[ADDR_Uca],              &g_CalibrateFactor[CALIFACTOR_Uca],        0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(U0)校准系数",        50.00f,   &g_TelemetryDB[ADDR_U0],               &g_CalibrateFactor[CALIFACTOR_U0],         0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(UAB)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UAB],              &g_CalibrateFactor[CALIFACTOR_UAB],        0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(UBC)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UBC],              &g_CalibrateFactor[CALIFACTOR_UBC],        0.02f,          0.0065f,         0.0095f},
 
-    { 1,    "直流电压1校准系数",         24,             &g_CalibrateFactor[CALIFACTOR_DC1],        0.5f,           0.001f,          0.01f},
-    { 1,    "直流电压2校准系数",         24,             &g_CalibrateFactor[CALIFACTOR_DC2],        0.5f,           0.001f,          0.01f},
-    { 1,    "温度校准系数",              0,              &g_CalibrateFactor[CALIFACTOR_T],          2.0f,           0.0001f,         1.0f},
-    { 1,    "UA_IA夹角校准系数",         0,              &g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa], 0.5f,           0.29f,           0.01f},
-    { 1,    "UB_IB夹角校准系数",         0,              &g_CalibrateFactor[CALIFACTOR_ALPHA_UbIb], 0.5f,           0.29f,           0.01f},
-    { 1,    "UC_IC夹角校准系数",         0,              &g_CalibrateFactor[CALIFACTOR_ALPHA_UcIc], 0.5f,           0.29f,           0.01f},
-    { 1,    "U0_I0夹角校准系数",         0,              &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0], 0.5f,           0.29f,           0.01f},
-    { 1,    "UA_IB夹角校准系数",         0,              &g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb], 0.5f,           0.29f,           0.01f},		
+    { 1,    "直流电压1校准系数",         24,       &g_TelemetryDB[ADDR_DC1],              &g_CalibrateFactor[CALIFACTOR_DC1],        0.5f,           0.001f,          0.01f},
+    { 1,    "直流电压2校准系数",         24,       &g_TelemetryDB[ADDR_DC2],              &g_CalibrateFactor[CALIFACTOR_DC2],        0.5f,           0.001f,          0.01f},
+    { 1,    "温度校准系数",              0,        &g_TelemetryDB[ADDR_T],                &g_CalibrateFactor[CALIFACTOR_T],          2.0f,           0.0001f,         1.0f},
+	
+    { 1,    "UA_IA夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_Ua_Ia],      &g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa], 0.5f,           0.29f,           0.01f},
+    { 1,    "UB_IB夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_Ub_Ib],      &g_CalibrateFactor[CALIFACTOR_ALPHA_UbIb], 0.5f,           0.29f,           0.01f},
+    { 1,    "UC_IC夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_UC_Ic],      &g_CalibrateFactor[CALIFACTOR_ALPHA_UCIc], 0.5f,           0.29f,           0.01f},
+    { 1,    "U0_I0夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_U0_I0],      &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0], 0.5f,           0.29f,           0.01f},
+    { 1,    "Uab_UBC夹角校准系数",       0,        &g_TelemetryDB[ADDR_ALPHY_Uab_UBC],    &g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb], 0.5f,           0.29f,           0.01f},		
 };
 	
 /* 定值0区 */
@@ -220,7 +218,7 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,      1,      "永磁输出翻转",    &g_Parameter[OUTPUT_OVERTURN],              "-",       1,           0,     0,         2,     {"不翻转", "翻转"  },   " "   }, 
     { 1,      1,      "合闸欠压定值",    &g_Parameter[CAP_UNDERVOLTAGE_CLOSING],     "V",     250.00f,     0.00f,   176,       0,     {"-",  "-"         },   " "   },	
     { 1,      1,      "分闸欠压定值",    &g_Parameter[CAP_UNDERVOLTAGE_OPENING],     "V",     250.00f,     0.00f,   176,       0,     {"-",  "-"         },   " "   }, 
-    { 1,      1,      "电容欠压系数",    &g_Parameter[CAP_UNDERVOLTAGE_FACTOR],      "-",      2.01f,      1.01f,   1.1f,      0,     {"-",  "-"         },   " "   },	    
+    { 1,      1,      "电容欠压系数",    &g_Parameter[CAP_UNDERVOLTAGE_FACTOR],      "-",      2.00f,      1.00f,   1.2f,      0,     {"-",  "-"         },   " "   },	    
     { 1,      1,      "一次变比_U",      &g_Parameter[RATIO_U_ONE_TURN],             "V",    100000.00f,   0.00f,   10000.00f, 0,     {"-",  "-"         },   " "    }, 
     { 1,      1,      "二次变比_U",      &g_Parameter[RATIO_U_SECONDARY],            "V",     1000.00f,   0.00f,    220.0f,    0,     {"-",  "-"         },   " "    },	
     { 1,      1,      "一次变比_U0",     &g_Parameter[RATIO_U0_ONE_TURN],            "V",     10000.00f,   0.00f,   1,         0,     {"-",  "-"         },   " "    }, 

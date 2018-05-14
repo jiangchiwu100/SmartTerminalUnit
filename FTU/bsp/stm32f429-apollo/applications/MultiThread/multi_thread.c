@@ -259,6 +259,7 @@ static void rt_slave101_thread_entry(void *param)
 { 
     rt_err_t result;
     
+	DLT634_HMI_SLAVE_INIT();
     DLT634_5101_SLAVE_INIT();
        
     for (;;)
