@@ -138,15 +138,20 @@ void *TelemetryCfg_JsonToStruct(cJSON* json_obj)
 */
 cJSON *CalibrateFactorCfg_StructToJson(void* struct_obj)
 {
-	struct tagCalibrateFactor *fixedValueCfg1 = struct_obj;
+	struct tagCalibrateFactor *calibrateFactorCfg = struct_obj;
 
 	/* create Student JSON object */
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);		    //使能
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);	    //名称
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, Val);			//值
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, int, enable);		    //使能
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, string, pName);	    //名称
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, double, calibrateVal);		//校准值
+	s2j_json_set_array_element(json_obj, calibrateFactorCfg, double, telemetry, 1);		//遥测
+	s2j_json_set_array_element(json_obj, calibrateFactorCfg, double, factorVal, 1);		//系数值
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, double, factorMax);		//系数上限值
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, double, factorMin);		//系数下限值
+	s2j_json_set_basic_element(json_obj, calibrateFactorCfg, double, factorDefault);	//系数缺省值
 
 	/* return Student JSON object pointer */
 	return json_obj;
@@ -167,7 +172,12 @@ void *CalibrateFactorCfg_JsonToStruct(cJSON* json_obj)
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);			//使能
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);			//名称
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, Val);			//值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, calibrateVal);	//校准值
+	s2j_struct_get_array_element(struct_obj, json_obj, double, telemetry);		//遥测
+	s2j_struct_get_array_element(struct_obj, json_obj, double, factorVal);		//系数值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorMax);		//系数上限值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorMin);		//系数下限值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorDefault);	//系数缺省值
 
 	/* return Student structure object pointer */
 	return struct_obj;
@@ -195,6 +205,7 @@ cJSON *ParameterCfg_StructToJson(void* struct_obj)
 	s2j_json_set_basic_element(json_obj, ParameterCfg, string, pUnit);		//单位
 	s2j_json_set_basic_element(json_obj, ParameterCfg, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, ParameterCfg, double, valMin);		//下限值
+	s2j_json_set_basic_element(json_obj, ParameterCfg, double, defaultVal);	//缺省值
 	s2j_json_set_basic_element(json_obj, ParameterCfg, int, dataType);		//数据类型
 	s2j_json_set_array_element(json_obj, ParameterCfg, string, pContent, ParameterCfg->dataType);	//数据显示内容
 	s2j_json_set_basic_element(json_obj, ParameterCfg, string, pNote);		//备注
@@ -223,6 +234,7 @@ void *ParameterCfg_JsonToStruct(cJSON* json_obj)
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
 	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
@@ -253,6 +265,7 @@ cJSON *FixedValueCfg1_StructToJson(void* struct_obj)
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pUnit);		//单位
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, valMin);		//下限值
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, double, defaultVal);	//缺省值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, dataType);		//数据类型
 	s2j_json_set_array_element(json_obj, fixedValueCfg1, string, pContent, fixedValueCfg1->dataType);	//数据显示内容
 	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pNote);		//备注
@@ -281,6 +294,7 @@ void *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
 	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
@@ -311,11 +325,12 @@ cJSON *FixedValueCfg2_StructToJson(void* struct_obj)
 	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, pUnit);		//单位
 	s2j_json_set_basic_element(json_obj, fixedValueCfg2, double, valMax);		//上限值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg2, double, valMin);		//下限值
+	s2j_json_set_basic_element(json_obj, fixedValueCfg2, double, defaultVal);	//缺省值
 	s2j_json_set_basic_element(json_obj, fixedValueCfg2, int, dataType);		//数据类型
 	s2j_json_set_array_element(json_obj, fixedValueCfg2, string, pContent, fixedValueCfg2->dataType);	//数据显示内容
 	s2j_json_set_basic_element(json_obj, fixedValueCfg2, string, pNote);		//备注
 
-																				/* return Student JSON object pointer */
+	/* return Student JSON object pointer */
 	return json_obj;
 }
 
@@ -339,11 +354,12 @@ void *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
 	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
+	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
 	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
 
-																			/* return Student structure object pointer */
+	/* return Student structure object pointer */
 	return struct_obj;
 }
 
