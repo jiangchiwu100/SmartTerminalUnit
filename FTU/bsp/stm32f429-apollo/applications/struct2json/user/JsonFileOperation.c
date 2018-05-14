@@ -69,7 +69,10 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
     strcpy(Json_FileName,"/sojo");
     strcat(Json_FileName,"/HISTORY/Config/");
     strcat(Json_FileName, fileName);	
-    
+    strcat(Json_FileName, ".json");	
+
+    g_ProductID.name = fileName;    //json内同时写入文件名称以作区分
+
     unlink(Json_FileName);   //删除该文件
      
     cJSON *struct_json = ProductID_StructToJson();

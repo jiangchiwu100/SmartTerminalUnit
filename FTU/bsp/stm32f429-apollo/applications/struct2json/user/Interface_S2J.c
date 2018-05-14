@@ -25,6 +25,7 @@ cJSON *ProductID_StructToJson(void)
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
+	s2j_json_set_basic_element(json_obj, &g_ProductID, string, pointTableType);				//标注该文件时遥信还是遥测
 	s2j_json_set_basic_element(json_obj, &g_ProductID, string, ProductSerialNumber);		//名称
 
 	/* return Student JSON object pointer */
