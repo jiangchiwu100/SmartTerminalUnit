@@ -26,7 +26,7 @@ cJSON *ProductID_StructToJson(void)
 
 	/* serialize data to Student JSON object. */
 	s2j_json_set_basic_element(json_obj, &g_ProductID, string, pointTableType);				//标注该文件时遥信还是遥测
-	s2j_json_set_basic_element(json_obj, &g_ProductID, string, ProductSerialNumber);		//名称
+	s2j_json_set_basic_element(json_obj, &g_ProductID, string, productSerialNumber);		//名称
 
 	/* return Student JSON object pointer */
 	return json_obj;
@@ -63,7 +63,7 @@ cJSON *TelesignalCfg_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *TelesignalCfg_JsonToStruct(cJSON* json_obj)
+struct tagTelesignalCfg *TelesignalCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagTelesignalCfg);
@@ -111,7 +111,7 @@ cJSON *TelemetryCfg_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *TelemetryCfg_JsonToStruct(cJSON* json_obj)
+struct tagTelemetryCfg *TelemetryCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagTelemetryCfg);
@@ -164,7 +164,7 @@ cJSON *CalibrateFactorCfg_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *CalibrateFactorCfg_JsonToStruct(cJSON* json_obj)
+struct tagCalibrateFactor *CalibrateFactorCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagCalibrateFactor);
@@ -221,7 +221,7 @@ cJSON *ParameterCfg_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *ParameterCfg_JsonToStruct(cJSON* json_obj)
+struct tagValueParaCfg *ParameterCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
@@ -281,7 +281,7 @@ cJSON *FixedValueCfg1_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
+struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
@@ -341,7 +341,7 @@ cJSON *FixedValueCfg2_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
+struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
@@ -392,7 +392,7 @@ cJSON *SetDatabaseCfg_StructToJson(void* struct_obj)
 * @return 返回指向转换后的结构体指针
 *
 */
-void *SetDatabaseCfg_JsonToStruct(cJSON* json_obj)
+ConfigurationSetDatabaseToJson *SetDatabaseCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, ConfigurationSetDatabaseToJson);

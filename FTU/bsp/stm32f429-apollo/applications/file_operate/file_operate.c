@@ -1369,7 +1369,8 @@ void file_operate_Init(void)
 	rt_s2j_init();
     
     Create_JsonFile("FixedValueCfg2", g_FixedValueCfg2_Len, _CFG_FIXED_VALUE_2);
-    
+
+    GetJsonForFile("SetDatabaseCfg", _CFG_SET_DATA_BASE);
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

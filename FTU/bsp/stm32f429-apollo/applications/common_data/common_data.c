@@ -292,19 +292,20 @@ void ParameterCheck(uint8_t type)
 	
 	for (i = 0; i < FIXED_VALUE_NUM; i++)
 	{
-		if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
+        float  a = *g_pFixedValueCfg[i].pVal;
+		if (a > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
 		{
 		    *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal; 
 		}
 	}	
 
-	for (i = 0; i < RUN_PARAMETER_NUM; i++)
-	{
-		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
-		{
-		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
-		}
-	}	
+//	for (i = 0; i < RUN_PARAMETER_NUM; i++)
+//	{
+//		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+//		{
+//		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+//		}
+//	}	
 }
 
 /**
@@ -1375,6 +1376,22 @@ void rt_multi_common_data_read_config_from_fram(void)
         rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
     }
     
+    
+    /* 读取当前定值区号 */
+    if (g_ValueParaOperateInfo.currentSN == 2)
+    {
+        //g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValue = g_FixedValue2; 
+		g_pFixedValueCfg = FixedValueCfg2;
+    }
+    else // 默认1区
+    {
+        g_ValueParaOperateInfo.currentSN = 1;
+        //g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValue = g_FixedValue1;
+		g_pFixedValueCfg = FixedValueCfg1;
+    } 
+    
     ParameterCheck(ZERODRIFT);    
     ParameterCheck(DEADZONE); 
     ParameterCheck(CALIBRATE_FACTOR); 
@@ -1592,22 +1609,7 @@ void rt_multi_common_data_config(void)
     for(i=0;i<DEV_MAX_NUM;i++)
     {
         g_NVADBOut[i] = g_NVADBIn;
-    }
-
-    /* 读取当前定值区号 */
-    if (g_ValueParaOperateInfo.currentSN == 2)
-    {
-        //g_pFixedValue = &g_FixedValueDB2;
-		g_pFixedValue = g_FixedValue2; 
-		g_pFixedValueCfg = FixedValueCfg2;
-    }
-    else // 默认1区
-    {
-        g_ValueParaOperateInfo.currentSN = 1;
-        //g_pFixedValue = &g_FixedValueDB1;
-		g_pFixedValue = g_FixedValue1;
-		g_pFixedValueCfg = FixedValueCfg1;
-    }   
+    }  
 		
     memset(&g_TelemetryDB, 0, sizeof(TelemetryDatabase));
     memset(&g_TelemetryLastDB, 0, sizeof(TelemetryDatabase));
