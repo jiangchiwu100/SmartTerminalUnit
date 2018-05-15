@@ -70,7 +70,7 @@
 #define NRZ_INVERTED                    1       /* Non Return to Zero : inverted mode */
 
 #ifndef RT_SERIAL_RB_BUFSZ
-#define RT_SERIAL_RB_BUFSZ              512
+#define RT_SERIAL_RB_BUFSZ              1024
 #endif
 
 #define RT_SERIAL_EVENT_RX_IND          0x01    /* Rx indication */

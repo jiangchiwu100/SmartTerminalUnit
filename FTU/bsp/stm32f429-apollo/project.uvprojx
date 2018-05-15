@@ -1635,6 +1635,36 @@
               <FileType>1</FileType>
               <FilePath>.\applications\lkdGui\gui\gui_common.c</FilePath>
             </File>
+            <File>
+              <FileName>lkdGuiMenu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\lkdGui\gui\lkdGuiMenu.c</FilePath>
+            </File>
+            <File>
+              <FileName>lkdGuiWindow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\lkdGui\gui\lkdGuiWindow.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUIdisplaydef.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\applications\lkdGui\gui\GUIdisplaydef.h</FilePath>
+            </File>
+            <File>
+              <FileName>GUIdisplay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\lkdGui\gui\GUIdisplay.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUIdisplay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\applications\lkdGui\gui\GUIdisplay.h</FilePath>
+            </File>
+            <File>
+              <FileName>userVariable.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\lkdGui\gui\userVariable.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

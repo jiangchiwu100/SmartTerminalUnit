@@ -269,7 +269,7 @@ static void rt_slave101_thread_entry(void *param)
         {
 			      g_ThreadRunSta |= THREAD_RUN_SLAVE101;
 			
-            DLT634_5101_SlaveTask();
+            //DLT634_5101_SlaveTask();
 			
 			      DLT634_HMI_SlaveTask();
         } 		
