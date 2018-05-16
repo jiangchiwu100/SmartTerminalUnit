@@ -30,7 +30,7 @@
 
 extern rt_err_t rt_s2j_init(void);  //初始化struct2json
 extern void Create_JsonFile(char* fileName, uint16_t length, uint8_t name);
-extern void GetJsonForFile(char* fileName, uint8_t name);
+extern uint8_t GetJsonForFile(char* fileName, uint8_t name);
 
 #endif
 

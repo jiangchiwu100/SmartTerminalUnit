@@ -26,7 +26,7 @@ static char Json_DirName[255]; /* Dir Name */
 static void Struct_To_Json(uint16_t length, uint8_t name, int file);
 static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json);
 static void Get_JSON(cJSON * root, uint8_t name);
-
+static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName);
 
 /**
  * @fn rt_s2j_init
@@ -56,11 +56,8 @@ rt_err_t rt_s2j_init(void)
  */
 void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
 {
-    
     //TERMINAL_PRODUCT_SERIAL_NUMBER
     char* string;
-    
-    char readBuffer[256];
     
 	memset(Json_DirName,0,sizeof(Json_DirName));
 	strcpy(Json_DirName,"/sojo");
@@ -72,25 +69,20 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
     strcat(Json_FileName, fileName);	
     strcat(Json_FileName, ".json");	
 
+    unlink(Json_FileName);  //删除文件
+
+    if(Get_ID_For_Json(Json_FileName, fileName) == 0)   //ID号能对应上则退出
+    {
+        return;
+    }
+     
     g_ProductID.pointTableType = fileName;    //json内同时写入文件名称以作区分
 
-    unlink(Json_FileName);   //删除该文件
-     
     cJSON *struct_json = ProductID_StructToJson();
     
     string = rt_Print_cJSON(struct_json);
     
-    s2j_delete_json_obj(struct_json);       //删除该json
-    
     Json_MyFile = open(Json_FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
-    
-    read(Json_MyFile, readBuffer, (sizeof(string) + 3));    //读取文件头，检查是否写过
-    
-    if((strstr(readBuffer, string)) != NULL)    //两个字符串相等
-    {
-        close(Json_MyFile);
-        return;
-    }
     
     write(Json_MyFile, string, (strlen(string) - 2));  //将硬件版本号写入到config文件中
     write(Json_MyFile, ",\n", 2);  //写入文件
@@ -176,8 +168,6 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
         {
             write(file, "\n", 1);  //依照标准格式进行写入
         }
-        
-        s2j_delete_json_obj(struct_json);       //删除该json
     }
 
 }
@@ -196,40 +186,15 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
     {
         case _CFG_SET_DATA_BASE:
         {
-//            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
-            SetDatabaseCfg_1[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
+            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
             break;
         }
         case _CFG_PARAMTER:
-        {
-            ParameterCfg[index] = *ParameterCfg_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_FIXED_VALUE_1:
-        {
-            FixedValueCfg1[index] = *FixedValueCfg1_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_FIXED_VALUE_2:
-        {
-            FixedValueCfg2[index] = *FixedValueCfg2_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_CALIBRATE_FACTOR:
-        {
-            CalibrateFactorCfg[index] = *CalibrateFactorCfg_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_TELE_METRY:
-        {
-            TelemetryCfg[index] = *TelemetryCfg_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_TELE_SIGNAL:
-        {
-            TelesignalCfg[index] = *TelesignalCfg_JsonToStruct(struct_json);
-            break;
-        }
         default :
         {
             break;
@@ -249,15 +214,15 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
 void Get_JSON(cJSON * root, uint8_t name)
 {
 	cJSON * item;
-    int a = cJSON_GetArraySize(root);
-	for (int i = 0; i < a; i++)   //遍历最外层json键值对
+	for (int i = 0; i < cJSON_GetArraySize(root); i++)   //遍历最外层json键值对
 	{
 		item = cJSON_GetArrayItem(root, i);
 		if (cJSON_Object != item->type)		//值不为json对象则查找child是否为空，为空即不包含json
 		{
 			if (item->child != NULL)
 			{
-				for (int j = 0; j < cJSON_GetArraySize(item); j++)   //遍历外层json键值对
+                int a = cJSON_GetArraySize(item);
+				for (int j = 0; j < a; j++)   //遍历外层json键值对
 				{
 					cJSON * _item = cJSON_GetArrayItem(item, j);
 					if (cJSON_Object == _item->type)    //如果类型为cJSON_Object则转换
@@ -276,15 +241,18 @@ void Get_JSON(cJSON * root, uint8_t name)
  * @brief 结构体转换为json并写入到文件
  * @param fileName    要写入的文件名称
  * @param name    需要转换的结构体名字
- * 
+ * @return 正确    0
+ *         文件打开错误    1
+ *         json格式错误    2
  */
-void GetJsonForFile(char* fileName, uint8_t name)
+uint8_t GetJsonForFile(char* fileName, uint8_t name)
 {
     //TERMINAL_PRODUCT_SERIAL_NUMBER
-    char* string;
+    static char* _string;
     static char data;
+    static cJSON *readJson;
 
-    string = rt_malloc(1024*1024);     //分配1M的内存
+    _string = rt_malloc(1024*1024);     //分配1M的内存
     
 	memset(Json_DirName,0,sizeof(Json_DirName));
 	strcpy(Json_DirName,"/sojo");
@@ -297,28 +265,107 @@ void GetJsonForFile(char* fileName, uint8_t name)
     strcat(Json_FileName, ".json");	
 
     Json_MyFile = open(Json_FileName,  O_RDONLY, 0);  //打开文件
-
-    if(Json_FileName < 0)
+    if(Json_MyFile < 0)
     {
-        rt_kprintf("check: open file for read failed\n");
-        return;
+        return 1;
     }
 
     for (uint32_t i = 0; (read(Json_MyFile, &data, 1)); i++)
 	{
-        string[i] = data;
+        _string[i] = data;
 	}
 
-    cJSON *readJson = cJSON_Parse(string);
+	close(Json_MyFile);
 
+    readJson = rt_Get_cJSON(_string);
+    if(readJson == 0)   //未能能正确转换json ，首先检查是否写错
+    {
+        rt_free(_string);    //释放动态内存
+        return 2;
+    }
     //增加动态内存获取，大小为结构体大小
     //获取文件内容
     //转换，根据电脑端demo
     Get_JSON(readJson, name); //获取文件内的json数据并转换为结构体数据
 
-	close(Json_MyFile);
+    rt_free(_string);    //释放动态内存
+    return 0;
+}
 
+/**
+ * @fn Get_ID_For_Json
+ * @brief 从json文件中获取ID号
+ * @param fileName 指向要读取的文件
+ * @return ID正确   0
+ *         不正确   1
+ *         没有“productSerialNumber”字段    2
+ *         文件名称不正确    3
+ *         文件打开不正确    4
+ *         字符串位置不正确    5
+ * 
+ */
+static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
+{
+    char* string;
+    static char data;
+    string = rt_malloc(512);     //分配512字节的内存
+    int myFile_;
+    uint8_t count = 0;  //计数，计读到的“，”标号的数量
+    uint8_t res = 1;    //要返回的结果
+    char* _string;
+    
+    myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
+    if(myFile_ < 0)
+    {
+        return 4;
+    }
+
+    for (uint32_t i = 0; (read(myFile_, &data, 1)); i++)
+	{
+        if(data == ',')
+        {
+            count++;
+            if(count >= 2)
+            {
+                string[i] = '}';
+                break;  //跳出循环
+            }
+        }
+        string[i] = data;
+	}
+    close(myFile_);
+    
+    _string = strstr(string, "pointTableType");
+    if(string - _string > 4)  //此处硬编码
+    {
+        res = 5;
+    }
+    if (strstr(string, jsonFileName))   //string字符串中是否包含有该json文件名称
+    {
+        if (strstr(string, "productSerialNumber"))   //判断字符串ProductSerialNumber在字符串1中首次出现的位置
+        {
+            if(strstr(string, TERMINAL_PRODUCT_SERIAL_NUMBER))    //判断读取出的ID与软件中是否一致
+            {
+                res = 0;
+            }
+            else
+            {
+                res = 1;
+            }
+        }
+        else
+        {
+            res = 2;
+        }
+    }
+    else
+    {
+        res = 3;
+    }
+    
     rt_free(string);    //释放动态内存
+    
+    return res;
 }
 
 

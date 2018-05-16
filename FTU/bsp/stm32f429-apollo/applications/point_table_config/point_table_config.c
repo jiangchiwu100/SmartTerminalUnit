@@ -542,7 +542,7 @@ ConfigurationSetDatabaseToJson SetDatabaseCfg[] = {
     {.name = "ASDU地址",         .dataLen = 1,       .value = {0.0f}   },
 //YX设置
     {.name = "YX设置总数",       .dataLen = 1,       .value = {0.0f}   },
-    {.name = "YX设置",           .dataLen = 299,     .value = {0.0f}   },
+    {.name = "YX设置",           .dataLen = 200,     .value = {0.0f}   },
 //YC设置
     {.name = "YC值",            .dataLen = 100,      .value = {0.0f}   },
     {.name = "属性",            .dataLen = 100,      .value = {0.0f}   },
@@ -551,7 +551,7 @@ ConfigurationSetDatabaseToJson SetDatabaseCfg[] = {
     {.name = "YK值",           .dataLen = 1,         .value = {0.0f}   },
     {.name = "属性",           .dataLen = 1,         .value = {0.0f}   },
     //ID设置 
-    {.name = "ID",             .dataLen = 12,      .value = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f}   },
+    {.name = "ID",             .dataLen = 12,       .value = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f}   },
 
 };
 

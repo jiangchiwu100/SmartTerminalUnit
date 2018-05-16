@@ -19,9 +19,9 @@
  */
 typedef struct tagConfigurationSetDatabaseToJson
 {
-    char name[30];      //数据名称
+    char name[20];      //数据名称
     int dataLen;        //标明该数据的长度
-    float value[100];   //存储数据的数组
+    float value[200];   //存储数据的数组
 }ConfigurationSetDatabaseToJson;
 
 
@@ -31,16 +31,16 @@ typedef struct tagConfigurationSetDatabaseToJson
 struct tagTelesignalCfg
 {
 	unsigned char enable;  // 使能
-    char pName[30];        // 名称
+    char *pName;        // 名称
     unsigned char *pVal;   // 值	
 };
 
 struct tagTelemetryCfg
 {
 	unsigned char enable;  // 使能
-    char pName[30];        // 名称
+    char *pName;        // 名称
     float *pVal;           // 值	
-    char pUnit[10];        // 单位
+    char *pUnit;        // 单位
     float *pCalifactor;    // 校准系数		
 	float *pZerodrift;     // 零漂    
 	float *pDeadzone;      // 死区	
@@ -49,7 +49,7 @@ struct tagTelemetryCfg
 struct tagCalibrateFactor
 {
 	unsigned char enable;  // 使能
-    char pName[30];        // 名称
+    char *pName;        // 名称
     float calibrateVal;    // 校准值
     float *telemetry;	   // 遥测
     float *factorVal;      // 系数值	
@@ -62,15 +62,15 @@ struct tagValueParaCfg
 {
 	unsigned char enable;      // 使能
 	unsigned char menuNum;     // 菜单编号
-    char pName[30];            // 名称
+    char *pName;            // 名称
     float *pVal;               // 值	
-    char pUnit[10];            // 单位
+    char *pUnit;            // 单位
     float valMax;	           // 上限值	
     float valMin;              // 下限值
     float defaultVal;          // 缺省值	
 	unsigned char dataType;    // 数据类型
-	char pContent[5][30];      // 数据显示内容
-	char pNote[30];            // 备注
+	char *pContent[5];      // 数据显示内容
+	char *pNote;            // 备注
 };
 
 extern struct tagTelesignalCfg TelesignalCfg[];

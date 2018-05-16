@@ -59,28 +59,6 @@ cJSON *TelesignalCfg_StructToJson(void* struct_obj)
 }
 
 /**
-* @fn TelesignalCfg_JsonToStruct
-* @brief 实现遥测结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagTelesignalCfg *TelesignalCfg_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagTelesignalCfg);
-    struct_obj->pVal = &uCharTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);	//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);	//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, int, pVal);		//值
-	
-	/* return Student structure object pointer */
-	return struct_obj;
-}
-
-/**
 * @fn TelemetryCfg_StructToJson
 * @brief 实现遥测结构体的struct转json
 * @param struct_obj 指向结构体的指针
@@ -105,36 +83,6 @@ cJSON *TelemetryCfg_StructToJson(void* struct_obj)
 
 	/* return Student JSON object pointer */
 	return json_obj;
-}
-
-/**
-* @fn TelemetryCfg_JsonToStruct
-* @brief 实现遥测结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagTelemetryCfg *TelemetryCfg_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagTelemetryCfg);
-
-    struct_obj->pVal = &FloatTemp;
-    struct_obj->pCalifactor = &FloatTemp;
-    struct_obj->pZerodrift = &FloatTemp;
-    struct_obj->pDeadzone = &FloatTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);			//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);			//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pVal);			//值
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);			//单位
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pCalifactor);	//校准系数
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pZerodrift);		//零漂
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pDeadzone);		//死区
-
-	/* return Student structure object pointer */
-	return struct_obj;
 }
 
 /**
@@ -163,35 +111,6 @@ cJSON *CalibrateFactorCfg_StructToJson(void* struct_obj)
 
 	/* return Student JSON object pointer */
 	return json_obj;
-}
-
-/**
-* @fn CalibrateFactorCfg_JsonToStruct
-* @brief 实现校准系数结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagCalibrateFactor *CalibrateFactorCfg_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagCalibrateFactor);
-
-    struct_obj->telemetry = &FloatTemp;
-    struct_obj->factorVal = &FloatTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);			//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);			//名称
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, calibrateVal);	//校准值
-	s2j_struct_get_array_element(struct_obj, json_obj, double, telemetry);		//遥测
-	s2j_struct_get_array_element(struct_obj, json_obj, double, factorVal);		//系数值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorMax);		//系数上限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorMin);		//系数下限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, factorDefault);	//系数缺省值
-
-	/* return Student structure object pointer */
-	return struct_obj;
 }
 
 /**
@@ -226,37 +145,6 @@ cJSON *ParameterCfg_StructToJson(void* struct_obj)
 }
 
 /**
-* @fn ParameterCfg_JsonToStruct
-* @brief 实现定值0区结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagValueParaCfg *ParameterCfg_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
-
-    struct_obj->pVal = &FloatTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, menuNum);		//菜单编号
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);		//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pVal);		//值
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
-	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
-
-	/* return Student structure object pointer */
-	return struct_obj;
-}
-
-/**
 * @fn FixedValueCfg1_StructToJson
 * @brief 实现定值一区结构体的struct转json
 * @param struct_obj 指向结构体的指针
@@ -288,37 +176,6 @@ cJSON *FixedValueCfg1_StructToJson(void* struct_obj)
 }
 
 /**
-* @fn FixedValueCfg1_JsonToStruct
-* @brief 实现定值一区结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
-
-    struct_obj->pVal = &FloatTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, menuNum);		//菜单编号
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);		//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pVal);		//值
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
-	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
-
-	/* return Student structure object pointer */
-	return struct_obj;
-}
-
-/**
 * @fn FixedValueCfg2_StructToJson
 * @brief 实现定值二区结构体的struct转json
 * @param struct_obj 指向结构体的指针
@@ -347,37 +204,6 @@ cJSON *FixedValueCfg2_StructToJson(void* struct_obj)
 
 	/* return Student JSON object pointer */
 	return json_obj;
-}
-
-/**
-* @fn FixedValueCfg2_JsonToStruct
-* @brief 实现定值二区结构体的json转struct
-* @param json_obj 指向json的指针
-* @return 返回指向转换后的结构体指针
-*
-*/
-struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student structure object */
-	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
-
-    struct_obj->pVal = &FloatTemp;
-
-	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, menuNum);		//菜单编号
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);		//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pVal);		//值
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pUnit);		//单位
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMax);		//上限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, valMin);		//下限值
-	s2j_struct_get_basic_element(struct_obj, json_obj, double, defaultVal);	//缺省值
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataType);		//数据类型
-	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
-
-	/* return Student structure object pointer */
-	return struct_obj;
 }
 
 /**
