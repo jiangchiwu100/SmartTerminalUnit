@@ -13,6 +13,8 @@
 
 ProductID g_ProductID;
 
+static float FloatTemp = 0.00f;
+static unsigned char uCharTemp = 0;
 /**
  * @fn ProductID_StructToJson
  * @brief 实现产品ID号的struct转json
@@ -48,9 +50,9 @@ cJSON *TelesignalCfg_StructToJson(void* struct_obj)
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);			//使能
-	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);		//名称
-	s2j_json_set_array_element(json_obj, fixedValueCfg1, double, pVal, 1);		//值    使用数组思想
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, int, enable);		//使能
+	s2j_json_set_basic_element(json_obj, fixedValueCfg1, string, pName);	//名称
+	s2j_json_set_array_element(json_obj, fixedValueCfg1, int, pVal, 1);		//值    使用数组思想
 
 	/* return Student JSON object pointer */
 	return json_obj;
@@ -67,11 +69,12 @@ struct tagTelesignalCfg *TelesignalCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagTelesignalCfg);
+    struct_obj->pVal = &uCharTemp;
 
 	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);		//名称
-	s2j_struct_get_array_element(struct_obj, json_obj, double, pVal);		//值
+	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);	//使能
+	s2j_struct_get_basic_element(struct_obj, json_obj, string, pName);	//名称
+	s2j_struct_get_array_element(struct_obj, json_obj, int, pVal);		//值
 	
 	/* return Student structure object pointer */
 	return struct_obj;
@@ -115,6 +118,11 @@ struct tagTelemetryCfg *TelemetryCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagTelemetryCfg);
+
+    struct_obj->pVal = &FloatTemp;
+    struct_obj->pCalifactor = &FloatTemp;
+    struct_obj->pZerodrift = &FloatTemp;
+    struct_obj->pDeadzone = &FloatTemp;
 
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);			//使能
@@ -168,6 +176,9 @@ struct tagCalibrateFactor *CalibrateFactorCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagCalibrateFactor);
+
+    struct_obj->telemetry = &FloatTemp;
+    struct_obj->factorVal = &FloatTemp;
 
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);			//使能
@@ -225,6 +236,8 @@ struct tagValueParaCfg *ParameterCfg_JsonToStruct(cJSON* json_obj)
 {
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
+
+    struct_obj->pVal = &FloatTemp;
 
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
@@ -286,6 +299,8 @@ struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
 
+    struct_obj->pVal = &FloatTemp;
+
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, menuNum);		//菜单编号
@@ -299,7 +314,7 @@ struct tagValueParaCfg *FixedValueCfg1_JsonToStruct(cJSON* json_obj)
 	s2j_struct_get_array_element(struct_obj, json_obj, string, pContent);	//数据显示内容
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, pNote);		//备注
 
-																			/* return Student structure object pointer */
+	/* return Student structure object pointer */
 	return struct_obj;
 }
 
@@ -346,6 +361,8 @@ struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
 	/* create Student structure object */
 	s2j_create_struct_obj(struct_obj, struct tagValueParaCfg);
 
+    struct_obj->pVal = &FloatTemp;
+
 	/* deserialize data to Student structure object. */
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, enable);		//使能
 	s2j_struct_get_basic_element(struct_obj, json_obj, int, menuNum);		//菜单编号
@@ -364,8 +381,8 @@ struct tagValueParaCfg *FixedValueCfg2_JsonToStruct(cJSON* json_obj)
 }
 
 /**
-* @fn FixedValueCfg2_StructToJson
-* @brief 实现定值二区结构体的struct转json
+* @fn SetDatabaseCfg_StructToJson
+* @brief 实现配置信息结构体的struct转json
 * @param struct_obj 指向结构体的指针
 * @return 返回指向转换后的json指针
 *
@@ -378,16 +395,16 @@ cJSON *SetDatabaseCfg_StructToJson(void* struct_obj)
 	s2j_create_json_obj(json_obj);
 
 	/* serialize data to Student JSON object. */
-	s2j_json_set_basic_element(json_obj, setDatabaseCfg, int, dataLen);			//菜单编号
 	s2j_json_set_basic_element(json_obj, setDatabaseCfg, string, name);		//名称
+	s2j_json_set_basic_element(json_obj, setDatabaseCfg, int, dataLen);	    //菜单编号
 	s2j_json_set_array_element(json_obj, setDatabaseCfg, double, value, setDatabaseCfg->dataLen);		//值    使用数组思想
-																				/* return Student JSON object pointer */
+	/* return Student JSON object pointer */
 	return json_obj;
 }
 
 /**
-* @fn FixedValueCfg2_JsonToStruct
-* @brief 实现定值二区结构体的json转struct
+* @fn SetDatabaseCfg_JsonToStruct
+* @brief 实现配置信息的转换
 * @param json_obj 指向json的指针
 * @return 返回指向转换后的结构体指针
 *
@@ -398,11 +415,11 @@ ConfigurationSetDatabaseToJson *SetDatabaseCfg_JsonToStruct(cJSON* json_obj)
 	s2j_create_struct_obj(struct_obj, ConfigurationSetDatabaseToJson);
 
 	/* deserialize data to Student structure object. */
-	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataLen);		//使能
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, name);		//名称
+	s2j_struct_get_basic_element(struct_obj, json_obj, int, dataLen);		//使能
 	s2j_struct_get_array_element(struct_obj, json_obj, double, value);		//值
 
-																			/* return Student structure object pointer */
+	/* return Student structure object pointer */
 	return struct_obj;
 }
 

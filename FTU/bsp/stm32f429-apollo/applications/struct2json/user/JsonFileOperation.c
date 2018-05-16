@@ -168,7 +168,7 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
 
         write(file, string, strlen(string));  //写入文件
         
-        if(i < (g_FixedValueCfg2_Len - 1))
+        if(i < (length - 1))
         {
             write(file, ",\n", 2);  //依照标准格式进行写入
         }
@@ -181,7 +181,7 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
     }
 
 }
-
+ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];
 /**
  * @fn Struct_To_Json
  * @brief 将获取到的字符串转换为相应的结构体
@@ -196,7 +196,8 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
     {
         case _CFG_SET_DATA_BASE:
         {
-            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
+//            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
+            SetDatabaseCfg_1[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
             break;
         }
         case _CFG_PARAMTER:
@@ -248,7 +249,8 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
 void Get_JSON(cJSON * root, uint8_t name)
 {
 	cJSON * item;
-	for (int i = 0; i < cJSON_GetArraySize(root); i++)   //遍历最外层json键值对
+    int a = cJSON_GetArraySize(root);
+	for (int i = 0; i < a; i++)   //遍历最外层json键值对
 	{
 		item = cJSON_GetArrayItem(root, i);
 		if (cJSON_Object != item->type)		//值不为json对象则查找child是否为空，为空即不包含json
@@ -301,8 +303,8 @@ void GetJsonForFile(char* fileName, uint8_t name)
         rt_kprintf("check: open file for read failed\n");
         return;
     }
-    
-    for (uint32_t i = 0; (read(Json_FileName, *data, 1)); i++)
+
+    for (uint32_t i = 0; (read(Json_MyFile, &data, 1)); i++)
 	{
         string[i] = data;
 	}
