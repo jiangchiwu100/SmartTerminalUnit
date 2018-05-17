@@ -45,6 +45,10 @@
 #define THREAD_RUN_CAL                0x0080
 #define THREAD_RUN_PROTECT            0x0100
 
+#define SYS_HAVE_UPDATE               0x01   
+#define SYS_UPDATE_FAILED             0x02   
+#define SYS_UPDATE_SUCCESS            0x00  
+
 #define SWITCH_ALARM  (2.0f)
 #define SWITCH_ON  (1.0f)
 #define SWITCH_OFF (0.0f)
@@ -1570,6 +1574,9 @@ extern struct lwip_dev g_EthDP83848; // dp83848
 extern rt_uint32_t g_ComLed;
 
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
+extern uint8_t rt_multi_common_read_update_state(void);
+extern void rt_multi_common_write_update_state(const uint8_t sta);
+
 extern void rt_multi_common_data_save_value_to_fram(uint8_t sn);
 extern void rt_multi_common_data_get_value_from_fram(uint8_t sn);
 extern void rt_common_data_save_value_default_to_fram(void);

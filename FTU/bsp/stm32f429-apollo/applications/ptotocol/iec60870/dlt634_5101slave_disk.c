@@ -16,7 +16,6 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "string.h"
-#include "user_mb_app.h"
 #include "channel_monitor.h"
 
 /* PRIVATE VARIABLES ----------------------------------------------------------*/
@@ -1199,8 +1198,7 @@ void DLT634_5101_SLAVE_F_SR(uint8_t pdrv, uint8_t *pbuf)//软件升级
                     if(pbuf[10]&0x80)
                     {
                         //启动升级
-//                        psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                        psCoilTimeTelesignal->allFlag |= REG_HAVEUPDATE;
+						rt_multi_common_write_update_state(SYS_HAVE_UPDATE);
                     }
                     else
                     {
@@ -1212,13 +1210,11 @@ void DLT634_5101_SLAVE_F_SR(uint8_t pdrv, uint8_t *pbuf)//软件升级
                 case 8:
                     temp_array[pdrv][4] = 9;
                     //升级过程中停止升级
-//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;
+				    rt_multi_common_write_update_state(SYS_UPDATE_FAILED);
                     break;
                 default:
                     temp_array[pdrv][4] = 47;
-//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;
+                    rt_multi_common_write_update_state(SYS_UPDATE_FAILED);
                     break;
             }
             break;

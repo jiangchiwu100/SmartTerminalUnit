@@ -200,6 +200,29 @@ uint8_t DecimalToBCD(uint8_t dec)
     return (bcd);
 }
 
+static uint8_t s_update_sta;
+/**
+  * @brief: 写系统更新状态
+  * @param:  sta-状态值
+  * @return: [none]
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void rt_multi_common_write_update_state(const uint8_t sta)
+{
+    s_update_sta &= ~(SYS_HAVE_UPDATE | SYS_UPDATE_FAILED);
+	s_update_sta |= sta;
+}
+
+/**
+  * @brief: 读取系统更新状态
+  * @param:  [none]
+  * @return: [s_update_sta]-系统更新状态值
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+uint8_t rt_multi_common_read_update_state(void)
+{
+    return s_update_sta;
+}
 /**
   * @brief: 获取定值缓存地址和偏移量
   * @param:  addr-定值地址
@@ -1371,6 +1394,21 @@ void rt_multi_common_data_read_config_from_fram(void)
         sn = 1; // 如果没有存储定值区  默认为1区
     }
     g_ValueParaOperateInfo.currentSN = sn;
+
+    /* 读取当前定值区号 */
+    if (g_ValueParaOperateInfo.currentSN == 2)
+    {
+        //g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValue = g_FixedValue2; 
+		g_pFixedValueCfg = FixedValueCfg2;
+    }
+    else // 默认1区
+    {
+        g_ValueParaOperateInfo.currentSN = 1;
+        //g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValue = g_FixedValue1;
+		g_pFixedValueCfg = FixedValueCfg1;
+    } 
     
     /* 读取定值 */
     for (i = 0; i < 4; i++)
@@ -1593,22 +1631,7 @@ void rt_multi_common_data_config(void)
     for(i=0;i<DEV_MAX_NUM;i++)
     {
         g_NVADBOut[i] = g_NVADBIn;
-    }
-
-    /* 读取当前定值区号 */
-    if (g_ValueParaOperateInfo.currentSN == 2)
-    {
-        //g_pFixedValue = &g_FixedValueDB2;
-		g_pFixedValue = g_FixedValue2; 
-		g_pFixedValueCfg = FixedValueCfg2;
-    }
-    else // 默认1区
-    {
-        g_ValueParaOperateInfo.currentSN = 1;
-        //g_pFixedValue = &g_FixedValueDB1;
-		g_pFixedValue = g_FixedValue1;
-		g_pFixedValueCfg = FixedValueCfg1;
-    }   
+    }  
 		
     memset(&g_TelemetryDB, 0, sizeof(TelemetryDatabase));
     memset(&g_TelemetryLastDB, 0, sizeof(TelemetryDatabase));

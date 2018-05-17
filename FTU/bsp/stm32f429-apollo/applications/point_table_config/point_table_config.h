@@ -11,21 +11,49 @@
 #ifndef __POINT_TABLE_CONFIG_H__
 #define __POINT_TABLE_CONFIG_H__
 
-//enum MENU_NUM
-//{
-//    
-//};
+enum TELEMETRY_MENU
+{
+    SECONDRY = 1,    // 二次遥测
+    ONCE,            // 一次遥测
+    HARMONIC         // 谐波分量
+};
+
+enum PARAMETER_MENU
+{
+    ME_BASIC_SET = 1,   // 基本设置
+    ME_ZERODRIFT,       // 零漂
+    ME_DEADEZONE,       // 死区
+};
+
+enum FIXED_VALUE_MENU
+{
+    INTERGHASE = 1,  // 相间故障
+    ZERO_SEQUE,      // 零序故障
+	OTHER_PROTEC,    // 其他保护
+	LOGICAL_FUN,     // 逻辑功能
+	LIMITATION,      // 越限告警
+	HEAVY_LOAD,      // 重过载
+	OVERLOAD,        // 过负荷
+	LIMIT_V_F,       // 越压越频
+	BATTERY_SET,     // 电池设置
+	AUTO_RESET,      // 自动复归
+	LOOP_CLOSE,      // 合环
+	FAULT_SWITCH,    // 故障投退
+};  
 
 struct tagTelesignalCfg
 {
-	unsigned char enable;  // 使能
-    char *pName;           // 名称
-    unsigned char *pVal;   // 值	
+	unsigned char enable;   // 使能
+    char *pName;            // 名称
+    unsigned char *pVal;    // 值	
+	char *pContentYx[2];    // 数据显示内容	
+	char *pContentSoe[2];   // 数据显示内容		
 };
 
 struct tagTelemetryCfg
 {
 	unsigned char enable;  // 使能
+	unsigned char menuNum; // 菜单编号	
     char *pName;           // 名称
     float *pVal;           // 值	
     char *pUnit;           // 单位

@@ -15,7 +15,6 @@
 #include ".\MultiThread\multi_thread.h"
 #include <dfs_posix.h>
 #include "uffs/uffs.h"
-#include "user_mb_app.h"
 #include "drv_timer.h"
 #include "calculator.h"
 #include "breaker_interface.h"
