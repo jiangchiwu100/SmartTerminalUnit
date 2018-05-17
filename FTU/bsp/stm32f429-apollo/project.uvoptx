@@ -159,7 +159,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -196,9 +195,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>319</LineNumber>
+          <LineNumber>363</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134352546</Address>
+          <Address>134353124</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -207,19 +206,35 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\applications\struct2json\user\JsonFileOperation.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\template\applications/struct2json/user/JsonFileOperation.c\319</Expression>
+          <Expression>\\template\applications/struct2json/user/JsonFileOperation.c\363</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>1375</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134445302</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\applications\file_operate\file_operate.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\applications/file_operate/file_operate.c\1375</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow2>
         <Ww>
           <count>0</count>
           <WinNumber>2</WinNumber>
-          <ItemText>g_pFixedValueCfg</ItemText>
+          <ItemText>SetDatabaseCfg_1</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>readJson,0x0A</ItemText>
+          <ItemText>SetDatabaseCfg</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
@@ -229,17 +244,22 @@
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>SetDatabaseCfg_1</ItemText>
+          <ItemText>_string</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>_item,0x0A</ItemText>
+          <ItemText>g_ConfigurationSetDB,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>struct_obj,0x0A</ItemText>
+          <ItemText>ipaddr</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>g_EthDP83848,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -3476,7 +3496,7 @@
 
   <Group>
     <GroupName>struct2json</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

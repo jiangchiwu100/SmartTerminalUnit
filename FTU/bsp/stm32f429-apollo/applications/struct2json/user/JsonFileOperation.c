@@ -306,10 +306,10 @@ uint8_t GetJsonForFile(char* fileName, uint8_t name)
  */
 static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
 {
-    char* string;
+    char* string;       //需要申请动态内存
     static char data;
     string = rt_malloc(512);     //分配512字节的内存
-    int myFile_;
+    int myFile_;    //文件名称
     uint8_t count = 0;  //计数，计读到的“，”标号的数量
     uint8_t res = 1;    //要返回的结果
     char* _string;
@@ -322,7 +322,7 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
 
     for (uint32_t i = 0; (read(myFile_, &data, 1)); i++)
 	{
-        if(data == ',')
+        if(data == ',')    //查找逗号，只判断前两个逗号内的数据
         {
             count++;
             if(count >= 2)
@@ -338,7 +338,7 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
     _string = strstr(string, "pointTableType");
     if(string - _string > 4)  //此处硬编码
     {
-        res = 5;
+        res = 5;    //偏移量不正确，该数据可能损坏或者写错
     }
     if (strstr(string, jsonFileName))   //string字符串中是否包含有该json文件名称
     {
@@ -346,21 +346,21 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
         {
             if(strstr(string, TERMINAL_PRODUCT_SERIAL_NUMBER))    //判断读取出的ID与软件中是否一致
             {
-                res = 0;
+                res = 0;    //软件ID号正确
             }
             else
             {
-                res = 1;
+                res = 1;    //软件ID号不正确
             }
         }
         else
         {
-            res = 2;
+            res = 2;    //文件中不存在“productSerialNumber”字段
         }
     }
     else
     {
-        res = 3;
+        res = 3;    //该文件不是要打开的json文件
     }
     
     rt_free(string);    //释放动态内存
