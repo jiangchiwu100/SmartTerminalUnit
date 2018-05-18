@@ -182,9 +182,9 @@ static rt_uint8_t *rt_thread_protect_stack;
 #if RT_USING_CAL
 static void rt_cal_thread_entry(void *param)
 { 
-    rt_err_t result;           
+    rt_err_t result;               
     
-    for (;;)
+	for (;;)
     {
         /* 永久等待事件 */
         result = rt_event_recv(&calculate_event, EVENT_RUN, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, RT_NULL);              
@@ -400,7 +400,7 @@ static void rt_ftuidle_thread_entry(void *param)
 
         if (s_run_state == 0)
         {   
-            s_run_state = 1;
+            s_run_state = 1;			
             rt_multi_common_data_fram_update_state_write(RUN_NOMAL); // 运行正常，写FRAM
         }        
     }    

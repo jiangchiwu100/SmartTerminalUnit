@@ -610,11 +610,11 @@ static void CalculateData(void)
     g_TelemetryDB[THIRDHARMONIC_I0] = I05;
     
 #if RT_USING_TELEMETRY_SET    
-    for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)
+    for (i = 0; i < TELEMETRY_NUM; i++)
     {
-        if (g_TelemetrySetEnable.buf[i] == SWITCH_ON)
+        if (g_TelemetrySetEnable[i] == SWITCH_ON)
         {
-            g_TelemetryDB[i] = g_TelemetrySetValue.buf[i];
+            g_TelemetryDB[i] = g_TelemetrySetValue[i];
         }
     }
 #endif /* RT_USING_TELEMETRY_SET */ 
@@ -646,7 +646,7 @@ void CalcultateTask(void)
     CalculateData();
 
     /* 系数校准 */
-    CalibrationFactorCal(CALIFACTOR_NUM);
+    CalibrationFactorCal(g_CalibrateFactorCfg_Len);
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

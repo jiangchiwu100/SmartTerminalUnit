@@ -209,7 +209,7 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
 /* 定值0区 */
 struct tagValueParaCfg ParameterCfg[] = 
 {
-//   使能  菜单编号       名称                            值                         单位      上限        下限   缺省值    数据类型     显示内容           备注
+//   使能  菜单编号          名称                             值                         单位      上限        下限   缺省值    数据类型     显示内容           备注
     { 1,  ME_BASIC_SET,   "操作机构",        &g_Parameter[OPERATING_MECHANISM],          "-",       1,           0,     0,         2,     {"弹簧", "永磁"    },   " "   },    
     { 1,  ME_BASIC_SET,   "开关类型",        &g_Parameter[SWITCH_TYPE],                  "-",       1,           0,     0,         2,     {"断路器", "负荷开关"},   " "   }, 
     { 1,  ME_BASIC_SET,   "断路器模式",      &g_Parameter[BREAK_WORK_MODE],              "-",       4,           0,     1,         5,     {"无","常规保护","电压时间型","电压电流型","电流计数型"},   " "   },	
@@ -514,6 +514,15 @@ struct tagValueParaCfg FixedValueCfg2[] =
     { 1,  LOGICAL_FUN,  "非遮断投退",      &g_FixedValue2[BREAKING_CURRENT_SWITCH],       "-",       1,           0,     0,          2,     {"退", "投",       },   " "    },	
     { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue2[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,     {"-",  "-"         },   " "    },	
 };
+
+
+unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0]);
+unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
+unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0]);
+unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
+unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
+unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
+
 
 /* END OF FILE ---------------------------------------------------------------*/
 
