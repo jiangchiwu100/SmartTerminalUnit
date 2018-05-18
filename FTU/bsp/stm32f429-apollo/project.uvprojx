@@ -496,14 +496,14 @@
               <FilePath>drivers\drv_iic.c</FilePath>
             </File>
             <File>
-              <FileName>drv_sd2405.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_sd2405.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_sd2405.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\drivers\drv_sd2405.c</FilePath>
             </File>
             <File>
               <FileName>drv_io_spi.c</FileName>

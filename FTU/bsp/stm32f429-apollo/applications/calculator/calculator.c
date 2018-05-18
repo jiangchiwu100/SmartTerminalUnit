@@ -387,10 +387,10 @@ static void CalculateData(void)
     if (++k % 10 == 1)
     {
         k = 0;
-        g_Alpha[0] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufIa[1][3], FFT_InputBufIa[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUaIa;
-        g_Alpha[1] = CalculateAngleU_I(FFT_InputBufUb[1][3], FFT_InputBufUb[1][2], FFT_InputBufIb[1][3], FFT_InputBufIb[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUbIb;
-        g_Alpha[2] = CalculateAngleU_I(FFT_InputBufUC[1][3], FFT_InputBufUC[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaUcIc;
-        g_Alpha[3] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - 0.29f;//g_ParameterDB.Data.calibrateFactor.Str.califactorAlphaU0I0;
+        g_Alpha[0] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufIa[1][3], FFT_InputBufIa[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa];
+        g_Alpha[1] = CalculateAngleU_I(FFT_InputBufUb[1][3], FFT_InputBufUb[1][2], FFT_InputBufIb[1][3], FFT_InputBufIb[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UbIb];
+        g_Alpha[2] = CalculateAngleU_I(FFT_InputBufUC[1][3], FFT_InputBufUC[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UCIc];
+        g_Alpha[3] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0];
 		g_Alpha[4] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb];
     }
 

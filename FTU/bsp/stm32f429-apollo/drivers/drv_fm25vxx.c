@@ -100,7 +100,9 @@ static int rt_hw_fram_first_clear(void)
         flag = FRAM_HWFLAG1;
 
         rt_device_write(device, ADDR_FRAM_UPDATE, &flag, 1);  
-		
+
+        rt_common_data_save_value_default_to_fram();		
+
         FRAM_PRINTF("fram is powered on firstly! \r\n"); 
     }
 	

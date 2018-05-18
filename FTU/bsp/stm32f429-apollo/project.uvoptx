@@ -477,7 +477,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -596,8 +596,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\drivers\drv_sd2405.c</PathWithFileName>
-      <FilenameWithoutPath>drv_sd2405.c</FilenameWithoutPath>
+      <PathWithFileName>drivers\drv_spi.c</PathWithFileName>
+      <FilenameWithoutPath>drv_spi.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -608,8 +608,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>drivers\drv_spi.c</PathWithFileName>
-      <FilenameWithoutPath>drv_spi.c</FilenameWithoutPath>
+      <PathWithFileName>.\drivers\drv_sd2405.c</PathWithFileName>
+      <FilenameWithoutPath>drv_sd2405.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -3365,7 +3365,7 @@
 
   <Group>
     <GroupName>IEC60870</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

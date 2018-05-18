@@ -15,7 +15,6 @@
 #include "dlt634_5104slave_app.h"
 #include "dlt634_5104slave_disk.h"
 #include "file_operate.h"
-#include "user_mb_app.h"
 #include "channel_monitor.h"
 
 /* PRIVATE VARIABLES ----------------------------------------------------------*/
@@ -1257,8 +1256,7 @@ void DLT634_5104_SLAVE_SoftwareUpdate(uint8_t pdrv, uint8_t *pbuf)//升级操作
                     if(pbuf[11]&0x80)
                     {
                         //启动升级
-//                        psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                        psCoilTimeTelesignal->allFlag |= REG_HAVEUPDATE;
+                        rt_multi_common_write_update_state(SYS_HAVE_UPDATE);
                     }
                     else
                     {
@@ -1269,14 +1267,11 @@ void DLT634_5104_SLAVE_SoftwareUpdate(uint8_t pdrv, uint8_t *pbuf)//升级操作
                     break;
                 case 8:
                     temp_array[pdrv][4] = 9;
-                    //升级过程中停止升级
-//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;           
+                    rt_multi_common_write_update_state(SYS_UPDATE_FAILED);          
                     break;
                 default:
                     temp_array[pdrv][4] = 47;
-//                    psCoilTimeTelesignal->allFlag &= ~0x0C; 
-//                    psCoilTimeTelesignal->allFlag |= REG_UPDATE_FAILED;
+                    rt_multi_common_write_update_state(SYS_UPDATE_FAILED); 
                     break;
             }
             break;
