@@ -438,15 +438,15 @@ void MessageFun(void)
   *@param  str 要修改字符串的指针
   *@retval None
   */
-static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
-	const struct ModbusCmd_ *cmd,uint8_t flag,uint8_t itemIs,uint8_t *str)
-{
-	dZModfiy.Items = pDingZhiItems;
-	dZModfiy.cmd = cmd;
-	dZModfiy.flag = flag;
-	dZModfiy.itemIs = itemIs;
-	dZModfiy.str = str;	
-}
+//static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
+//	const struct ModbusCmd_ *cmd,uint8_t flag,uint8_t itemIs,uint8_t *str)
+//{
+//	dZModfiy.Items = pDingZhiItems;
+//	dZModfiy.cmd = cmd;
+//	dZModfiy.flag = flag;
+//	dZModfiy.itemIs = itemIs;
+//	dZModfiy.str = str;	
+//}
 
 ///**
 //  *@brief 定值修改初始化
@@ -949,57 +949,65 @@ static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
 //	}
 //}
 
-///**
-//  *@brief HomeWindow deal with function
-//  *@param  None
-//  *@retval None
-//  */
-//void HomeWindowFun(void)
-//{
-//	static uint8_t flag = 0;
-//	static uint8_t currentTime[24];
-//	struct YaoXinData_  tempyaoXin;
-//	uint8_t i,j;
-//	if(flag == 0){//绘制主页
-//		GUI_LoadPic1(HomeWindow.x+1, HomeWindow.y+25,sojoImage, 158,30);
-//		j = 110;
-//		for(i=1;i<24;i+=2){
-//			GuiHPointLine(HomeWindow.x+1,i,j,2,forecolor);
-//			j -= 2;
-//		}
-//		for(i=25;i<55;i+=2){
-//			GuiHPointLine(HomeWindow.x+1,i,159,2,forecolor);
-//		}
-//		j = 70;
-//		for(i=55;i<78;i+=2){
-//			GuiHPointLine(HomeWindow.x+j,i,159,2,forecolor);
-//			j -= 2;
-//		}
-//		GuiFont12Align(HomeWindow.x+5,1,152,FONT_RIGHT,(uint8_t *)HMiVersion);
-//		GuiHLine(HomeWindow.x+1,78,158,forecolor);
-//		GuiFillRect(HomeWindow.x+1,81,159,94, forecolor);
-//		GuiHLine(HomeWindow.x+1,96,158,forecolor);
-//		
-//		GuiFont12Align(HomeWindow.x+9,102,16,FONT_LEFT,"信");
-//		GuiFont12Align(HomeWindow.x+9,121,16,FONT_LEFT,"息");
-//		GuiFont12Align(HomeWindow.x+9,140,16,FONT_LEFT,"栏");
-//		GuiRLine(HomeWindow.x+30,96,158,forecolor);
-//		
-//		for(i=0;i<4;i++){
-//			GuiFont12Align(HomeWindow.x+31,96+2+i*16,90,FONT_MID,"----");
-//			GuiRPointLine(HomeWindow.x+31+91,96,96+15+i*16,2,forecolor);
-//			GuiFont12Align(HomeWindow.x+31+93,96+2+i*16,34,FONT_MID,"--");
-//			GuiHPointLine(HomeWindow.x+30,96+15+i*16,159,2,forecolor);
-//		}
-//		
-//		GuiFont12Align(HomeWindow.x+31,96+34,90,FONT_MID,"开关状态");
-//		flag = 1;
-//	}
-//	if(flag == 1){
-//		TimeToString(currentTime);
-//		GuiExchangeColor();
-//		GuiFont12Align(HomeWindow.x+2,82,156,FONT_MID,currentTime);
-//		GuiExchangeColor();
+/**
+  *@brief HomeWindow deal with function
+  *@param  None
+  *@retval None
+  */
+void HomeWindowFun(void)
+{
+	static uint8_t flag = 0;
+	static uint8_t currentTime[24];
+	//struct YaoXinData_  tempyaoXin;
+	uint8_t i,j;
+	if(flag == 0){//绘制主页
+		lkdBitmap tImage;
+	
+		tImage.number = 1;
+		tImage.wide = 160;
+		tImage.high = 30;
+		tImage.beginx = 0;
+		tImage.beginy = 0;
+		tImage.bitmap = NULL;
+		GuiAreaBitMap(&tImage,HomeWindow.x+1,HomeWindow.y+25, 159, 55, 0);
+		j = 110;
+		for(i=1;i<24;i+=2){
+			GuiHPointLine(HomeWindow.x+1,i,j,2,forecolor);
+			j -= 2;
+		}
+		for(i=25;i<55;i+=2){
+			GuiHPointLine(HomeWindow.x+1,i,159,2,forecolor);
+		}
+		j = 70;
+		for(i=55;i<78;i+=2){
+			GuiHPointLine(HomeWindow.x+j,i,159,2,forecolor);
+			j -= 2;
+		}
+		GuiFont12Align(HomeWindow.x+5,1,152,FONT_RIGHT,(uint8_t *)HMiVersion);
+		GuiHLine(HomeWindow.x+1,78,158,forecolor);
+		GuiFillRect(HomeWindow.x+1,81,159,94, forecolor);
+		GuiHLine(HomeWindow.x+1,96,158,forecolor);
+		
+		GuiFont12Align(HomeWindow.x+9,102,16,FONT_LEFT,"信");
+		GuiFont12Align(HomeWindow.x+9,121,16,FONT_LEFT,"息");
+		GuiFont12Align(HomeWindow.x+9,140,16,FONT_LEFT,"栏");
+		GuiRLine(HomeWindow.x+30,96,158,forecolor);
+		
+		for(i=0;i<4;i++){
+			GuiFont12Align(HomeWindow.x+31,96+2+i*16,90,FONT_MID,"----");
+			GuiRPointLine(HomeWindow.x+31+91,96,96+15+i*16,2,forecolor);
+			GuiFont12Align(HomeWindow.x+31+93,96+2+i*16,34,FONT_MID,"--");
+			GuiHPointLine(HomeWindow.x+30,96+15+i*16,159,2,forecolor);
+		}
+		
+		GuiFont12Align(HomeWindow.x+31,96+34,90,FONT_MID,"开关状态");
+		flag = 1;
+	}
+	if(flag == 1){
+		//TimeToString(currentTime);
+		GuiExchangeColor();
+		//GuiFont12Align(HomeWindow.x+2,82,156,FONT_MID,currentTime);
+		GuiExchangeColor();
 //		tempyaoXin = GetYaoxinStatus();
 //		if(tempyaoXin.YaoXinData1.Bit.switchClose_h == 1){
 //			GuiFont12Align(HomeWindow.x+31+93,96+34,34,FONT_MID,"合");
@@ -1007,166 +1015,166 @@ static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
 //		else{
 //			GuiFont12Align(HomeWindow.x+31+93,96+34,34,FONT_MID,"分");
 //		}
-//		GuiUpdateDisplayAll();
-//	}
-//	switch(keyStatus){
-//	case UpKey:
-//	case DownKey:
+		GuiUpdateDisplayAll();
+	}
+	switch(keyStatus){
+	case UpKey:
+	case DownKey:
 //		userGUIWindowAdd(&YaoCe2Win);
-//		flag = 0;
-//		break;
-//	case LeftKey:
-//	case RightKey:
+		flag = 0;
+		break;
+	case LeftKey:
+	case RightKey:
 //		userGUIWindowAdd(&YaoxinWin);
-//		flag = 0;
-//		break;
-//	case OkKey:
-//		flag = 0;
-//		userGUIWindowAdd(&MenuWindow);
-//		break;
-//	case CancelKey:break;
-//	default: break;
-//	}
-//}
+		flag = 0;
+		break;
+	case OkKey:
+		flag = 0;
+		userGUIWindowAdd(&MenuWindow);
+		break;
+	case CancelKey:break;
+	default: break;
+	}
+}
 
-///**
-//  *@brief Menu Window deal with function
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuWindowFun(void)
-//{
-//	if(GetMenuManagepMenu() == 0){
-//		userGUIMenuAdd(&mianMenu);
-//	}
-//	userGUIMenuDisplay();
-//}
+/**
+  *@brief Menu Window deal with function
+  *@param  None
+  *@retval None
+  */
+static void MenuWindowFun(void)
+{
+	if(GetMenuManagepMenu() == 0){
+		userGUIMenuAdd(&mianMenu);
+	}
+	userGUIMenuDisplay();
+}
 
-///**
-//  *@brief mianMenu deal with function 主菜单
-//  *@param  None
-//  *@retval None
-//  */
-//static void mianMenuFun(void)
-//{
-//	static uint8_t flag;
-//	static uint8_t passWordState;
-//	
-//	if(flag == 0){
-//		passWordState = 0;
-//	}
-//	if(flag == 1){
-//		switch(mianMenu.currentItem){
-//		case 0://信息查询
-//		case 4://版本信息
-//			flag = 3;
-//			break;
-//		case 1://定值设置
-//		case 2://配置设置
-//		case 3://命令下发
-//			SetPassWordWin(0,&passWordState);
-//			userGUIWindowAdd(&PassWordWin);
-//			flag = 2;
-//			break;
-//		default:break;
-//		}			
-//	}
-//	else if(flag == 2){
-//		if(passWordState == 1){
-//			flag = 3;
-//		}
-//		else{
-//			flag = 0;
-//		}
-//	}
-//	if(flag == 3){
-//		switch(mianMenu.currentItem){
-//		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
-//		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
-//		case 2:userGUIMenuAdd(&MenuM2);break;//配置设置
+/**
+  *@brief mianMenu deal with function 主菜单
+  *@param  None
+  *@retval None
+  */
+static void mianMenuFun(void)
+{
+	static uint8_t flag;
+	static uint8_t passWordState;
+	
+	if(flag == 0){
+		passWordState = 0;
+	}
+	if(flag == 1){
+		switch(mianMenu.currentItem){
+		case 0://信息查询
+		case 4://版本信息
+			flag = 3;
+			break;
+		case 1://定值设置
+		case 2://配置设置
+		case 3://命令下发
+			SetPassWordWin(0,&passWordState);
+			userGUIWindowAdd(&PassWordWin);
+			flag = 2;
+			break;
+		default:break;
+		}			
+	}
+	else if(flag == 2){
+		if(passWordState == 1){
+			flag = 3;
+		}
+		else{
+			flag = 0;
+		}
+	}
+	if(flag == 3){
+		switch(mianMenu.currentItem){
+		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
+		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
+		case 2:userGUIMenuAdd(&MenuM2);break;//配置设置
 //		case 3:userGUIWindowAdd(&CmdSendWin);break;//命令下发
 //		case 4:userGUIWindowAdd(&VersionWin);break;//版本信息
-//		default:break;
-//		}
-//	}
-//	switch(keyStatus){
-//	case UpKey:
-//		userGUIMenuIremModfiy(0);
-//		break;
-//	case DownKey:
-//		userGUIMenuIremModfiy(1);
-//		break;
-//	case LeftKey:
-//	case CancelKey:
-//		flag = 0;
-//		userGUIMenuHide();
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		break;
-//	case RightKey:
-//	case OkKey:
-//		if(flag == 0){
-//			flag = 1;
-//		}
-//		break;
-//	}
-//	if(flag == 3){
-//		flag = 0;
-//	}
-//}
+		default:break;
+		}
+	}
+	switch(keyStatus){
+	case UpKey:
+		userGUIMenuIremModfiy(0);
+		break;
+	case DownKey:
+		userGUIMenuIremModfiy(1);
+		break;
+	case LeftKey:
+	case CancelKey:
+		flag = 0;
+		userGUIMenuHide();
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		break;
+	case RightKey:
+	case OkKey:
+		if(flag == 0){
+			flag = 1;
+		}
+		break;
+	}
+	if(flag == 3){
+		flag = 0;
+	}
+}
 
-///**
-//  *@brief MenuM0 deal with function 信息查询
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM0Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:userGUIMenuIremModfiy(0);break;	
-//	case DownKey:userGUIMenuIremModfiy(1);break;	
-//	case LeftKey:
-//	case CancelKey:
-//		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
-//		userGUIMenuHide();break;
-//	case RightKey:
-//	case OkKey:
-//		SetDingZhiSetOrSee(SEE_DINGZHI);//修改定值设置标志为查询
-//		switch(MenuM0.currentItem){
+/**
+  *@brief MenuM0 deal with function 信息查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		SetDingZhiSetOrSee(SEE_DINGZHI);//修改定值设置标志为查询
+		switch(MenuM0.currentItem){
 //		case 0:userGUIWindowAdd(&YaoxinWin);break;//遥信查询
-//		case 1:userGUIMenuAdd(&MenuM0S1);break;//遥测查询
+		case 1:userGUIMenuAdd(&MenuM0S1);break;//遥测查询
 //		case 2:userGUIWindowAdd(&SOEWin);break;//SOE查询
 //		case 3:userGUIWindowAdd(&FaultEventWin);break;//故障事件
-//		case 4:userGUIMenuAdd(&MenuM0S4);break;//定值查询
-//		case 5:userGUIMenuAdd(&MenuM0S5);break;//配置查询
-//		default:break;
-//		}
-//	}
-//}
+		case 4:userGUIMenuAdd(&MenuM0S4);break;//定值查询
+		case 5:userGUIMenuAdd(&MenuM0S5);break;//配置查询
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief MenuM1 deal with function 定值设置
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM1Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:
-//		userGUIMenuIremModfiy(0);
-//		break;
-//	case DownKey:
-//		userGUIMenuIremModfiy(1);
-//		break;
-//	case LeftKey:
-//	case CancelKey:
-//		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
-//		userGUIMenuHide();
-//		break;
-//	case RightKey:
-//	case OkKey:
-//		SetDingZhiSetOrSee(SET_DINGZHI);//修改定值设置标志为设置
-//		switch(MenuM1.currentItem){
+/**
+  *@brief MenuM1 deal with function 定值设置
+  *@param  None
+  *@retval None
+  */
+static void MenuM1Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:
+		userGUIMenuIremModfiy(0);
+		break;
+	case DownKey:
+		userGUIMenuIremModfiy(1);
+		break;
+	case LeftKey:
+	case CancelKey:
+		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
+		userGUIMenuHide();
+		break;
+	case RightKey:
+	case OkKey:
+		SetDingZhiSetOrSee(SET_DINGZHI);//修改定值设置标志为设置
+		switch(MenuM1.currentItem){
 //		case 0:userGUIMenuAdd(&MenuM1S0);break;//保护功能
 //		case 1:userGUIWindowAdd(&LogicalFunWin);break;//逻辑功能
 //		case 2:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
@@ -1176,87 +1184,87 @@ static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
 //		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
 //		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
 //		case 8:userGUIMenuAdd(&MenuM1S8);break;//其他设置
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief  MenuM2 deal with function 配置设置
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM2Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:
-//		userGUIMenuIremModfiy(0);
-//		break;
-//	case DownKey:
-//		userGUIMenuIremModfiy(1);
-//		break;
-//	case LeftKey:
-//	case CancelKey:
-//		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
-//		userGUIMenuHide();
-//		break;
-//	case RightKey:
-//	case OkKey:
-//		SetDingZhiSetOrSee(SET_DINGZHI);//修改定值设置标志为设置
-//		switch(MenuM2.currentItem){
+/**
+  *@brief  MenuM2 deal with function 配置设置
+  *@param  None
+  *@retval None
+  */
+static void MenuM2Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:
+		userGUIMenuIremModfiy(0);
+		break;
+	case DownKey:
+		userGUIMenuIremModfiy(1);
+		break;
+	case LeftKey:
+	case CancelKey:
+		SetDingZhiSetOrSee(NULL_DINGZHI);//修改定值设置标志为空
+		userGUIMenuHide();
+		break;
+	case RightKey:
+	case OkKey:
+		SetDingZhiSetOrSee(SET_DINGZHI);//修改定值设置标志为设置
+		switch(MenuM2.currentItem){
 //		case 0:userGUIWindowAdd(&BasicSetWin);break;
 //		case 1:userGUIWindowAdd(&ZeroDriftWin);break;
 //		case 2:userGUIWindowAdd(&DeadZoneWin);break;
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief yaoce deal with function
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM0S1Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:userGUIMenuIremModfiy(0);break;
-//	case DownKey:userGUIMenuIremModfiy(1);break;
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();break;
-//	case RightKey:
-//	case OkKey:
-//		switch(MenuM0S1.currentItem){
+/**
+  *@brief yaoce deal with function
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S1Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;
+	case DownKey:userGUIMenuIremModfiy(1);break;
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch(MenuM0S1.currentItem){
 //		case 0:userGUIWindowAdd(&YaoCe1Win);break;//一次遥测
 //		case 1:userGUIWindowAdd(&YaoCe2Win);break;//二次遥测
 //		case 2:userGUIWindowAdd(&HarmonicWin);break;//谐波
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief MenuM0S4 deal with function 定值查询
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM0S4Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:
-//		userGUIMenuIremModfiy(0);
-//		break;
-//	case DownKey:
-//		userGUIMenuIremModfiy(1);
-//		break;
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();
-//		break;
-//	case RightKey:
-//	case OkKey:
-//		switch(MenuM0S4.currentItem){
+/**
+  *@brief MenuM0S4 deal with function 定值查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S4Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:
+		userGUIMenuIremModfiy(0);
+		break;
+	case DownKey:
+		userGUIMenuIremModfiy(1);
+		break;
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();
+		break;
+	case RightKey:
+	case OkKey:
+		switch(MenuM0S4.currentItem){
 //		case 0:userGUIMenuAdd(&MenuM0S4S0);break;//保护功能
 //		case 1:userGUIWindowAdd(&LogicalFunWin);break;//逻辑功能
 //		case 2:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
@@ -1266,109 +1274,109 @@ static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
 //		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
 //		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
 //		case 8:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief MenuM0S4 deal with function 配置查询
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM0S5Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:
-//		userGUIMenuIremModfiy(0);
-//		break;
-//	case DownKey:
-//		userGUIMenuIremModfiy(1);
-//		break;
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();
-//		break;
-//	case RightKey:
-//	case OkKey:
-//		switch(MenuM0S5.currentItem){
+/**
+  *@brief MenuM0S4 deal with function 配置查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S5Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:
+		userGUIMenuIremModfiy(0);
+		break;
+	case DownKey:
+		userGUIMenuIremModfiy(1);
+		break;
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();
+		break;
+	case RightKey:
+	case OkKey:
+		switch(MenuM0S5.currentItem){
 //		case 0:userGUIWindowAdd(&BasicSetWin);break;
 //		case 1:userGUIWindowAdd(&ZeroDriftWin);break;
 //		case 2:userGUIWindowAdd(&DeadZoneWin);break;
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief MenuM0S4S0 deal with function 保护功能
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM0S4S0Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:userGUIMenuIremModfiy(0);break;	
-//	case DownKey:userGUIMenuIremModfiy(1);break;	
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();break;
-//	case RightKey:
-//	case OkKey:
-//		switch( MenuM0S4S0.currentItem){
+/**
+  *@brief MenuM0S4S0 deal with function 保护功能
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S4S0Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM0S4S0.currentItem){
 //		case 0:userGUIWindowAdd(&InterphaseOverWin);break;//相间过流
 //		case 1:userGUIWindowAdd(&ZeroSequenceOverWin);break;//零序过流
 //		case 2:userGUIWindowAdd(&CutoutSwitchWin);break;//断路器
-//		default:break;
-//		}
-//	}
-//}
-///**
-//  *@brief MenuM1S0 deal with function 保护功能
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM1S0Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:userGUIMenuIremModfiy(0);break;	
-//	case DownKey:userGUIMenuIremModfiy(1);break;	
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();break;
-//	case RightKey:
-//	case OkKey:
-//		switch( MenuM1S0.currentItem){
+		default:break;
+		}
+	}
+}
+/**
+  *@brief MenuM1S0 deal with function 保护功能
+  *@param  None
+  *@retval None
+  */
+static void MenuM1S0Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM1S0.currentItem){
 //		case 0:userGUIWindowAdd(&InterphaseOverWin);break;//相间过流
 //		case 1:userGUIWindowAdd(&ZeroSequenceOverWin);break;//零序过流
 //		case 2:userGUIWindowAdd(&CutoutSwitchWin);break;//断路器
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
-///**
-//  *@brief MenuM1S8 deal with function 其他
-//  *@param  None
-//  *@retval None
-//  */
-//static void MenuM1S8Fun(void)
-//{
-//	switch(keyStatus){
-//	case UpKey:userGUIMenuIremModfiy(0);break;	
-//	case DownKey:userGUIMenuIremModfiy(1);break;	
-//	case LeftKey:
-//	case CancelKey:
-//		userGUIMenuHide();break;
-//	case RightKey:
-//	case OkKey:
-//		switch( MenuM1S8.currentItem){
+/**
+  *@brief MenuM1S8 deal with function 其他
+  *@param  None
+  *@retval None
+  */
+static void MenuM1S8Fun(void)
+{
+	switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM1S8.currentItem){
 //		case 0:userGUIWindowAdd(&RingUniteWin);break;//合环
 //		case 1:userGUIWindowAdd(&BreakDownWin);break;//故障投退
-//		default:break;
-//		}
-//	}
-//}
+		default:break;
+		}
+	}
+}
 
 ///**
 //  *@brief CmdSend deal with function 命令下发
@@ -2578,9 +2586,9 @@ static void SetDingZhiModfiy(const struct DingZhi1Item *pDingZhiItems,\
   */
 static void BasicSetFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(BasicConfigureItems,BasicConfigure_NUM,\
-		&ModbuscmdDingZhi[BasicConfigureNum],&flag);
+//	static uint8_t flag = 0;
+//	DZModfiyDisplay(BasicConfigureItems,BasicConfigure_NUM,\
+//		&ModbuscmdDingZhi[BasicConfigureNum],&flag);
 }
 
 /**
@@ -2590,9 +2598,9 @@ static void BasicSetFun(void)
   */
 static void ZeroDriftFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(ZeroDriftItems,ZeroDrift_NUM,\
-		&ModbuscmdDingZhi[ZeroDriftNum],&flag);
+//	static uint8_t flag = 0;
+//	DZModfiyDisplay(ZeroDriftItems,ZeroDrift_NUM,\
+//		&ModbuscmdDingZhi[ZeroDriftNum],&flag);
 }
 
 /**
@@ -2602,9 +2610,9 @@ static void ZeroDriftFun(void)
   */
 static void DeadZoneFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(DeadZoneItems,DeadZone_NUM,\
-		&ModbuscmdDingZhi[DeadZoneNum],&flag);
+//	static uint8_t flag = 0;
+//	DZModfiyDisplay(DeadZoneItems,DeadZone_NUM,\
+//		&ModbuscmdDingZhi[DeadZoneNum],&flag);
 }
 
 /* END */

@@ -63,8 +63,6 @@ typedef struct{
 
 /* 声明前景色/背景色 */
 extern lkdColour forecolor,backcolor;
-/* 声明cmd101发送事件 */
-extern struct rt_event Cmd101SendEvent;
 
 void GuiBiasLine(lkdCoord x0, lkdCoord y0, lkdCoord x1, lkdCoord y1, lkdColour color);
 void GuiHPointLine(lkdCoord x0, lkdCoord y0, lkdCoord x1, uint8_t interval, lkdColour color);
@@ -91,7 +89,8 @@ enum KeyStatus GetKeyStatus(void);
 void SetKeyStatus(enum KeyStatus keyIs);
 void SetKeyIsNoKey(void);
 
-
+/* 由发送完成函数调用 */
+void Cmd101SendFinish(void);
 
 
 void TestMain(void);

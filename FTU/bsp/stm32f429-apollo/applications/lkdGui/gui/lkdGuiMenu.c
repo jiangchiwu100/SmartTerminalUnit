@@ -321,3 +321,5 @@ void MenuManageInit(void)
 {
 	menuManage.pMenu = 0;
 }
+
+/* END */
