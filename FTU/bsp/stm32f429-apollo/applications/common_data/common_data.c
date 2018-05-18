@@ -295,6 +295,7 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
     return (array + offset);
 }
 
+uint32_t num;
 /**
   * @brief: 参数监测.
   * @param:  [none]
@@ -313,7 +314,7 @@ void ParameterCheck(void)
 		}
 	}
 	
-	for (i = 0; i < FIXED_VALUE_NUM; i++)
+	for (num = 0; num < FIXED_VALUE_NUM; num++)
 	{
 		if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
 		{
@@ -321,13 +322,13 @@ void ParameterCheck(void)
 		}
 	}	
 
-	for (i = 0; i < RUN_PARAMETER_NUM; i++)
-	{
-		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
-		{
-		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
-		}
-	}	
+//	for (i = 0; i < RUN_PARAMETER_NUM; i++)
+//	{
+//		//if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+//		{
+//		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+//		}
+//	}	
 }
 
 /**

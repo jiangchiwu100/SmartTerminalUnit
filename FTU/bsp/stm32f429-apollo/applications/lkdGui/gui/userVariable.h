@@ -2,6 +2,20 @@
 #define  __USERVARIABLE_H
 
 #include "stdint.h"
+#include "point_table_config.h"
+
+/* 遥信显示结构体 */
+typedef struct{
+	uint8_t *pBuff;	/* 保存遥信索引号 */
+	uint8_t Num;		/* 索引号总数 */
+	struct tagTelesignalCfg *pRoot; /* 遥信实体指针 */
+}YaoxinDisplayInfo;
+
+extern YaoxinDisplayInfo yxInfo;
+
+void YaoxinDisplayInit(void);
+
+
 
 /* 遥信 */
 struct YaoXinItem{

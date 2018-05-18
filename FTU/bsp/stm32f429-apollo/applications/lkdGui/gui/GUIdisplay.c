@@ -14,6 +14,8 @@
 #include <string.h>
 #include <math.h>
 #include "userVariable.h"
+#include "gui_101_cmd.h"
+#include "hmiInOut.h"
 
 const static uint8_t *modfiyKey[14] = {/* 软按键 */
 	"0","1","2","3","4",".","esc","5","6","7","8","9","<-","ok"};
@@ -212,6 +214,7 @@ void GUIDisplayInit(void)
 	MenuManageInit();
 	WinManageInit();
 	userGUIWindowAdd(&HomeWindow);
+	YaoxinDisplayInit();
 }
 
 /**
@@ -1765,121 +1768,121 @@ static void MenuM1S8Fun(void)
 //		&ModbuscmdDingZhi[BreakDownNum],&flag);
 //}
 
-///**
-//  *@brief 遥信处理函数
-//  *@param  None
-//  *@retval None
-//  */
+/**
+  *@brief 遥信处理函数
+  *@param  None
+  *@retval None
+  */
 //static void YaoxinFun(void)
-//{
-//	const  uint8_t listCol[2][2] = {{90,66},{COL_LEFT_DISPLAY,COL_MID_DISPLAY}};
-//	static uint8_t flag = 0;//步骤标志
-//	static SCROLL *Scroll;//进度条
-//	static ListColSet colset;
-//	static LIST  *list;//列表控件
-//	static uint8_t **pText;//列表内容指针
-//	static uint8_t *col1Data;//显示内容指针	
-//	static struct YaoXinData_ *yaoXin;
-//	struct YaoXinData_ tempYaoXin;
-//	
-//	uint16_t memMall;
-//	uint8_t i;
-//	uint8_t itemsNum;
-//	if(flag == 0){//初始化，分配内存
-//		memMall = 0;
-//		itemsNum = sizeof(yaoXinItems)/sizeof(struct YaoXinItem);
-//		
-//		list = (LIST  *)&userGUIBuff[memMall];
-//		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
-//		Scroll = (SCROLL *)&userGUIBuff[memMall];
-//		memMall += sizeof(SCROLL) + (4 - sizeof(SCROLL)%4);
-//		pText = (uint8_t **)&userGUIBuff[memMall];
-//		memMall += itemsNum*2*4;
-//		yaoXin = (struct YaoXinData_ *)&userGUIBuff[memMall];
-//		memMall += sizeof(struct YaoXinData_) + (4 - sizeof(struct YaoXinData_)%4);	
-//		col1Data = &userGUIBuff[memMall];
+void YaoxinFun(void)
+{
+	const  uint8_t listCol[2][2] = {{90,66},{FONT_LEFT,FONT_MID}};
+	static uint8_t flag = 0;//步骤标志
+	static SCROLL *Scroll;//进度条
+	static ListColSet colset;
+	static LIST  *list;//列表控件
+	static uint8_t **pText;//列表内容指针
+	static uint8_t *col1Data;//显示内容指针	
+	static uint32_t YaoXinTick;
+	
+	uint16_t memMall;
+	uint8_t i;
+	uint8_t itemsNum;
+	
+	keyStatus = GetKeyStatus();//获取按键状态
+	
+	if(flag == 0){//初始化，分配内存
+		itemsNum = yxInfo.Num;
+		
+		memMall = 0;
+		list = (LIST  *)&userGUIBuff[memMall];
+		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
+		Scroll = (SCROLL *)&userGUIBuff[memMall];
+		memMall += sizeof(SCROLL) + (4 - sizeof(SCROLL)%4);
+		pText = (uint8_t **)&userGUIBuff[memMall];
+		memMall += itemsNum*2*4;
+		col1Data = &userGUIBuff[memMall];
 
-//		Scroll->x = 156;
-//		Scroll->y = 18;
-//		Scroll->hight = 141;
-//		Scroll->max = itemsNum/DISPLAYLISTROW+(itemsNum%DISPLAYLISTROW >0 ?1:0);
-//		Scroll->lump = 1;
-//		colset.colWide = (uint8_t *)listCol[0];
-//		colset.colFlag = (uint8_t *)listCol[1];
-//		list->x = 0;
-//		list->y = 18;
-//		list->wide = 156;
-//		list->hight = 141;
-//		list->row = itemsNum;
-//		list->col = 2;
-//		list->drawRow = 0;
-//		list->currentRow = 255;
-//		list->flag = LIST_USEBORDER_H;
-//		list->content = (uint8_t **)pText;
-//		list->colSet = &colset;	
-//		*yaoXin = GetYaoxinStatus();//获取遥信
-//		flag = 1;
-//	}
-//	if(flag == 1){//获取相应数据
-//		itemsNum = sizeof(yaoXinItems)/sizeof(struct YaoXinItem);
-//		for(i = 0;i < itemsNum;i++){
-//			col1Data[i] = (yaoXin->YaoXinData1.All>>i)&0x01;
-//		}	
-//		for(i = 0;i < itemsNum;i++){
-//			*(pText + i*2 + 0) = yaoXinItems[i].name;
-//			if(col1Data[i] == 0)
-//				*(pText + i*2 + 1) = yaoXinItems[i].status[0];
-//			else
-//				*(pText + i*2 + 1) = yaoXinItems[i].status[1];
-//		}
-//		flag = 2;
-//	}
-//	if(flag == 2){//显示
-//		if(list->drawRow == list->row - DISPLAYLISTROW){
-//			Scroll->lump = Scroll->max;
-//		}
-//		else{
-//			Scroll->lump = list->drawRow/DISPLAYLISTROW + 1;
-//		}
-//		DrawList(list);
-//		DrawVScroll(Scroll);
-//		GuiUpdateDisplayAll();
-//		flag = 3;
-//	}
-//	if(flag == 3){//检测遥信变化
-//		tempYaoXin = GetYaoxinStatus();
-//		if(tempYaoXin.YaoXinData1.All != yaoXin->YaoXinData1.All){
-//			*yaoXin = tempYaoXin;
-//			flag = 1;
-//		}
-//	}	
-//	switch(keyStatus){
-//	case UpKey:
-//		if(list->drawRow > DISPLAYLISTROW)
-//			list->drawRow -= DISPLAYLISTROW;
-//		else
-//			list->drawRow = 0;
-//		flag = 2;
-//		break;	
-//	case DownKey:	
-//		list->drawRow += DISPLAYLISTROW;
-//		if(list->drawRow + DISPLAYLISTROW > list->row){
-//			list->drawRow = list->row - DISPLAYLISTROW;
-//		}
-//		flag = 2;
-//		break;
-//	case LeftKey:break;
-//	case RightKey:break;
-//	case OkKey:break;
-//	case CancelKey:
-//		flag = 0;
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		userGUIMenuRedraw();
-//		break;
-//	default:break;
-//	}
-//}
+		Scroll->x = 156;
+		Scroll->y = 18;
+		Scroll->hight = 141;
+		Scroll->max = itemsNum/DISPLAYLISTROW+(itemsNum%DISPLAYLISTROW >0 ?1:0);
+		Scroll->lump = 1;
+		colset.colWide = (uint8_t *)listCol[0];
+		colset.colFlag = (uint8_t *)listCol[1];
+		list->x = 0;
+		list->y = 18;
+		list->wide = 156;
+		list->hight = 141;
+		list->row = itemsNum;
+		list->col = 2;
+		list->drawRow = 0;
+		list->currentRow = 255;
+		list->flag = LIST_USEBORDER_H;
+		list->content = (uint8_t **)pText;
+		list->colSet = &colset;	
+		flag = 1;
+	}
+	if(flag == 1){//获取相应数据
+		itemsNum = yxInfo.Num;
+		for(i = 0;i < itemsNum;i++){
+			col1Data[i] = (uint8_t )*(yxInfo.pRoot[yxInfo.pBuff[i]].pVal);
+		}	
+		for(i = 0;i < itemsNum;i++){
+			*(pText + i*2 + 0) = (uint8_t *)yxInfo.pRoot[i].pName;
+			if(col1Data[i] == 0)
+				*(pText + i*2 + 1) = (uint8_t *)yxInfo.pRoot[yxInfo.pBuff[i]].pContentYx[0];
+			else
+				*(pText + i*2 + 1) = (uint8_t *)yxInfo.pRoot[yxInfo.pBuff[i]].pContentYx[1];
+		}
+		flag = 2;
+	}
+	if(flag == 2){//显示
+		if(list->drawRow == list->row - DISPLAYLISTROW){
+			Scroll->lump = Scroll->max;
+		}
+		else{
+			Scroll->lump = list->drawRow/DISPLAYLISTROW + 1;
+		}
+		DrawList(list);
+		GuiVScroll(Scroll);
+		GuiUpdateDisplayAll();
+		YaoXinTick = getCurrentTick();
+		flag = 3;
+	}
+	if(flag == 3){//检测遥信变化
+		if(GetIntervalTick(YaoXinTick) > 1000){
+			//flag = 1;
+		}
+	}
+
+	switch(keyStatus){
+	case UpKey:
+		if(list->drawRow > DISPLAYLISTROW)
+			list->drawRow -= DISPLAYLISTROW;
+		else
+			list->drawRow = 0;
+		flag = 2;
+		break;	
+	case DownKey:	
+		list->drawRow += DISPLAYLISTROW;
+		if(list->drawRow + DISPLAYLISTROW > list->row){
+			list->drawRow = list->row - DISPLAYLISTROW;
+		}
+		flag = 2;
+		break;
+	case LeftKey:break;
+	case RightKey:break;
+	case OkKey:break;
+	case CancelKey:
+		flag = 0;
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		userGUIMenuRedraw();
+		break;
+	default:break;
+	}
+}
 
 ///**
 //  *@brief 遥测数据处理

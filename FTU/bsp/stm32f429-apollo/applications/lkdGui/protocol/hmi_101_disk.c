@@ -66,6 +66,18 @@ uint16_t i = 0;
 }
 
 /**
+  * @brief : EMPTY.
+  * @param : [pdrv]
+  * @param : [pbuf]
+  * @return: none
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+void DLT634_HMI_SLAVE_EMPTY(uint8_t pdrv)
+{   
+	Cmd101SendFinish();
+}
+
+/**
   * @brief : TO HMI.
   * @param : [pdrv]
   * @param : [pbuf]
@@ -74,8 +86,7 @@ uint16_t i = 0;
   */
 uint8_t DLT634_HMI_SLAVE_TO_HMI(uint8_t pdrv, uint8_t *pbuf)//TO HMI
 {
-
-    return(0);    
+    return hmi101Scan(pbuf);    
 }
 
 /**

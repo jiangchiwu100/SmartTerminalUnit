@@ -41,18 +41,6 @@ typedef struct{
 	uint16_t beginy;/* 位图开始坐标 */
 }lkdBitmap;
 
-/* 按键枚举 */
-enum KeyStatus{
-	NoKey,
-	UpKey,
-	DownKey,
-	LeftKey,
-	RightKey,
-	OkKey,
-	CancelKey
-};
-
-
 #define PACKBUFFMAX 1024
 typedef struct{
 	uint8_t state;
@@ -60,6 +48,19 @@ typedef struct{
 	uint16_t pIn;
 	uint8_t cmdNum;
 }Gui101CmdControl;
+
+/* Hmi101帧命令处理 */
+typedef struct{
+	uint8_t cmdNum;
+	uint8_t *cmdBegin;
+	union{
+		uint16_t len16;
+		uint8_t len8[2];
+	}frameLen;
+	uint16_t cmdOffset;
+	uint16_t pContent;
+}Hmi101FrameResult;
+
 
 /* 声明前景色/背景色 */
 extern lkdColour forecolor,backcolor;
@@ -84,21 +85,19 @@ void CloseLcdDisplay(void);
 void GuiButton(int16_t x,int16_t y,uint8_t *keyName,uint8_t flag);
 void GuiVScroll(SCROLL *pScroll);
 
-/* 按键处理函数 */
-enum KeyStatus GetKeyStatus(void);
-void SetKeyStatus(enum KeyStatus keyIs);
-void SetKeyIsNoKey(void);
-
 /* 由发送完成函数调用 */
 void Cmd101SendFinish(void);
 
 
 void TestMain(void);
+void Hmi101Init(void);
 
 extern uint32_t GetTimer1Tick(void);
 extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);
 extern uint8_t DLT634_HMI_SLAVE_C_REPLY(uint8_t drvid,uint8_t *pbuf);
 
+extern void YaoxinFun(void);
+extern void YaoxinDisplayInit(void);
 #endif /* __GUI101CMD_H */
 
 /* END */

@@ -1665,6 +1665,11 @@
               <FileType>1</FileType>
               <FilePath>.\applications\lkdGui\gui\userVariable.c</FilePath>
             </File>
+            <File>
+              <FileName>hmiInOut.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\lkdGui\gui\hmiInOut.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

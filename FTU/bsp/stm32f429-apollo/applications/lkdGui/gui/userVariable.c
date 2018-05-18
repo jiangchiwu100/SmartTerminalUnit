@@ -1,19 +1,45 @@
-#include "userVariable.h"
 
-const struct YaoXinItem yaoXinItems[12] = {
-	{(YAOXIN_START_ADDR+0),"开关分位",		{"分","合"}},
-    {(YAOXIN_START_ADDR+1),"开关合位",		{"分","合"}},
-    {(YAOXIN_START_ADDR+2),"储能/有压",		{"无","有"}},	
-	{(YAOXIN_START_ADDR+3),"低气压",		{"无","告警"}},	
-	{(YAOXIN_START_ADDR+4),"电源故障告警",	{"无","告警"}},
-	{(YAOXIN_START_ADDR+5),"电池欠压告警",	{"无","告警"}},
-	{(YAOXIN_START_ADDR+6),"电池活化状态",	{"无","活化"}},
-	{(YAOXIN_START_ADDR+7),"输入失电告警",	{"无","告警"}},
-	{(YAOXIN_START_ADDR+8),"工作模式",{"分段","联络"}},
-	{(YAOXIN_START_ADDR+9),"重合压板/FA",{"退","投"}},
-    {(YAOXIN_START_ADDR+10),"保护压板",{"退","投"}},
-	{(YAOXIN_START_ADDR+11),"远方/就地",{"就地","远方"}},
-};
+#include "userVariable.h"
+#include <rtthread.h>
+
+/* 遥信显示信息 */
+YaoxinDisplayInfo yxInfo;
+
+/**
+  *@brief  遥信显示初始化
+  *@param  None
+  *@retval None
+  */
+void YaoxinDisplayInit(void)
+{
+	#define YAOXIN_MAXITEMS 12
+	
+	uint8_t YaoxinItem = 0;
+	uint8_t i = 0;
+	
+	yxInfo.pRoot = TelesignalCfg;
+	for(i = 0; i < YAOXIN_MAXITEMS; i++){//查找可用遥信
+		if(yxInfo.pRoot[i].enable == 0){
+			continue;
+		}
+		YaoxinItem ++;
+	}
+	yxInfo.Num = YaoxinItem;
+	yxInfo.pBuff = (uint8_t *)rt_malloc(yxInfo.Num);
+	if(yxInfo.pBuff == NULL){
+		rt_kprintf("遥信内存获取失败");
+		return;
+	}
+	YaoxinItem = 0;
+	for(i = 0; i < YAOXIN_MAXITEMS; i++){//遥信显示缓冲
+		if(yxInfo.pRoot[i].enable == 0){
+			continue;
+		}
+		yxInfo.pBuff[YaoxinItem ++] = i;
+	}
+}
+
+
 
 const struct YaoCeItem yaoCe1Items[YAOCE1_NUM] = {
 	{ YAOCE_START_ADDR,	   8,3,"f",  {"Hz", ""}},

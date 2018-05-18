@@ -90,7 +90,8 @@ static void MenuWindowFun(void);
 static void mianMenuFun(void);
 /*M0 信息查询 */
 static void MenuM0Fun(void);
-	static void YaoxinFun(void);		//遥信
+//	static void YaoxinFun(void);		//遥信
+void YaoxinFun(void);
 	static void MenuM0S1Fun(void);		//遥测
 		static void YaoCe1Fun(void);	//一次
 		static void YaoCe2Fun(void);	//二次

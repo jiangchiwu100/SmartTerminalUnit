@@ -111,3 +111,77 @@ void WinManageInit(void)
 {
 	winManage.pWin = 0;
 }
+
+
+/**
+  *@brief list draw
+  *@param  plist list handle
+  *@retval None
+  */
+void DrawList(LIST *plist)
+{
+	uint8_t tempDrawRow;
+	uint8_t i,j;
+	uint8_t drawx,drawy,maxDrawx,maxDrawy;
+	
+	if(plist->drawRow >= plist->row){
+		return;
+	}
+	if(plist->x + plist->wide > GUI_LCM_XMAX){
+		return;
+	}
+	if(plist->y +  plist->hight > GUI_LCM_YMAX){
+		return;
+	}
+	maxDrawx = 0;
+	for(i=0;i < plist->col;i++){
+		maxDrawx += plist->colSet->colWide[i];
+	}
+	if(maxDrawx + plist->x > GUI_LCM_XMAX){
+		return;
+	}
+	
+	GuiFillRect(plist->x,plist->y,plist->x + plist->wide,\
+			plist->y +  plist->hight, backcolor);
+	if(plist->flag & LIST_USEBORDER_H){
+		GuiRect(plist->x,plist->y,plist->x + plist->wide,\
+			plist->y +  plist->hight, forecolor);
+	}
+	drawy = plist->y;
+	maxDrawy = plist->y +  plist->hight;
+	
+	for(tempDrawRow = plist->drawRow;tempDrawRow < plist->row;tempDrawRow++){
+		if(drawy + LIST_CONTENT_ROWHIGHT > maxDrawy){
+			break;
+		}
+		drawx = plist->x;//每行开始坐标
+		if(tempDrawRow == plist->currentRow){//当前行高亮
+			GuiFillRect(drawx+1,drawy+1,plist->x + plist->wide,\
+				drawy + LIST_CONTENT_ROWHIGHT - 1, forecolor);
+			GuiExchangeColor();
+			for(j=0;j < plist->col;j++){
+				GuiFont12Align(drawx+2,drawy+1,
+					plist->colSet->colWide[j]-1,
+					(plist->colSet->colFlag[j])&0x03,
+					*(plist->content+tempDrawRow*plist->col+j));
+				drawx += plist->colSet->colWide[j];
+				GuiRPointLine(drawx,drawy,drawy + LIST_CONTENT_ROWHIGHT,2,forecolor);
+			}
+			GuiExchangeColor();
+		}
+		else{
+			GuiFillRect(drawx+1,drawy+1,plist->x + plist->wide,\
+				drawy + LIST_CONTENT_ROWHIGHT - 1, backcolor);
+			for(j=0;j < plist->col;j++){
+				GuiFont12Align(drawx+2,drawy+1,
+					plist->colSet->colWide[j]-1,
+					(plist->colSet->colFlag[j])&0x07,
+					*(plist->content+tempDrawRow*plist->col+j));
+				drawx += plist->colSet->colWide[j];
+				GuiRPointLine(drawx,drawy,drawy + LIST_CONTENT_ROWHIGHT,2,forecolor);
+			}
+		}
+		drawy += LIST_CONTENT_ROWHIGHT;
+		GuiHPointLine(plist->x,drawy,plist->x + plist->wide,2,forecolor);
+	}
+}

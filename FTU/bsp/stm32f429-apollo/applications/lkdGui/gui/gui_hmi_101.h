@@ -18,18 +18,6 @@ struct Hmi101Rev{
 	uint16_t pout;
 };
 
-/* Hmi101帧命令处理 */
-typedef struct{
-	uint8_t cmdNum;
-	uint8_t *cmdBegin;
-	union{
-		uint16_t len16;
-		uint8_t len8[2];
-	}frameLen;
-	uint16_t cmdOffset;
-	uint16_t pContent;
-}Hmi101FrameResult;
-
 /* Hmi101帧命令 */
 enum Hmi101Frame{
 	H101CMD_LEN_L,
@@ -39,7 +27,36 @@ enum Hmi101Frame{
 	/* 后面跟所有具体命令 */
 };
 
-
+/* 开入命令 */
+enum HmiInputCmd_001{
+	CMD001_LEN,		/* 命令长度 */
+	CMD001_CMD,		/* 命令标识 */
+	CMD001_TYPE,	/* 0 非连续 1 连续 */
+	CMD001_NUM,		/* 开入数量 */
+	CMD001_NUMBER,/* 开入号 */
+	CMD001_VALUE,	/* 对应值 */
+	/* 如果是连续 全部为值 */
+	/* 如果非连续  CMD100_NUMBER0 CMD100_VALUE0 CMD100_NUMBER1 CMD100_VALUE1 ... */
+};
+enum Cmd001Type{
+	C001TYPE_DISCRETE,	/* 非连续 */
+	C001TYPE_CONTINUOUS,/* 连续 */
+};
+/* 开出命令 */
+enum HmiInputCmd_002{
+	CMD002_LEN,		/* 命令长度 */
+	CMD002_CMD,		/* 命令标识 */
+	CMD002_TYPE,	/* 0 非连续 1 连续 */
+	CMD002_NUM,		/* 开出数量 */
+	CMD002_NUMBER,/* 开出号 */
+	CMD002_VALUE,	/* 对应值 */
+	/* 如果是连续 全部为值 */
+	/* 如果非连续  CMD002_NUMBER0 CMD002_VALUE0 CMD002_NUMBER1 CMD002_VALUE1 ... */
+};
+enum Cmd002Type{
+	C002TYPE_DISCRETE,	/* 非连续 */
+	C002TYPE_CONTINUOUS,/* 连续 */
+};
 /* 画线命令 */
 enum HmiGuiCmd_100{
 	CMD100_LEN,		/* 命令长度 */
@@ -200,6 +217,7 @@ enum Cmd109Type{
 };
 
 enum HmiGuiCmdTab{
+	HmiCmd002 = 2,
 	GuiCmd100 = 100,
 	GuiCmd101,
 	GuiCmd102,

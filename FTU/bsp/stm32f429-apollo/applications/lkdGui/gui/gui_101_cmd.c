@@ -13,7 +13,7 @@
 #include "lkdGuiMenu.h"
 #include "lkdGuiWindow.h"
 #include <rtthread.h>
-
+#include "hmiInOut.h"
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
@@ -24,7 +24,6 @@ Gui101CmdControl cmd101;
 /* 定义前景色/背景色 */
 lkdColour forecolor = 1,backcolor;
 /* 定义按键状态 */
-enum KeyStatus guikeyIs;
 
 /**
   *@brief  结束101压栈
@@ -97,8 +96,6 @@ void BeginCmd101Down(void)
 	else{
 		cmd101.pIn = 3;
 	}
-	cmd101.cmdNum = 0;
-	cmd101.pIn = 3;
 }
 
 /**
@@ -164,8 +161,8 @@ void  GuiRPointLine(lkdCoord x0, lkdCoord y0,\
 	cmd101.packBuff[cmd101.pIn + CMD100_TYPE] = C100TYPE_RLINE;
 	cmd101.packBuff[cmd101.pIn + CMD100_BX] = x0;
 	cmd101.packBuff[cmd101.pIn + CMD100_BY] = y0;
-	cmd101.packBuff[cmd101.pIn + CMD100_EX] = y1;
-	cmd101.packBuff[cmd101.pIn + CMD100_EY] = 0;
+	cmd101.packBuff[cmd101.pIn + CMD100_EX] = 0;
+	cmd101.packBuff[cmd101.pIn + CMD100_EY] = y1;
 	cmd101.packBuff[cmd101.pIn + CMD100_POINT] = interval;
 	cmd101.packBuff[cmd101.pIn + CMD100_COLOUR] = color;
 	cmd101.packBuff[cmd101.pIn + CMD100_LEN] = 9;
@@ -514,188 +511,88 @@ void GuiExchangeColor(void)
 	cmd101.cmdNum += 1;
 }
 
-enum KeyStatus GetKeyStatus(void)
-{
-	return guikeyIs;
-}
-void SetKeyStatus(enum KeyStatus keyIs)
-{
-	guikeyIs = keyIs;
-}
-void SetKeyIsNoKey(void)
-{
-	guikeyIs = NoKey;
-}
-
-
-uint8_t *testStr[] = {
-	"开关分位0","开关合位1","过流一段2","过流二段3","重合闸闭锁4",
-	"开关分位5","开关合位6","过流一段7","过流二段8","重合闸闭锁9",
-	"开关分位10","开关合位11","过流一段12","过流二段13","重合闸闭锁14",
-	"灯15","SOE16","保护投17","保护退18","掉电19",
-	"灯20","SOE21","保护投22","保护退23","掉电24",
-};
-
-
-void TestHmiMain(uint8_t *flag)
-{
-	uint8_t i;
-	static  uint32_t TestTick;
-	uint8_t floatStr[16];
-	if(*flag == 1){
-		BeginCmd101Down();
-		GuiFillRect(0, 0, 159, 159, 0);
-		GuiFillRect(10, 20, 149, 36, 1);
-		GuiFont12Align(12, 22, 130, FONT_MID,"sojo新架构测试例子");
-		for(i = 0; i < 6; i++){
-			GuiHLine(0, 38 + i * 14, 159, 1);
-		}
-		GuiRLine(0, 38, 102, 1);
-		GuiRLine(52, 38, 102, 1);
-		GuiRLine(104, 38, 102, 1);
-		GuiRLine(159, 38, 102, 1);
-		GuiRect(20, 110, 140,130, 1);
-		GuiUpdateDisplayAll();
-	}
-	if(*flag == 2){
-		BeginCmd101Down();
-		GuiFillRect(0, 0, 159, 159, 0);
-		GuiRect(0, 0, 159, 159, 1);
-		GuiHLine(0, 16, 159, 1);
-		GuiHLine(0, 18, 159, 1);
-		GuiFont12Align(0, 2, 159, FONT_MID,"不刷新窗口");
-		for(i = 1; i < 9; i++){
-			GuiHPointLine(0, 18 + i * 15, 159, 2, 1);
-		}
-		for(i = 0; i < 9; i++){
-			GuiFont12Align(2, 20 + i * 15, 78, FONT_LEFT,testStr[i]);
-		}
-		for(i = 0; i < 9; i++){
-			GuiFont12Align(82, 20 + i * 15, 77, FONT_LEFT,testStr[i + 9]);
-		}
-		GuiUpdateDisplayAll();
-	}
-	if(*flag == 3){
-		if(GetTimer1IntervalTick(TestTick) > 1000){
-			TestTick = GetTimer1Tick();
-			BeginCmd101Down();
-			GuiFillRect(0, 0, 159, 159, 0);
-			GuiRect(0, 0, 159, 159, 1);
-			GuiHLine(0, 16, 159, 1);
-			GuiHLine(0, 18, 159, 1);
-			GuiFont12Align(0, 2, 159, FONT_MID,"HMI窗口");
-			for(i = 1; i < 9; i++){
-				GuiHPointLine(0, 18 + i * 15, 159, 2, 1);
-			}
-			sprintf((char *)floatStr,"%d",(uint8_t)TestTick);
-			for(i = 1; i < 9; i++){
-				GuiFont12Align(2, 20 + i * 15, 78, FONT_LEFT,floatStr);
-			}
-			for(i = 1; i < 9; i++){
-				GuiFont12Align(82, 20 + i * 15, 77, FONT_LEFT,floatStr);
-			}
-			GuiUpdateDisplayAll();
-		}
-	}
-	if(*flag == 4){
-		BeginCmd101Down();
-		//GUIMenuDraw(&mianMenu);
-		GuiUpdateDisplayAll();
-	}
-}
-
-//MENU mianMenu = {
-//	0,0,NULL,0,5,{1,1,1,0,0},//x,y,fatherMenu,currentItem,mun,ItemFlag
-//	{"信息查询","定值设置","配置设置","命令下发","版本信息",NULL,NULL,NULL,NULL,NULL},
-//	NULL/* MenuFunction */
-//};
-//MENU MenuM1 = {
-//	0,0,&mianMenu,0,9,{1,0,0,0,0,0,0,0,1},//x,y,fatherMenu,currentItem,mun
-//	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","自动复归","其他设置",NULL},
-//	NULL/* itemFunction */
-//};
-
-//void MenuTest(void)
-//{
-//	static uint8_t menustep,ItemIs,itemflag;
-//	static uint32_t menuTick;
-//	BeginCmd101Down();
-//	if(menustep == 0){
-//		BeginCmd101Down();
-//		userGUIMenuAdd(&mianMenu);
-//		userGUIMenuAdd(&MenuM1);
-//		GuiUpdateDisplayAll();
-//		menuTick = GetTimer1Tick();
-//		menustep = 1;
-//	}
-//	if(menustep == 1 && GetTimer1IntervalTick(menuTick) > 1000){
-//		menuTick = GetTimer1Tick();
-//		if(ItemIs < 9 && itemflag == 0){
-//			userGUIMenuIremModfiy(1);
-//			ItemIs ++;
-//			if(ItemIs >= 9){
-//				itemflag = 1;
-//			}
-//		}
-//		else{
-//			if(ItemIs < 1){
-//				itemflag = 0;
-//			}
-//			ItemIs --;
-//			userGUIMenuIremModfiy(0);	
-//		}
-//		GuiUpdateDisplayAll();
-//	}
-//}
-//WINDOW VersionWin = {0,0,160,160,NULL,"版本信息管理",NULL};
-//void WindowTest(void)
-//{
-//	static uint8_t winstep;
-//	static uint32_t winTick;
-//	if(winstep == 0){
-//		BeginCmd101Down();
-//		userGUIWindowAdd(&VersionWin);
-//		GuiUpdateDisplayAll();
-//		winTick = GetTimer1Tick();
-//		winstep = 1;
-//	}
-//	if(winstep == 1 && GetTimer1IntervalTick(winTick) > 1000){
-//		winstep = 0;
-//		BeginCmd101Down();
-//		userGUITopWindowHide();
-//		GuiUpdateDisplayAll();
-//	}
-//}
 void TestMain(void)
 {
 	static uint8_t flag;
 	static uint32_t runTick,HmiTestTick;
-	if(flag == 0){
-		runTick = GetTimer1Tick();
-		flag = 1;
-	}
-	else if(flag == 1 && GetTimer1IntervalTick(runTick) > 5000){
-		runTick = GetTimer1Tick();
-		flag = 2;
-	}
-	else if(flag == 2 && GetTimer1IntervalTick(runTick) > 5000){
-		runTick = GetTimer1Tick();
-		flag = 3;
-	}
-	else if(flag == 3 && GetTimer1IntervalTick(runTick) > 10000){
-		runTick = GetTimer1Tick();
-		flag = 4;
-	}
-	else if(flag == 4 && GetTimer1IntervalTick(runTick) > 10000){
-		runTick = GetTimer1Tick();
-		flag = 1;
-	}
 	if(GetTimer1IntervalTick(HmiTestTick) > 50){
 		HmiTestTick = GetTimer1Tick();
-		//TestHmiMain(&flag);
-		//MenuTest();
-		//WindowTest();
+		YaoxinFun();
 	}
-	
 }
 
+void Hmi101Init(void)
+{
+	rt_err_t result;
+	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
+	if (result != RT_EOK){  
+	}
+	YaoxinDisplayInit();
+}
+
+/**
+  *@brief Gui108命令处理
+  *@param  pbuff 内容数组
+  *@retval 内容大小
+  */
+uint16_t HmiCmd002Fun(uint8_t *pbuff)
+{
+	uint8_t i;
+	switch(pbuff[CMD002_TYPE])
+	{
+	case C002TYPE_DISCRETE://不连续的
+		for(i = 0; i < pbuff[CMD002_NUM]; i++){
+			KeyCmdResult(pbuff[CMD002_NUMBER + i*2], pbuff[CMD002_VALUE + i*2]);
+		}break;
+	case C002TYPE_CONTINUOUS://连续的
+		for(i = 0; i < pbuff[CMD002_NUM]; i++){
+			KeyCmdResult(pbuff[CMD002_NUMBER] + i, pbuff[CMD002_VALUE] + i);
+		}break;
+	default:break;
+	}
+	return pbuff[CMD002_LEN];
+}
+/**
+  *@brief Gui命令处理
+  *@param  pbuff 内容数组
+  *@retval None
+  */
+void Hmi101CmdResult(Hmi101FrameResult *pFrame)
+{
+	/* 偏移0为长度 1 为命令 */
+	switch(pFrame->cmdBegin[1])
+	{
+	case HmiCmd002:pFrame->pContent = HmiCmd002Fun(&pFrame->cmdBegin[0]);break;
+	default:pFrame->pContent = 0;break;
+	}
+	//GuiUpdateDisplayAll();
+}
+/**
+  *@brief hmi101查询处理主函数
+  *@param  pbuff 内容数组
+  *@retval 0 成功 1 失败
+  */
+uint8_t hmi101Scan(uint8_t *pBuff)
+{
+	Hmi101FrameResult frameIs;
+	frameIs.frameLen.len8[0] = pBuff[H101CMD_LEN_L];
+	frameIs.frameLen.len8[1] = pBuff[H101CMD_LEN_H];
+	frameIs.cmdNum = pBuff[H101CMD_CMDNUM];
+	if(frameIs.frameLen.len16 < 2 || frameIs.cmdNum < 1){
+		return 1;
+	}
+	frameIs.pContent = 0;
+	frameIs.cmdOffset = 0;
+	while(frameIs.cmdNum){
+		frameIs.cmdOffset += frameIs.pContent;
+		if(frameIs.cmdOffset + H101CMD_CMD >= frameIs.frameLen.len16){
+			return 1;
+		}
+		frameIs.cmdBegin = &pBuff[frameIs.cmdOffset + H101CMD_CMD];
+		Hmi101CmdResult(&frameIs);
+		frameIs.cmdNum --;
+	}
+	return 0;
+}
+
+/* END */
