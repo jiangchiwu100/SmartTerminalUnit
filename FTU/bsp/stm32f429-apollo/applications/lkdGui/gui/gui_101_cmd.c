@@ -517,8 +517,9 @@ void TestMain(void)
 	static uint32_t runTick,HmiTestTick;
 	if(GetTimer1IntervalTick(HmiTestTick) > 50){
 		HmiTestTick = GetTimer1Tick();
-		YaoxinFun();
+		
 	}
+	YaoxinFun();
 }
 
 void Hmi101Init(void)

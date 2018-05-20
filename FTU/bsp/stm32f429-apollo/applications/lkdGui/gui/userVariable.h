@@ -11,10 +11,21 @@ typedef struct{
 	struct tagTelesignalCfg *pRoot; /* 遥信实体指针 */
 }YaoxinDisplayInfo;
 
+/* 遥测显示结构体 */
+typedef struct{
+	uint8_t *pBuff;	/* 保存遥测索引号 */
+	uint8_t num;		/* 索引号总数 */
+	struct tagTelemetryCfg *pRoot; /* 遥测实体指针 */
+}YaoceDisplayInfo;
+
+
+/* 遥信信息结构 */
 extern YaoxinDisplayInfo yxInfo;
+/* 遥测信息结构 */
+extern YaoceDisplayInfo yceInfo[3];
 
 void YaoxinDisplayInit(void);
-
+void userVariableDisplayInit(void);
 
 
 /* 遥信 */

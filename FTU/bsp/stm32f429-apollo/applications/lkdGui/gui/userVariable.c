@@ -4,14 +4,17 @@
 
 /* 遥信显示信息 */
 YaoxinDisplayInfo yxInfo;
+/* 遥测显示信息 */
+YaoceDisplayInfo yceInfo[3];
 
 /**
   *@brief  遥信显示初始化
   *@param  None
   *@retval None
   */
-void YaoxinDisplayInit(void)
+static void YaoxinDisplayInit(void)
 {
+	/* 遥信显示个数 */
 	#define YAOXIN_MAXITEMS 12
 	
 	uint8_t YaoxinItem = 0;
@@ -39,7 +42,62 @@ void YaoxinDisplayInit(void)
 	}
 }
 
+/**
+  *@brief  遥测显示初始化
+  *@param  None
+  *@retval None
+  */
+static void YaoceDisplayInit(void)
+{
+	uint8_t yaoceItemsAll,typeIs;
+	uint8_t YaoceItem = 0;
+	uint8_t i,j;
+	
+	yaoceItemsAll = sizeof(TelemetryCfg)/sizeof(tagTelemetryCfg);
+	for(i = 0; i < 3; i++){
+		if(i == 0){
+			typeIs = SECONDRY;
+		}
+		else if(i == 1){
+			typeIs = ONCE;
+		}
+		else{
+			typeIs = HARMONIC;
+		}
+		/* 获取遥测实体指针 */
+		yceInfo[i].pRoot = TelemetryCfg;	
+		for(j = 0; j < yaoceItemsAll; j++){//查找可用遥测
+			if(yceInfo[i].pRoot[j].enable == 0 && yceInfo[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			YaoceItem ++;
+		}
+		yceInfo[i].num = YaoceItem;
+		yceInfo[i].pBuff = (uint8_t *)rt_malloc(yceInfo[i].num);
+		if(yceInfo[i].pBuff == NULL){
+			rt_kprintf("遥测内存获取失败");
+			return;
+		}
+		YaoceItem = 0;
+		for(j = 0; j < yaoceItemsAll; j++){//遥测显示缓冲
+			if(yceInfo[i].pRoot[j].enable == 0 && yceInfo[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			yceInfo[i].pBuff[YaoceItem ++] = j;
+		}
+	}
+}
 
+/**
+  *@brief  用户显示数据初始化
+  *@param  None
+  *@retval None
+  */
+void userVariableDisplayInit(void)
+{
+	YaoxinDisplayInit();
+	YaoceDisplayInit();
+}
 
 const struct YaoCeItem yaoCe1Items[YAOCE1_NUM] = {
 	{ YAOCE_START_ADDR,	   8,3,"f",  {"Hz", ""}},

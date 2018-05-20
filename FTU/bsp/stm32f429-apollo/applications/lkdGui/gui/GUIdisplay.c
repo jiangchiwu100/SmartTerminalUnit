@@ -1790,6 +1790,7 @@ void YaoxinFun(void)
 	uint8_t itemsNum;
 	
 	keyStatus = GetKeyStatus();//获取按键状态
+	SetKeyIsNoKey();
 	
 	if(flag == 0){//初始化，分配内存
 		itemsNum = yxInfo.Num;
@@ -1851,7 +1852,7 @@ void YaoxinFun(void)
 		flag = 3;
 	}
 	if(flag == 3){//检测遥信变化
-		if(GetIntervalTick(YaoXinTick) > 1000){
+		if(GetIntervalTick(YaoXinTick) > 2000){
 			//flag = 1;
 		}
 	}
@@ -1884,15 +1885,15 @@ void YaoxinFun(void)
 	}
 }
 
-///**
-//  *@brief 遥测数据处理
-//  *@param  pData 待处理数据
-//  *@param  outData 处理输出数据
-//  *@param  items 遥测显示项
-//  *@param  itemsNum 遥测数量
-//  *@param  items modbus命令
-//  *@retval None
-//  */
+/**
+  *@brief 遥测数据处理
+  *@param  pData 待处理数据
+  *@param  outData 处理输出数据
+  *@param  items 遥测显示项
+  *@param  itemsNum 遥测数量
+  *@param  items modbus命令
+  *@retval None
+  */
 //void yaoCeDataResult(uint8_t *pData,uint8_t *outData,const struct YaoCeItem *items,\
 //	uint8_t itemsNum,const struct ModbusCmd_ *modbusCmd)
 //{
