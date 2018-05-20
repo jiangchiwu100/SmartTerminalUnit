@@ -468,109 +468,109 @@ enum TelesignalAddr
 	TELESIGNAL_NUM
 };
 
-/* 遥信数据 */
-typedef union TagTelesignalDatabase
-{
-    struct Telesignal
-    {
-        rt_uint8_t switchOpen;               // 开关分位
-        rt_uint8_t switchClose;              // 开关合位
-        rt_uint8_t operatingMechanism;       // 弹簧储能/永磁电容欠压
-        rt_uint8_t lowPressure;              // 低气压
-        rt_uint8_t powerFaultAlarm;          // 电源故障告警
-        rt_uint8_t batteryUnderVoltageAlarm; // 电池欠压告警
-        rt_uint8_t batteryActivationStatus;  // 电池活化状态
-        rt_uint8_t batteryLossAlarm;         // 电池失电告警
-        rt_uint8_t breakContact;             // 分断/联络	(模式)
-        union
-        {
-            rt_uint8_t recloseHardStrap;     // 重合闸硬压板
-            rt_uint8_t faHardStrap;          // FA功能投退硬压板
-        } FA;
-        rt_uint8_t functionHardStrap;        // 功能投退硬压板
-        rt_uint8_t remoteEarth;              // 远方/就地
-        rt_uint8_t shortCircuitFault;        // 短路故障/过流保护
-        rt_uint8_t earthingFault;            // 接地故障/零序保护
-        rt_uint8_t protectionAct;            // 保护动作
-        rt_uint8_t protectionLock;           // 保护闭锁
-        rt_uint8_t closingLocked;            // 合闸闭锁
-        rt_uint8_t openingLockedEvent;       // 分闸闭锁事件
-        rt_uint8_t recloseAct;               // 重合动作
-        rt_uint8_t recloseLock;  			  // 重合闭锁
-        rt_uint8_t deviceFault;              // 装置故障
-		rt_uint8_t selfCheckAbnomal;         // 自检异常
-		rt_uint8_t communication;            // 通讯
-        rt_uint8_t swtichclass;              // 开关类型		
-        rt_uint8_t batteryLowVoltageAlarm;   // 蓄电池低压告警(直流量)
-        rt_uint8_t doubleSwitch;             // 双点开关分合
-        rt_uint8_t controlLoopDisconnection; // 控制回路断线
-        rt_uint8_t overcurrentIa1;           // A相过流一段保护
-        rt_uint8_t overcurrentIb1;           // B相过流一段保护
-        rt_uint8_t overcurrentIc1;           // C相过流一段保护
-        rt_uint8_t overcurrentIa2;           // A相过流二段保护
-        rt_uint8_t overcurrentIb2;           // B相过流二段保护
-        rt_uint8_t overcurrentIc2;           // C相过流二段保护
-        rt_uint8_t overcurrentIa3;           // A相过流三段保护
-        rt_uint8_t overcurrentIb3;           // B相过流三段保护
-        rt_uint8_t overcurrentIc3;           // C相过流三段保护
-        rt_uint8_t overcurrentI01;           // 零序过流一段保护
-        rt_uint8_t overcurrentI02;           // 零序过流二段保护
-        rt_uint8_t overcurrentAccIa;		  // A相后加速过流
-        rt_uint8_t overcurrentAccIb;		  // B相后加速过流
-        rt_uint8_t overcurrentAccIc;		  // C相后加速过流
-        rt_uint8_t overcurrentInverseIa;	  // A相反时限过流
-        rt_uint8_t overcurrentInverseIb;	  // B相反时限过流
-        rt_uint8_t overcurrentInverseIc;	  // C相反时限过流
-        rt_uint8_t recloseProtection1;		  // 重合闸一次保护
-        rt_uint8_t recloseProtection2;		  // 重合闸二次保护
-        rt_uint8_t recloseProtection3;		  // 重合闸三次保护
-        rt_uint8_t recloseProtection4;		  // 重合闸四次保护
-        rt_uint8_t recloseClockProtection;	  // 重合闸闭锁保护
-        rt_uint8_t zeroRecloseProtection1;   // 零序重合闸一次保护
-        rt_uint8_t zeroRecloseProtection2;   // 零序重合闸二次保护
-        rt_uint8_t clockSecondaryClose;      // 闭锁二次重合闸
-        rt_uint8_t lossTrip;                 // 失电跳闸
-        rt_uint8_t getClossingEvent;		  // 得电合闸事件
-        rt_uint8_t closingFaultEvent;        // 合闸于故障
-        rt_uint8_t protectionLockedEvent;    // 保护闭锁事件
-        rt_uint8_t doubleProhibitClossing;   // 双侧有压禁止合闸
-        rt_uint8_t singleLossClosingEvent;   // 单侧失压延时合闸事件
-        rt_uint8_t remainClockClossing;      // 残压闭锁合闸
-        rt_uint8_t earthingFaultTripU0;      // 零序电压接地故障跳闸
-        rt_uint8_t smallSignalEarthingTrip;  // 小信号接地选线跳闸
-        rt_uint8_t breakingCurrent;          // 遮断电流
-        rt_uint8_t overloadEvent;            // 过负荷事件		
-        rt_uint8_t haveyOverload;            // 重过载
-        rt_uint8_t overVoltageProtection;    // 过压保护
-        rt_uint8_t overFrequencyProtection;  // 过频保护		
-        rt_uint8_t downVoltageProtection;    // 低压保护	
-        rt_uint8_t downFrequencyProtection;  // 低频保护
-        rt_uint8_t overLimitUaUp;            // A相电压越上限
-        rt_uint8_t overLimitUaDown;          // A相电压越下限
-        rt_uint8_t overLimitUbUp;            // B相电压越上限
-        rt_uint8_t overLimitUbDown;          // B相电压越下限
-        rt_uint8_t overLimitUcUp;            // C相电压越上限
-        rt_uint8_t overLimitUcDown;          // C相电压越下限
-        rt_uint8_t overLimitU0Up;            // 零序电压越上限
-        rt_uint8_t overLimitU0Down;          // 零序电压越下限
-        rt_uint8_t overLimitIaUp;            // A相电压越上限
-        rt_uint8_t overLimitIaDown;          // A相电压越下限
-        rt_uint8_t overLimitIbUp;            // B相电压越上限
-        rt_uint8_t overLimitIbDown;          // B相电压越下限
-        rt_uint8_t overLimitIcUp;            // C相电压越上限
-        rt_uint8_t overLimitIcDown;          // C相电压越下限
-        rt_uint8_t overLimitI0Up;            // 零序电压越上限
-        rt_uint8_t overLimitI0Down;          // 零序电压越下限
-        rt_uint8_t overLimitDC_U_Up;         // 直流电压越上限
-        rt_uint8_t overLimitDC_U_Down;       // 直流电压越下限
-        rt_uint8_t overLimitDC_I_Up;         // 直流电流越限
-        rt_uint8_t overLimitDC_I_Down;       // 直流电流越限
-        rt_uint8_t devicePowerDown;          // 装置掉电
-    }Str;
+///* 遥信数据 */
+//typedef union TagTelesignalDatabase
+//{
+//    struct Telesignal
+//    {
+//        rt_uint8_t switchOpen;               // 开关分位
+//        rt_uint8_t switchClose;              // 开关合位
+//        rt_uint8_t operatingMechanism;       // 弹簧储能/永磁电容欠压
+//        rt_uint8_t lowPressure;              // 低气压
+//        rt_uint8_t powerFaultAlarm;          // 电源故障告警
+//        rt_uint8_t batteryUnderVoltageAlarm; // 电池欠压告警
+//        rt_uint8_t batteryActivationStatus;  // 电池活化状态
+//        rt_uint8_t batteryLossAlarm;         // 电池失电告警
+//        rt_uint8_t breakContact;             // 分断/联络	(模式)
+//        union
+//        {
+//            rt_uint8_t recloseHardStrap;     // 重合闸硬压板
+//            rt_uint8_t faHardStrap;          // FA功能投退硬压板
+//        } FA;
+//        rt_uint8_t functionHardStrap;        // 功能投退硬压板
+//        rt_uint8_t remoteEarth;              // 远方/就地
+//        rt_uint8_t shortCircuitFault;        // 短路故障/过流保护
+//        rt_uint8_t earthingFault;            // 接地故障/零序保护
+//        rt_uint8_t protectionAct;            // 保护动作
+//        rt_uint8_t protectionLock;           // 保护闭锁
+//        rt_uint8_t closingLocked;            // 合闸闭锁
+//        rt_uint8_t openingLockedEvent;       // 分闸闭锁事件
+//        rt_uint8_t recloseAct;               // 重合动作
+//        rt_uint8_t recloseLock;  			  // 重合闭锁
+//        rt_uint8_t deviceFault;              // 装置故障
+//		rt_uint8_t selfCheckAbnomal;         // 自检异常
+//		rt_uint8_t communication;            // 通讯
+//        rt_uint8_t swtichclass;              // 开关类型		
+//        rt_uint8_t batteryLowVoltageAlarm;   // 蓄电池低压告警(直流量)
+//        rt_uint8_t doubleSwitch;             // 双点开关分合
+//        rt_uint8_t controlLoopDisconnection; // 控制回路断线
+//        rt_uint8_t overcurrentIa1;           // A相过流一段保护
+//        rt_uint8_t overcurrentIb1;           // B相过流一段保护
+//        rt_uint8_t overcurrentIc1;           // C相过流一段保护
+//        rt_uint8_t overcurrentIa2;           // A相过流二段保护
+//        rt_uint8_t overcurrentIb2;           // B相过流二段保护
+//        rt_uint8_t overcurrentIc2;           // C相过流二段保护
+//        rt_uint8_t overcurrentIa3;           // A相过流三段保护
+//        rt_uint8_t overcurrentIb3;           // B相过流三段保护
+//        rt_uint8_t overcurrentIc3;           // C相过流三段保护
+//        rt_uint8_t overcurrentI01;           // 零序过流一段保护
+//        rt_uint8_t overcurrentI02;           // 零序过流二段保护
+//        rt_uint8_t overcurrentAccIa;		  // A相后加速过流
+//        rt_uint8_t overcurrentAccIb;		  // B相后加速过流
+//        rt_uint8_t overcurrentAccIc;		  // C相后加速过流
+//        rt_uint8_t overcurrentInverseIa;	  // A相反时限过流
+//        rt_uint8_t overcurrentInverseIb;	  // B相反时限过流
+//        rt_uint8_t overcurrentInverseIc;	  // C相反时限过流
+//        rt_uint8_t recloseProtection1;		  // 重合闸一次保护
+//        rt_uint8_t recloseProtection2;		  // 重合闸二次保护
+//        rt_uint8_t recloseProtection3;		  // 重合闸三次保护
+//        rt_uint8_t recloseProtection4;		  // 重合闸四次保护
+//        rt_uint8_t recloseClockProtection;	  // 重合闸闭锁保护
+//        rt_uint8_t zeroRecloseProtection1;   // 零序重合闸一次保护
+//        rt_uint8_t zeroRecloseProtection2;   // 零序重合闸二次保护
+//        rt_uint8_t clockSecondaryClose;      // 闭锁二次重合闸
+//        rt_uint8_t lossTrip;                 // 失电跳闸
+//        rt_uint8_t getClossingEvent;		  // 得电合闸事件
+//        rt_uint8_t closingFaultEvent;        // 合闸于故障
+//        rt_uint8_t protectionLockedEvent;    // 保护闭锁事件
+//        rt_uint8_t doubleProhibitClossing;   // 双侧有压禁止合闸
+//        rt_uint8_t singleLossClosingEvent;   // 单侧失压延时合闸事件
+//        rt_uint8_t remainClockClossing;      // 残压闭锁合闸
+//        rt_uint8_t earthingFaultTripU0;      // 零序电压接地故障跳闸
+//        rt_uint8_t smallSignalEarthingTrip;  // 小信号接地选线跳闸
+//        rt_uint8_t breakingCurrent;          // 遮断电流
+//        rt_uint8_t overloadEvent;            // 过负荷事件		
+//        rt_uint8_t haveyOverload;            // 重过载
+//        rt_uint8_t overVoltageProtection;    // 过压保护
+//        rt_uint8_t overFrequencyProtection;  // 过频保护		
+//        rt_uint8_t downVoltageProtection;    // 低压保护	
+//        rt_uint8_t downFrequencyProtection;  // 低频保护
+//        rt_uint8_t overLimitUaUp;            // A相电压越上限
+//        rt_uint8_t overLimitUaDown;          // A相电压越下限
+//        rt_uint8_t overLimitUbUp;            // B相电压越上限
+//        rt_uint8_t overLimitUbDown;          // B相电压越下限
+//        rt_uint8_t overLimitUcUp;            // C相电压越上限
+//        rt_uint8_t overLimitUcDown;          // C相电压越下限
+//        rt_uint8_t overLimitU0Up;            // 零序电压越上限
+//        rt_uint8_t overLimitU0Down;          // 零序电压越下限
+//        rt_uint8_t overLimitIaUp;            // A相电压越上限
+//        rt_uint8_t overLimitIaDown;          // A相电压越下限
+//        rt_uint8_t overLimitIbUp;            // B相电压越上限
+//        rt_uint8_t overLimitIbDown;          // B相电压越下限
+//        rt_uint8_t overLimitIcUp;            // C相电压越上限
+//        rt_uint8_t overLimitIcDown;          // C相电压越下限
+//        rt_uint8_t overLimitI0Up;            // 零序电压越上限
+//        rt_uint8_t overLimitI0Down;          // 零序电压越下限
+//        rt_uint8_t overLimitDC_U_Up;         // 直流电压越上限
+//        rt_uint8_t overLimitDC_U_Down;       // 直流电压越下限
+//        rt_uint8_t overLimitDC_I_Up;         // 直流电流越限
+//        rt_uint8_t overLimitDC_I_Down;       // 直流电流越限
+//        rt_uint8_t devicePowerDown;          // 装置掉电
+//    }Str;
 
-    rt_uint8_t buf[sizeof(struct Telesignal)];
+//    rt_uint8_t buf[sizeof(struct Telesignal)];
 
-}TelesignalDatabase;
+//}TelesignalDatabase;
 
 enum TelemetryAddr
 {
@@ -635,66 +635,6 @@ enum TelemetryAddr
     TELEMETRY_NUM
 };
     
-/* 遥测数据 */
-typedef union TagTelemetryDatabase
-{
-    struct Telemetry
-    {
-        float frequency;                // 频率
-        float Ia;                       // A相电流
-        float Ib;                       // B相电流
-        float Ic;                       // C相电流
-        float I0;                       // 零序电流
-        float Uab;                      // 线电压Uab
-        float Ubc;                      // 线电压Ubc
-        float Uac;                      // 线电压Uac
-        float U0;                       // 零序电压
-        float UAB;                      // 线电压Uab
-        float UBC;                      // 线电压Ubc
-        float P;                        // 有功功率
-        float Q;                        // 无功功率
-        float S;                        // 视在功率
-        float pf;                       // 功率因数
-        float Alpha0;                    // 零序夹角
-        float AlphaU;                    // 电源测负载测电压夹角		
-        float DCVoltage;                // 直流电压
-        float DCSpare;                  // 直流量备用
-        float temprature;               // 温度
-        float onceIa;                   // A相电流
-        float onceIb;                   // B相电流
-        float onceIc;                   // C相电流
-        float onceI0;                   // 零序电流
-        float onceUab;                  // 线电压Uab
-        float onceUbc;                  // 线电压Ubc
-        float onceUac;                  // 线电压Uac
-        float onceU0;                   // 零序电压
-        float onceUAB;                  // 线电压UAB
-        float onceUBC;                  // 线电压UBC
-        float onceP;                    // 有功功率
-        float onceQ;                    // 无功功率
-        float onceS;                    // 视在功率
-        float voltagePassRate;          // 电压合格率
-        float thirdHarmonicUab;         // 三次谐波
-        float thirdHarmonicUbc;         // 三次谐波
-        float thirdHarmonicUac;         // 三次谐波
-        float thirdHarmonicU0;          // 三次谐波
-        float thirdHarmonicIa;          // 三次谐波
-        float thirdHarmonicIb;          // 三次谐波
-        float thirdHarmonicIc;          // 三次谐波
-        float thirdHarmonicI0;          // 三次谐波
-        float fifthHarmonicUab;         // 五次谐波
-        float fifthHarmonicUbc;         // 五次谐波
-        float fifthHarmonicUac;         // 五次谐波
-        float fifthHarmonicU0;          // 五次谐波
-        float fifthHarmonicIa;          // 五次谐波
-        float fifthHarmonicIb;          // 五次谐波
-        float fifthHarmonicIc;          // 五次谐波
-        float fifthHarmonicI0;          // 五次谐波
-    }Str;
-
-    float buf[sizeof(struct Telemetry) / sizeof(float)];
-}TelemetryDatabase;
-
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \
 {                                                       \
@@ -811,73 +751,6 @@ enum AddrRunParameter
 	
     RUN_PARAMETER_NUM,	                  // 运行参数数量
 };
-	
-// 运行参数
-typedef union TagRunParameter
-{
-    struct Run
-    {
-        float operatingMechanism;                 // 操作机构(0-弹簧/1-永磁)
-		float switchType;						  // 开关类型(0-断路器/1-负荷开关)
-		float breakWorkMode;                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
-		float loadWorkMode;                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
-		float connectSwitchRecognize;             // 联络开关识别
-        float outputOverturn;                     // 永磁输出翻转
-        float capUnderVoltageClosing;	          // 合闸电容欠压定值
-        float capUnderVoltageOpening;             // 分闸电容欠压定值
-        float capUnderVoltageFactor;			  // 电容欠压返回系数 
-        float ratioUOneTurn;                      // 电压变比一次		
-        float ratioUSecondary;                    // 电压变比二次
-		float ratioU0OneTurn;                     // 零序电压变比一次
-        float ratioU0Secondary;                   // 零序电压变比二次
-		float ratioIOneTurn;                      // 电流变比一次		
-        float ratioISecondary;                    // 电流变比二次
-		float ratioI0OneTurn;                     // 零序电流一次变比
-        float ratioI0Secondary;                   // 零序电流二次变比		        
-        float diShakingTime;                      // 开入采集防抖时间 
-        float closingPulseTime;                   // 合闸脉宽时间
-        float openingPulseTime;			          // 分闸脉宽时间
-        float reverseTime;                        // 反校时间
-        float zerodriftF;                         // 频率零漂
-        float zerodriftIa;                        // A相电流零漂
-        float zerodriftIb;                        // B相电流零漂
-        float zerodriftIc;                        // C相电流零漂
-        float zerodriftI0;                        // 零序电流零漂
-        float zerodriftUab;                       // 线电压Uab零漂
-        float zerodriftUbc;                       // 线电压Ubc零漂
-        float zerodriftUac;                       // 线电压Uac零漂
-        float zerodriftU0;                        // 零序电压零漂
-        float zerodriftUAB;                       // 线电压Uab零漂
-        float zerodriftUBC;                       // 线电压Ubc零漂
-        float zerodriftP;                         // 有功功率零漂
-        float zerodriftQ;                         // 无功功率零漂
-        float zerodriftS;                         // 视在功率零漂
-        float zerodriftPF;                        // 功率因数零漂
-        float zerodriftDC;                        // 直流电压零漂
-        float zerodriftDC2;                       // 直流电压2零漂
-        float zerodriftT;                         // 温度零漂
-        float deadzoneF;                          // 频率死区
-        float deadzoneIa;                         // A相电流死区
-        float deadzoneIb;                         // B相电流死区
-        float deadzoneIc;                         // C相电流死区
-        float deadzoneI0;                         // 零序电流死区
-        float deadzoneUab;                        // 线电压Uab死区
-        float deadzoneUbc;                        // 线电压Ubc死区
-        float deadzoneUac;                        // 线电压Uac死区
-        float deadzoneU0;                         // 零序电压死区
-        float deadzoneUAB;                        // 线电压Ubc死区
-        float deadzoneUBC;                        // 线电压Uac死区
-        float deadzoneP;                          // 有功功率死区
-        float deadzoneQ;                          // 无功功率死区
-        float deadzoneS;                          // 视在功率死区
-        float deadzonePf;                         // 功率因数死区
-        float deadzoneDC;                         // 直流电压死区
-        float deadzoneDC2;                        // 直流量2死区
-        float deadzoneT;				          // 温度死区
-    } Str;
-
-    float buf[sizeof(struct Run) / sizeof(float)];   // 终端运行参数存储区
-} RunParameter;
 
 enum AddrCalibrateFactor
 {
@@ -907,41 +780,6 @@ enum AddrCalibrateFactor
 	
 	CALIFACTOR_NUM
 };
-// 校准系数
-typedef union TagCalibrateFactor
-{
-    struct Calibrate
-    {
-        float califactorF;                        // 频率校准系数
-        float califactorIa;                       // A相电流(Ia)校准系数
-        float califactorIb;                       // B相电流(Ib)校准系数
-        float califactorIc;                       // C相电流(Ic)校准系数
-        float califactorI0;                       // 零序电流(I0)校准系数
-        float califactorUab;                      // 线电压(Uab)校准系数
-        float califactorUbc;                      // 线电压(Ubc)校准系数
-        float califactorUac;                      // 线电压(Uac)校准系数
-        float califactorU0;                       // 零序电压(U0)校准系数
-        float califactorUAB;                      // 线电压(Uab)校准系数
-        float califactorUBC;                      // 线电压(Ubc)校准系数
-        float califactorP;                        // 有功功率(p)校准系数（无效）
-        float califactorQ;                        // 无功功率(Q)校准系数（无效）
-        float califactorS;                        // 视在功率(S)校准系数（无效）
-        float califactorPf;                       // 功率因数(Pf)校准系数（无效）
-        float califactorL0;                       // 零序角度(L)校准系数（无效）   
-        float califactorU;                        // 电压角度(U)校准系数（无效）   		
-        float califactorDC;                       // 直流电压(V)校准系数
-        float califactorDC2;                      // 直流电压(V)校准系数
-        float califactorT;			              // 温度(T)校准系数
-        float califactorAlphaUaIa;	              // 角UaIa校准系数
-        float califactorAlphaUbIb;	              // 角UbIb校准系数
-        float califactorAlphaUcIc;	              // 角UcIc校准系数
-        float califactorAlphaU0I0;	              // 角UcIc校准系数
-        float califactorAlphaUaUb;	              // 角UaUb校准系数		
-    } Str;
-
-    float buf[sizeof(struct Calibrate) / sizeof(float)];
-
-} CalibrateFactor;
 
 enum AddrFixedValue
 {
@@ -1068,155 +906,6 @@ enum AddrFixedValue
 	
 	FIXED_VALUE_NUM                      // 定值数量
 };
-// 公共定值
-typedef union TagPublicValue
-{
-    struct Public
-    {
-        float overCurrentSwitch1;                // 过流1段投退 “1投入”、“0退出”
-        float directionLockSwitch1;              // 过流1段方向闭锁 “1投入”、“0退出”
-        float overCurrentValue1;                 // 过流1段电流 流定值，整定范围：00.00A~99.99A
-        float overCurrentTime1;                  // 过流1段时间 时间定值，整定范围：00.00s~99.99s
-        float overCurrentSwitch2;                // 过流2段投退 “1投入”、“0退出”
-        float directionLockSwitch2;              // 过流2段方向闭锁 “1投入”、“0退出”
-        float overCurrentValue2;                 // 过流2段电流 电流定值，整定范围：00.00A~99.99A
-        float overCurrentTime2;                  // 过流2段时间 时间定值，整定范围：00.00s~99.99s
-        float overCurrentSwitch3;                // 过流3段投退 “1投入”、“0退出”
-        float directionLockSwitch3;              // 过流3段方向闭锁 “1投入”、“0退出”
-        float overCurrentValue3;                 // 过流3段电流 电流定值，整定范围：00.00A~99.99A
-        float overCurrentTime3;                  // 过流3段时间 时间定值，整定范围：00.00s~99.99s
-        float overCurrentI0Switch1;              // 零序过流1段投退 “1投入”、“0退出”
-        float overCurrentI0Value1;               // 零序过流1段电流 流定值，整定范围：00.00A~99.99A
-        float overCurrentI0Time1;                // 零序过流1段时间 时间定值，整定范围：00.00s~99.99s
-        float overCurrentI0Switch2;              // 零序过流2段投退 “1投入”、“0退出”
-        float overCurrentI0Value2;               // 零序过流2段时间 时间定值，整定范围：00.00s~99.99s
-        float overCurrentI0Time2;                // 零序过流2段时间 时间定值，整定范围：00.00s~99.99s
-        float overlimitAlarmSwitch;              // 越限报警功能投退
-        float uplimitFactor;                     // 越限上限系数
-        float downlimitFactor;                   // 越限下限系数
-        float overlimitTime;                     // 越限延时
-        float overlimitAlarmSwitchUab;           // Uab越限报警投退
-        float overlimitAlarmSwitchUbc;           // Ubc越限报警投退
-        float overlimitAlarmSwitchUac;           // Uac越限报警投退
-        float uplimitVoltageU;                   // 电压上限定值
-        float downlimitVoltageU;                 // 电压下限定值
-        float overlimitAlarmSwitchIa;            // Ia越限报警投退
-        float overlimitAlarmSwitchIb;            // Ib越限报警投退
-        float overlimitAlarmSwitchIc;            // Ic越限报警投退
-        float uplimitCurrentI;                   // 电流上限定值
-        float downlimitCurrentI;                 // 电流下限定值
-        float overlimitAlarmSwitchU0;            // 零序电压越限投退
-        float uplimitVoltageU0;                  // 零序电压上限定值
-        float downlimitVoltageU0;                // 零序电压下限定值
-        float overlimitAlarmSwitchI0;            // 零序电流越限投退
-        float uplimitCurrentI0;                  // 零序电流上限定值
-        float downlimitCurrentI0;                // 零序电流下限定值
-        float overlimitAlarmSwitchDC_U;          // 直流电压越限投退
-        float uplimitDCVoltageU;                 // 直流电压上限定值
-        float downlimitDCVoltageU;               // 直流电压下限定值
-        float overlimitAlarmSwitchDC_I;          // 直流电流越限投退
-        float uplimitDCCurrentI;                 // 直流电流上限定值
-        float downlimitDCCurrentI;               // 直流电流下限定值
-        float heavyOverloadSwitch;               // 重过载保护投退
-        float heavyOverloadValue;                // 重过载定值
-        float heavyOverloadFactor;               // 重过载返回系数
-        float heavyOverloadTime;                 // 重过载延时
-        float overloadSwitch;                    // 过负荷保护投退
-        float overloadValue;                     // 过负荷定值
-        float overloadFactor;                    // 过负荷返回系数
-        float overloadTime;                      // 过负荷延时
-        float batteryLowVoltageAlarmSwitch;      // 蓄电池低压报警投退
-        float batteryLowVoltageValue;            // 电池低压定值
-        float batteryLowVoltageFactor;           // 电池低压返回系数
-        float batteryLowVoltageTime;             // 电池低压延时
-        float batteryActiveSwitch;               // 电池活化周期投退
-        float batteryActiveCycle;                // 电池活化周期(天)
-        float batteryActiveTime;                 // 电池活化时间(h)
-        float batteryActiveFaultVoltage;         // 电池活化故障电压
-        float batteryActiveFaultTime;            // 电池活化故障延时
-        float automaticResetEnable;              // 自动复归使能
-        float automaticResetTime;                // 自动复位时间
-        float overVoltageSwitch;                 // 过压投退
-        float overVoltageValue;                  // 过压定值
-        float overVoltageTime;                   // 过压时间
-        float overVoltageFactor;                 // 过压返回系数
-        float overFrequencySwitch;               // 过频投退
-        float overFrequencyValue;                // 过频定值
-        float overFrequencyTime;                 // 过频时间
-        float overFrequencyFactor;               // 过频返回系数
-        float downVoltageSwitch;                 // 低压投退
-        float downVoltageValue;                  // 低压定值
-        float downVoltageTime;                   // 低压时间
-        float downVoltageFactor;                 // 低压返回系数
-        float downFrequencySwitch;               // 低频投退
-        float downFrequencyValue;                // 低频定值
-        float downFrequencyTime;                 // 低频时间
-        float downFrequencyFactor;               // 低频返回系数
-        float closingLoopSwitch;                 // 合环功能投退
-        float voltageDifference;                 // 两侧压差
-        float phaseAngleDifference;				 // 相角差
-        float controlloopAnomalyEnable;          // 控制回路异常使能
-    } Str;
-
-    float buf[sizeof(struct Public) / sizeof(float)];
-} PublicValue;
-
-// 断路器定值
-typedef union TagBreakerValue
-{
-    struct Breaker
-    {
-        float inverseSwitch;                     // 反时限投退
-        float inverseCurrentValue;               // 反时限保护电流值
-        float inverseTime;                       // 反时限保护延时
-        float iaccSwitch;                        // 后加速投退 软压板定值，可以选择“投入”、“退出"
-        float iaccCurrentValue;                  // 后加速电流 电流定值，整定范围：00.00s~99.99A
-        float iaccTime;                          // 后加速时间 时间定值，整定范围：00.00s~99.99s
-        float inrushSwitch;                      // 涌流抑制投退 软压板定值，可以选择“投入”、“退出”
-        float inrushTime;                        // 涌流抑制时间 时间定值，整定范围：0000~9999ms
-        float secondaryRecloseLockSwitch;        // 二次重合闸闭锁投退
-        float secondaryRecloseLockTime;          // 闭锁二次重合闸时间 时间定值，整定范围：00.00s~99.99
-        float recloseTimesI;                     // 重合闸次数 可以选择：0，1，2，3，4
-        float recloseTimesI0;                    // 零序重合闸次数 可以选择：0，1，2
-        float recloseTimer1;                     // 1次重合闸时间 时间定值，整定范围：00.00s~99.99s
-        float recloseTimer2;                     // 2次重合闸时间 时间定值，整定范围：00.00s~99.99s
-        float recloseTimer3;                     // 3次重合闸时间 时间定值，整定范围：00.00s~99.99s
-        float recloseTimer4;                     // 4次重合闸时间 时间定值，整定范围：00.00s~99.99s
-		float reResetTime;						 // 重合闸复位时间
-		float rechargeTime;						 // 重合闸充电时间
-		
-    } Str;
-
-    float buf[sizeof(struct Breaker) / sizeof(float)];
-} BreakerValue;
-
-// 负荷开关定值
-typedef union TagLoadSwitchValue
-{
-    struct LoadSwitch
-    {
-        float currentValue;                      // 电流定值
-        float voltageValue;                      // 电压定值
-        float faultCheckYTime;                   // 故障检测Y时间
-        float shortLockedOpeningTime;            // 短时闭锁分闸时间
-        float lossElectricitySwitch;             // 失电分闸投退 “1投入”、“0退出”
-        float lossOpeningTime;                   // 分闸时间
-        float getVoltageClossingSwitch;          // 得电合闸投退
-        float getVoltageClossingXTime;           // 得电延时合闸X时间
-        float singleLossVoltageSwitch;           // 单侧失压延时合闸
-        float singleLossVoltageXLTime;           // 单侧失压延时XL时间
-        float doubleVoltageSwitch;               // 双侧有压禁止合闸投退
-        float remainVoltageSwitch;               // 残压脉冲投退
-        float remainVoltageValue;                // 残压定值
-        float voltageU0Switch;                   // 零序电压保护投退
-        float voltageU0Value;                    // 零序电压值
-        float voltageU0Time;                     // 零序电压延时
-        float breakingCurrentSwitch;             // 非遮断电流投退
-        float breakingCurrentValue;        		 // 非遮断电流
-    }Str;
-    
-    float buf[sizeof(struct LoadSwitch) / sizeof(float)];
-} LoadSwitchValue;
 
 /* common操作结构体 */
 struct CommonInfo
@@ -1225,31 +914,6 @@ struct CommonInfo
     uint32_t num;        // 定值数量
     uint8_t sn;          // 定值区号
 };
-
-/* 定值数据结构体 */
-//typedef union TagParameter
-//{
-//    struct SN0
-//    {
-//        InherentPara inherentPara;         // 终端固有参数存储区
-//        RunParameter runPara;              // 终端运行参数存储区
-//        CalibrateFactor calibrateFactor;   // 校准系数     
-//    }Data;       
-
-//    //float value[sizeof(struct SN0) / sizeof(float)];
-//}Parameter;
-
-typedef union TagFixedValue
-{
-    struct SN1_2
-    {
-        PublicValue publicValue;           // 公共定值
-        BreakerValue breakerValue;         // 断路器定值
-        LoadSwitchValue loadSwitchValue;   // 负荷开关定值
-    }Data;    
-
-    float value[sizeof(struct SN1_2) / sizeof(float)];    
-}FixedValue;
 
 /* 定值/参数操作结构体 */
 struct ValueParameterOperate
@@ -1499,16 +1163,16 @@ extern float g_TelemetryDB[TELEMETRY_NUM];
 extern float g_TelemetryLastDB[TELEMETRY_NUM];
 extern float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 #if RT_USING_TELEMETRY_SET
-extern TelemetryDatabase    g_TelemetrySetEnable;
-extern TelemetryDatabase    g_TelemetrySetValue;
+extern float    g_TelemetrySetEnable[TELEMETRY_NUM];
+extern float    g_TelemetrySetValue[TELEMETRY_NUM];
 #endif
 
 /* 新遥测点表映射 */
-extern rt_uint16_t g_NewPropertyTelemetry[TELEMETRY_TOTAL_NUM];//新点表属性
-extern rt_uint16_t g_NewAddTelemetry[TELEMETRY_TOTAL_NUM];//写入对应新地址
+extern rt_uint16_t g_NewPropertyTelemetry[TELEMETRY_NUM];//新点表属性
+extern rt_uint16_t g_NewAddTelemetry[TELEMETRY_NUM];//写入对应新地址
 
 extern rt_uint16_t g_NewMaxNumTelemetry;//新点表个数
-extern rt_uint16_t g_NewToOldTelemetry[TELEMETRY_TOTAL_NUM];//新点表映射，填原点表数组下标
+extern rt_uint16_t g_NewToOldTelemetry[TELEMETRY_NUM];//新点表映射，填原点表数组下标
 
 /* 新遥控点表映射 */
 extern rt_uint16_t g_NewToOldRemote[REMOTE_TOTAL_NUM];//新点表映射，填原点表数组下标
@@ -1521,8 +1185,6 @@ extern rt_uint32_t g_CommunicatFlag[COM_MAX];
 
 //extern FixedValue *g_pFixedValue;
 extern struct Inherent  g_InherentPara;
-extern FixedValue g_FixedValueDB1;
-extern FixedValue g_FixedValueDB2;
 extern float    *g_pFixedValue;
 extern float     g_FixedValue1[FIXED_VALUE_NUM];
 extern float     g_FixedValue2[FIXED_VALUE_NUM];

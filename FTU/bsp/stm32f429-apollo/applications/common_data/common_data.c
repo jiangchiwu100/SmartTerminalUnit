@@ -34,9 +34,9 @@ struct SD2405Time                   g_SystemTime; // 系统时间
 //TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
 uint8_t								g_TelesignalDB[TELESIGNAL_NUM];						
  /* 新遥信点表映射 */
-List                                g_NewListTelesignal[TELESIGNAL_TOTAL_NUM];
+List                                g_NewListTelesignal[TELESIGNAL_NUM];
 rt_uint16_t                         g_NewMaxNumTelesignal;
-rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_TOTAL_NUM]; // 新点表映射，填原点表数组下标
+rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 遥测缓存 */
 float                               g_TelemetryDB[TELEMETRY_NUM];
@@ -44,16 +44,16 @@ float                               g_TelemetryLastDB[TELEMETRY_NUM];
 float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 
 #if RT_USING_TELEMETRY_SET
-TelemetryDatabase                   g_TelemetrySetEnable;
-TelemetryDatabase                   g_TelemetrySetValue;
+float                   g_TelemetrySetEnable[TELEMETRY_NUM];
+float                   g_TelemetrySetValue[TELEMETRY_NUM];
 #endif /* RT_USING_TELEMETRY_SET */
 
 /* 新遥测点表映射 */
-rt_uint16_t                         g_NewPropertyTelemetry[TELEMETRY_TOTAL_NUM];//新点表属性//低6位类型，变化，取反
-rt_uint16_t                         g_NewAddTelemetry[TELEMETRY_TOTAL_NUM];//写入对应新地址
+rt_uint16_t                         g_NewPropertyTelemetry[TELEMETRY_NUM];//新点表属性//低6位类型，变化，取反
+rt_uint16_t                         g_NewAddTelemetry[TELEMETRY_NUM];//写入对应新地址
 
 rt_uint16_t                         g_NewMaxNumTelemetry; // 新点表个数
-rt_uint16_t                         g_NewToOldTelemetry[TELEMETRY_TOTAL_NUM]; // 新点表映射，填原点表数组下标
+rt_uint16_t                         g_NewToOldTelemetry[TELEMETRY_NUM]; // 新点表映射，填原点表数组下标
 
 /* 新遥控点表映射 */
 rt_uint16_t                         g_NewToOldRemote[REMOTE_TOTAL_NUM]; // 新点表映射，填原点表数组下标
@@ -63,10 +63,10 @@ rt_uint32_t                         g_CommunicatFlag[COM_MAX]; // 通讯互锁�
 
 /* 定值和参数缓存 */
 struct Inherent                 g_InherentPara = RT_SYS_CONFIG_DEFAULT;
+
 float                          *g_pFixedValue;
 float                           g_FixedValue1[FIXED_VALUE_NUM];
 float                           g_FixedValue2[FIXED_VALUE_NUM];
-
 float                           g_Parameter[RUN_PARAMETER_NUM];
 float                           g_CalibrateFactor[CALIFACTOR_NUM];
 
@@ -253,13 +253,13 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         array = g_Parameter;
         offset = addr - RUNPARAMETER_START_ADDR;
     }
-    else if((CALIBRATE_FACTOR_START_ADDR <= addr) && ( addr < (CALIBRATE_FACTOR_START_ADDR + CALIFACTOR_NUM)))
+    else if((CALIBRATE_FACTOR_START_ADDR <= addr) && ( addr < (CALIBRATE_FACTOR_START_ADDR + g_CalibrateFactorCfg_Len)))
     {
         // calibration para block 校准系数
         array = g_CalibrateFactor;
         offset = addr - CALIBRATE_FACTOR_START_ADDR;
     }
-    else if (addr >= CALIBRATE_VALUE_START_ADDR && (addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
+    else if (addr >= CALIBRATE_VALUE_START_ADDR && (addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
     {
         // 校准值 不固化
         array = NULL;
@@ -272,16 +272,16 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         offset = addr - FIXED_VALUE_START_ADDR;
     }
     #if RT_USING_TELEMETRY_SET
-    else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_TOTAL_NUM)))
+    else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_NUM)))
     {
         // 强制遥测地址
-        array = g_TelemetrySetEnable.buf;
+        array = g_TelemetrySetEnable;
         offset = addr - TELEMETRY_SETENABLE_START_ADDR;
     }
-    else if((TELEMETRY_SETVALUE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETVALUE_START_ADDR + TELEMETRY_TOTAL_NUM)))
+    else if((TELEMETRY_SETVALUE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETVALUE_START_ADDR + TELEMETRY_NUM)))
     {
         // 强制遥测值
-        array = g_TelemetrySetValue.buf;
+        array = g_TelemetrySetValue;
         offset = addr - TELEMETRY_SETVALUE_START_ADDR;
     }
     #endif
@@ -295,7 +295,6 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
     return (array + offset);
 }
 
-uint32_t num;
 /**
   * @brief: 参数监测.
   * @param:  [none]
@@ -306,7 +305,7 @@ void ParameterCheck(void)
 {
     uint32_t i;
 
-	for (i = 0; i < CALIFACTOR_NUM; i++)
+	for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
 	{
 		if (CalibrateFactorCfg[i].calibrateVal > CalibrateFactorCfg[i].factorMax || CalibrateFactorCfg[i].calibrateVal < CalibrateFactorCfg[i].factorMin)
 		{
@@ -314,7 +313,7 @@ void ParameterCheck(void)
 		}
 	}
 	
-	for (num = 0; num < FIXED_VALUE_NUM; num++)
+	for (i = 0; i < g_FixedValueCfg1_Len; i++)
 	{
 		if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
 		{
@@ -322,13 +321,13 @@ void ParameterCheck(void)
 		}
 	}	
 
-//	for (i = 0; i < RUN_PARAMETER_NUM; i++)
-//	{
-//		//if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
-//		{
-//		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
-//		}
-//	}	
+	for (i = 0; i < g_ParameterCfg_Len; i++)
+	{
+		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+		{
+		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+		}
+	}	
 }
 
 /**
@@ -364,7 +363,7 @@ uint8_t DBWriteValue(uint8_t *pData, struct CommonInfo *pInfo)
             g_ValueParaOperateInfo.len += data[3]/sizeof(float);
             memcpy(&data, &data[sizeof(ValueParameterStr) + data[3]], 256);
 
-            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
+            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
             {
                 g_ValueParaOperateInfo.calibratFlag = 1;
             }
@@ -508,13 +507,13 @@ void CalibrationFactorCal(uint8_t num)
     uint8_t i, offset;
     static uint8_t complate = 0;
     static float telemetry[AVERAGE_TIMER];
-    static uint8_t counter[TELEMETRY_TOTAL_NUM];
+    static uint8_t counter[TELEMETRY_NUM];
 
     if (g_ValueParaOperateInfo.calibratFlag)
     {
         for (i = 0; i < num; i++)
         {
-            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM)))
+            if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
             {
                 offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;
                 telemetry[offset] += (*CalibrateFactorCfg[offset].telemetry);
@@ -525,9 +524,9 @@ void CalibrationFactorCal(uint8_t num)
                     counter[offset] = 0;
                     telemetry[offset] /= (float)AVERAGE_TIMER;
 
-                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - sizeof(g_Alpha)/sizeof(float))
+                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - sizeof(g_Alpha)/sizeof(float))
                     {
-						*CalibrateFactorCfg[offset].factorVal -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + CALIFACTOR_NUM - g_ValueParaPresetDB.property[i].addr)]);
+						*CalibrateFactorCfg[offset].factorVal -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - g_ValueParaPresetDB.property[i].addr)]);
                     }
                     else
                     {
@@ -572,7 +571,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     rt_uint8_t Property;
     uint16_t newaddr;
     
-    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_TOTAL_NUM)
+    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_NUM)
     {
         if (state == g_TelesignalDB[addr - TELESIGNAL_START_ADDR])
         {
@@ -613,7 +612,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
 
     //*MemoryCounter.soe = DB_COUNTER_EN;	
     
-    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_TOTAL_NUM)
+    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_NUM)
     {
         if(g_NewListTelesignal[addr - TELESIGNAL_START_ADDR].size != 0)//链表不为空
         {
@@ -1049,21 +1048,26 @@ void rt_common_data_save_value_default_to_fram(void)
 {
 	uint32_t i;
 	
-    for (i = 0; i < RUN_PARAMETER_NUM; i++)
+    for (i = 0; i < g_ParameterCfg_Len; i++)
 	{
 	    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal;
 	}
 	
-    for (i = 0; i < CALIFACTOR_NUM; i++)
+    for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
 	{
 	    *CalibrateFactorCfg[i].factorVal = CalibrateFactorCfg[i].factorDefault;
 	}
 
-    for (i = 0; i < FIXED_VALUE_NUM; i++)
+    for (i = 0; i < g_FixedValueCfg1_Len; i++)
 	{
 	    *FixedValueCfg1[i].pVal = g_pFixedValueCfg[i].defaultVal;
 	}	
 
+	for (i = 0; i < g_FixedValueCfg2_Len; i++)
+	{
+	    *FixedValueCfg2[i].pVal = g_pFixedValueCfg[i].defaultVal;
+	}
+	
 	for (i = 0; i < 4; i++)
 	{
 	    rt_multi_common_data_save_value_to_fram(i);
@@ -1164,7 +1168,7 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
     switch(type)
     {        
         case TELESIGNAL:
-            rt_device_read(device_fram, ADDR_FRAM_TELISIGNAL, pBuf, TELESIGNAL_TOTAL_NUM);
+            rt_device_read(device_fram, ADDR_FRAM_TELISIGNAL, pBuf, TELESIGNAL_NUM);
             break;
 
         case SOE_RECODE:
@@ -1267,15 +1271,15 @@ void rt_multi_common_data_configure_default(void)
     g_ConfigurationSetDB.NetSourceAddr = 1;//从站地址
     g_ConfigurationSetDB.NetASDUAddr = 1;//ASDU地址
     
-    g_ConfigurationSetDB.YXSetNum = TELESIGNAL_TOTAL_NUM;
+    g_ConfigurationSetDB.YXSetNum = TELESIGNAL_NUM;
     
-    for(i=0; i<TELESIGNAL_TOTAL_NUM;i++)
+    for(i=0; i<TELESIGNAL_NUM;i++)
     {
         g_ConfigurationSetDB.YXSet[2*i] = (1<<NEWONEYX_NUM)|(COMMON_DATA_M_SP_NA_1<<NEWPROPERTY_TI)|(1<<NEWPROPERTY_SOE)|(1<<NEWPROPERTY_COS);
         g_ConfigurationSetDB.YXSet[2*i + 1] = (0<<NEWONEYX_CAL)|((TELESIGNAL_START_ADDR + i)<<NEWONEYX_ADDR);
     }
     
-    for(i=0;i<TELEMETRY_TOTAL_NUM;i++)
+    for(i=0;i<TELEMETRY_NUM;i++)
     {
         g_ConfigurationSetDB.YCAddr[i] = TELEMETRY_START_ADDR + i;
         g_ConfigurationSetDB.YCProperty[i] = (1<<NEWPROPERTY_COE)|(2<<NEWPROPERTY_TI);
@@ -1344,7 +1348,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         for(j=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            if(!((((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=TELESIGNAL_START_ADDR)&&(((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELESIGNAL_START_ADDR+TELESIGNAL_TOTAL_NUM)))
+            if(!((((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=TELESIGNAL_START_ADDR)&&(((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELESIGNAL_START_ADDR+TELEMETRY_NUM)))
             {
                 configureFault = 1;
                 break;
@@ -1359,7 +1363,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     
     for(i=0;((i<sizeof(g_ConfigurationSetDB.YCAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥测
     {
-        if(!((g_ConfigurationSetDB.YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB.YCAddr[i]<TELEMETRY_START_ADDR+TELEMETRY_TOTAL_NUM)))
+        if(!((g_ConfigurationSetDB.YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB.YCAddr[i]<TELEMETRY_START_ADDR+TELEMETRY_NUM)))
         {
             if(g_ConfigurationSetDB.YCAddr[i] != 0)
             {
@@ -1395,7 +1399,7 @@ void rt_multi_common_data_read_config_from_fram(void)
         sn = 1; // 如果没有存储定值区  默认为1区
     }
     g_ValueParaOperateInfo.currentSN = sn;
-
+    
     /* 读取当前定值区号 */
     if (g_ValueParaOperateInfo.currentSN == 2)
     {
@@ -1416,8 +1420,8 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
     }
-
-    ParameterCheck(); 
+	
+	ParameterCheck();
 }
 
 /**
@@ -1552,7 +1556,7 @@ void rt_multi_common_data_config(void)
     memset(g_CommunicatFlag,0,sizeof(g_CommunicatFlag));//清除通讯互锁标志
     
     /* 遥信变双点 */
-    for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)
+    for (i = 0; i < TELESIGNAL_NUM; i++)
     {
         if (g_TelesignalDB[i] != ON && g_TelesignalDB[i] != OFF)
         {
@@ -1575,7 +1579,7 @@ void rt_multi_common_data_config(void)
         temp2 += (g_NewToOldTelesignal[temp2+1]>>NEWONEYX_NUM) + 1 + 1;
     }
        
-    for(i=0;i<TELESIGNAL_TOTAL_NUM;i++)//建立空链表
+    for(i=0;i<TELESIGNAL_NUM;i++)//建立空链表
     {
         list_init(&g_NewListTelesignal[i]);
     }
@@ -1634,8 +1638,8 @@ void rt_multi_common_data_config(void)
         g_NVADBOut[i] = g_NVADBIn;
     }  
 		
-    memset(&g_TelemetryDB, 0, sizeof(TelemetryDatabase));
-    memset(&g_TelemetryLastDB, 0, sizeof(TelemetryDatabase));
+    memset(&g_TelemetryDB, 0, sizeof(g_TelemetryDB));
+    memset(&g_TelemetryLastDB, 0, sizeof(g_TelemetryLastDB));
 }
 
 /**
@@ -1654,10 +1658,10 @@ int rt_multi_common_data_init(void)
     }
     else
     {
-        rt_multi_common_data_read_config();
+        rt_multi_common_data_read_config();         		
         rt_multi_common_data_config();
-    }
-
+    }	
+	
     device_sd2405 = rt_device_find(RT_I2C_SD2405_NAME);
 	
     if (device_sd2405 == NULL)
