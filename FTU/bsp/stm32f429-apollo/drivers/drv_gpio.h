@@ -47,8 +47,9 @@
 #define BATTERYA_CTIVATE_DI        128
 #define BETTERY_UNDERVOLTAGE_DI    129
 #define POWER_FAILURE_ALARM_DI     130
-#define MCU_POWER_ALARM_DI         145
 
+//ртобс╡╠ЮбК
+#define MCU_POWER_ALARM_DI         145
 #define HANDHELD_OPEN_PRESET       173
 #define HANDHELD_OPEN_EXECUTE      174
 #define HANDHELD_CLOSE_PRESET      175
