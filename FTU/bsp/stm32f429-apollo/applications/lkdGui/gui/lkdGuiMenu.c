@@ -132,6 +132,7 @@ void GUIMenuDraw(MENU *pMenu)
 	else{
 		MenuDrawXY(pTempMenu);
 	}
+	GuiUpdateDisplayAll();
 }
 
 /**
@@ -173,6 +174,7 @@ void GUIMenuHide(MENU *pMenu)
 		x += MENUITEM_WIDE;
 		fCount --;
 	}
+	GuiUpdateDisplayAll();
 }
 
 /**
@@ -219,6 +221,7 @@ void GUIMenuCurrentItemModfiy(MENU *pMenu,uint8_t flag)
 	}
 	GuiExchangeColor();
 	pMenu->currentItem = tempCurrentItem;
+	GuiUpdateDisplayAll();
 }
 
 /**

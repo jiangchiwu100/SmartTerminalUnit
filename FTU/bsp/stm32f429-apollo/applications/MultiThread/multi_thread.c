@@ -33,7 +33,7 @@
 #include "gui_common.h"
 #include "gui_101_cmd.h"
 #include "hmi_101_disk.h"
-
+#include "GUIdisplay.h"
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
 //static rt_uint8_t rt_thread_system_stack[INIT_THREAD_STACK_SIZE]; 
@@ -314,8 +314,10 @@ static void rt_hmicom_thread_entry(void *param)
 {
 	time_static_init();
 	Hmi101Init();
+	GUIDisplayInit();
 	for (;;){ 				
-		TestMain();
+		//TestMain();
+		GUIDisplayMian();
 //	g_ThreadRunSta |= THREAD_RUN_HMI;
 		rt_thread_delay(20);		
 	}    

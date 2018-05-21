@@ -58,9 +58,9 @@ uint16_t DLT634_HMI_SLAVE_WriteData(uint8_t pdrv, uint8_t *pbuf, uint16_t count)
 uint16_t i = 0;
 	
     rt_device_write(dev[pdrv],0,pbuf,count);
-	  rt_kprintf("\r\n--ZK   ");
-		for(i=0;i<count;i++)
-			rt_kprintf("%02X ",pbuf[i]);
+//	  rt_kprintf("\r\n--ZK   ");
+//		for(i=0;i<count;i++)
+//			rt_kprintf("%02X ",pbuf[i]);
     
     return(count);
 }

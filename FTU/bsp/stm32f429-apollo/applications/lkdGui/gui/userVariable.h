@@ -18,13 +18,43 @@ typedef struct{
 	struct tagTelemetryCfg *pRoot; /* 遥测实体指针 */
 }YaoceDisplayInfo;
 
+/* 定值显示结构体 */
+typedef struct{
+	uint8_t *pBuff;	/* 保存定值索引号 */
+	uint8_t num;		/* 索引号总数 */
+	void(* SaveModify)(uint16_t addr);/* 定值修改保存指针函数 */
+	struct tagValueParaCfg *pRoot; /* 定值实体指针 */
+}DzhiDisplayInfo;
 
+enum Dzhi0OffsetNumber{
+	DZ0_CONFIG,/* 配置 */
+	DZ0_ZERODRIFT,/* 零漂 */
+	DZ0_DEADEZONE,/* 死区 */
+	DZ0_ALLNUM,/* 定值总数 */
+};
+enum Dzhi1OffsetNumber{
+	DZ1_INTERGHASE,		/* 相间过流 */
+	DZ1_ZERO_SEQUE,		/* 零序过流 */
+	DZ1_LIMITATION,		/* 越线告警 */
+	DZ1_HEAVY_LOAD,		/* 重过载 */
+	DZ1_OVERLOAD,			/* 过负荷 */
+	DZ1_IBATTERY_SET,	/* 电池设置 */
+	DZ1_AUTO_RESET,		/* 自动复归 */
+	DZ1_LIMIT_V_F,		/* 越压越频 */
+	DZ1_LOOP_CLOSE,		/* 合环 */
+	DZ1_FAULT_SWITCH,	/* 故障投退 */
+	DZ1_OTHER_PROTEC,	/* 其他保护 */
+	DZ1_LOGICAL_FUN,	/* 逻辑功能 */
+	DZ1_ALLNUM,				/* 定值总数 */
+};
 /* 遥信信息结构 */
 extern YaoxinDisplayInfo yxInfo;
 /* 遥测信息结构 */
 extern YaoceDisplayInfo yceInfo[3];
-
-void YaoxinDisplayInit(void);
+/* 定值信息结构 */
+extern DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
+extern DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
+/* 显示信息映射初始化 */
 void userVariableDisplayInit(void);
 
 

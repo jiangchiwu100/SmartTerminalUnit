@@ -36,6 +36,7 @@ void GUIWindowDraw(WINDOW *pWindow)
 		GuiRLine(pWindow->x + 15, pWindow->y, pWindow->y + 15, forecolor);
 		GuiFont12Align(pWindow->x + 18, pWindow->y +2,130,FONT_LEFT,pWindow->title);
 	}
+	GuiUpdateDisplayAll();
 }
 
 /**
@@ -48,6 +49,7 @@ void GUIWindowHide(WINDOW *pWindow)
 	if(pWindow != NULL){
 		GuiFillRect(pWindow->x, pWindow->y, pWindow->x + pWindow->wide - 1,\
 			pWindow->y + pWindow->hight - 1, backcolor);
+		GuiUpdateDisplayAll();
 	}
 }
 

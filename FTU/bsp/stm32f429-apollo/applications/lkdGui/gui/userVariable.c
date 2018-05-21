@@ -4,9 +4,12 @@
 
 /* 遥信显示信息 */
 YaoxinDisplayInfo yxInfo;
-/* 遥测显示信息 */
+/* 遥测显示信息 0一次 1二次 2 谐波 */
 YaoceDisplayInfo yceInfo[3];
-
+/* 配置定值显示信息 */
+DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
+/* 运行定值显示信息 */
+DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
 /**
   *@brief  遥信显示初始化
   *@param  None
@@ -53,21 +56,22 @@ static void YaoceDisplayInit(void)
 	uint8_t YaoceItem = 0;
 	uint8_t i,j;
 	
-	yaoceItemsAll = sizeof(TelemetryCfg)/sizeof(tagTelemetryCfg);
+	yaoceItemsAll = g_TelemetryCfg_Len;
 	for(i = 0; i < 3; i++){
 		if(i == 0){
-			typeIs = SECONDRY;
+			typeIs = ONCE;
 		}
 		else if(i == 1){
-			typeIs = ONCE;
+			typeIs = SECONDRY;
 		}
 		else{
 			typeIs = HARMONIC;
 		}
 		/* 获取遥测实体指针 */
-		yceInfo[i].pRoot = TelemetryCfg;	
+		yceInfo[i].pRoot = TelemetryCfg;
+		YaoceItem = 0;
 		for(j = 0; j < yaoceItemsAll; j++){//查找可用遥测
-			if(yceInfo[i].pRoot[j].enable == 0 && yceInfo[i].pRoot[j].menuNum != typeIs){
+			if(yceInfo[i].pRoot[j].enable == 0 || yceInfo[i].pRoot[j].menuNum != typeIs){
 				continue;
 			}
 			YaoceItem ++;
@@ -80,10 +84,112 @@ static void YaoceDisplayInit(void)
 		}
 		YaoceItem = 0;
 		for(j = 0; j < yaoceItemsAll; j++){//遥测显示缓冲
-			if(yceInfo[i].pRoot[j].enable == 0 && yceInfo[i].pRoot[j].menuNum != typeIs){
+			if(yceInfo[i].pRoot[j].enable == 0 || yceInfo[i].pRoot[j].menuNum != typeIs){
 				continue;
 			}
 			yceInfo[i].pBuff[YaoceItem ++] = j;
+		}
+	}
+}
+/**
+  *@brief  配置显示初始化
+  *@param  None
+  *@retval None
+  */
+static void Dzhi0DisplayInit(void)
+{
+	uint16_t dzhiItemsAll,typeIs;
+	uint8_t dzhiItem = 0;
+	uint16_t i,j;
+	dzhiItemsAll = g_ParameterCfg_Len;
+	for(i = 0 ; i < DZ0_ALLNUM; i++){
+		if(i == 0){
+			typeIs = ME_BASIC_SET;
+		}
+		else if(i == 1){
+			typeIs = ME_ZERODRIFT;
+		}
+		else{
+			typeIs = ME_DEADEZONE;
+		}
+		dzhiItem = 0;
+		dzhi0Info[i].SaveModify = 0;
+		dzhi0Info[i].pRoot = ParameterCfg;
+		for(j = 0; j < dzhiItemsAll; j++){//查找可用定值
+			if(dzhi0Info[i].pRoot[j].enable == 0 || dzhi0Info[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			dzhiItem ++;
+		}
+		dzhi0Info[i].num = dzhiItem;
+		dzhi0Info[i].pBuff = (uint8_t *)rt_malloc(dzhi0Info[i].num);
+		if(dzhi0Info[i].pBuff == NULL){
+			rt_kprintf("定值内存获取失败");
+			return;
+		}
+		dzhiItem = 0;
+		for(j = 0; j < dzhiItemsAll; j++){//定值显示缓冲
+			if(dzhi0Info[i].pRoot[j].enable == 0 || dzhi0Info[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			dzhi0Info[i].pBuff[dzhiItem ++] = j;
+		}
+	}
+}
+
+static void Dzhi1TypeRemap(uint16_t i,uint16_t *type)
+{
+	switch(i)
+	{
+		case DZ1_INTERGHASE:*type = INTERGHASE;break;
+		case DZ1_ZERO_SEQUE:*type = ZERO_SEQUE;break;
+		case DZ1_LIMITATION:*type = LIMITATION;break;
+		case DZ1_HEAVY_LOAD:*type = HEAVY_LOAD;break;
+		case DZ1_OVERLOAD:*type = OVERLOAD;break;
+		case DZ1_IBATTERY_SET:*type = BATTERY_SET;break;
+		case DZ1_AUTO_RESET:*type = AUTO_RESET;break;
+		case DZ1_LIMIT_V_F:*type = LIMIT_V_F;break;
+		case DZ1_LOOP_CLOSE:*type = LOOP_CLOSE;break;
+		case DZ1_FAULT_SWITCH:*type = FAULT_SWITCH;break;
+		case DZ1_OTHER_PROTEC:*type = OTHER_PROTEC;break;
+		case DZ1_LOGICAL_FUN:*type = LOGICAL_FUN;break;
+		default:*type = INTERGHASE;break;
+	}
+}
+/**
+  *@brief  运行显示初始化
+  *@param  None
+  *@retval None
+  */
+static void Dzhi1DisplayInit(void)
+{
+	uint16_t dzhiItemsAll,typeIs;
+	uint8_t dzhiItem = 0;
+	uint16_t i,j;
+	dzhiItemsAll = g_FixedValueCfg1_Len;
+	for(i = 0 ; i < DZ1_ALLNUM; i++){
+		Dzhi1TypeRemap(i,&typeIs);
+		dzhiItem = 0;
+		dzhi0Info[i].SaveModify = 0;
+		dzhi1Info[i].pRoot = ParameterCfg;
+		for(j = 0; j < dzhiItemsAll; j++){//查找可用定值
+			if(dzhi1Info[i].pRoot[j].enable == 0 || dzhi1Info[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			dzhiItem ++;
+		}
+		dzhi1Info[i].num = dzhiItem;
+		dzhi1Info[i].pBuff = (uint8_t *)rt_malloc(dzhi1Info[i].num);
+		if(dzhi1Info[i].pBuff == NULL){
+			rt_kprintf("定值内存获取失败");
+			return;
+		}
+		dzhiItem = 0;
+		for(j = 0; j < dzhiItemsAll; j++){//定值显示缓冲
+			if(dzhi1Info[i].pRoot[j].enable == 0 || dzhi1Info[i].pRoot[j].menuNum != typeIs){
+				continue;
+			}
+			dzhi1Info[i].pBuff[dzhiItem ++] = j;
 		}
 	}
 }
@@ -97,6 +203,8 @@ void userVariableDisplayInit(void)
 {
 	YaoxinDisplayInit();
 	YaoceDisplayInit();
+	Dzhi1DisplayInit();
+	Dzhi0DisplayInit();
 }
 
 const struct YaoCeItem yaoCe1Items[YAOCE1_NUM] = {

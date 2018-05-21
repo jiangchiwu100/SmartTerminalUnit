@@ -12,6 +12,7 @@
 #include "lkdGuiMenu.h"
 #include "gui_101_cmd.h"
 #include "lkdGuiWindow.h"
+#include "userVariable.h"
 
 #define DZDISPLAYCOL 3		/* 定值显示列数 */
 #define YaoCeDISPLAYCOL 3	/* 遥测显示列数 */
@@ -75,8 +76,7 @@ struct EventDisplay{
 
 /* 定值修改 */
 struct DZModfiy{
-	const struct DingZhi1Item *Items;	/* 定值结构体 */
-	const struct ModbusCmd_ *cmd;		/* modbus命令 */
+	const DzhiDisplayInfo *info;	/* 定值结构体 */
 	uint8_t flag;	/* 标志 */
 	uint8_t itemIs;	/* 当前行 */
 	uint8_t *str;	/* 要修改的字符串 */
@@ -90,8 +90,7 @@ static void MenuWindowFun(void);
 static void mianMenuFun(void);
 /*M0 信息查询 */
 static void MenuM0Fun(void);
-//	static void YaoxinFun(void);		//遥信
-void YaoxinFun(void);
+	static void YaoxinFun(void);		//遥信
 	static void MenuM0S1Fun(void);		//遥测
 		static void YaoCe1Fun(void);	//一次
 		static void YaoCe2Fun(void);	//二次

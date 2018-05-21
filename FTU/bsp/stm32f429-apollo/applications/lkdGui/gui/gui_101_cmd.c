@@ -458,6 +458,7 @@ lkdColour GuiGetForecolor(void)
   */
 void GuiSetForecolor(lkdColour colour)
 {
+	Cmd101DownControl(4);
 	forecolor = colour;
 	cmd101.packBuff[cmd101.pIn + CMD109_CMD] = 109;
 	cmd101.packBuff[cmd101.pIn + CMD109_TYPE] = C109TYPE_FORE;
@@ -483,6 +484,7 @@ lkdColour GuiGetbackcolor(void)
   */
 void GuiSetbackcolor(lkdColour colour)
 {
+	Cmd101DownControl(4);
 	backcolor = colour;
 	cmd101.packBuff[cmd101.pIn + CMD109_CMD] = 109;
 	cmd101.packBuff[cmd101.pIn + CMD109_TYPE] = C109TYPE_BACK;
@@ -499,6 +501,7 @@ void GuiSetbackcolor(lkdColour colour)
   */
 void GuiExchangeColor(void)
 {
+	Cmd101DownControl(4);
 	lkdColour tColour;
 	tColour = backcolor;
 	backcolor = forecolor;
@@ -517,9 +520,7 @@ void TestMain(void)
 	static uint32_t runTick,HmiTestTick;
 	if(GetTimer1IntervalTick(HmiTestTick) > 50){
 		HmiTestTick = GetTimer1Tick();
-		
 	}
-	YaoxinFun();
 }
 
 void Hmi101Init(void)
@@ -528,7 +529,7 @@ void Hmi101Init(void)
 	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
 	if (result != RT_EOK){  
 	}
-	YaoxinDisplayInit();
+	userVariableDisplayInit();
 }
 
 /**
