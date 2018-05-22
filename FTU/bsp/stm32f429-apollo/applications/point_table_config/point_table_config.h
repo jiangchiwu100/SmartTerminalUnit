@@ -118,6 +118,14 @@ struct tagValueParaCfg
 	char *pNote;           // 备注
 };
 
+/* 固有参数配置结构 */
+struct tagInherentParaCfg
+{
+	unsigned char enable;  // 使能
+    char *pName;           // 名称
+    char *pVal;            // 值	
+};
+
 extern struct tagTelesignalCfg TelesignalCfg[];
 extern struct tagTelemetryCfg TelemetryCfg[];
 extern struct tagCalibrateFactor CalibrateFactorCfg[];

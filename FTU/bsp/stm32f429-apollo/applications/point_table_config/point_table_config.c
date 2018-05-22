@@ -187,6 +187,22 @@ struct tagTelecontrolCfg TelecontrolCfg[] =
     {1, "本地清除记录",2,  {"失败", "成功"}},
     {1, "手持操作",   13,  {"分闸选择失败", "分闸选择成功", "分闸执行失败", "分闸执行成功", "合闸选择失败", "合闸选择成功", "合闸执行失败", "合闸执行成功", "遥控取消","合环选择失败", "合环选择成功", "合环执行失败", "合环执行成功"}},	
 };
+
+/* 固有参数 */
+struct tagInherentParaCfg InherentParaCfg[] = 
+{
+    {1, "终端类型",             g_InherentPara.terminalType},  
+    {1, "终端操作系统",         g_InherentPara.terminalOpreatSystem}, 
+    {1, "终端制造商",           g_InherentPara.terminalManufacturer}, 	
+    {1, "终端硬件版本",         g_InherentPara.terminalHardwareVersion},  
+    {1, "终端软件版本",         g_InherentPara.terminalSoftwareVersion}, 
+    {1, "软件版本校验码",       g_InherentPara.terminalSoftwareVersionCheckCode}, 	
+    {1, "通讯规约类型",         g_InherentPara.terminalCommunicationProtocolType},  
+    {1, "终端出厂型号",         g_InherentPara.terminalFactoryModel}, 
+    {1, "终端ID号",             g_InherentPara.terminalID}, 		
+    {1, "终端网卡MAC地址",      g_InherentPara.terminalMAC}, 
+    {1, "终端产品序列号",       g_InherentPara.terminalProductSerialNumber}, 	
+};
 	
 /* 校准系数 */
 struct tagCalibrateFactor CalibrateFactorCfg[] = 
@@ -218,7 +234,8 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
     { 1,    "U0_I0夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_U0_I0],      &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0], 0.5f,           0.29f,           0.01f},
     { 1,    "Uab_UBC夹角校准系数",       0,        &g_TelemetryDB[ADDR_ALPHY_Uab_UBC],    &g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb], 0.5f,           0.29f,           0.01f},		
 };
-	
+
+
 /* 定值0区 */
 struct tagValueParaCfg ParameterCfg[] = 
 {
