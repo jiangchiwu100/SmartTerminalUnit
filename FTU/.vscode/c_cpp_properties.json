@@ -32,7 +32,8 @@
                 "${workspaceFolder}/bsp/stm32f429-apollo/applications/struct2json/user",
                 "${workspaceFolder}/bsp/stm32f429-apollo/applications/struct2json/struct2json/inc",
                 "${workspaceFolder}/bsp/stm32f429-apollo/applications/wave_recording",
-                "${workspaceFolder}/components/mini_xml"
+                "${workspaceFolder}/components/mini_xml",
+                "${workspaceFolder}/bsp/stm32f429-apollo/applications/md5"
             ],
             "defines": [
                 "_DEBUG",

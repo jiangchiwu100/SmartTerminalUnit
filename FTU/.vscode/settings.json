@@ -18,8 +18,17 @@
         "ostream": "c",
         "string.h": "c",
         "iosfwd": "c",
-        "rtthread.h": "c"
+        "rtthread.h": "c",
+        "drv_gpio.h": "c",
+        "drv_sd2405.h": "c",
+        "md5.h": "c",
+        "stdint.h": "c",
+        "config.h": "c",
+        "memory": "c",
+        "type_traits": "c",
+        "vector": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Anaconda3_64\\python.exe"
+    "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Anaconda3_64\\python.exe",
+    "git.ignoreLimitWarning": true
 }
