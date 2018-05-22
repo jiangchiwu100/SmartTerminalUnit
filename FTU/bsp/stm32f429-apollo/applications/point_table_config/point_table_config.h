@@ -80,6 +80,15 @@ struct tagTelemetryCfg
 	float *pDeadzone;      // 死区	
 };
 	
+/* 遥控配置结构 */
+struct tagTelecontrolCfg
+{
+	unsigned char enable;   // 使能
+    char *pName;            // 名称
+	unsigned char dataType; // 数据类型
+	char *pContentSoe[13];   // 数据显示内容	
+};
+
 /* 校准系数配置结构 */
 struct tagCalibrateFactor
 {
