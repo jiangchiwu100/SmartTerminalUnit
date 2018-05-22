@@ -13,8 +13,8 @@
 
 ProductID g_ProductID;
 
-static float FloatTemp = 0.00f;
-static unsigned char uCharTemp = 0;
+//static float FloatTemp = 0.00f;
+//static unsigned char uCharTemp = 0;
 
 /**
  * @fn ProductID_StructToJson

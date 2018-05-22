@@ -634,7 +634,18 @@ enum TelemetryAddr
 
     TELEMETRY_NUM
 };
-    
+ 
+enum TelecontrlAddr
+{
+    ADDR_REMOTE_OPERATE = 0x6001, // 遥控操作
+	ADDR_REMOTE_ACTIVE,           // 电池活化
+	ADDR_REMOTE_RESET,            // 远方复位
+	ADDR_REMOTE_CLEAR,            // 远方清除记录
+    ADDR_LOCAL_OPERATE,           // 本地操作
+	ADDR_LOCAL_RESET,             // 本地复位
+	ADDR_LOCAL_CLEAR,             // 本地清除记录
+	ADDR_HANDHELD_OPER,           // 手持操作
+};
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \
 {                                                       \
