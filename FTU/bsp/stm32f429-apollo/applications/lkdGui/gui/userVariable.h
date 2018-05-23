@@ -4,6 +4,16 @@
 #include "stdint.h"
 #include "point_table_config.h"
 
+typedef struct {
+	uint8_t year;
+	uint8_t month;
+	uint8_t day;
+	uint8_t hour;
+	uint8_t min;
+	uint8_t s;
+	uint16_t ms;
+}SystemTimeDisplay;
+
 /* 遥信显示结构体 */
 typedef struct{
 	uint8_t *pBuff;	/* 保存遥信索引号 */
@@ -26,6 +36,37 @@ typedef struct{
 	struct tagValueParaCfg *pRoot; /* 定值实体指针 */
 }DzhiDisplayInfo;
 
+/* Soe显示结构体 */
+typedef struct{
+	uint8_t highlight;
+	uint8_t *pName;
+	uint8_t *pContent;
+	SystemTimeDisplay time;
+}SoeContent;
+
+/* Soe显示结构体 */
+typedef struct{
+	uint16_t num;		/* soe总数 */
+	uint16_t in;
+}SoeDisplayInfo;
+
+/* 故障事件显示结构体 */
+typedef struct{
+	uint8_t *pName;
+	uint8_t *pContent;
+	uint8_t yaoceNum;
+	uint8_t *pYaoceName[16];
+	uint8_t *pYaoceUnit[16];
+	float pYaoceValue[16];
+	SystemTimeDisplay time;
+}FeventContent;
+
+/* 故障事件显示结构体 */
+typedef struct{
+	uint16_t num;		/* 故障事件总数 */
+	uint16_t in;
+}FeventDisplayInfo;
+
 enum Dzhi0OffsetNumber{
 	DZ0_CONFIG,/* 配置 */
 	DZ0_ZERODRIFT,/* 零漂 */
@@ -47,6 +88,19 @@ enum Dzhi1OffsetNumber{
 	DZ1_LOGICAL_FUN,	/* 逻辑功能 */
 	DZ1_ALLNUM,				/* 定值总数 */
 };
+
+/* 命令下发结构 */
+struct HmiCmdSend{
+	uint8_t *name;
+	uint8_t cmd;
+};
+/* 命令下发信息 */
+typedef struct{
+	uint8_t itemsNum;
+	struct HmiCmdSend *pHmiCmd;
+	void (* cmdfun)(uint8_t cmdIs);
+}HmiCmdSendInfo;
+
 /* 遥信信息结构 */
 extern YaoxinDisplayInfo yxInfo;
 /* 遥测信息结构 */
@@ -54,9 +108,23 @@ extern YaoceDisplayInfo yceInfo[3];
 /* 定值信息结构 */
 extern DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
 extern DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
+/* 命令下发结构体 */
+extern HmiCmdSendInfo hcmdInfo;
 /* 显示信息映射初始化 */
 void userVariableDisplayInit(void);
 
+/* 获取SOE内容 */
+uint8_t GetSoeNoContent(uint16_t soeNo,SoeContent *pSoe);
+/* 检测SOE有无更新 */
+uint8_t CheckSoeUpdata(void);
+/* 获取SOE数量 */
+uint16_t GetSoeNum(void);
+/* 获取故障事件数量 */
+uint16_t GetFeventNum(void);
+/* 获取故障事件内容 */
+uint8_t GetFeventNoContent(uint16_t feventNo,FeventContent *pEvent);
+/* 检测故障事件有无更新 */
+uint8_t CheckFeventUpdata(void);
 
 /* 遥信 */
 struct YaoXinItem{

@@ -57,21 +57,21 @@ struct PassWordPipe{
 
 /* SOE显示 */
 struct SOEDisplay{
+	uint16_t allNum;
+	int16_t pRead;
 	uint8_t itemNum[4];	/* 当前条数 */
 	uint8_t time[24];	/* 时间 */
-	uint16_t SOEItem;	/* SOE item */
-	uint8_t itemValue;	/* SOE 状态 */
+	SoeContent pSoe;
 };
 
 /* 故障事件显示 */
 struct EventDisplay{
-	uint8_t itemNum[4];		/* 当前条数 */
+	uint8_t pRead;
+	uint8_t allNum;
+	uint8_t itemNum[4];	/* 当前条数 */
 	uint8_t time[24];		/* 时间 */
-	uint16_t SOEItem;		/* SOE item */
-	uint8_t itemValue;		/* SOE 状态 */
-	uint8_t yaoceNum;		/* 遥测数 */
-	uint8_t yaoceItem[12];	/* 遥测对应的item */
-	uint8_t yaoceValue[12*16];/* 遥测值转化为字符串 */
+	uint8_t yaoceValue[16];/* 遥测值转化为字符串 */
+	FeventContent pFevent;
 };
 
 /* 定值修改 */

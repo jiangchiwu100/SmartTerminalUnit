@@ -1,6 +1,7 @@
 
 #include "userVariable.h"
 #include <rtthread.h>
+#include "common_data.h"
 
 /* 遥信显示信息 */
 YaoxinDisplayInfo yxInfo;
@@ -10,6 +11,18 @@ YaoceDisplayInfo yceInfo[3];
 DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
 /* 运行定值显示信息 */
 DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
+/* Soe显示信息 */
+SoeDisplayInfo soeInfo;
+/* 故障事件显示信息 */
+FeventDisplayInfo fEventInfo;
+/* 命令下发 */
+struct HmiCmdSend hmiCmdItems[] = {
+	{"清除记录",0},
+	{"分闸",1},
+	{"合闸",2},
+	{"复归",3},
+};
+HmiCmdSendInfo hcmdInfo;
 /**
   *@brief  遥信显示初始化
   *@param  None
@@ -91,6 +104,28 @@ static void YaoceDisplayInit(void)
 		}
 	}
 }
+
+/**
+  *@brief  配置定值修改保存
+  *@param  addr 地址号
+  *@retval None
+  */
+static void Dzhi0ModfiySave(uint16_t addr)
+{
+	addr = addr;
+	rt_multi_common_data_save_value_to_fram(0);
+}
+
+/**
+  *@brief  运行定值修改保存
+  *@param  addr 地址号
+  *@retval None
+  */
+static void Dzhi1ModfiySave(uint16_t addr)
+{
+	addr = addr;
+	rt_multi_common_data_save_value_to_fram(g_ValueParaOperateInfo.currentSN);
+}
 /**
   *@brief  配置显示初始化
   *@param  None
@@ -113,7 +148,7 @@ static void Dzhi0DisplayInit(void)
 			typeIs = ME_DEADEZONE;
 		}
 		dzhiItem = 0;
-		dzhi0Info[i].SaveModify = 0;
+		dzhi0Info[i].SaveModify = Dzhi0ModfiySave;
 		dzhi0Info[i].pRoot = ParameterCfg;
 		for(j = 0; j < dzhiItemsAll; j++){//查找可用定值
 			if(dzhi0Info[i].pRoot[j].enable == 0 || dzhi0Info[i].pRoot[j].menuNum != typeIs){
@@ -137,6 +172,11 @@ static void Dzhi0DisplayInit(void)
 	}
 }
 
+/**
+  *@brief  运行定值类型重映射
+  *@param  i 当前序列号 type 原始类型
+  *@retval None
+  */
 static void Dzhi1TypeRemap(uint16_t i,uint16_t *type)
 {
 	switch(i)
@@ -170,8 +210,8 @@ static void Dzhi1DisplayInit(void)
 	for(i = 0 ; i < DZ1_ALLNUM; i++){
 		Dzhi1TypeRemap(i,&typeIs);
 		dzhiItem = 0;
-		dzhi0Info[i].SaveModify = 0;
-		dzhi1Info[i].pRoot = ParameterCfg;
+		dzhi1Info[i].SaveModify = Dzhi1ModfiySave;
+		dzhi1Info[i].pRoot = g_pFixedValueCfg;
 		for(j = 0; j < dzhiItemsAll; j++){//查找可用定值
 			if(dzhi1Info[i].pRoot[j].enable == 0 || dzhi1Info[i].pRoot[j].menuNum != typeIs){
 				continue;
@@ -195,6 +235,206 @@ static void Dzhi1DisplayInit(void)
 }
 
 /**
+  *@brief  检测SOE更新
+  *@param  None
+  *@retval 0 无更新 1有更新
+  */
+uint8_t CheckSoeUpdata(void)
+{
+	if(soeInfo.in != g_FlagDB.queue_soe.in){
+		soeInfo.in = g_FlagDB.queue_soe.in;
+		return 1;
+	}
+	return 0;
+}
+
+/**
+  *@brief  获取SOE
+  *@param  soeNo soe号
+  *@retval 0 成功 1 失败
+  */
+uint8_t GetSoeNoContent(uint16_t soeNo,SoeContent *pSoe)
+{
+	uint16_t pNo;
+	uint16_t tms;
+	GetSoeNum();
+	if(soeNo >= soeInfo.num){
+		return 1;
+	}
+	if(g_FlagDB.queue_soe.full == FULL){
+		if(soeNo < g_FlagDB.queue_soe.in){
+			pNo = g_FlagDB.queue_soe.in - soeNo - 1;
+		}
+		else{
+			pNo = soeInfo.num - soeNo + g_FlagDB.queue_soe.in - 1;
+		}
+	}
+	else{
+		pNo = g_FlagDB.queue_soe.in - 1 - soeNo;
+	}
+	
+	pSoe->time.year = g_SOEDB[pNo].time.year;
+	pSoe->time.month = g_SOEDB[pNo].time.month;
+	pSoe->time.day = g_SOEDB[pNo].time.dayofWeek & 0x1F;
+	pSoe->time.hour = g_SOEDB[pNo].time.hour;
+	pSoe->time.min = g_SOEDB[pNo].time.minute;
+	tms = (g_SOEDB[pNo].time.msecondH << 8) + g_SOEDB[pNo].time.msecondL;
+	pSoe->time.s = tms / 1000;
+	pSoe->time.ms = tms % 1000;
+	
+	if(g_SOEDB[pNo].addr < 0x6000){
+		if(g_SOEDB[pNo].addr <= g_TelesignalCfg_Len && g_SOEDB[pNo].addr > 0){	
+			pSoe->pName = TelesignalCfg[g_SOEDB[pNo].addr - 1].pName;
+			pSoe->pContent = TelesignalCfg[g_SOEDB[pNo].addr - 1].pContentSoe[g_SOEDB[pNo].value - 1];
+		}
+		if(g_SOEDB[pNo].value - 1){
+			pSoe->highlight = 1;
+		}
+		else{
+			pSoe->highlight = 0;
+		}
+	}
+	else{
+		return 1;
+	}
+	return 0;
+}
+
+/**
+  *@brief  获取SOE总数
+  *@param  soeNo soe号
+  *@retval soe数量
+  */
+uint16_t GetSoeNum(void)
+{
+	if(g_FlagDB.queue_soe.full == FULL){
+		soeInfo.num = SOE_MAX_NUM;
+	}
+	else{
+		soeInfo.num = g_FlagDB.queue_soe.in;
+	}
+	return soeInfo.num;
+}
+
+/**
+  *@brief  检测故障事件更新
+  *@param  None
+  *@retval 0 无更新 1有更新
+  */
+uint8_t CheckFeventUpdata(void)
+{
+	if(fEventInfo.in != g_FlagDB.queue_fevent.in){
+		fEventInfo.in = g_FlagDB.queue_fevent.in;
+		return 1;
+	}
+	return 0;
+}
+/**
+  *@brief  获取故障事件
+  *@param  feventNo 故障事件号
+  *@retval 0 成功 1 失败
+  */
+uint8_t GetFeventNoContent(uint16_t feventNo,FeventContent *pEvent)
+{
+	struct SOE_Str *tSoe;
+	uint16_t pNo,tAddr;
+	uint16_t tms;
+	GetFeventNum();
+	if(feventNo >= fEventInfo.num){
+		return 1;
+	}
+	if(g_FlagDB.queue_fevent.full == FULL){
+		if(feventNo < g_FlagDB.queue_fevent.in){
+			pNo = g_FlagDB.queue_fevent.in - feventNo - 1;
+		}
+		else{
+			pNo = fEventInfo.num - feventNo + g_FlagDB.queue_fevent.in - 1;
+		}
+	}
+	else{
+		pNo = g_FlagDB.queue_fevent.in - 1 - feventNo;
+	}
+	tSoe = &g_FeventDB[pNo].yx[0];
+	pEvent->time.year = tSoe->time.year;
+	pEvent->time.month =  tSoe->time.month;
+	pEvent->time.day =  tSoe->time.dayofWeek & 0x1F;
+	pEvent->time.hour =  tSoe->time.hour;
+	pEvent->time.min =  tSoe->time.minute;
+	tms = ( tSoe->time.msecondH << 8) + tSoe->time.msecondL;
+	pEvent->time.s = tms / 1000;
+	pEvent->time.ms = tms % 1000;
+	if(tSoe->addr < 0x6000){
+		if(tSoe->addr <= g_TelesignalCfg_Len){
+			pEvent->pName = TelesignalCfg[tSoe->addr - 1].pName;
+			pEvent->pContent = TelesignalCfg[tSoe->addr - 1].pContentSoe[tSoe->value - 1];
+		}
+	}
+	pEvent->yaoceNum = g_FeventDB[pNo].yc_num;
+	if(pEvent->yaoceNum > 16){
+		pEvent->yaoceNum = 16;
+	} 
+	for(uint8_t i = 0; i < pEvent->yaoceNum; i ++){
+		tAddr = g_FeventDB[pNo].yc[i].addr - TELEMETRY_START_ADDR;
+		if(tAddr < g_TelemetryCfg_Len){
+			pEvent->pYaoceName[i] = TelemetryCfg[tAddr].pName;
+			pEvent->pYaoceUnit[i] = TelemetryCfg[tAddr].pUnit;
+			pEvent->pYaoceValue[i] = g_FeventDB[pNo].yc[i].value;
+		}
+	}
+	return 0;
+}
+
+/**
+  *@brief  获取故障事件总数
+  *@param  None
+  *@retval 故障事件总数
+  */
+uint16_t GetFeventNum(void)
+{
+	if(g_FlagDB.queue_fevent.full == FULL){
+		fEventInfo.num = FEVENT_MAX_NUM;
+	}
+	else{
+		fEventInfo.num = g_FlagDB.queue_fevent.in;
+	}
+	return fEventInfo.num;
+}
+
+void HmiCmdSendFun(uint8_t cmdIs)
+{
+	switch(cmdIs)
+	{
+		case 0:/* 清除记录 */
+			DBClear();
+			DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR,ON);
+			break;
+		case 1:
+			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+				rt_hw_do_operate(DO_OPEN, LOCAL);
+			}break;
+		case 2:
+			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+				rt_hw_do_operate(DO_CLOSE, LOCAL);
+			}break;
+		case 3:
+			DBRevert(LOCAL);break;
+		default:break;
+	}
+}
+
+/**
+  *@brief  命令下发初始化
+  *@param  None
+  *@retval None
+  */
+static void HmiCmdSendInit(void)
+{
+	hcmdInfo.itemsNum = sizeof(hmiCmdItems)/sizeof(struct HmiCmdSend);
+	hcmdInfo.pHmiCmd = hmiCmdItems;
+	hcmdInfo.cmdfun = HmiCmdSendFun;
+}
+
+/**
   *@brief  用户显示数据初始化
   *@param  None
   *@retval None
@@ -205,6 +445,7 @@ void userVariableDisplayInit(void)
 	YaoceDisplayInit();
 	Dzhi1DisplayInit();
 	Dzhi0DisplayInit();
+	HmiCmdSendInit();
 }
 
 const struct YaoCeItem yaoCe1Items[YAOCE1_NUM] = {

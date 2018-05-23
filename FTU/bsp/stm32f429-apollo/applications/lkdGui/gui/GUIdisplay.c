@@ -402,19 +402,24 @@ void MessageFun(void)
 			GuiButton(winWide,winHight + 3,"取消",0);
 		}
 		GuiUpdateDisplayAll();
+		flag = 2;
+	}
+	if(flag == 2){
 	}
 	switch(keyStatus){
 	case LeftKey:
 		keyFlag--;
 		if(keyFlag < 0){
 			keyFlag = 1;
-		}break;
+		}
+		flag = 1;break;
 	case UpKey:break;
 	case RightKey:
 		keyFlag++;
 		if(keyFlag > 1){
 			keyFlag = 0;
-		}break;
+		}
+		flag = 1;break;
 	case DownKey:break;
 	case OkKey:
 		*MessageIs.flag = keyFlag;
@@ -624,7 +629,7 @@ void DZModfiyFun(void)
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){//汉字		
 			dZModfiy.str[0] = modfiyStr[0];
 			*(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pVal) = (float)modfiyStr[0];
-			//dZModfiy.info->SaveModify(0);
+			dZModfiy.info->SaveModify(0);
 			flag = 5;
 		}
 		else{
@@ -634,7 +639,7 @@ void DZModfiyFun(void)
 				fValue >= dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].valMin){
 				*(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pVal) = fValue;
 				strcpy((char *)dZModfiy.str,(char *)modfiyStr);
-				//dZModfiy.info->SaveModify(0);
+				dZModfiy.info->SaveModify(0);
 				flag = 5;
 			}
 			else{//超出范围
@@ -749,43 +754,6 @@ void DZModfiyFun(void)
 	}
 }
 
-
-///**
-//  *@brief 定值数据处理
-//  *@param  None
-//  *@retval None
-//  */
-//void DingZhiDataResult(uint8_t *pData,uint8_t *outData,const struct DingZhi1Item *items,\
-//	uint8_t itemsNum,const struct ModbusCmd_ *modbusCmd)
-//{
-//	union{
-//		float f32;
-//		uint8_t u8[4];
-//	}tempFloat;
-//	
-//	uint16_t mapAddr;
-//	uint8_t i;
-//	
-//	for(i=0;i<itemsNum;i++){
-//		mapAddr = items[i].addr - modbusCmd->mapAddr.addr16;
-//		tempFloat.u8[3] = pData[4*mapAddr];
-//		tempFloat.u8[2] = pData[4*mapAddr + 1];
-//		tempFloat.u8[1] = pData[4*mapAddr + 2];
-//		tempFloat.u8[0] = pData[4*mapAddr + 3];
-//		if(items[i].flag){//汉字
-//			if((uint32_t)tempFloat.f32 < items[i].flag){
-//				outData[i*16] = (uint32_t)tempFloat.f32;
-//			}
-//			else{
-//				outData[i*16] = 0;
-//			}
-//		}
-//		else{
-//			sprintf((char *)&outData[i*16],"%.3f",tempFloat.f32);
-//		}
-//	}
-//}
-
 /**
   *@brief 通用定值显示函数
   *@param  Items 定值结构指针
@@ -840,6 +808,7 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 		}
 	}
 	if(*flag == 1){
+		itemsNum = info->num;
 		for(i=0;i<itemsNum;i++){
 			*(pText + i*DZDISPLAYCOL + 0) = info->pRoot[info->pBuff[i]].pName;
 			if(info->pRoot[info->pBuff[i]].dataType){//汉字
@@ -1068,7 +1037,7 @@ static void mianMenuFun(void)
 		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
 		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
 		case 2:userGUIMenuAdd(&MenuM2);break;//配置设置
-//		case 3:userGUIWindowAdd(&CmdSendWin);break;//命令下发
+		case 3:userGUIWindowAdd(&CmdSendWin);break;//命令下发
 //		case 4:userGUIWindowAdd(&VersionWin);break;//版本信息
 		default:break;
 		}
@@ -1119,8 +1088,8 @@ static void MenuM0Fun(void)
 		switch(MenuM0.currentItem){
 		case 0:userGUIWindowAdd(&YaoxinWin);break;//遥信查询
 		case 1:userGUIMenuAdd(&MenuM0S1);break;//遥测查询
-//		case 2:userGUIWindowAdd(&SOEWin);break;//SOE查询
-//		case 3:userGUIWindowAdd(&FaultEventWin);break;//故障事件
+		case 2:userGUIWindowAdd(&SOEWin);break;//SOE查询
+		case 3:userGUIWindowAdd(&FaultEventWin);break;//故障事件
 		case 4:userGUIMenuAdd(&MenuM0S4);break;//定值查询
 		case 5:userGUIMenuAdd(&MenuM0S5);break;//配置查询
 		default:break;
@@ -1354,118 +1323,116 @@ static void MenuM1S8Fun(void)
 	}
 }
 
-///**
-//  *@brief CmdSend deal with function 命令下发
-//  *@param  None
-//  *@retval None
-//  */
-//static void CmdSendWinFun(void)
-//{
-//	const  uint8_t listCol[2][1] = {{156},{COL_MID_DISPLAY}};
-//	static uint8_t flag = 0;//步骤标志
-//	static SCROLL *Scroll;//进度条
-//	static ListColSet colset;
-//	static LIST  *list;//列表控件
-//	static uint8_t **pText;//列表内容指针
-//	
-//	static uint8_t messageFlag = 0;//步骤标志
-//	uint16_t memMall;
-//	static int8_t currentNum;
-//	uint8_t i;
-//	if(flag == 0){//初始化，分配内存
-//		memMall = 0;	
-//		list = (LIST  *)&userGUIBuff[memMall];
-//		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
-//		Scroll = (SCROLL *)&userGUIBuff[memMall];
-//		memMall += sizeof(SCROLL) + (4 - sizeof(SCROLL)%4);
-//		pText = (uint8_t **)&userGUIBuff[memMall];
-//		Scroll->x = 156;
-//		Scroll->y = 18;
-//		Scroll->hight = 141;
-//		Scroll->max = CmdSend_NUM;
-//		Scroll->lump = 1;
-//		colset.colWide = (uint8_t *)listCol[0];
-//		colset.colFlag = (uint8_t *)listCol[1];
-//		list->x = 0;
-//		list->y = 18;
-//		list->wide = 156;
-//		list->hight = 141;
-//		list->row = CmdSend_NUM;
-//		list->col = 1;
-//		list->drawRow = 0;
-//		list->currentRow = 0;
-//		list->flag = LIST_USEBORDER_H;
-//		list->content = (uint8_t **)pText;
-//		list->colSet = &colset;	
-//		currentNum = 0;
-//		flag = 1;
-//	}
-//	if(flag == 1){//获取相应数据	
-//		for(i = 0;i < CmdSend_NUM;i++){
-//			*(pText + i) = CmdSendItems[i].name;
-//		}
-//		flag = 2;
-//	}
-//	if(flag == 2){//显示
-//		list->currentRow = currentNum;
-//		Scroll->lump = currentNum + 1;
-//		if((list->currentRow /DISPLAYLISTROW)*DISPLAYLISTROW + DISPLAYLISTROW <= list->row){
-//			list->drawRow = (list->currentRow /DISPLAYLISTROW)*DISPLAYLISTROW;
-//		}
-//		else{
-//			if(list->row < DISPLAYLISTROW){
-//				list->drawRow = 0;
-//			}
-//			else{
-//				list->drawRow = list->row - DISPLAYLISTROW;
-//			}	
-//		}
-//		DrawList(list);
-//		DrawVScroll(Scroll);
-//		GuiUpdateDisplayAll();
-//		flag = 3;
-//	}
-//	if(flag == 3){
-//	}
-//	if(flag == 4){
-//		if(messageFlag == 1){
-//			FillYaoKongFIFO(ModBusSlaveAddr1,\
-//				&ModbuscmdYaoKong[CmdSendItems[currentNum].M_mapNum]);
-//		}
-//		flag = 2;
-//	}
-//	switch(keyStatus){
-//	case LeftKey:
-//	case UpKey:
-//		currentNum --;
-//		if(currentNum < 0){
-//			currentNum = Scroll->max - 1;
-//		}
-//		flag = 2;
-//		break;
-//	case RightKey:
-//	case DownKey:
-//		currentNum ++;
-//		if(currentNum > Scroll->max - 1){
-//			currentNum = 0;
-//		}
-//		flag = 2;
-//		break;
-//	case OkKey:
-//		flag = 4;
-//		messageFlag = 0;
-//		SetMessageWin(23,40,"确定执行?",&messageFlag);
-//		userGUIWindowAdd(&MessageWin);
-//		break;
-//	case CancelKey:
-//		flag = 0;
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		userGUIMenuRedraw();
-//		break;
-//	default:break;
-//	}
-//}
+/**
+  *@brief CmdSend deal with function 命令下发
+  *@param  None
+  *@retval None
+  */
+static void CmdSendWinFun(void)
+{
+	const  uint8_t listCol[2][1] = {{156},{FONT_MID}};
+	static uint8_t flag = 0;//步骤标志
+	static SCROLL *Scroll;//进度条
+	static ListColSet colset;
+	static LIST  *list;//列表控件
+	static uint8_t **pText;//列表内容指针
+	static uint8_t messageFlag = 0;//步骤标志
+	uint16_t memMall;
+	static int8_t currentNum;
+	uint8_t i;
+	if(flag == 0){//初始化，分配内存
+		memMall = 0;	
+		list = (LIST  *)&userGUIBuff[memMall];
+		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
+		Scroll = (SCROLL *)&userGUIBuff[memMall];
+		memMall += sizeof(SCROLL) + (4 - sizeof(SCROLL)%4);
+		pText = (uint8_t **)&userGUIBuff[memMall];
+		Scroll->x = 156;
+		Scroll->y = 18;
+		Scroll->hight = 141;
+		Scroll->max = hcmdInfo.itemsNum;
+		Scroll->lump = 1;
+		colset.colWide = (uint8_t *)listCol[0];
+		colset.colFlag = (uint8_t *)listCol[1];
+		list->x = 0;
+		list->y = 18;
+		list->wide = 156;
+		list->hight = 141;
+		list->row = hcmdInfo.itemsNum;
+		list->col = 1;
+		list->drawRow = 0;
+		list->currentRow = 0;
+		list->flag = LIST_USEBORDER_H;
+		list->content = (uint8_t **)pText;
+		list->colSet = &colset;	
+		currentNum = 0;
+		flag = 1;
+	}
+	if(flag == 1){//获取相应数据	
+		for(i = 0;i < hcmdInfo.itemsNum;i++){
+			*(pText + i) = hcmdInfo.pHmiCmd[i].name;
+		}
+		flag = 2;
+	}
+	if(flag == 2){//显示
+		list->currentRow = currentNum;
+		Scroll->lump = currentNum + 1;
+		if((list->currentRow /DISPLAYLISTROW)*DISPLAYLISTROW + DISPLAYLISTROW <= list->row){
+			list->drawRow = (list->currentRow /DISPLAYLISTROW)*DISPLAYLISTROW;
+		}
+		else{
+			if(list->row < DISPLAYLISTROW){
+				list->drawRow = 0;
+			}
+			else{
+				list->drawRow = list->row - DISPLAYLISTROW;
+			}	
+		}
+		DrawList(list);
+		GuiVScroll(Scroll);
+		GuiUpdateDisplayAll();
+		flag = 3;
+	}
+	if(flag == 3){
+	}
+	if(flag == 4){
+		if(messageFlag == 1){
+			hcmdInfo.cmdfun(hcmdInfo.pHmiCmd[currentNum].cmd);
+		}
+		flag = 2;
+	}
+	switch(keyStatus){
+	case LeftKey:
+	case UpKey:
+		currentNum --;
+		if(currentNum < 0){
+			currentNum = Scroll->max - 1;
+		}
+		flag = 2;
+		break;
+	case RightKey:
+	case DownKey:
+		currentNum ++;
+		if(currentNum > Scroll->max - 1){
+			currentNum = 0;
+		}
+		flag = 2;
+		break;
+	case OkKey:
+		flag = 4;
+		messageFlag = 0;
+		SetMessageWin(23,40,"确定执行?",&messageFlag);
+		userGUIWindowAdd(&MessageWin);
+		break;
+	case CancelKey:
+		flag = 0;
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		userGUIMenuRedraw();
+		break;
+	default:break;
+	}
+}
 
 ///**
 //  *@brief  固有参数数据处理
@@ -1604,9 +1571,8 @@ static void MenuM1S8Fun(void)
   */
 static void InterphaseOverFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(InterphaseOverItems,InterphaseOver_NUM - 3,\
-//		&ModbuscmdDingZhi[InterphaseOverNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_INTERGHASE],&flag);
 }
 
 /**
@@ -1616,9 +1582,8 @@ static void InterphaseOverFun(void)
   */
 static void ZeroSequenceOverFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(ZeroSequenceOverItems,ZeroSequenceOver_NUM,\
-//		&ModbuscmdDingZhi[ZeroSequenceOverNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_ZERO_SEQUE],&flag);
 }
 
 /**
@@ -1628,9 +1593,8 @@ static void ZeroSequenceOverFun(void)
   */
 static void CutoutSwitchFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(CutoutSwitchItems,CutoutSwitch_NUM,\
-//		&ModbuscmdDingZhi[CutoutSwitchNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_OTHER_PROTEC],&flag);
 }
 
 /**
@@ -1640,9 +1604,8 @@ static void CutoutSwitchFun(void)
   */
 static void LogicalFunFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(LoadSwitchItems,LoadSwitch_NUM,\
-//		&ModbuscmdDingZhi[LoadSwitchNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_LOGICAL_FUN],&flag);
 }
 
 /**
@@ -1652,9 +1615,8 @@ static void LogicalFunFun(void)
   */
 static void OverLineWarnFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(ThresholdAlarmItems,ThresholdAlarm_NUM,\
-//		&ModbuscmdDingZhi[ThresholdAlarmNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_LIMITATION],&flag);
 }
 
 /**
@@ -1664,9 +1626,8 @@ static void OverLineWarnFun(void)
   */
 static void OverLoadMuchFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(OverloadMuchItems,OverloadMuch_NUM,\
-//		&ModbuscmdDingZhi[OverloadNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_HEAVY_LOAD],&flag);
 }
 
 /**
@@ -1688,9 +1649,8 @@ static void OverLoadFun(void)
   */
 static void OverVoltageFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(OverVoltageItems,OverVoltage_NUM,\
-//		&ModbuscmdDingZhi[OverVoltageNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_LIMIT_V_F],&flag);
 }
 
 /**
@@ -1700,9 +1660,8 @@ static void OverVoltageFun(void)
   */
 static void BatterySetFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(BatterySetItems,BatterySet_NUM,\
-//		&ModbuscmdDingZhi[BatteryActivationNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_IBATTERY_SET],&flag);
 }
 
 /**
@@ -1712,9 +1671,8 @@ static void BatterySetFun(void)
   */
 static void AutoResetFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(AutoResetItems,AutoReset_NUM,\
-//		&ModbuscmdDingZhi[AutoResetNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_AUTO_RESET],&flag);
 }
 
 /**
@@ -1724,9 +1682,8 @@ static void AutoResetFun(void)
   */
 static void RingUniteFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(RingUniteItems,RingUnite_NUM,\
-//		&ModbuscmdDingZhi[RingUniteNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_LOOP_CLOSE],&flag);
 }
 
 /**
@@ -1736,9 +1693,8 @@ static void RingUniteFun(void)
   */
 static void BreakDownFun(void)
 {
-//	static uint8_t flag = 0;
-//	DZModfiyDisplay(BreakDownItems,BreakDown_NUM,\
-//		&ModbuscmdDingZhi[BreakDownNum],&flag);
+	static uint8_t flag = 0;
+	DZModfiyDisplay(&dzhi1Info[DZ1_FAULT_SWITCH],&flag);
 }
 
 /**
@@ -2004,500 +1960,280 @@ static void HarmonicFun(void)
 	yaoCeDisplay(&yceInfo[2]);
 }
 
-///**
-//  *@brief SOE数据处理
-//  *@param  pData 要处理的数据
-//  *@param  eachSoeSize 单位大小
-//  *@param  *SOE[] 处理存放
-//  *@retval None
-//  */
-//static void SOEDataResult(uint8_t *pData,uint8_t eachSoeSize,struct SOEDisplay *SOE[])
-//{
-//	uint32_t tempaddr,tempaddr2;
-//	uint8_t i,j;
-//	
-//	for(j=0;j<SOEDISPLAYROW;j++){
-//		tempaddr = (pData[j*eachSoeSize+0]<<8)+pData[j*eachSoeSize+1];
-//		if(pData[j*eachSoeSize+2]>=0x20){//状态位含义较多
-//			if((pData[j*eachSoeSize+2]&0x10) == 1){
-//				tempaddr2 = 0x00060000|tempaddr;//遥控取消
-//			}
-//			else{
-//				switch(pData[j*eachSoeSize+2]&0x03){
-//				case 0x01://分闸
-//					switch(pData[j*eachSoeSize+2]&0x08){
-//					case 0x00://选择
-//						tempaddr2 = 0x00000000|tempaddr;
-//						break;
-//					case 0x08://执行
-//						tempaddr2 = 0x00010000|tempaddr;
-//						break;;
-//					}break;
-//				case 0x02://合闸
-//					switch(pData[j*eachSoeSize+2]&0x08){
-//					case 0x00://选择
-//						tempaddr2 = 0x00020000|tempaddr;
-//						break;
-//					case 0x08://执行
-//						tempaddr2 = 0x00030000|tempaddr;
-//						break;
-//					}break;
-//				case 0x03://合环
-//					switch(pData[j*eachSoeSize+2]&0x08){
-//					case 0x00://选择
-//						tempaddr2 = 0x00040000|tempaddr;
-//						break;
-//					case 0x08://执行
-//						tempaddr2 = 0x00050000|tempaddr;
-//						break;
-//					}break;
-//				}
-//			}
-//			for(i = 0;i<SOE_NUM;i++){
-//				if(tempaddr2 == SOEItems[i].addr){
-//					SOE[j]->SOEItem = i;
-//					SOE[j]->itemValue = (pData[j*eachSoeSize+2]&0x04)?1:0;
-//					break;
-//				}
-//			}
-//			if(i == SOE_NUM){
-//				SOE[j]->SOEItem = 255;//255表示无效
-//			}
-//		}
-//		else{
-//			tempaddr2 = (uint32_t)(tempaddr&0x0000FFFF);
-//			for(i = 0;i<SOE_NUM;i++){
-//				if(tempaddr2 == SOEItems[i].addr){
-//					SOE[j]->SOEItem = i;
-//					SOE[j]->itemValue = pData[j*eachSoeSize+2] - 1;//将 1，2 两种状态转换成 0 1 方便数组调用
-//					if(SOE[j]->itemValue > 2){
-//						SOE[j]->itemValue = 0;
-//					}
-//					break;
-//				}
-//			}
-//			if(i == SOE_NUM){
-//				SOE[j]->SOEItem = 255;//255表示无效
-//			}
-//		}
-//		sprintf((char *)SOE[j]->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
-//			(pData[j*eachSoeSize+9]%100),(pData[j*eachSoeSize+8]&0x3F),\
-//			pData[j*eachSoeSize+7]&0x1F,(pData[j*eachSoeSize+6]&0x3F),\
-//			(pData[j*eachSoeSize+5]&0x3F),\
-//			((pData[j*eachSoeSize+4]<<8) + pData[j*eachSoeSize+3])/1000,
-//			((pData[j*eachSoeSize+4]<<8) + pData[j*eachSoeSize+3])%1000);
-//	}
-//}
 
-///**
-//  *@brief SOE处理函数
-//  *@param  None
-//  *@retval None
-//  */
-//static void SOEFun(void)
-//{
-//	static struct SOEDisplay *SOE[SOEDISPLAYROW];
-//	static uint8_t flag = 0;
-//	static SCROLL Scroll ={156,18,141,2,1};//进度条
-//	static uint8_t getDataFlag = 0;
-//	static uint16_t offestAddr = 0;//SOE偏移地址
-//	static int16_t currentNum;
-//	
-//	uint32_t pData;//存放接收数据指针
-//	union yaoXinTimeflag dataUpdateFlag;
-//	uint8_t tempRetrun;
-//	uint16_t offest;
-//	uint8_t i;
-//	uint16_t y;
-//	Scroll.max = GetSoeAllNum();
-//	if(Scroll.max == 0){
-//		GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,\
-//			SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
-//		GuiUpdateDisplayAll();
-//	}
-//	else{
-//		if(flag == 0){//初始化，分配内存
-//			for(i=0;i<SOEDISPLAYROW;i++){//给SOE分配显示缓冲区
-//				SOE[i] = (struct SOEDisplay *)&userGUIBuff[i*sizeof(struct SOEDisplay)];
-//			}
-//			flag = 1;
-//			getDataFlag = 0;
-//		}
-//		if(flag == 1){//发送命令
-//			offestAddr = currentNum*(ModbuscmdFIFO[FIFO_SOE_NUM].length.len16/2)*SOEDISPLAYROW;
-//			tempRetrun = GetModbusData(&getDataFlag,ModBusSlaveAddr1,\
-//				ModbuscmdFIFO[FIFO_SOE_NUM].addr.addr16+offestAddr,\
-//				ModbuscmdFIFO[FIFO_SOE_NUM].length.len16*SOEDISPLAYROW,&pData);
-//			if(tempRetrun == ISTURE){
-//				SOEDataResult((uint8_t *)pData,ModbuscmdFIFO[FIFO_SOE_NUM].length.len16,SOE);
-//				offest = offestAddr/(ModbuscmdFIFO[FIFO_SOE_NUM].length.len16/2) + 1;
-//				for(i=0;i<SOEDISPLAYROW;i++){
-//					sprintf((char *)SOE[i]->itemNum,"%d",offest + i);
-//				}
-//				flag = 2;
-//			}
-//			else if(tempRetrun == ISFAILTURE){
-//				getDataFlag = 0;
-//			}
-//			else{
-//				GUIWiatMessage(30,65);
-//			}
-//		}
-//		if(flag == 2){
-//			y = SOEWin.y + 18;
-//			GuiFillRect(SOEWin.x+1,y,155,158, backcolor);
-//			for(i=0;i<SOEDISPLAYROW;i++){
-//				if(SOE[i]->SOEItem == 255){//检测到无效SOE,结束
-//					GuiHLine(SOEWin.x,y+i*28,155,forecolor);
-//					break;
-//				}
-//				GuiHLine(SOEWin.x,y+i*28+0,155,forecolor);//水平线
-//				GuiFillRect(SOEWin.x+1,y+i*28,SOEWin.x+20,y+i*28+13, forecolor);
-//				GuiExchangeColor();
-//				GuiFont12Align(SOEWin.x+1,y + i*28+2,19,\
-//					FONT_MID,SOE[i]->itemNum);//序号
-//				GuiExchangeColor();	
-//				GUI_RPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
-//				GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,SOE[i]->time);
-//				GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
-//				GuiFont12Align(SOEWin.x+2,y + i*28+15,72,\
-//					FONT_MID,SOEItems[SOE[i]->SOEItem].name);
-//				GUI_RPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
-//				if(SOE[i]->itemValue){
-//					GuiFillRect(SOEWin.x+10+73,y+i*28+14,158,y+i*28+28, forecolor);
-//					GuiExchangeColor();
-//					GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,\
-//						SOEItems[SOE[i]->SOEItem].status[SOE[i]->itemValue]);
-//					GuiExchangeColor();
-//				}
-//				else{
-//					GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,\
-//						SOEItems[SOE[i]->SOEItem].status[SOE[i]->itemValue]);
-//				}
-//					
-//			}
-//			Scroll.lump = currentNum + 1;
-//			DrawVScroll(&Scroll);
-//			GuiUpdateDisplayAll();
-//			flag = 3;
-//		}
-//		if(flag == 3){
-//			 dataUpdateFlag = GetDtatUpdateStatus();
-//			if(dataUpdateFlag.bit.newSoe == 1){//SOE有更新
-//				ClearDtatUpdateNewSoe();//清除更新标志
-//				currentNum = 0;
-//				flag = 1;
-//			}
-//		}
-//	}
-//	
-//	switch(keyStatus){
-//	case UpKey:
-//	case LeftKey:
-//		if(flag > 1){
-//			currentNum --;
-//			if(currentNum < 0){
-//				currentNum = Scroll.max - 1;
-//			}
-//		}
-//		flag = 1;
-//		break;
-//	case DownKey:
-//	case RightKey:
-//		if(flag > 1){
-//			currentNum ++;
-//			if(currentNum > Scroll.max - 1){
-//				currentNum = 0;
-//			}
-//		}
-//		flag = 1;
-//		break;
-//	case OkKey:break;
-//	case CancelKey:
-//		currentNum = 0;
-//		offestAddr = 0;
-//		flag = 0;
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		userGUIMenuRedraw();
-//		break;
-//	default:break;
-//	}
-//}
+/**
+  *@brief SOE处理函数
+  *@param  None
+  *@retval None
+  */
+static void SOEFun(void)
+{
+	static struct SOEDisplay *soeStr;
+	static SCROLL Scroll ={156,18,141,2,1};//进度条
+	static uint8_t currentNum;
+	static uint8_t flag = 0;
+	SystemTimeDisplay *tTim;
+	uint8_t tRes;
+	uint8_t i;
+	uint16_t y;
+	
+	if(flag == 0){//初始化，分配内存
+		soeStr = (struct SOEDisplay *)&userGUIBuff[0];
+		soeStr->pRead = 0;
+		soeStr->allNum = GetSoeNum();
+		currentNum = 1;
+		flag = 1;
+	}
+	if(flag == 1){
+		if(soeStr->allNum == 0){//没有SOE
+			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
+			GuiUpdateDisplayAll();
+			flag = 3;
+		}
+		else{
+			if(soeStr->allNum % SOEDISPLAYROW){
+				Scroll.max = soeStr->allNum / SOEDISPLAYROW + 1;
+			}
+			else{
+				Scroll.max = soeStr->allNum / SOEDISPLAYROW;
+			}
+			flag = 2;
+		}
+	}
+	if(flag == 2){
+		soeStr->pRead = (currentNum - 1) * SOEDISPLAYROW;
+		if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
+			flag = 3;
+		}
+		y = SOEWin.y + 18;
+		GuiFillRect(SOEWin.x+1,y,155,158, backcolor);
+		for(i = 0; i < SOEDISPLAYROW; i ++){
+			if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
+				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
+				break;
+			}
+			tRes = GetSoeNoContent(soeStr->pRead,&soeStr->pSoe);
+			if(tRes != 0){//获取SOE有错
+				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
+				break;
+			}
+			tTim = &soeStr->pSoe.time;
+			sprintf((char *)soeStr->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
+				tTim->year,tTim->month,tTim->day,tTim->hour,tTim->min,tTim->s,tTim->ms);
+			soeStr->time[23] = '\0';
+			sprintf((char *)soeStr->itemNum,"%d",soeStr->pRead + 1);
+			soeStr->itemNum[3] = '\0';
+			GuiHLine(SOEWin.x,y+i*28+0,155,forecolor);//水平线
+			GuiFillRect(SOEWin.x+1,y+i*28,SOEWin.x+20,y+i*28+13, forecolor);
+			GuiExchangeColor();
+			GuiFont12Align(SOEWin.x+1,y + i*28+1,19,FONT_MID,soeStr->itemNum);//序号
+			GuiExchangeColor();	
+			GuiRPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
+			GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,soeStr->time);
+			GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
+			GuiFont12Align(SOEWin.x+2,y + i*28+15,72,FONT_MID,soeStr->pSoe.pName);
+			GuiRPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
+			if(soeStr->pSoe.highlight){//高亮显示
+				GuiFillRect(SOEWin.x+10+73,y+i*28+14,158,y+i*28+28, forecolor);
+				GuiExchangeColor();
+				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+				GuiExchangeColor();
+			}
+			else{
+				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+			}
+			soeStr->pRead ++;
+		}
+		Scroll.lump = currentNum;
+		GuiVScroll(&Scroll);
+		GuiUpdateDisplayAll();
+		flag = 3;
+	}
+	if(flag == 3){
+		if(CheckSoeUpdata()){//SOE有更新
+			soeStr->allNum = GetSoeNum();
+			soeStr->pRead = 0;
+			currentNum = 1;
+			flag = 1;
+		}
+	}
+	switch(keyStatus){
+	case UpKey:
+	case LeftKey:
+		if(flag > 1){
+			currentNum --;
+			if(currentNum < 1){
+				currentNum = Scroll.max;
+			}
+		}
+		flag = 1;
+		break;
+	case DownKey:
+	case RightKey:
+		if(flag > 1){
+			currentNum ++;
+			if(currentNum > Scroll.max){
+				currentNum = 1;
+			}
+		}
+		flag = 1;
+		break;
+	case OkKey:break;
+	case CancelKey:
+		currentNum = 0;
+		flag = 0;
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		userGUIMenuRedraw();
+		break;
+	default:break;
+	}
+}
 
-///**
-//  *@brief 故障事件数据处理
-//  *@param  pData 待处理数据
-//  *@param  eachSize 每个事件数据的大小
-//  *@param  pEvent 故障事件显示指针
-//  *@retval None
-//  */
-//static void EventDataResult(uint8_t *pData,uint8_t eachSize,struct EventDisplay *pEvent)
-//{
-//	uint32_t tempaddr,tempaddr2;
-//	uint8_t i,j;
-//	union{
-//		float f32;
-//		uint8_t u8[4];
-//	}charToFloat;
-//	tempaddr = (pData[2]<<8)+pData[3];
-//	if(pData[4]>=0x20){//状态位含义较多
-//		if((pData[4]&0x10) == 1){
-//			tempaddr2 = 0x00060000|tempaddr;//遥控取消
-//		}
-//		else{
-//			switch(pData[4]&0x03){
-//			case 0x01://分闸
-//				switch(pData[4]&0x08){
-//				case 0x00://选择
-//					tempaddr2 = 0x00000000|tempaddr;
-//					break;
-//				case 0x08://执行
-//					tempaddr2 = 0x00010000|tempaddr;
-//					break;
-//				default: break;
-//				}break;
-//			case 0x02://合闸
-//				switch(pData[4]&0x08){
-//				case 0x00://选择
-//					tempaddr2 = 0x00020000|tempaddr;
-//					break;
-//				case 0x08://执行
-//					tempaddr2 = 0x00030000|tempaddr;
-//					break;
-//				default: break;
-//				}break;
-//			case 0x03://合环
-//				switch(pData[4]&0x08){
-//				case 0x00://选择
-//					tempaddr2 = 0x00040000|tempaddr;
-//					break;
-//				case 0x08://执行
-//					tempaddr2 = 0x00050000|tempaddr;
-//					break;
-//				default: break;
-//				}break;
-//			}
-//		}
-//		for(i = 0;i<SOE_NUM;i++){
-//			if(tempaddr2 == SOEItems[i].addr){
-//				pEvent->SOEItem = i;
-//				pEvent->itemValue = (pData[4]&0x04)?1:0;
-//				break;
-//			}
-//		}
-//		if(i == SOE_NUM){
-//			pEvent->SOEItem = 255;//255表示无效
-//		}
-//	}
-//	else{
-//		tempaddr2 = (uint32_t)(tempaddr&0x0000FFFF);
-//		for(i = 0;i<SOE_NUM;i++){
-//			if(tempaddr2 == SOEItems[i].addr){
-//				pEvent->SOEItem = i;
-//				pEvent->itemValue = pData[4] - 1;//将 1，2 两种状态转换成 0 1 方便数组调用
-//				if(pEvent->itemValue > 2){
-//					pEvent->itemValue = 0;
-//				}
-//				break;
-//			}
-//		}
-//		if(i == SOE_NUM){
-//			pEvent->SOEItem = 255;//255表示无效
-//		}
-//	}
-//	if(pEvent->SOEItem < 255){
-//		pEvent->yaoceNum = pData[12];
-//		if(pEvent->yaoceNum > 12){
-//			pEvent->yaoceNum = 12;
-//		}
-//		for(i=0;i<pEvent->yaoceNum;i++){
-//			tempaddr = (pData[14 + i*6]<<8) + pData[15 + i*6];
-//			for(j=0;j<YAOCE2_NUM;j++){
-//				if(tempaddr == yaoCe2Items[j].addr){
-//					pEvent->yaoceItem[i] = j;
-//					charToFloat.u8[3] = pData[i*6+16];
-//					charToFloat.u8[2] = pData[i*6+17];
-//					charToFloat.u8[1] = pData[i*6+18];
-//					charToFloat.u8[0] = pData[i*6+19];
-//					if(((uint8_t)isnan(charToFloat.f32)) != 0){
-//						sprintf((char *)&(pEvent->yaoceValue[i*16]),"%s","NaN");
-//					}
-//					else{
-//						sprintf((char *)&(pEvent->yaoceValue[i*16]),"%.3f",charToFloat.f32);
-//					}
-//					break;
-//				}
-//			}
-//			if(j == YAOCE2_NUM){
-//				pEvent->yaoceItem[i] = 255;
-//				break;
-//			}
-//		}
-//	}
-//	sprintf((char *)pEvent->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
-//		(pData[11]%100),(pData[10]&0x3F),pData[9]&0x1F,\
-//		(pData[8]&0x3F),(pData[7]&0x3F),\
-//		((pData[6]<<8) + pData[5])/1000,((pData[6]<<8) + pData[5])%1000);
-//}
-
-///**
-//  *@brief 故障事件处理函数
-//  *@param  None
-//  *@retval None
-//  */
-//static void FaultEventFun(void)
-//{
-//	static uint8_t flag = 0;
-//	static struct EventDisplay *pEvent;
-//	static SCROLL Scroll ={156,18,141,2,1};//进度条
-//	static SCROLL yaoCeScroll ={153,47,112,2,1};//进度条
-//	static uint8_t getDataFlag = 0;
-//	static uint16_t offestAddr = 0;//SOE偏移地址
-//	static int16_t currentNum;
-//	static int8_t yaoCeNum;
-//	uint32_t pData;//存放接收数据指针
-//	union yaoXinTimeflag dataUpdateFlag;
-//	uint8_t tempRetrun;
-//	uint8_t i;
-//	uint16_t y;
-//	Scroll.max = GetEventAllNum();
-//	if(Scroll.max == 0){
-//		GuiFont12Align(FaultEventWin.x+2,FaultEventWin.y + 50,\
-//			FaultEventWin.x+FaultEventWin.wide-4,FONT_MID,"当前没有故障事件");
-//		GuiUpdateDisplayAll();
-//	}
-//	else{
-//		if(flag == 0){//初始化，分配内存
-//			pEvent = (struct EventDisplay *)userGUIBuff;
-//			flag = 1;
-//			getDataFlag = 0;
-//		}
-//		if(flag == 1){//发送命令
-//			offestAddr = currentNum*(ModbuscmdFIFO[FIFO_EVENT_NUM].length.len16/2);
-//			tempRetrun = GetModbusData(&getDataFlag,ModBusSlaveAddr1,\
-//				ModbuscmdFIFO[FIFO_EVENT_NUM].addr.addr16+offestAddr,\
-//				ModbuscmdFIFO[FIFO_EVENT_NUM].length.len16,&pData);
-//			if(tempRetrun == ISTURE){
-//				EventDataResult((uint8_t *)pData,ModbuscmdFIFO[FIFO_EVENT_NUM].length.len16,pEvent);
-//				sprintf((char *)pEvent->itemNum,"%d",\
-//					offestAddr/(ModbuscmdFIFO[FIFO_EVENT_NUM].length.len16/2) + 1);
-//				if(pEvent->yaoceNum <= 8){
-//					yaoCeScroll.max = 1;
-//				}
-//				else{
-//					yaoCeScroll.max = pEvent->yaoceNum - 8 + 1;
-//				}
-//				yaoCeNum = 0;
-//				flag = 2;
-//				if(pEvent->SOEItem == 255){
-//					flag = 4;
-//				}
-//			}
-//			else if(tempRetrun == ISFAILTURE){
-//				getDataFlag = 0;
-//			}
-//			else{//等待画面
-//				GUIWiatMessage(30,65);
-//			}
-//		}
-//		if(flag == 2){//画图
-//			y = FaultEventWin.y + 18;
-//			GuiFillRect(FaultEventWin.x+1,y,155,158, backcolor);
-//			GuiHLine(FaultEventWin.x,y,155,forecolor);//水平线	
-//			GuiFillRect(FaultEventWin.x+1,y,FaultEventWin.x+20,y+13, forecolor);
-//			GuiExchangeColor();
-//			GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEvent->itemNum);//序号
-//			GuiExchangeColor();	
-//			GUI_RPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//垂直线
-//			GuiFont12Align(FaultEventWin.x + 21,y+2,133,FONT_RIGHT,pEvent->time);
-//			GuiHPointLine(FaultEventWin.x,y+13,155,2,forecolor);
-//			GuiFont12Align(FaultEventWin.x+2,y+15,72,FONT_LEFT,SOEItems[pEvent->SOEItem].name);
-//			GUI_RPointLine(FaultEventWin.x+10+72,y+15,y+27,2,forecolor);
-//			GuiFont12Align(FaultEventWin.x+10+73,y+15,70,FONT_RIGHT,\
-//				SOEItems[pEvent->SOEItem].status[pEvent->itemValue]);	
-//			Scroll.lump = currentNum + 1;
-//			DrawVScroll(&Scroll);
-//			GuiHLine(FaultEventWin.x,y+28,155,forecolor);//水平线	
-//			flag = 3;
-//		}
-//		if(flag == 3){
-//			y = FaultEventWin.y + 18 + 29;
-//			yaoCeScroll.lump = yaoCeNum + 1;
-//			DrawVScroll(&yaoCeScroll);
-//			GuiFillRect(FaultEventWin.x+1,y,151,158, backcolor);
-//			for(i=0;i<8;i++){
-//				GuiFont12Align(FaultEventWin.x+2,y+1+i*14,40,FONT_LEFT,\
-//					yaoCe2Items[pEvent->yaoceItem[yaoCeNum + i]].name);			
-//				GUI_RPointLine(FaultEventWin.x+43,y+i*14,y+13+i*14,2,forecolor);
-//				GuiFont12Align(FaultEventWin.x+44,y+1+i*14,70,FONT_MID,&pEvent->yaoceValue[(i+yaoCeNum)*16]);
-//				GUI_RPointLine(FaultEventWin.x+115,y+i*14,y+13+i*14,2,forecolor);
-//				GuiFont12Align(FaultEventWin.x+116,y+1+i*14,35,FONT_RIGHT,\
-//					yaoCe2Items[pEvent->yaoceItem[yaoCeNum+i]].unit[0]);		
-//				GuiHPointLine(FaultEventWin.x,y+13+i*14,151,2,forecolor);
-//			}
-//			GuiUpdateDisplayAll();
-//			flag = 4;
-//		}
-//		if(flag == 4){
-//			 dataUpdateFlag = GetDtatUpdateStatus();
-//			if(dataUpdateFlag.bit.newFaultEvent == 1){//SOE有更新
-//				ClearnewFaultEvent();//清除更新标志
-//				currentNum = 0;
-//				flag = 1;
-//			}
-//		}
-//	}
-//	
-//	switch(keyStatus){
-//	case UpKey:
-//		if(flag > 3){
-//			yaoCeNum --;
-//			if(yaoCeNum < 0){
-//				yaoCeNum = yaoCeScroll.max - 1;
-//			}
-//		}
-//		flag = 3;
-//		break;
-//	case LeftKey:
-//		if(flag > 1){
-//			currentNum --;
-//			if(currentNum < 0){
-//				currentNum = Scroll.max - 1;
-//			}
-//		}
-//		flag = 1;
-//		break;
-//	case DownKey:
-//		if(flag > 3){
-//			yaoCeNum ++;
-//			if(yaoCeNum > yaoCeScroll.max - 1){
-//				yaoCeNum = 0;
-//			}
-//		}
-//		flag = 3;
-//		break;
-//	case RightKey:
-//		if(flag > 1){
-//			currentNum ++;
-//			if(currentNum > Scroll.max - 1){
-//				currentNum = 0;
-//			}
-//		}
-//		flag = 1;
-//		break;
-//	case OkKey:break;
-//	case CancelKey:
-//		currentNum = 0;
-//		offestAddr = 0;
-//		flag = 0;
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		userGUIMenuRedraw();
-//		break;
-//	default:break;
-//	}
-//}
+/**
+  *@brief 故障事件处理函数
+  *@param  None
+  *@retval None
+  */
+static void FaultEventFun(void)
+{
+	static uint8_t flag = 0;
+	static struct EventDisplay *pEventStr;
+	static SCROLL Scroll ={156,18,141,2,1};//进度条
+	static SCROLL yaoCeScroll ={153,47,112,2,1};//进度条
+	static int16_t currentNum;
+	static int8_t yaoCeNum;
+	uint8_t i;
+	uint16_t y;
+	
+	if(flag == 0){//初始化，分配内存
+		pEventStr = (struct EventDisplay *)&userGUIBuff[0];
+		pEventStr->pRead = 0;
+		pEventStr->allNum = GetFeventNum();
+		currentNum = 1;
+		yaoCeNum = 1;
+		flag = 1;
+	}
+	if(flag == 1){
+		if(pEventStr->allNum == 0){//没有故障事件
+			GuiFont12Align(FaultEventWin.x+2,FaultEventWin.y + 50,\
+			FaultEventWin.x+FaultEventWin.wide-4,FONT_MID,"当前没有故障事件");
+			GuiUpdateDisplayAll();
+			flag = 4;
+		}
+		else{
+			pEventStr->pRead = currentNum - 1;
+			GetFeventNoContent(pEventStr->pRead,&pEventStr->pFevent);
+			Scroll.max = pEventStr->allNum;
+			if(pEventStr->pFevent.yaoceNum <= 8){
+				yaoCeScroll.max = 1;
+			}
+			else{
+				yaoCeScroll.max = pEventStr->pFevent.yaoceNum - 8 + 1;
+			}
+			flag = 2;
+		}
+	}
+	if(flag == 2){//画图
+		y = FaultEventWin.y + 18;
+		GuiFillRect(FaultEventWin.x+1,y,155,158, backcolor);
+		GuiHLine(FaultEventWin.x,y,155,forecolor);//水平线	
+		GuiFillRect(FaultEventWin.x+1,y,FaultEventWin.x+20,y+13, forecolor);
+		SystemTimeDisplay *tTim;
+		tTim = &pEventStr->pFevent.time;
+		sprintf((char *)pEventStr->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
+			tTim->year,tTim->month,tTim->day,tTim->hour,tTim->min,tTim->s,tTim->ms);
+		pEventStr->time[23] = '\0';
+		sprintf((char *)pEventStr->itemNum,"%d",pEventStr->pRead + 1);
+		pEventStr->itemNum[3] = '\0';
+		GuiExchangeColor();
+		GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEventStr->itemNum);//序号
+		GuiExchangeColor();	
+		GuiRPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//垂直线
+		GuiFont12Align(FaultEventWin.x + 21,y+2,133,FONT_RIGHT,pEventStr->time);
+		GuiHPointLine(FaultEventWin.x,y+13,155,2,forecolor);
+		GuiFont12Align(FaultEventWin.x+2,y+15,72,FONT_LEFT,pEventStr->pFevent.pName);
+		GuiRPointLine(FaultEventWin.x+10+72,y+15,y+27,2,forecolor);
+		GuiFont12Align(FaultEventWin.x+10+73,y+15,70,FONT_RIGHT,pEventStr->pFevent.pContent);	
+		Scroll.lump = currentNum;
+		GuiVScroll(&Scroll);
+		GuiHLine(FaultEventWin.x,y+28,155,forecolor);//水平线	
+		flag = 3;
+	}
+	if(flag == 3){
+		y = FaultEventWin.y + 18 + 29;
+		yaoCeScroll.lump = yaoCeNum;
+		GuiVScroll(&yaoCeScroll);
+		GuiFillRect(FaultEventWin.x+1,y,151,158, backcolor);
+		for(i = 0;i < 8;i ++){
+			GuiFont12Align(FaultEventWin.x+2,y+1+i*14,40,FONT_LEFT,\
+				pEventStr->pFevent.pYaoceName[i + yaoCeNum - 1]);			
+			GuiRPointLine(FaultEventWin.x+43,y+i*14,y+13+i*14,2,forecolor);
+			sprintf((char *)pEventStr->yaoceValue,"%.3f",pEventStr->pFevent.pYaoceValue[i + yaoCeNum - 1]);
+			pEventStr->yaoceValue[15] = '\0';
+			GuiFont12Align(FaultEventWin.x+44,y+1+i*14,70,FONT_MID,pEventStr->yaoceValue);
+			GuiRPointLine(FaultEventWin.x+115,y+i*14,y+13+i*14,2,forecolor);
+			GuiFont12Align(FaultEventWin.x+116,y+1+i*14,35,FONT_RIGHT,\
+				pEventStr->pFevent.pYaoceUnit[i + yaoCeNum - 1]);		
+			GuiHPointLine(FaultEventWin.x,y+13+i*14,151,2,forecolor);
+		}
+		GuiUpdateDisplayAll();
+		flag = 4;
+	}
+	if(flag == 4){
+		if(CheckFeventUpdata()){//SOE有更新
+			currentNum = 1;
+			flag = 1;
+		}
+	}
+	
+	switch(keyStatus){
+	case UpKey:
+		if(flag > 3){
+			yaoCeNum --;
+			if(yaoCeNum < 1){
+				yaoCeNum = yaoCeScroll.max;
+			}
+		}
+		flag = 3;
+		break;
+	case LeftKey:
+		if(flag > 1){
+			currentNum --;
+			if(currentNum < 1){
+				currentNum = Scroll.max;
+			}
+		}
+		flag = 1;
+		break;
+	case DownKey:
+		if(flag > 3){
+			yaoCeNum ++;
+			if(yaoCeNum > yaoCeScroll.max){
+				yaoCeNum = 1;
+			}
+		}
+		flag = 3;
+		break;
+	case RightKey:
+		if(flag > 1){
+			currentNum ++;
+			if(currentNum > Scroll.max){
+				currentNum = 1;
+			}
+		}
+		flag = 1;
+		break;
+	case OkKey:break;
+	case CancelKey:
+		flag = 0;
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		userGUIMenuRedraw();
+		break;
+	default:break;
+	}
+}
 
 /**
   *@brief 基本设置处理函数

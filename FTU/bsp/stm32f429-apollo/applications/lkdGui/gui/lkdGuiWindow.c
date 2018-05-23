@@ -49,7 +49,7 @@ void GUIWindowHide(WINDOW *pWindow)
 	if(pWindow != NULL){
 		GuiFillRect(pWindow->x, pWindow->y, pWindow->x + pWindow->wide - 1,\
 			pWindow->y + pWindow->hight - 1, backcolor);
-		GuiUpdateDisplayAll();
+		//GuiUpdateDisplayAll();
 	}
 }
 

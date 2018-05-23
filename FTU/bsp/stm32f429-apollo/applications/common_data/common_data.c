@@ -571,7 +571,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     rt_uint8_t Property;
     uint16_t newaddr;
     
-    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_NUM)
+    if (addr >= 0 && addr <= TELESIGNAL_NUM)
     {
         if (state == g_TelesignalDB[addr - TELESIGNAL_START_ADDR])
         {

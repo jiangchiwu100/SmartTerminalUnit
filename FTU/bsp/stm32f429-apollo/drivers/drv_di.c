@@ -154,7 +154,7 @@ void rt_hw_di_check_task(rt_uint8_t clock)
             {
                 g_DiCollect.counter[i] = 0;
 
-                DBWriteSOE(TELESIGNAL_START_ADDR + i, ((g_DiCollect.state >> i) & 0x01) ? OFF : ON);				
+                DBWriteSOE(i, ((g_DiCollect.state >> i) & 0x01) ? OFF : ON);				
 				
                 g_DiCollect.stateLast ^= (0x01 << i);
             }

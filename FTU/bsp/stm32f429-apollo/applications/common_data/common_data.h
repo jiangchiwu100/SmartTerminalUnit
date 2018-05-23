@@ -140,7 +140,7 @@ enum RatioSeclect
 /* 系统时间结构体 */
 __packed struct SD2405Time
 {
-    rt_uint8_t msecond;    // 毫秒
+    rt_uint16_t msecond;    // 毫秒
     rt_uint8_t second;     // 秒
     rt_uint8_t minute;     // 分
     rt_uint8_t hour;       // 时

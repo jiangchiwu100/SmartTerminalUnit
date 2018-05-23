@@ -64,7 +64,7 @@ MENU MenuM1S8 = {
 
 WINDOW HomeWindow = {0,0,160,160,NULL,NULL,HomeWindowFun};
 WINDOW MenuWindow = {0,0,160,160,NULL,"菜单管理窗口",MenuWindowFun};
-//WINDOW CmdSendWin = {0,0,160,160,NULL,"命令下发窗口",CmdSendWinFun};
+WINDOW CmdSendWin = {0,0,160,160,NULL,"命令下发窗口",CmdSendWinFun};
 //WINDOW VersionWin = {0,0,160,160,NULL,"版本信息管理",VersionWinFun};
 
 ///* 信息查询菜单子窗口 */
@@ -72,10 +72,10 @@ WINDOW YaoxinWin     = {0,0,160,160,NULL,"遥信状态窗口",YaoxinFun};
 	WINDOW YaoCe1Win   = {0,0,160,160,NULL,"一次遥测窗口",YaoCe1Fun};
 	WINDOW YaoCe2Win   = {0,0,160,160,NULL,"二次遥测窗口",YaoCe2Fun};
 	WINDOW HarmonicWin = {0,0,160,160,NULL,"谐波分量窗口",HarmonicFun};
-//WINDOW SOEWin   	 = {0,0,160,160,NULL,"SOE记录窗口",SOEFun};
-//WINDOW FaultEventWin = {0,0,160,160,NULL,"故障事件窗口",FaultEventFun};
+WINDOW SOEWin   	 = {0,0,160,160,NULL,"SOE记录窗口",SOEFun};
+WINDOW FaultEventWin = {0,0,160,160,NULL,"故障事件窗口",FaultEventFun};
 
-///* 信息查询->定值查询菜单子窗口 */
+/* 信息查询->定值查询菜单子窗口 */
 
 /* 定值设置菜单子窗口 */
 	WINDOW InterphaseOverWin   = {0,0,160,160,NULL,"相间过流窗口",InterphaseOverFun};
