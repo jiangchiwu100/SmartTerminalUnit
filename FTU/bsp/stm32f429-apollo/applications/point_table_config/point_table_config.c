@@ -20,7 +20,7 @@ struct tagTelesignalCfg TelesignalCfg[] =
 //   使能    名称	                      遥信                                           描述
     { 1,  "开关分位",            &g_TelesignalDB[ADDR_OPEN],                         {"分", "合"},      {"合->分","分->合"}},
     { 1,  "开关合位",            &g_TelesignalDB[ADDR_CLOSE],                        {"分", "合"},      {"合->分","分->合"}},
-    { 1,  "储能有压",            &g_TelesignalDB[ADDR_OPERATING_MECHANISM],          {"无", "有"},      {"有->无","无->有"}},
+    { 1,  "储能/有压",           &g_TelesignalDB[ADDR_OPERATING_MECHANISM],          {"无", "有"},      {"有->无","无->有"}},
     { 1,  "低气压",              &g_TelesignalDB[ADDR_LOW_PRESSURE],                 {"无", "告警"},    {"告警->复位","无->告警"}},
     { 1,  "电源故障告警",        &g_TelesignalDB[ADDR_POWERFAULTALARM],              {"无", "告警"},    {"告警->复位","无->告警"}},
     { 1,  "电池欠压告警",        &g_TelesignalDB[ADDR_BATTERY_UNDERVOLTAGE_ALARM],   {"无", "告警"},    {"告警->复位","无->告警"}},

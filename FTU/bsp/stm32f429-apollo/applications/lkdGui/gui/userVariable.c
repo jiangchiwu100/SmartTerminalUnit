@@ -2,6 +2,7 @@
 #include "userVariable.h"
 #include <rtthread.h>
 #include "common_data.h"
+#include "drv_do.h"
 
 /* 遥信显示信息 */
 YaoxinDisplayInfo yxInfo;
@@ -302,8 +303,8 @@ uint8_t GetSoeNoContent(uint16_t soeNo,SoeContent *pSoe)
 	
 	if(g_SOEDB[pNo].addr < 0x6000){
 		if(g_SOEDB[pNo].addr <= g_TelesignalCfg_Len && g_SOEDB[pNo].addr > 0){	
-			pSoe->pName = TelesignalCfg[g_SOEDB[pNo].addr - 1].pName;
-			pSoe->pContent = TelesignalCfg[g_SOEDB[pNo].addr - 1].pContentSoe[g_SOEDB[pNo].value - 1];
+			pSoe->pName = (uint8_t *)TelesignalCfg[g_SOEDB[pNo].addr - 1].pName;
+			pSoe->pContent = (uint8_t *)TelesignalCfg[g_SOEDB[pNo].addr - 1].pContentSoe[g_SOEDB[pNo].value - 1];
 		}
 		if(g_SOEDB[pNo].value - 1){
 			pSoe->highlight = 1;
@@ -383,8 +384,8 @@ uint8_t GetFeventNoContent(uint16_t feventNo,FeventContent *pEvent)
 	pEvent->time.ms = tms % 1000;
 	if(tSoe->addr < 0x6000){
 		if(tSoe->addr <= g_TelesignalCfg_Len){
-			pEvent->pName = TelesignalCfg[tSoe->addr - 1].pName;
-			pEvent->pContent = TelesignalCfg[tSoe->addr - 1].pContentSoe[tSoe->value - 1];
+			pEvent->pName = (uint8_t *)TelesignalCfg[tSoe->addr - 1].pName;
+			pEvent->pContent = (uint8_t *)TelesignalCfg[tSoe->addr - 1].pContentSoe[tSoe->value - 1];
 		}
 	}
 	pEvent->yaoceNum = g_FeventDB[pNo].yc_num;
@@ -394,8 +395,8 @@ uint8_t GetFeventNoContent(uint16_t feventNo,FeventContent *pEvent)
 	for(uint8_t i = 0; i < pEvent->yaoceNum; i ++){
 		tAddr = g_FeventDB[pNo].yc[i].addr - TELEMETRY_START_ADDR;
 		if(tAddr < g_TelemetryCfg_Len){
-			pEvent->pYaoceName[i] = TelemetryCfg[tAddr].pName;
-			pEvent->pYaoceUnit[i] = TelemetryCfg[tAddr].pUnit;
+			pEvent->pYaoceName[i] = (uint8_t *)TelemetryCfg[tAddr].pName;
+			pEvent->pYaoceUnit[i] = (uint8_t *)TelemetryCfg[tAddr].pUnit;
 			pEvent->pYaoceValue[i] = g_FeventDB[pNo].yc[i].value;
 		}
 	}

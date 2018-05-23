@@ -14,6 +14,7 @@
 #include "lkdGuiWindow.h"
 #include <rtthread.h>
 #include "hmiInOut.h"
+#include "userVariable.h"
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
@@ -514,15 +515,11 @@ void GuiExchangeColor(void)
 	cmd101.cmdNum += 1;
 }
 
-void TestMain(void)
-{
-	static uint8_t flag;
-	static uint32_t runTick,HmiTestTick;
-	if(GetTimer1IntervalTick(HmiTestTick) > 50){
-		HmiTestTick = GetTimer1Tick();
-	}
-}
-
+/**
+  *@brief hmi101初始化
+  *@param  None
+  *@retval None
+  */
 void Hmi101Init(void)
 {
 	rt_err_t result;

@@ -466,7 +466,7 @@ void DZModfiyInit(void)
 	GuiRect(DZModfiyWin.x,DZModfiyWin.y,DZModfiyWin.x + DZModfiyWin.wide, \
 		DZModfiyWin.y + DZModfiyWin.hight, forecolor);
 	GuiFont12Align(DZModfiyWin.x + 2,DZModfiyWin.y + 17,150,FONT_LEFT,\
-		dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pName);
+		(uint8_t *)dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pName);
 	GuiHPointLine(DZModfiyWin.x,DZModfiyWin.y + 30,\
 		DZModfiyWin.x + DZModfiyWin.wide,2,forecolor);
 	GuiHPointLine(DZModfiyWin.x,DZModfiyWin.y + DZModfiyWin.hight - 16,\
@@ -484,14 +484,14 @@ void DZModfiyInit(void)
 	else{//float
 		GuiFont12Align(DZModfiyWin.x + 2,DZModfiyWin.y + 32,40,FONT_LEFT,"最大值");
 		tRange = dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].valMax;
-		sprintf(tRangeStr,"%.3f",tRange);
+		sprintf((char *)tRangeStr,"%.3f",tRange);
 		tRangeStr[15] = '\0';
 		GuiFont12Align(DZModfiyWin.x + 50,DZModfiyWin.y + 32,80,FONT_MID,tRangeStr);
 		GuiHPointLine(DZModfiyWin.x,DZModfiyWin.y + 45,\
 			DZModfiyWin.x + DZModfiyWin.wide,2,forecolor);
 		GuiFont12Align(DZModfiyWin.x + 2,DZModfiyWin.y + 47,40,FONT_LEFT,"最小值");
 		tRange = dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].valMin;
-		sprintf(tRangeStr,"%.3f",tRange);
+		sprintf((char *)tRangeStr,"%.3f",tRange);
 		tRangeStr[15] = '\0';
 		GuiFont12Align(DZModfiyWin.x + 50,DZModfiyWin.y + 47,80,FONT_MID,tRangeStr);
 		GuiHPointLine(DZModfiyWin.x,DZModfiyWin.y + 60,\
@@ -563,10 +563,6 @@ void DZModfiyFun(void)
 	static uint8_t keyIs = 0;//按键记录
 	static uint32_t inputCursorTick;//光标闪烁记时
 	int16_t x,y;
-	static union{
-		float f32;
-		uint16_t u16[2];
-	}ftrans16;
 	float fValue;
 	if(flag == 0){//初始化
 		DZModfiyInit();
@@ -588,7 +584,7 @@ void DZModfiyFun(void)
 			y = DZModfiyWin.y + 25 + (DZModfiyWin.hight - 43)/2 - 8;
 			GuiFillRect(DZModfiyWin.x+18,y + 3,x - 20,y + 15, backcolor);
 			GuiFont12Align(DZModfiyWin.x+18,y + 3,x - DZModfiyWin.x - 40,FONT_MID,\
-				dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pContent[keyIs]);
+				(uint8_t *)dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pContent[keyIs]);
 			GuiExchangeColor();
 			flag = 3;
 		}
@@ -810,13 +806,13 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 	if(*flag == 1){
 		itemsNum = info->num;
 		for(i=0;i<itemsNum;i++){
-			*(pText + i*DZDISPLAYCOL + 0) = info->pRoot[info->pBuff[i]].pName;
+			*(pText + i*DZDISPLAYCOL + 0) = (uint8_t *)info->pRoot[info->pBuff[i]].pName;
 			if(info->pRoot[info->pBuff[i]].dataType){//汉字
 				tempFloat = *(info->pRoot[info->pBuff[i]].pVal);
 				if((uint32_t)tempFloat >= info->pRoot[info->pBuff[i]].dataType){
 					tempFloat = 0;
 				}
-				*(pText + i*DZDISPLAYCOL + 1) = info->pRoot[info->pBuff[i]].pContent[(uint8_t)tempFloat];
+				*(pText + i*DZDISPLAYCOL + 1) = (uint8_t *)info->pRoot[info->pBuff[i]].pContent[(uint8_t)tempFloat];
 			}
 			else{//float value
 				tempFloat = *(info->pRoot[info->pBuff[i]].pVal);
@@ -824,7 +820,7 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 				col1Data[i*16 + 15] = '\0';
 				*(pText + i*DZDISPLAYCOL + 1) = &col1Data[i*16];
 			}
-			*(pText + i*DZDISPLAYCOL + 2) = info->pRoot[info->pBuff[i]].pUnit;
+			*(pText + i*DZDISPLAYCOL + 2) = (uint8_t *)info->pRoot[info->pBuff[i]].pUnit;
 		}
 		*flag = 2;
 	}
@@ -949,7 +945,7 @@ void HomeWindowFun(void)
 		disTime = &DisTime;
 		GuiExchangeColor();
 		GetDisplayTime(disTime);
-		sprintf(strTime,"20%02d-%02d-%02d   %02d:%02d:%02d",disTime->year,\
+		sprintf((char *)strTime,"20%02d-%02d-%02d   %02d:%02d:%02d",disTime->year,\
 			disTime->month,disTime->day,disTime->hour,disTime->min,disTime->s);
 		GuiFont12Align(HomeWindow.x+2,82,156,FONT_MID,strTime);
 		GuiExchangeColor();
@@ -1441,7 +1437,7 @@ static void CmdSendWinFun(void)
   */
 static void ConstParDataResult(const uint8_t *pData,uint8_t *outData,uint8_t len)
 {
-	uint8_t j;
+	int8_t j;
 	strncpy((char *)outData,(char *)pData,len);
 	for(j = len - 1; j >= 0 ; j--){
 		if(outData[j] == ' '){
@@ -1495,9 +1491,9 @@ static void VersionWinFun(void)
 			GuiFillRect(VersionWin.x+1,y + i*28+1,155,y + i*28+14, forecolor);
 			GuiExchangeColor();
 			GuiFont12Align(VersionWin.x + 2,y + i*28+2,133,FONT_LEFT,
-				versInfo.pItems[i + currentNum * CONSTPARDISPLAYROW].pName);
+				(uint8_t *)versInfo.pItems[i + currentNum * CONSTPARDISPLAYROW].pName);
 			GuiExchangeColor();
-			ConstParDataResult(versInfo.pItems[i + currentNum * CONSTPARDISPLAYROW].pVal,col1Data,24);
+			ConstParDataResult((uint8_t *)versInfo.pItems[i + currentNum * CONSTPARDISPLAYROW].pVal,col1Data,24);
 			GuiFont12Align(VersionWin.x+2,y + i*28+15,153,FONT_MID,col1Data);
 		}
 		Scroll->lump = currentNum + 1;
@@ -1847,9 +1843,9 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 				sprintf((char *)&col1Data[i*16],"%.3f",tempFloat);
 			}
 			col1Data[i*16 + 15] = '\0';
-			*(pText + i*YaoCeDISPLAYCOL + 0) = info->pRoot[info->pBuff[i]].pName;
+			*(pText + i*YaoCeDISPLAYCOL + 0) = (uint8_t *)info->pRoot[info->pBuff[i]].pName;
 			*(pText + i*YaoCeDISPLAYCOL + 1) = &col1Data[i*16];
-			*(pText + i*YaoCeDISPLAYCOL + 2) = info->pRoot[info->pBuff[i]].pUnit;
+			*(pText + i*YaoCeDISPLAYCOL + 2) = (uint8_t *)info->pRoot[info->pBuff[i]].pUnit;
 		}
 		flag = 2;
 	}

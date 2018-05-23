@@ -88,8 +88,6 @@ void GuiVScroll(SCROLL *pScroll);
 /* 由发送完成函数调用 */
 void Cmd101SendFinish(void);
 
-
-void TestMain(void);
 void Hmi101Init(void);
 
 extern uint32_t GetTimer1Tick(void);

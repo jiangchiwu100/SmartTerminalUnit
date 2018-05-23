@@ -162,10 +162,8 @@ void DrawList(LIST *plist)
 				drawy + LIST_CONTENT_ROWHIGHT - 1, forecolor);
 			GuiExchangeColor();
 			for(j=0;j < plist->col;j++){
-				GuiFont12Align(drawx+2,drawy+1,
-					plist->colSet->colWide[j]-1,
-					(plist->colSet->colFlag[j])&0x03,
-					*(plist->content+tempDrawRow*plist->col+j));
+				GuiFont12Align(drawx+2,drawy+1,plist->colSet->colWide[j]-1,
+					(plist->colSet->colFlag[j]),*(plist->content+tempDrawRow*plist->col+j));
 				drawx += plist->colSet->colWide[j];
 				GuiRPointLine(drawx,drawy,drawy + LIST_CONTENT_ROWHIGHT,2,forecolor);
 			}
@@ -175,10 +173,8 @@ void DrawList(LIST *plist)
 			GuiFillRect(drawx+1,drawy+1,plist->x + plist->wide,\
 				drawy + LIST_CONTENT_ROWHIGHT - 1, backcolor);
 			for(j=0;j < plist->col;j++){
-				GuiFont12Align(drawx+2,drawy+1,
-					plist->colSet->colWide[j]-1,
-					(plist->colSet->colFlag[j])&0x07,
-					*(plist->content+tempDrawRow*plist->col+j));
+				GuiFont12Align(drawx+2,drawy+1,plist->colSet->colWide[j]-1,
+					(plist->colSet->colFlag[j]),*(plist->content+tempDrawRow*plist->col+j));
 				drawx += plist->colSet->colWide[j];
 				GuiRPointLine(drawx,drawy,drawy + LIST_CONTENT_ROWHIGHT,2,forecolor);
 			}

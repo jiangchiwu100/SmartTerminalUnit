@@ -78,48 +78,6 @@
         <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>18</CpuCode>
-      <Books>
-        <Book>
-          <Number>0</Number>
-          <Title>STM32F429I-Discovery Quick Start Guide (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\32F429IDISCOVERY_QSG.pdf</Path>
-        </Book>
-        <Book>
-          <Number>1</Number>
-          <Title>Getting Started (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00092920.pdf</Path>
-        </Book>
-        <Book>
-          <Number>2</Number>
-          <Title>User Manual (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00093903.pdf</Path>
-        </Book>
-        <Book>
-          <Number>3</Number>
-          <Title>STM32F429I-Discovery: Blinky Lab (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\STMicroelectronics_Blinky_Lab.pdf</Path>
-        </Book>
-        <Book>
-          <Number>4</Number>
-          <Title>Bill of Materials (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_bom.zip</Path>
-        </Book>
-        <Book>
-          <Number>5</Number>
-          <Title>Gerber Files (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_gerber.zip</Path>
-        </Book>
-        <Book>
-          <Number>6</Number>
-          <Title>Schematics (STM32F429I-Discovery)</Title>
-          <Path>D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_sch.zip</Path>
-        </Book>
-        <Book>
-          <Number>7</Number>
-          <Title>STM32F429I-Discovery Web Page (STM32F429I-Discovery)</Title>
-          <Path>http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF259090</Path>
-        </Book>
-      </Books>
       <DebugOpt>
         <uSim>0</uSim>
         <uTrg>1</uTrg>
@@ -143,7 +101,7 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <nTsel>3</nTsel>
+        <nTsel>5</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -154,13 +112,13 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>Segger\JL2CM3.dll</pMon>
+        <pMon>STLink\ST-LINKIII-KEIL_SWO.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
-          <Name>-U32FF72064D4E353610452443 -O8334 -S256 -C0 -A0 -N00("ARM CoreSight JTAG-DP (Cortex-") -D00(0BA00477) -L00(4) -N01("STM32 BSC (boundary scan) TAP") -D01(06419041) -L01(5) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32F429IGTx$CMSIS\Flash\STM32F4xx_1024.FLM)</Name>
+          <Name>-U53FF6E067284524849350867 -O8398 -SF1800 -C0 -A0 -I0 -HNlocalhost -HP7184 -P2 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32F429IGTx$CMSIS\Flash\STM32F4xx_1024.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -305,11 +263,16 @@
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
       <bLintAuto>0</bLintAuto>
-      <Lin2Executable></Lin2Executable>
-      <Lin2ConfigFile></Lin2ConfigFile>
-      <bLin2Auto>0</bLin2Auto>
       <bAutoGenD>0</bAutoGenD>
-      <bAuto2GenD>0</bAuto2GenD>
+      <LntExFlags>0</LntExFlags>
+      <pMisraName></pMisraName>
+      <pszMrule></pszMrule>
+      <pSingCmds></pSingCmds>
+      <pMultCmds></pMultCmds>
+      <pMisraNamep></pMisraNamep>
+      <pszMrulep></pszMrulep>
+      <pSingCmdsp></pSingCmdsp>
+      <pMultCmdsp></pMultCmdsp>
       <DebugDescription>
         <Enable>1</Enable>
         <EnableLog>0</EnableLog>
@@ -3297,6 +3260,90 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>242</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\lkdGuiMenu.c</PathWithFileName>
+      <FilenameWithoutPath>lkdGuiMenu.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>243</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\lkdGuiWindow.c</PathWithFileName>
+      <FilenameWithoutPath>lkdGuiWindow.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>244</FileNumber>
+      <FileType>5</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\GUIdisplaydef.h</PathWithFileName>
+      <FilenameWithoutPath>GUIdisplaydef.h</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>245</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\GUIdisplay.c</PathWithFileName>
+      <FilenameWithoutPath>GUIdisplay.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>246</FileNumber>
+      <FileType>5</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\GUIdisplay.h</PathWithFileName>
+      <FilenameWithoutPath>GUIdisplay.h</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>247</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\userVariable.c</PathWithFileName>
+      <FilenameWithoutPath>userVariable.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>248</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\applications\lkdGui\gui\hmiInOut.c</PathWithFileName>
+      <FilenameWithoutPath>hmiInOut.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -3307,7 +3354,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>242</FileNumber>
+      <FileNumber>249</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3319,7 +3366,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>243</FileNumber>
+      <FileNumber>250</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3331,7 +3378,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>244</FileNumber>
+      <FileNumber>251</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3343,7 +3390,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>245</FileNumber>
+      <FileNumber>252</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3355,7 +3402,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>246</FileNumber>
+      <FileNumber>253</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3367,7 +3414,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>247</FileNumber>
+      <FileNumber>254</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3379,7 +3426,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>248</FileNumber>
+      <FileNumber>255</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3399,7 +3446,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>13</GroupNumber>
-      <FileNumber>249</FileNumber>
+      <FileNumber>256</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3419,7 +3466,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>250</FileNumber>
+      <FileNumber>257</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3439,7 +3486,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>15</GroupNumber>
-      <FileNumber>251</FileNumber>
+      <FileNumber>258</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3459,7 +3506,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>16</GroupNumber>
-      <FileNumber>252</FileNumber>
+      <FileNumber>259</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3479,7 +3526,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>17</GroupNumber>
-      <FileNumber>253</FileNumber>
+      <FileNumber>260</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3491,7 +3538,7 @@
     </File>
     <File>
       <GroupNumber>17</GroupNumber>
-      <FileNumber>254</FileNumber>
+      <FileNumber>261</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3503,7 +3550,7 @@
     </File>
     <File>
       <GroupNumber>17</GroupNumber>
-      <FileNumber>255</FileNumber>
+      <FileNumber>262</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3515,7 +3562,7 @@
     </File>
     <File>
       <GroupNumber>17</GroupNumber>
-      <FileNumber>256</FileNumber>
+      <FileNumber>263</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3535,7 +3582,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>18</GroupNumber>
-      <FileNumber>257</FileNumber>
+      <FileNumber>264</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

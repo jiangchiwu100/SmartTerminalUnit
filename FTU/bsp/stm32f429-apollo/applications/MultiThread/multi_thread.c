@@ -316,7 +316,6 @@ static void rt_hmicom_thread_entry(void *param)
 	Hmi101Init();
 	GUIDisplayInit();
 	for (;;){ 				
-		//TestMain();
 		GUIDisplayMian();
 //	g_ThreadRunSta |= THREAD_RUN_HMI;
 		rt_thread_delay(20);		
