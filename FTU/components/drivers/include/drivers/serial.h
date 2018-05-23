@@ -70,7 +70,7 @@
 #define NRZ_INVERTED                    1       /* Non Return to Zero : inverted mode */
 
 #ifndef RT_SERIAL_RB_BUFSZ
-#define RT_SERIAL_RB_BUFSZ              512
+#define RT_SERIAL_RB_BUFSZ              1024
 #endif
 
 #define RT_SERIAL_EVENT_RX_IND          0x01    /* Rx indication */
@@ -95,7 +95,7 @@
 /* Default config for serial_configure structure */
 #define RT_SERIAL_CONFIG_DEFAULT           \
 {                                          \
-    BAUD_RATE_115200, /* 115200 bits/s */  \
+    BAUD_RATE_230400, /* 115200 bits/s */  \
     DATA_BITS_8,      /* 8 databits */     \
     STOP_BITS_1,      /* 1 stopbit */      \
     PARITY_NONE,      /* No parity  */     \

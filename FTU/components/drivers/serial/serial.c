@@ -298,6 +298,11 @@ rt_inline int _serial_int_rx(struct rt_serial_device *serial, rt_uint8_t *data, 
         }
 
         /* otherwise there's the data: */
+				if(rx_fifo->get_index >= serial->config.bufsz)
+				{
+					rx_fifo->get_index =rx_fifo->get_index;
+				}
+				
         ch = rx_fifo->buffer[rx_fifo->get_index];
         rx_fifo->get_index += 1;
         if (rx_fifo->get_index >= serial->config.bufsz) rx_fifo->get_index = 0;

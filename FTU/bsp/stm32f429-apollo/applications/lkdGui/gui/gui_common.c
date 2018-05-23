@@ -24,7 +24,7 @@ static void Timer1Timeout(void	*parameter)
 void time_static_init(void)
 {
 	/* 1ms÷–∂œ“ª¥Œ */
-	rt_timer_init(&Timer1,"time1",Timer1Timeout,\
+	rt_timer_init(&Timer1,"gui_time",Timer1Timeout,\
 				   RT_NULL,1,RT_TIMER_FLAG_PERIODIC);	
 	rt_timer_start(&Timer1);
 }

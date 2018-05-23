@@ -22,11 +22,16 @@ extern uint16_t DLT634_HMI_SLAVE_WriteData(uint8_t pdrv, uint8_t *pbuf, uint16_t
 extern uint8_t DLT634_HMI_SLAVE_TO_HMI(uint8_t pdrv, uint8_t *pbuf);
 extern uint8_t DLT634_HMI_SLAVE_H_HMIYX(uint8_t pdrv);
 extern void DLT634_HMI_SLAVE_R_HMIYX(uint8_t pdrv, uint8_t *pbuf);
+extern void DLT634_HMI_SLAVE_EMPTY(uint8_t pdrv);
 
 extern void DLT634_HMI_SlaveTask(void);
 extern int DLT634_HMI_SLAVE_INIT(void);
 
 uint8_t DLT634_HMI_SLAVE_C_REPLY(uint8_t drvid,uint8_t *pbuf);
+
+/* 调用外部 */
+extern uint8_t hmi101Scan(uint8_t *pBuff);
+extern void Cmd101SendFinish(void);
 #endif /* END _HMI_101_DISK_H_ */
     
 
