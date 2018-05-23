@@ -23,6 +23,24 @@ struct HmiCmdSend hmiCmdItems[] = {
 	{"复归",3},
 };
 HmiCmdSendInfo hcmdInfo;
+/* 版本信息 */
+VersionInfo versInfo;
+
+void GetDisplayTime(SystemTimeDisplay *tim)
+{
+	uint16_t tms;
+	struct CP56Time2a_t cpTime;
+	DBReadSystemTime(&cpTime);
+	tim->year = cpTime.year;
+	tim->month = cpTime.month;
+	tim->day = cpTime.dayofWeek & 0x1F;
+	tim->hour = cpTime.hour;
+	tim->min = cpTime.minute;
+	tms = (cpTime.msecondH << 8) + cpTime.msecondL;
+	tim->s = tms / 1000;
+	tim->ms = tms % 1000;
+}
+
 /**
   *@brief  遥信显示初始化
   *@param  None
@@ -400,7 +418,12 @@ uint16_t GetFeventNum(void)
 	return fEventInfo.num;
 }
 
-void HmiCmdSendFun(uint8_t cmdIs)
+/**
+  *@brief  命令下发回调函数
+  *@param  cmdIs 命令号
+  *@retval 故障事件总数
+  */
+static void HmiCmdSendFun(uint8_t cmdIs)
 {
 	switch(cmdIs)
 	{
@@ -408,15 +431,15 @@ void HmiCmdSendFun(uint8_t cmdIs)
 			DBClear();
 			DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR,ON);
 			break;
-		case 1:
+		case 1:/* 分闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
 				rt_hw_do_operate(DO_OPEN, LOCAL);
 			}break;
-		case 2:
+		case 2:/* 合闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
 				rt_hw_do_operate(DO_CLOSE, LOCAL);
 			}break;
-		case 3:
+		case 3:/* 复归 */
 			DBRevert(LOCAL);break;
 		default:break;
 	}
@@ -435,6 +458,16 @@ static void HmiCmdSendInit(void)
 }
 
 /**
+  *@brief  版本信息初始化
+  *@param  None
+  *@retval None
+  */
+static void VersionInfoInit(void)
+{
+	versInfo.num = g_InherentParaCfg_Len;
+	versInfo.pItems = InherentParaCfg;
+}
+/**
   *@brief  用户显示数据初始化
   *@param  None
   *@retval None
@@ -446,6 +479,7 @@ void userVariableDisplayInit(void)
 	Dzhi1DisplayInit();
 	Dzhi0DisplayInit();
 	HmiCmdSendInit();
+	VersionInfoInit();
 }
 
 const struct YaoCeItem yaoCe1Items[YAOCE1_NUM] = {

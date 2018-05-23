@@ -89,7 +89,7 @@ enum Dzhi1OffsetNumber{
 	DZ1_ALLNUM,				/* 定值总数 */
 };
 
-/* 命令下发结构 */
+/* 命令下发内容 */
 struct HmiCmdSend{
 	uint8_t *name;
 	uint8_t cmd;
@@ -101,6 +101,12 @@ typedef struct{
 	void (* cmdfun)(uint8_t cmdIs);
 }HmiCmdSendInfo;
 
+/* 命令下发信息 */
+typedef struct{
+	uint8_t num;
+	struct tagInherentParaCfg *pItems;
+}VersionInfo;
+
 /* 遥信信息结构 */
 extern YaoxinDisplayInfo yxInfo;
 /* 遥测信息结构 */
@@ -110,6 +116,10 @@ extern DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
 extern DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
 /* 命令下发结构体 */
 extern HmiCmdSendInfo hcmdInfo;
+/* 版本信息结构体 */
+extern VersionInfo versInfo;
+/* 获取显示时间 */
+void GetDisplayTime(SystemTimeDisplay *tim);
 /* 显示信息映射初始化 */
 void userVariableDisplayInit(void);
 

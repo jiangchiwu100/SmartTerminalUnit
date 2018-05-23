@@ -65,7 +65,7 @@ MENU MenuM1S8 = {
 WINDOW HomeWindow = {0,0,160,160,NULL,NULL,HomeWindowFun};
 WINDOW MenuWindow = {0,0,160,160,NULL,"菜单管理窗口",MenuWindowFun};
 WINDOW CmdSendWin = {0,0,160,160,NULL,"命令下发窗口",CmdSendWinFun};
-//WINDOW VersionWin = {0,0,160,160,NULL,"版本信息管理",VersionWinFun};
+WINDOW VersionWin = {0,0,160,160,NULL,"版本信息管理",VersionWinFun};
 
 ///* 信息查询菜单子窗口 */
 WINDOW YaoxinWin     = {0,0,160,160,NULL,"遥信状态窗口",YaoxinFun};
