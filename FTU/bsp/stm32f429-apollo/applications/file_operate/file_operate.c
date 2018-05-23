@@ -15,6 +15,8 @@
 #include "common_data.h"
 #include "wave_recording.h"
 #include <dfs_posix.h>
+
+#include "JsonFileOperation.h"
 	
 	
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
@@ -1360,6 +1362,16 @@ void file_operate_Init(void)
 	
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
+	
+	rt_s2j_init();	//struct2json动态内存申请初始化
+	
+	Create_JsonFile("ParameterCfg", g_ParameterCfg_Len, _CFG_PARAMTER);				//创建定值0区json文件
+	Create_JsonFile("FixedValueCfg1", g_FixedValueCfg1_Len, _CFG_FIXED_VALUE_1);	//创建定值1区json文件
+	Create_JsonFile("FixedValueCfg2", g_FixedValueCfg2_Len, _CFG_FIXED_VALUE_2);	//创建定值2区json文件
+	Create_JsonFile("CalibrateFactorCfg", g_CalibrateFactorCfg_Len, _CFG_CALIBRATE_FACTOR);	//创建校准系数json文件
+	Create_JsonFile("TelemetryCfg", g_TelemetryCfg_Len, _CFG_TELE_METRY);		//创建遥测json文件
+	Create_JsonFile("TelesignalCfg", g_TelesignalCfg_Len, _CFG_TELE_SIGNAL);	//创建遥信json文件
+	
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

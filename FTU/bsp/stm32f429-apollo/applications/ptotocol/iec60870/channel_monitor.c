@@ -63,8 +63,8 @@ static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(uint8_t pdrv, uin
     {
         pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE11;                                            //起始码
         pBuf[1] = _DLT634_ChannelToMonitor_SLAVE_FC_RESPONSE;                                            //控制域，回答响应
-        pBuf[2] = (channel_monitor.ByAddr>>8) & 0xff;
-        pBuf[3] = channel_monitor.ByAddr & 0xff;
+		pBuf[2] = channel_monitor.ByAddr & 0xff;
+        pBuf[3] = (channel_monitor.ByAddr>>8) & 0xff;
 
         pBuf[2+AddrSize] = DLT634_ChannelToMonitor_SLAVE_CKS(pdrv, pBuf);                               //帧校验和
         pBuf[3+AddrSize] = _DLT634_ChannelToMonitor_SLAVE_ENDCODE66;                                     //终止码
@@ -75,8 +75,7 @@ static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(uint8_t pdrv, uin
         if(protocol == DLT634_5104)
         {
             DLT634_5104_SLAVE_WriteData(pdrv, pBuf, 6);                                     //应答发送
-        }
-                                               
+        }                                               
     }        
 }
 
@@ -94,9 +93,9 @@ static void DLT634_ChannelToMonitor_AddError(uint8_t pdrv, uint8_t protocol)
     {
         pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE11;                                            //起始码
         pBuf[1] = _DLT634_ChannelToMonitor_AddError;                                            //控制域，回答响应
-        pBuf[2] = (channel_monitor.ByAddr>>8) & 0xff;
-        pBuf[3] = channel_monitor.ByAddr & 0xff;
-
+		pBuf[2] = channel_monitor.ByAddr & 0xff;
+        pBuf[3] = (channel_monitor.ByAddr>>8) & 0xff;
+        
         pBuf[2+AddrSize] = DLT634_ChannelToMonitor_SLAVE_CKS(pdrv, pBuf);                               //帧校验和
         pBuf[3+AddrSize] = _DLT634_ChannelToMonitor_SLAVE_ENDCODE66;                                     //终止码
 
@@ -133,7 +132,7 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         }
         if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_ON)                                           //启动通道监听
         {
-            channel_monitor.ByAddr = (RxdBuf[2]<<8)|RxdBuf[3];                              //被监测端口地址
+            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];                              //被监测端口地址
             if(channel_monitor.ByAddr != channel_monitor.Addr)
             {
                 channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor1_START;              //串口启动监听
@@ -152,7 +151,7 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         else if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_OFF)                            
         {
             channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor1_START;                 //串口监听关闭
-            channel_monitor.ByAddr = (RxdBuf[2]<<8)|RxdBuf[3];
+            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
             DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                              //应答回复
             memset(RxdBuf, 0, 256);
             return 0;
@@ -177,7 +176,7 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         }
         if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_ON)                                           //启动通道监听
         {
-            channel_monitor.ByAddr = (RxdBuf[2]<<8)|RxdBuf[3];
+            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
             if(channel_monitor.ByAddr != channel_monitor.Addr)
             {
                 channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor2_START;              //串口启动监听
@@ -195,8 +194,8 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         else if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_OFF)                                     // 禁止通道监听
         {
             channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor2_START;
-            channel_monitor.ByAddr = (RxdBuf[2]<<8)|RxdBuf[3];
-            DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                              //应答回复
+            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
+//            DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                              //应答回复
             memset(RxdBuf, 0, 256);
             return 0;
         }
@@ -243,7 +242,7 @@ uint8_t DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(uint8_t pdrv, uint8_t p
                 channel_monitor.CRxdStatus = CRXDHEAD;				                        //寻找报头
                 if (MonitorRxdHead != 0)
                 {	
-                    memcpy(RxdBuf, RxdBuf+MonitorRxdHead, MonitorRxdTail - MonitorRxdHead); //目的地址，原地址，长度
+                    memcpy(RxdBuf[pdrv], RxdBuf[pdrv]+MonitorRxdHead, MonitorRxdTail - MonitorRxdHead); //目的地址，原地址，长度
                     MonitorRxdTail -= MonitorRxdHead;
                     MonitorRxdHead = 0;
                 }
@@ -273,7 +272,7 @@ uint8_t DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(uint8_t pdrv, uint8_t p
         {
             if (MonitorRxdHead > 0)
             {
-                memcpy(RxdBuf, RxdBuf+MonitorRxdHead, MonitorRxdTail - MonitorRxdHead);
+                memcpy(RxdBuf[pdrv], RxdBuf[pdrv]+MonitorRxdHead, MonitorRxdTail - MonitorRxdHead);
                 MonitorRxdTail -= MonitorRxdHead;
                 MonitorRxdHead = 0;
             }
@@ -295,33 +294,39 @@ uint8_t DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(uint8_t pdrv, uint8_t p
   */
 void MonitoringDataTransmission(uint8_t *pbuf, uint16_t count, uint8_t ReceiveAndDispatch)
 {
+   uint8_t Buf[2];					//发送数据标志
+	Buf[0] = 0xAA;
+	Buf[1] = 0x55;
     switch(channel_monitor.Addr)
     {
         case SerialPort1:                                                                   //串口1
-            rt_device_write(dev[DLT634_5101SLAVE_DISK0], 0, &ReceiveAndDispatch, 1); 
+			if(ReceiveAndDispatch == TransmittedData)
+			{
+				rt_device_write(dev[DLT634_5101SLAVE_DISK0], 0,  Buf, 2); 
+			}
             rt_device_write(dev[DLT634_5101SLAVE_DISK0], 0, pbuf, count); 
             break;
         case SerialPort2:                                                                   //串口2
-            rt_device_write(dev[DLT634_5101SLAVE_DISK1], 0, &ReceiveAndDispatch, 1); 
+			if(ReceiveAndDispatch == TransmittedData)
+			{
+				rt_device_write(dev[DLT634_5101SLAVE_DISK1], 0, Buf, 2); 
+			}
             rt_device_write(dev[DLT634_5101SLAVE_DISK1], 0, pbuf, count); 
             break;
         case InternetAccess1:                                                               //网口1
-            lwip_send(1, &ReceiveAndDispatch, count, 0);
+			if(ReceiveAndDispatch == TransmittedData)
+			{
+				lwip_send(1, Buf, 2, 0);
+			}
             lwip_send(1, pbuf, count, 0);
-//            while(DP83848TcpServerTxLen);       
-//            dp83848_tcpserver_putc(&ReceiveAndDispatch, 1);
-//            while(DP83848TcpServerTxLen);
-//            dp83848_tcpserver_putc(pbuf, count);
             break;
         case InternetAccess2:                                                               //网口2
-            w5500_send(0, &ReceiveAndDispatch, count);
+			if(ReceiveAndDispatch == TransmittedData)
+			{
+				w5500_send(0, Buf, 2);
+			}
             w5500_send(0, pbuf, count);
-//            while(W5500TcpServerTxLen);                                     
-//            w5500_tcpserver_putc(&ReceiveAndDispatch, 1);
-//            while(W5500TcpServerTxLen);   
-//            w5500_tcpserver_putc(pbuf, count);
             break;
-        
     }
 }
 

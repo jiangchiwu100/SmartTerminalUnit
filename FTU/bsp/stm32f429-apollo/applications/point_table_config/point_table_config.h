@@ -41,6 +41,23 @@ enum FIXED_VALUE_MENU
 	FAULT_SWITCH,    // 故障投退
 };  
 
+/**
+ * @note  注意：所有名称为字符串数组格式，且长度为30字节
+ */
+/**
+ * @brief 点表配置转Json结构体定义
+ */
+typedef struct tagConfigurationSetDatabaseToJson
+{
+    char name[20];      //数据名称
+    int dataLen;        //标明该数据的长度
+    float value[200];   //存储数据的数组
+}ConfigurationSetDatabaseToJson;
+
+
+/**
+ * @brief 遥信配置结构体
+ */
 struct tagTelesignalCfg
 {
 	unsigned char enable;   // 使能
@@ -50,6 +67,7 @@ struct tagTelesignalCfg
 	char *pContentSoe[2];   // 数据显示内容		
 };
 
+/* 遥测配置结构 */
 struct tagTelemetryCfg
 {
 	unsigned char enable;  // 使能
@@ -62,6 +80,16 @@ struct tagTelemetryCfg
 	float *pDeadzone;      // 死区	
 };
 	
+/* 遥控配置结构 */
+struct tagTelecontrolCfg
+{
+	unsigned char enable;   // 使能
+    char *pName;            // 名称
+	unsigned char dataType; // 数据类型
+	char *pContentSoe[13];   // 数据显示内容	
+};
+
+/* 校准系数配置结构 */
 struct tagCalibrateFactor
 {
 	unsigned char enable;  // 使能
@@ -74,6 +102,7 @@ struct tagCalibrateFactor
     float factorDefault;   // 系数缺省值	
 };
 
+/* 定值配置结构 */
 struct tagValueParaCfg
 {
 	unsigned char enable;  // 使能
@@ -89,20 +118,32 @@ struct tagValueParaCfg
 	char *pNote;           // 备注
 };
 
+/* 固有参数配置结构 */
+struct tagInherentParaCfg
+{
+	unsigned char enable;  // 使能
+    char *pName;           // 名称
+    char *pVal;            // 值	
+};
+
 extern struct tagTelesignalCfg TelesignalCfg[];
 extern struct tagTelemetryCfg TelemetryCfg[];
 extern struct tagCalibrateFactor CalibrateFactorCfg[];
 extern struct tagValueParaCfg ParameterCfg[];
 extern struct tagValueParaCfg FixedValueCfg1[];
 extern struct tagValueParaCfg FixedValueCfg2[];
+extern struct tagTelecontrolCfg TelecontrolCfg[];
+extern struct tagInherentParaCfg InherentParaCfg[];
+extern ConfigurationSetDatabaseToJson SetDatabaseCfg[];
 
-extern unsigned int g_FixedValueCfg1_Len;
+extern unsigned int g_FixedValueCfg1_Len;	
 extern unsigned int g_FixedValueCfg2_Len;
 extern unsigned int g_ParameterCfg_Len;
 extern unsigned int g_CalibrateFactorCfg_Len;
 extern unsigned int g_TelemetryCfg_Len;
 extern unsigned int g_TelesignalCfg_Len;
-
+extern unsigned int g_TelecontrolCfg_Len;
+extern unsigned int g_InherentParaCfg_Len;
 
 #endif /* __POINT_TABLE_CONFIG_H__ */
 

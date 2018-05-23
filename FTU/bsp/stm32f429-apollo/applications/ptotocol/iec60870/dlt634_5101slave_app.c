@@ -1323,6 +1323,11 @@ void DLT634_5101_SLAVE_LinkOnTimer(uint8_t pdrv)
                 DLT634_5101Slave_App[pdrv].LinkFlag = 0;
                 DLT634_5101Slave_App[pdrv].TimeOutTick_AskCount = _DLT634_5101SLAVE_NUMOF_MAXRETRY;
                 DLT634_5101Slave_App[pdrv].TimeOutTick_AskSta = DLT634_5101Slave_Pad[pdrv].AskStaOutValue;
+                DLT634_5101Slave_App[pdrv].LinkFlag |= _DLT634_5101SLAVE_ASKSTATUS;
+                if (DLT634_5101Slave_App[pdrv].TimeOutTick_AskCount)
+                {
+                    DLT634_5101Slave_App[pdrv].TimeOutTick_AskCount--;
+                }
                 if(DLT634_5101Slave_App[pdrv].TxdBuf_Pri[5+DLT634_5101Slave_Pad[pdrv].LinkAddrSize]& (_DLT634_5101SLAVE_M_SP_TB_1|_DLT634_5101SLAVE_M_DP_TB_1))
                 {
                     DLT634_5101Slave_App[pdrv].TxdTail_Special= DLT634_5101Slave_App[pdrv].TxdTail_Pri;

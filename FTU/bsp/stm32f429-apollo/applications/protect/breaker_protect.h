@@ -120,7 +120,7 @@ typedef struct
 {
     struct
     {
-        uint32_t *gTime[2];       //定时器    
+        uint32_t *gTime;       //定时器    
         uint32_t flag;
     }valstr;
     struct
@@ -131,9 +131,11 @@ typedef struct
 }InrushSts;
 
 //后加速标志保持到重新合闸
-#define IACCCUR 0x00000001
-#define IACCCURSTA1  0x00010000    //发生过流
-#define IACCCURSTA2  0x00020000    //过流导致分闸
+#define IACCTIME     			3000				//后加速保护时间
+#define IACCCUR 				0x00000001
+#define IACCCURSTA1  			0x00010000    	//发生过流
+#define IACCCURSTA2  			0x00020000    	//过流导致分闸
+#define IACCCURSTA4  			0x00080000    	//涌流抑制时间已到
 typedef struct
 {
     struct
@@ -145,7 +147,7 @@ typedef struct
 		uint32_t *recloseI0flag;
         uint32_t *resetflag;
         uint32_t flag;
-        uint32_t *gTime;       //定时器  
+        uint32_t *gTime[2];       //定时器  
     }valstr;
     struct
     {

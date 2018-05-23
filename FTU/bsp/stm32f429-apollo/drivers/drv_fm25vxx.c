@@ -90,20 +90,23 @@ static int rt_hw_fram_first_clear(void)
 		
     if (flag != FRAM_HWFLAG1)
     {
-        flag = 0;
-
-        for (i = 0; i < FM25V10_MAX_ADDR; i++)
-        {
-            rt_device_write(device, 0x01 + i, &flag, 1); 
-        }        
+		rt_device_read(device, ADDR_FRAM_UPDATE, &flag, 1);
 		
-        flag = FRAM_HWFLAG1;
+		if (flag != FRAM_HWFLAG1)
+		{
+			flag = 0;
 
-        rt_device_write(device, ADDR_FRAM_UPDATE, &flag, 1);  
+			for (i = 0; i < FM25V10_MAX_ADDR; i++)
+			{
+				rt_device_write(device, 0x01 + i, &flag, 1); 
+			}        
+			
+			flag = FRAM_HWFLAG1;
 
-        rt_common_data_save_value_default_to_fram();		
-
-        FRAM_PRINTF("fram is powered on firstly! \r\n"); 
+			rt_device_write(device, ADDR_FRAM_UPDATE, &flag, 1);  
+			
+			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
+		}
     }
 	
     return RT_EOK; 

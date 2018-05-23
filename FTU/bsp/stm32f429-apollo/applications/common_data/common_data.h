@@ -610,7 +610,7 @@ enum TelemetryAddr
 	ADDR_P_ONCE,
     ADDR_Q_ONCE,
     ADDR_S_ONCE,
-    VOLTAGE_PASS_RATE,
+//    VOLTAGE_PASS_RATE,
 	THIRDHARMONIC_Uab,
 	THIRDHARMONIC_Ubc,
 	THIRDHARMONIC_Uca,
@@ -634,7 +634,18 @@ enum TelemetryAddr
 
     TELEMETRY_NUM
 };
-    
+ 
+enum TelecontrlAddr
+{
+    ADDR_REMOTE_OPERATE = 0x6001, // 遥控操作
+	ADDR_REMOTE_ACTIVE,           // 电池活化
+	ADDR_REMOTE_RESET,            // 远方复位
+	ADDR_REMOTE_CLEAR,            // 远方清除记录
+    ADDR_LOCAL_OPERATE,           // 本地操作
+	ADDR_LOCAL_RESET,             // 本地复位
+	ADDR_LOCAL_CLEAR,             // 本地清除记录
+	ADDR_HANDHELD_OPER,           // 手持操作
+};
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \
 {                                                       \
@@ -784,15 +795,15 @@ enum AddrCalibrateFactor
 enum AddrFixedValue
 {
     OVER_CURRENT_SWITCH1,                // 过流1段投退 “1投入”、“0退出”
-    DIRE_CTIONLOCK_SWITCH1,              // 过流1段方向闭锁 “1投入”、“0退出”
+//    DIRE_CTIONLOCK_SWITCH1,              // 过流1段方向闭锁 “1投入”、“0退出”
 	OVER_CURRENT_VALUE1,                 // 过流1段电流 流定值，整定范围：00.00A~99.99A
 	OVER_CURRENT_TIME1,                  // 过流1段时间 时间定值，整定范围：00.00s~99.99s
     OVER_CURRENT_SWITCH2,                // 过流2段投退 “1投入”、“0退出”
-    DIRE_CTIONLOCK_SWITCH2,              // 过流2段方向闭锁 “1投入”、“0退出”
+//    DIRE_CTIONLOCK_SWITCH2,              // 过流2段方向闭锁 “1投入”、“0退出”
 	OVER_CURRENT_VALUE2,                 // 过流2段电流 电流定值，整定范围：00.00A~99.99A
 	OVER_CURRENT_TIME2,                  // 过流2段时间 时间定值，整定范围：00.00s~99.99s    
 	OVER_CURRENT_SWITCH3,                // 过流3段投退 “1投入”、“0退出”
-    DIRE_CTIONLOCK_SWITCH3,              // 过流3段方向闭锁 “1投入”、“0退出”
+//    DIRE_CTIONLOCK_SWITCH3,              // 过流3段方向闭锁 “1投入”、“0退出”
 	OVER_CURRENT_VALUE3,                 // 过流3段电流 电流定值，整定范围：00.00A~99.99A
 	OVER_CURRENT_TIME3,                  // 过流3段时间 时间定值，整定范围：00.00s~99.99s	
     OVER_CURRENTI0_SWITCH1,              // 零序过流1段投退 “1投入”、“0退出”

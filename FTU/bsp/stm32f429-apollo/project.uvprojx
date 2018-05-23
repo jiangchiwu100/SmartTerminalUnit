@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32F429xx,ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol</IncludePath>
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1743,22 +1743,47 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>README</GroupName>
-          <Files>
-            <File>
-              <FileName>read_me.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\read_me.txt</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>malloc</GroupName>
           <Files>
             <File>
               <FileName>malloc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\components\malloc\malloc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>struct2json</GroupName>
+          <Files>
+            <File>
+              <FileName>s2j.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\struct2json\src\s2j.c</FilePath>
+            </File>
+            <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\struct2json\src\cJSON.c</FilePath>
+            </File>
+            <File>
+              <FileName>Interface_S2J.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\user\Interface_S2J.c</FilePath>
+            </File>
+            <File>
+              <FileName>JsonFileOperation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\struct2json\user\JsonFileOperation.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>README</GroupName>
+          <Files>
+            <File>
+              <FileName>read_me.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\read_me.txt</FilePath>
             </File>
           </Files>
         </Group>

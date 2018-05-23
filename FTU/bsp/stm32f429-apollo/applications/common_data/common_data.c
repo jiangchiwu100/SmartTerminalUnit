@@ -578,7 +578,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
             return FALSE;
         }
         g_TelesignalDB[addr - TELESIGNAL_START_ADDR] = state;
-        g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + 1;		
+        g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + TELESIGNAL_START_ADDR;		
     }
 	else
 	{
@@ -612,7 +612,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
 
     //*MemoryCounter.soe = DB_COUNTER_EN;	
     
-    if (addr >= TELESIGNAL_START_ADDR && addr <= TELESIGNAL_START_ADDR + TELESIGNAL_NUM)
+    if (addr >= 0 && addr <= TELESIGNAL_NUM)
     {
         if(g_NewListTelesignal[addr - TELESIGNAL_START_ADDR].size != 0)//链表不为空
         {
@@ -713,7 +713,7 @@ rt_uint8_t DBWriteCO(uint16_t addr, rt_uint8_t state)
 {
     rt_uint32_t i;
 
-    g_CoDB[g_FlagDB.queue_co.in].addr = addr;
+    g_CoDB[g_FlagDB.queue_co.in].addr = addr + TELESIGNAL_START_ADDR;
     g_CoDB[g_FlagDB.queue_co.in].value = state;
     g_CoDB[g_FlagDB.queue_co.in].time.year = g_SystemTime.year;
     g_CoDB[g_FlagDB.queue_co.in].time.month = g_SystemTime.month;
@@ -756,7 +756,7 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_type = COMMON_DATA_M_DP_NA_1;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_num = 1;
-    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].addr = yx_addr; 
+    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].addr = yx_addr + TELESIGNAL_START_ADDR; 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].value = g_TelesignalDB[yx_addr - TELESIGNAL_START_ADDR];
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.year = g_SystemTime.year;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.month = g_SystemTime.month;    
@@ -1591,7 +1591,7 @@ void rt_multi_common_data_config(void)
             for(j=0;j<(g_NewToOldTelesignal[temp1+1]>>NEWONEYX_NUM);j++)
             {
                 addr = (g_NewToOldTelesignal[temp1+1+j+1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR;
-                list_ins_next(&g_NewListTelesignal[addr - TELESIGNAL_START_ADDR],&g_NewToOldTelesignal[temp1]);
+                list_ins_next(&g_NewListTelesignal[addr - TELESIGNAL_START_ADDR],NULL,&g_NewToOldTelesignal[temp1]);
                 THREAD_PRINTF("%d -> %d\n",addr,(g_NewToOldTelesignal[temp1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR);
             }            
         } 

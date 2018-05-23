@@ -175,6 +175,35 @@ struct tagTelemetryCfg TelemetryCfg[] =
 	
 };	
 
+/* 遥控 */
+struct tagTelecontrolCfg TelecontrolCfg[] =
+{
+    {1, "远方遥控",   13,  {"分闸选择失败", "分闸选择成功", "分闸执行失败", "分闸执行成功", "合闸选择失败", "合闸选择成功", "合闸执行失败", "合闸执行成功", "遥控取消","合环选择失败", "合环选择成功", "合环执行失败", "合环执行成功"}},
+    {1, "远方活化",    2,  {"失败", "成功"}},	
+	{1, "远方复位",    2,  {"失败", "成功"}},
+    {1, "远方清除记录",2,  {"失败", "成功"}},	
+    {1, "本地操作",   13,  {"分闸选择失败", "分闸选择成功", "分闸执行失败", "分闸执行成功", "合闸选择失败", "合闸选择成功", "合闸执行失败", "合闸执行成功", "遥控取消","合环选择失败", "合环选择成功", "合环执行失败", "合环执行成功"}},
+	{1, "本地复位",    2,  {"失败", "成功"}},
+    {1, "本地清除记录",2,  {"失败", "成功"}},
+    {1, "手持操作",   13,  {"分闸选择失败", "分闸选择成功", "分闸执行失败", "分闸执行成功", "合闸选择失败", "合闸选择成功", "合闸执行失败", "合闸执行成功", "遥控取消","合环选择失败", "合环选择成功", "合环执行失败", "合环执行成功"}},	
+};
+
+/* 固有参数 */
+struct tagInherentParaCfg InherentParaCfg[] = 
+{
+    {1, "终端类型",             g_InherentPara.terminalType},  
+    {1, "终端操作系统",         g_InherentPara.terminalOpreatSystem}, 
+    {1, "终端制造商",           g_InherentPara.terminalManufacturer}, 	
+    {1, "终端硬件版本",         g_InherentPara.terminalHardwareVersion},  
+    {1, "终端软件版本",         g_InherentPara.terminalSoftwareVersion}, 
+    {1, "软件版本校验码",       g_InherentPara.terminalSoftwareVersionCheckCode}, 	
+    {1, "通讯规约类型",         g_InherentPara.terminalCommunicationProtocolType},  
+    {1, "终端出厂型号",         g_InherentPara.terminalFactoryModel}, 
+    {1, "终端ID号",             g_InherentPara.terminalID}, 		
+    {1, "终端网卡MAC地址",      g_InherentPara.terminalMAC}, 
+    {1, "终端产品序列号",       g_InherentPara.terminalProductSerialNumber}, 	
+};
+	
 /* 校准系数 */
 struct tagCalibrateFactor CalibrateFactorCfg[] = 
 {
@@ -195,8 +224,8 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
     { 1,    "线电压(UAB)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UAB],              &g_CalibrateFactor[CALIFACTOR_UAB],        0.02f,          0.0065f,         0.0095f},
     { 1,    "线电压(UBC)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UBC],              &g_CalibrateFactor[CALIFACTOR_UBC],        0.02f,          0.0065f,         0.0095f},
 
-    { 1,    "直流电压1校准系数",         24,       &g_TelemetryDB[ADDR_DC1],              &g_CalibrateFactor[CALIFACTOR_DC1],        0.5f,           0.001f,          0.01f},
-    { 1,    "直流电压2校准系数",         24,       &g_TelemetryDB[ADDR_DC2],              &g_CalibrateFactor[CALIFACTOR_DC2],        0.5f,           0.001f,          0.01f},
+    { 1,    "直流电压1校准系数",         24,       &g_TelemetryDB[ADDR_DC1],              &g_CalibrateFactor[CALIFACTOR_DC1],        0.05f,          0.0001f,         0.0013745f},
+    { 1,    "直流电压2校准系数",         24,       &g_TelemetryDB[ADDR_DC2],              &g_CalibrateFactor[CALIFACTOR_DC2],        0.05f,          0.0001f,         0.0013745f},
     { 1,    "温度校准系数",              0,        &g_TelemetryDB[ADDR_T],                &g_CalibrateFactor[CALIFACTOR_T],          2.0f,           0.0001f,         1.0f},
 	
     { 1,    "UA_IA夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_Ua_Ia],      &g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa], 0.5f,           0.29f,           0.01f},
@@ -205,7 +234,8 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
     { 1,    "U0_I0夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_U0_I0],      &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0], 0.5f,           0.29f,           0.01f},
     { 1,    "Uab_UBC夹角校准系数",       0,        &g_TelemetryDB[ADDR_ALPHY_Uab_UBC],    &g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb], 0.5f,           0.29f,           0.01f},		
 };
-	
+
+
 /* 定值0区 */
 struct tagValueParaCfg ParameterCfg[] = 
 {
@@ -515,6 +545,45 @@ struct tagValueParaCfg FixedValueCfg2[] =
     { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue2[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,     {"-",  "-"         },   " "    },	
 };
 
+//配置信息
+ConfigurationSetDatabaseToJson SetDatabaseCfg[] = {
+//    名称                    数据长度            数据
+//串口配置
+    {.name = "串口配置",          .dataLen = 1,       .value = {1.00f}   },
+    {.name = "波特率",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "数据位",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "停止位",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "校验",              .dataLen = 1,       .value = {0.0f}   },
+//串口设置
+    {.name = "通讯模式",          .dataLen = 1,       .value = {0.0f}   },
+    {.name = "从站地址",          .dataLen = 1,       .value = {0.0f}   },
+    {.name = "从站地址长度",      .dataLen = 1,       .value = {0.0f}   },
+    {.name = "传送原因字节数",    .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址",         .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址长度",     .dataLen = 1,       .value = {0.0f}   },
+//网口配置
+    {.name = "上行IP",           .dataLen = 4,       .value = {0.0f}   },
+    {.name = "下行IP",           .dataLen = 4,       .value = {0.0f}   },
+    {.name = "子网掩码",         .dataLen = 4,       .value = {0.0f}   },
+    {.name = "网关",             .dataLen = 4,       .value = {0.0f}   },
+    {.name = "DNS",             .dataLen = 4,       .value = {0.0f}   },
+//网口设置
+    {.name = "从站地址",         .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址",         .dataLen = 1,       .value = {0.0f}   },
+//YX设置
+    {.name = "YX设置总数",       .dataLen = 1,       .value = {0.0f}   },
+    {.name = "YX设置",           .dataLen = 200,     .value = {0.0f}   },
+//YC设置
+    {.name = "YC值",            .dataLen = 100,      .value = {0.0f}   },
+    {.name = "属性",            .dataLen = 100,      .value = {0.0f}   },
+    {.name = "倍率",            .dataLen = 100,      .value = {0.0f}   },
+//YK设置
+    {.name = "YK值",           .dataLen = 1,         .value = {0.0f}   },
+    {.name = "属性",           .dataLen = 1,         .value = {0.0f}   },
+    //ID设置 
+    {.name = "ID",             .dataLen = 12,       .value = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f}   },
+
+};
 
 unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0]);
 unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
@@ -522,8 +591,9 @@ unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0])
 unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
 unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
 unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
-
-
+unsigned int g_SetDatabaseCfg_Len = sizeof(SetDatabaseCfg) / sizeof(SetDatabaseCfg[0]);
+unsigned int g_TelecontrolCfg_Len = sizeof(TelecontrolCfg) / sizeof(TelecontrolCfg[0]);
+unsigned int g_InherentParaCfg_Len = sizeof(InherentParaCfg) / sizeof(InherentParaCfg[0]);
 /* END OF FILE ---------------------------------------------------------------*/
 
 
