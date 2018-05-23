@@ -71,7 +71,7 @@ struct rt_device_pin_status pin_status[] =
     /* LED */
     {BOARD_RUN_LED, GPIO_PIN_SET},
     {BOTTOM_RUN_LED, GPIO_PIN_SET},
-    {BOTTOM_POWER_LED, GPIO_PIN_RESET},
+    {BOTTOM_POWER_LED, GPIO_PIN_SET},
     /* DO */
     {SWITCH_OPEN_DO, GPIO_PIN_SET},
     {SWITCH_CLOSE_DO, GPIO_PIN_SET},

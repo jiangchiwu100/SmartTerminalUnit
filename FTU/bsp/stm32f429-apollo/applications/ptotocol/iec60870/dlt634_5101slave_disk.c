@@ -1508,9 +1508,9 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101Slave_Pad[pdrv].YC_AllNum = g_NewMaxNumTelemetry;
                 DLT634_5101Slave_Pad[pdrv].YC_FirstAddr = TELEMETRY_START_ADDR;
                 DLT634_5101Slave_Pad[pdrv].YC_FrameNum = 24;
-                DLT634_5101Slave_Pad[pdrv].TimeOutValue = 1000/DLT_101SLAVE_MS/DLT634_5101Slave_Pad[pdrv].ClockTimers;//重发超时节拍
+                DLT634_5101Slave_Pad[pdrv].TimeOutValue = 5000/DLT_101SLAVE_MS/DLT634_5101Slave_Pad[pdrv].ClockTimers;//重发超时节拍
                 DLT634_5101Slave_Pad[pdrv].AskStaOutValue = 5000/DLT_101SLAVE_MS/DLT634_5101Slave_Pad[pdrv].ClockTimers;//链路请求间隔节拍
-                DLT634_5101Slave_Pad[pdrv].TimeOutLink = 200000/DLT_101SLAVE_MS/DLT634_5101Slave_Pad[pdrv].ClockTimers;//链路链接超时节拍
+                DLT634_5101Slave_Pad[pdrv].TimeOutLink = 600000/DLT_101SLAVE_MS/DLT634_5101Slave_Pad[pdrv].ClockTimers;//链路链接超时节拍
                 break;
 								
             default:

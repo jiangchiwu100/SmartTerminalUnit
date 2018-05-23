@@ -224,8 +224,8 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
     { 1,    "线电压(UAB)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UAB],              &g_CalibrateFactor[CALIFACTOR_UAB],        0.02f,          0.0065f,         0.0095f},
     { 1,    "线电压(UBC)校准系数",       100.00f,  &g_TelemetryDB[ADDR_UBC],              &g_CalibrateFactor[CALIFACTOR_UBC],        0.02f,          0.0065f,         0.0095f},
 
-    { 1,    "直流电压1校准系数",         24,       &g_TelemetryDB[ADDR_DC1],              &g_CalibrateFactor[CALIFACTOR_DC1],        0.5f,           0.001f,          0.01f},
-    { 1,    "直流电压2校准系数",         24,       &g_TelemetryDB[ADDR_DC2],              &g_CalibrateFactor[CALIFACTOR_DC2],        0.5f,           0.001f,          0.01f},
+    { 1,    "直流电压1校准系数",         24,       &g_TelemetryDB[ADDR_DC1],              &g_CalibrateFactor[CALIFACTOR_DC1],        0.05f,          0.0001f,         0.0013745f},
+    { 1,    "直流电压2校准系数",         24,       &g_TelemetryDB[ADDR_DC2],              &g_CalibrateFactor[CALIFACTOR_DC2],        0.05f,          0.0001f,         0.0013745f},
     { 1,    "温度校准系数",              0,        &g_TelemetryDB[ADDR_T],                &g_CalibrateFactor[CALIFACTOR_T],          2.0f,           0.0001f,         1.0f},
 	
     { 1,    "UA_IA夹角校准系数",         0,        &g_TelemetryDB[ADDR_AIPHY_Ua_Ia],      &g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa], 0.5f,           0.29f,           0.01f},

@@ -1194,15 +1194,15 @@ static void DLT634_5104_SLAVE_ReadMISIData(uint8_t pdrv, uint8_t Flag)
         count = DLT634_5104_SLAVE_ReadData(pdrv, (uint8_t *)&DLT104SlaveLink[pdrv].RxdBuf[DLT104SlaveLink[pdrv].RxdTail], DLT634_5104SLAVE_FRAMEBUFSIZE);   
 	}
     
-    if(!DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(pdrv, DLT634_5104, DLT104SlaveLink[pdrv].RxdBuf, 256))
-    {
+	if(!DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(pdrv, DLT634_5104, (uint8_t *)&DLT104SlaveLink[pdrv].RxdBuf[DLT104SlaveLink[pdrv].RxdTail], count))
+	{
 		if (Flag)
 		{
 			DLT104SlaveLink[pdrv].RxdTail += count;
 			DLT104SlaveLink[pdrv].RxdLength += count;
 		}		
-        DLT634_5104_SLAVE_SearchValidFrame(pdrv); 
-    }
+		DLT634_5104_SLAVE_SearchValidFrame(pdrv); 
+	}	
 }
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
