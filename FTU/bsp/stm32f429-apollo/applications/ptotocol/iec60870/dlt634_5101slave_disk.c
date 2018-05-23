@@ -1451,7 +1451,7 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101_SLAVE_AppInit(pdrv);
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID0;            
-                dev[pdrv] = rt_device_find(RT_UART4_NAME);
+                dev[pdrv] = rt_device_find(RT_UART5_NAME);
                 serial = (struct rt_serial_device *)(dev[pdrv]);
                 rt_device_open(dev[pdrv], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);            
                 DLT634_5101Slave_Pad[pdrv].BalanMode = 1;
@@ -1479,8 +1479,10 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101_SLAVE_AppInit(pdrv);
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID1;   
-			
-                dev[pdrv] = rt_device_find(RT_USART3_NAME);
+                if(g_ConfigurationSetDB.UartPort == 1)
+                {dev[pdrv] = rt_device_find(RT_USART3_NAME);}
+                else
+                {dev[pdrv] = rt_device_find(RT_USART1_NAME);}
                 serial = (struct rt_serial_device *)(dev[pdrv]);
                 serial->config.baud_rate = UartBaudRate;
                 serial->config.parity = UartParity;

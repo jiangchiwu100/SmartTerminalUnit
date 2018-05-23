@@ -1234,7 +1234,7 @@ void rt_multi_common_data_configure_default(void)
     uint16_t i;
     
 //串口配置
-    g_ConfigurationSetDB.UartPort = 2;      //左1，中2，右3
+    g_ConfigurationSetDB.UartPort = 1;      //中1，右2
     g_ConfigurationSetDB.UartBaudRate = 4;  //波特率，1200为1,2400为2,4800为3,9600为4,38400为5,115200为6
     g_ConfigurationSetDB.UartWordLength = 8;    //数据位
     g_ConfigurationSetDB.UartStopBits = 1;      //停止位
