@@ -592,7 +592,8 @@ unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(Cali
 unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
 unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
 unsigned int g_SetDatabaseCfg_Len = sizeof(SetDatabaseCfg) / sizeof(SetDatabaseCfg[0]);
-
+unsigned int g_TelecontrolCfg_Len = sizeof(TelecontrolCfg) / sizeof(TelecontrolCfg[0]);
+unsigned int g_InherentParaCfg_Len = sizeof(InherentParaCfg) / sizeof(InherentParaCfg[0]);
 /* END OF FILE ---------------------------------------------------------------*/
 
 

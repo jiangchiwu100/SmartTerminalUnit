@@ -132,6 +132,8 @@ extern struct tagCalibrateFactor CalibrateFactorCfg[];
 extern struct tagValueParaCfg ParameterCfg[];
 extern struct tagValueParaCfg FixedValueCfg1[];
 extern struct tagValueParaCfg FixedValueCfg2[];
+extern struct tagTelecontrolCfg TelecontrolCfg[];
+extern struct tagInherentParaCfg InherentParaCfg[];
 extern ConfigurationSetDatabaseToJson SetDatabaseCfg[];
 
 extern unsigned int g_FixedValueCfg1_Len;	
@@ -140,7 +142,8 @@ extern unsigned int g_ParameterCfg_Len;
 extern unsigned int g_CalibrateFactorCfg_Len;
 extern unsigned int g_TelemetryCfg_Len;
 extern unsigned int g_TelesignalCfg_Len;
-
+extern unsigned int g_TelecontrolCfg_Len;
+extern unsigned int g_InherentParaCfg_Len;
 
 #endif /* __POINT_TABLE_CONFIG_H__ */
 
