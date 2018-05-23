@@ -22,7 +22,7 @@ void list_init(List *list)
     return;
 }
 
-int list_ins_next(List *list,const void *data)
+int list_ins_next(List *list,ListElmt *element,const void *data)
 {
     ListElmt *new_element;
     
@@ -30,12 +30,22 @@ int list_ins_next(List *list,const void *data)
         return -1;
     
     new_element->data = (void *)data;
+    if(element == NULL)
+    {
+        if(list_size(list) == 0)
+        list->tail = new_element;
+        
+        new_element->next = list->head;
+        list->head = new_element;
+    }
+    else
+    {
+        if(element->next == NULL)
+        list->tail = new_element;
 
-    if(list_size(list) == 0)
-    list->tail = new_element;
-    
-    new_element->next = list->head;
-    list->head = new_element;
+        new_element->next = element->next;
+        element->next = new_element;            
+    }
     
     list->size++;
     

@@ -1591,7 +1591,7 @@ void rt_multi_common_data_config(void)
             for(j=0;j<(g_NewToOldTelesignal[temp1+1]>>NEWONEYX_NUM);j++)
             {
                 addr = (g_NewToOldTelesignal[temp1+1+j+1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR;
-                list_ins_next(&g_NewListTelesignal[addr - TELESIGNAL_START_ADDR],&g_NewToOldTelesignal[temp1]);
+                list_ins_next(&g_NewListTelesignal[addr - TELESIGNAL_START_ADDR],NULL,&g_NewToOldTelesignal[temp1]);
                 THREAD_PRINTF("%d -> %d\n",addr,(g_NewToOldTelesignal[temp1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR);
             }            
         } 

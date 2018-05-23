@@ -44,11 +44,11 @@ typedef struct List_
 }List;
 
 void list_init(List *list);
-int list_ins_next(List *list,const void *data);
+int list_ins_next(List *list,ListElmt *element,const void *data);
 
 #define list_size(list) ((list)->size)
 #define list_head(list) ((list)->head)		
-#define list_head(list) ((list)->head)	
+#define list_tail(list) ((list)->tail)	
 #define list_is_head(list,element) ((element) == (list)->head ? 1 : 0)
 #define list_is_tail(element) ((element)->next == NULL ? 1 : 0)
 

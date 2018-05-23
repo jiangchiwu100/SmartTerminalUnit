@@ -147,18 +147,17 @@ static void rest_ctrl(uint8_t pdrv,ComProSts *comProSts, RestSts *restSts)
 static void inrush_ctrl(ComProSts *comProSts, InrushSts *inrushSts)
 {
 	const float k = 0.2;
-//	const float xt = 10;		//消抖时间
     if ((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))	//合位
     {
         if (*(inrushSts->parastr.pSwitch) == SWITCH_ON)	//涌流抑制投入	
         {
 			if (!((inrushSts->valstr.flag)&INRUSH1))	//涌流抑制未发生
 			{
-                if (!(*(inrushSts->valstr.gTime[0])&BRE_ENTIMERS))
+                if (!(*(inrushSts->valstr.gTime)&BRE_ENTIMERS))
                 {
-                    *(inrushSts->valstr.gTime[0]) = BRE_ENTIMERS;	//启动时钟
+                    *(inrushSts->valstr.gTime) = BRE_ENTIMERS;	//启动时钟
                 }
-                if ((*(inrushSts->valstr.gTime[0])&BRE_TITIMERS)>(uint32_t)(*(inrushSts->parastr.pTime)*1000))
+                if ((*(inrushSts->valstr.gTime)&BRE_TITIMERS)>(uint32_t)(*(inrushSts->parastr.pTime)*1000))
                 {
                     inrushSts->valstr.flag |= INRUSH1;
 					inrushSts->valstr.flag |= INRUSH;    //无涌流抑制
@@ -169,20 +168,11 @@ static void inrush_ctrl(ComProSts *comProSts, InrushSts *inrushSts)
 						(*(comProSts->yc.Ib2)>*(comProSts->yc.Ib)*k)||\
 						(*(comProSts->yc.Ic2)>*(comProSts->yc.Ic)*k)))
 					{
-//						if (!(*(inrushSts->valstr.gTime[1])&BRE_ENTIMERS))
-//						{
-//							*(inrushSts->valstr.gTime[1]) = BRE_ENTIMERS;	//启动时钟
-//						}
-//						if ((*(inrushSts->valstr.gTime[1])&BRE_TITIMERS)>xt)
-//						{
-							inrushSts->valstr.flag &= ~INRUSH;	
-							//inrushSts->valstr.flag |= INRUSH1;
-//						}
+						inrushSts->valstr.flag &= ~INRUSH;	
 					}
 					else
 					{
 						inrushSts->valstr.flag |= INRUSH;
-//						*(inrushSts->valstr.gTime[1]) = 0;
 					}
 				}
 			}
@@ -195,8 +185,7 @@ static void inrush_ctrl(ComProSts *comProSts, InrushSts *inrushSts)
     else // 分位
     {
         inrushSts->valstr.flag = 0;						//标志复位
-        *(inrushSts->valstr.gTime[0]) = 0;
-//		*(inrushSts->valstr.gTime[1]) = 0;
+        *(inrushSts->valstr.gTime) = 0;
     }
 }
 
@@ -224,62 +213,81 @@ static void iACC_ctrl(ComProSts *comProSts, IACCSts *iACCSts)
     {
         if(iACCSts->valstr.flag&IACCCURSTA2)//过流后合闸//复位状态量
         {
-            iACCSts->valstr.flag = 0;
-            *(iACCSts->valstr.gTime) = 0;
+            iACCSts->valstr.flag = IACCCURSTA4;
             addSOE(comProSts,&comProSts->yx.overcurrentAccIa,OFF);
             addSOE(comProSts,&comProSts->yx.overcurrentAccIb,OFF);
             addSOE(comProSts,&comProSts->yx.overcurrentAccIc,OFF);
             addSOE(comProSts,&comProSts->yx.shortCircuitFault,OFF);
-//            addSOE(comProSts,&comProSts->yx.recloseClock,OFF);					
+//          addSOE(comProSts,&comProSts->yx.recloseClock,OFF);					
             addSOE(comProSts,&comProSts->yx.protectionAct,OFF);
         }
+		if(iACCSts->valstr.flag&IACCCURSTA4)
+		{
+			if(!(*(iACCSts->valstr.gTime[1])&BRE_ENTIMERS))
+			{
+				*(iACCSts->valstr.gTime[1]) = BRE_ENTIMERS;//启动定时
+			}
+			if((*(iACCSts->valstr.gTime[1])&BRE_TITIMERS)<(uint32_t)(*(iACCSts->parastr.pTime)*1000) + IACCTIME)
+			{
+				if(((*(iACCSts->parastr.pSwitch)==SWITCH_ON)&&((*(iACCSts->valstr.recloseflag)&JUDGRFLAG)||(*(iACCSts->valstr.recloseI0flag)&JUDGRFLAG))&&\
+					(!(iACCSts->valstr.flag&IACCCURSTA1)))&&\
+					(!(*(iACCSts->valstr.overcurflag)&JUDGRFLAG))&&(!(*(iACCSts->valstr.overcurI0flag)&JUDGRFLAG))&&\
+					((*(comProSts->yc.Ia)>*(iACCSts->parastr.pValue))||\
+					 (*(comProSts->yc.Ib)>*(iACCSts->parastr.pValue))||\
+					 (*(comProSts->yc.Ic)>*(iACCSts->parastr.pValue))))//过流
+				{
 
-        if(((*(iACCSts->parastr.pSwitch)==SWITCH_ON)&&((*(iACCSts->valstr.recloseflag)&JUDGRFLAG)||(*(iACCSts->valstr.recloseI0flag)&JUDGRFLAG))&&\
-                (!(iACCSts->valstr.flag&IACCCURSTA1)))&&\
-                (!(*(iACCSts->valstr.overcurflag)&JUDGRFLAG))&&(!(*(iACCSts->valstr.overcurI0flag)&JUDGRFLAG))&&\
-                ((*(comProSts->yc.Ia)>*(iACCSts->parastr.pValue))||\
-                 (*(comProSts->yc.Ib)>*(iACCSts->parastr.pValue))||\
-                 (*(comProSts->yc.Ic)>*(iACCSts->parastr.pValue))))//过流
-        {
-
-            if(!(*(iACCSts->valstr.gTime)&BRE_ENTIMERS))
-            {
-                *(iACCSts->valstr.gTime) = BRE_ENTIMERS;//启动定时
-            }
-            if((*(iACCSts->valstr.gTime)&BRE_TITIMERS)>=(uint32_t)(*(iACCSts->parastr.pTime)*1000))
-            {
-                iACCSts->valstr.flag |= IACCCUR|IACCCURSTA1;
-                comProSts->opening(DO_OPEN,LOGIC_ACT);
-                iACCSts->valstr.flag |= RESETFLAG;
-                if(*(comProSts->yc.Ia)>*(iACCSts->parastr.pValue))
-                {
-                    //SOE
-                    addSOE(comProSts,&comProSts->yx.overcurrentAccIa,ON);
-                }
-                if(*(comProSts->yc.Ib)>*(iACCSts->parastr.pValue))
-                {
-                    //SOE
-                    addSOE(comProSts,&comProSts->yx.overcurrentAccIb,ON);
-                }
-                if(*(comProSts->yc.Ic)>*(iACCSts->parastr.pValue))
-                {
-                    //SOE
-                    addSOE(comProSts,&comProSts->yx.overcurrentAccIc,ON);
-                }
-                addSOE(comProSts,&comProSts->yx.shortCircuitFault,ON);
-                //addSOE(comProSts,&comProSts->yx.recloseClock,ON);
-                addSOE(comProSts,&comProSts->yx.protectionAct,ON);
-            }
-        }
-        else//不过流
-        {
-            *(iACCSts->valstr.gTime) = 0;
-        }
+					if(!(*(iACCSts->valstr.gTime[0])&BRE_ENTIMERS))
+					{
+						*(iACCSts->valstr.gTime[0]) = BRE_ENTIMERS;//启动定时
+					}
+					if((*(iACCSts->valstr.gTime[0])&BRE_TITIMERS)>=(uint32_t)(*(iACCSts->parastr.pTime)*1000))
+					{
+						iACCSts->valstr.flag |= IACCCUR|IACCCURSTA1;
+						comProSts->opening(DO_OPEN,LOGIC_ACT);
+						iACCSts->valstr.flag |= RESETFLAG;
+						if(*(comProSts->yc.Ia)>*(iACCSts->parastr.pValue))
+						{
+							//SOE
+							addSOE(comProSts,&comProSts->yx.overcurrentAccIa,ON);
+						}
+						if(*(comProSts->yc.Ib)>*(iACCSts->parastr.pValue))
+						{
+							//SOE
+							addSOE(comProSts,&comProSts->yx.overcurrentAccIb,ON);
+						}
+						if(*(comProSts->yc.Ic)>*(iACCSts->parastr.pValue))
+						{
+							//SOE
+							addSOE(comProSts,&comProSts->yx.overcurrentAccIc,ON);
+						}
+						addSOE(comProSts,&comProSts->yx.shortCircuitFault,ON);
+						//addSOE(comProSts,&comProSts->yx.recloseClock,ON);
+						addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+					}
+				}
+				else//不过流
+				{
+					*(iACCSts->valstr.gTime[0]) = 0;
+				}
+			}
+			else
+			{
+				iACCSts->valstr.flag &= ~IACCCURSTA4;
+				*(iACCSts->valstr.gTime[0]) = 0;
+				*(iACCSts->valstr.gTime[1]) = 0;
+			}
+		}
+        
     }
     else //if(iACCSts->valstr.flag&IACCCURSTA1)//分位//过流后分闸
     {
         iACCSts->valstr.flag &= (~IACCCURSTA1);
+		iACCSts->valstr.flag |= IACCCURSTA4;
         iACCSts->valstr.flag |= IACCCURSTA2;
+		*(iACCSts->valstr.gTime[1]) = 0;
+		*(iACCSts->valstr.gTime[0]) = 0;
+
     }
 }
 
@@ -295,7 +303,8 @@ static void iACC_rest(ComProSts *comProSts,IACCSts *iACCSts)
     {
         *(iACCSts->valstr.resetflag) &= ~(1<<BRE_IACC);
         iACCSts->valstr.flag = 0;
-        *(iACCSts->valstr.gTime) = 0;
+        *(iACCSts->valstr.gTime[0]) = 0;
+		*(iACCSts->valstr.gTime[1]) = 0;
         addSOE(comProSts,&comProSts->yx.overcurrentAccIa,OFF);
         addSOE(comProSts,&comProSts->yx.overcurrentAccIb,OFF);
         addSOE(comProSts,&comProSts->yx.overcurrentAccIc,OFF);
@@ -1051,6 +1060,7 @@ void BreakerCtrlInit(void)
             
             //复位
             addtimers(pdrv,&s_Rest[pdrv].valstr.gTime);
+            s_Rest[pdrv].valstr.flag = 0;
             s_Rest[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Rest[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_Rest[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
@@ -1061,22 +1071,25 @@ void BreakerCtrlInit(void)
             s_Rest[pdrv].parastr.pSwitch = &g_pFixedValue[AUTOMATIC_RESET_SWITCH];
             s_Rest[pdrv].parastr.pTime = &g_pFixedValue[AUTOMATIC_RESET_TIME];
             //涌流抑制
-            addtimers(pdrv,&s_Inrush[pdrv].valstr.gTime[0]);
-			addtimers(pdrv,&s_Inrush[pdrv].valstr.gTime[1]);
+            addtimers(pdrv,&s_Inrush[pdrv].valstr.gTime);
+			s_Inrush[pdrv].valstr.flag = 0;
             s_Inrush[pdrv].parastr.pSwitch = &g_pFixedValue[INRUSH_SWITCH];
             s_Inrush[pdrv].parastr.pTime = &g_pFixedValue[INRUSH_TIME];
             //后加速
+			s_IACC[pdrv].valstr.flag = 0;
             s_IACC[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.recloseflag = &s_Reclose[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_IACC[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
-            addtimers(pdrv,&s_IACC[pdrv].valstr.gTime);
+            addtimers(pdrv,&s_IACC[pdrv].valstr.gTime[0]);
+			addtimers(pdrv,&s_IACC[pdrv].valstr.gTime[1]);
             s_IACC[pdrv].parastr.pSwitch = &g_pFixedValue[IACC_SWITCH];
             s_IACC[pdrv].parastr.pValue = &g_pFixedValue[IACC_CURRENT_VALUE];
             s_IACC[pdrv].parastr.pTime = &g_pFixedValue[IACC_TIME];
             //反时限
+			s_Inverse[pdrv].valstr.flag = 0;
             s_Inverse[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Inverse[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
             s_Inverse[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
@@ -1089,6 +1102,7 @@ void BreakerCtrlInit(void)
             s_Inverse[pdrv].parastr.pValue = &g_pFixedValue[INVERSE_CURRENT_VALUE];
             s_Inverse[pdrv].parastr.pTime = &g_pFixedValue[INVERSE_TIME];
             //过流
+			s_Overcur[pdrv].valstr.flag = 0;
             s_Overcur[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Overcur[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_Overcur[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
@@ -1109,6 +1123,7 @@ void BreakerCtrlInit(void)
             s_Overcur[pdrv].parastr.pTime[1] = &g_pFixedValue[OVER_CURRENT_TIME2];
             s_Overcur[pdrv].parastr.pTime[2] = &g_pFixedValue[OVER_CURRENT_TIME3];
             //零序过流
+			s_OvercurI0[pdrv].valstr.flag = 0;
             s_OvercurI0[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_OvercurI0[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_OvercurI0[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
@@ -1125,6 +1140,7 @@ void BreakerCtrlInit(void)
             s_OvercurI0[pdrv].parastr.pTime[0] = &g_pFixedValue[OVER_CURRENTI0_TIME1];
             s_OvercurI0[pdrv].parastr.pTime[1] = &g_pFixedValue[OVER_CURRENTI0_TIME2];
             // 二次重合闸闭锁
+			s_SecondaryRecloseLock[pdrv].valstr.flag = 0;
 			s_SecondaryRecloseLock[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_SecondaryRecloseLock[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_SecondaryRecloseLock[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
@@ -1136,6 +1152,7 @@ void BreakerCtrlInit(void)
             s_SecondaryRecloseLock[pdrv].parastr.pSwitch = &g_pFixedValue[OVER_CURRENTI0_TIME2];
             s_SecondaryRecloseLock[pdrv].parastr.pTime = &g_pFixedValue[SECONDARY_RECLOSE_LOCK_TIME];
             // 过流重合闸
+			s_Reclose[pdrv].valstr.flag = 0;
             s_Reclose[pdrv].valstr.secondaryRecloseLockflag = &s_SecondaryRecloseLock[pdrv].valstr.flag;
 			s_Reclose[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
             s_Reclose[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
@@ -1152,9 +1169,10 @@ void BreakerCtrlInit(void)
 			s_Reclose[pdrv].parastr.pRechargeTime = &g_pFixedValue[RE_CHARGE_TIME];
 			s_Reclose[pdrv].parastr.pResetTime = &g_pFixedValue[RE_RESET_TIME];
             //零序过流重合闸
+			s_RecloseI0[pdrv].valstr.flag = 0;
             s_RecloseI0[pdrv].valstr.secondaryRecloseLockflag = &s_SecondaryRecloseLock[pdrv].valstr.flag;
 			s_RecloseI0[pdrv].valstr.iACCflag = &s_IACC[pdrv].valstr.flag;
-            s_Reclose[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
+            s_RecloseI0[pdrv].valstr.inverseflag = &s_Inverse[pdrv].valstr.flag;
             s_RecloseI0[pdrv].valstr.overcurflag = &s_Overcur[pdrv].valstr.flag;
             s_RecloseI0[pdrv].valstr.overcurI0flag = &s_OvercurI0[pdrv].valstr.flag;
             s_RecloseI0[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;

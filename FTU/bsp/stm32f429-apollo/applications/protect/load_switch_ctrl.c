@@ -724,6 +724,7 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
 			addSOE(comProSts,&comProSts->yx.openingLocked,OFF);
             *(openCloseLockingSts->valstr.gTime) = 0;
 			openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA10;
+			openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
 		}
 		
         if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA8)//手动分闸
@@ -748,6 +749,8 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
         {
             openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA4;
             openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGCLOSELOCK;
+			openCloseLockingSts->valstr.flag &= ~OVERCURRENTCLOSELOCKINGCLOSELOCK;
+			openCloseLockingSts->valstr.flag &= ~U0CLOSELOCKINGCLOSELOCK;
             openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA6;
         }
     }
@@ -777,110 +780,129 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
             }
             if((*(openCloseLockingSts->valstr.gTime)&LOAD_TITIMERS)<(uint32_t)(*(openCloseLockingSts->parastr.pYTime))*1000)
             {
-                //Y时间内            if(!(*(overcurI0Sts->valstr.stateJudgeflag)&STATEUNBLOCKED)&&\
-                    (*(comProSts->yx.openingLocked.value) == OFF))//非遮断
-                if((((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME))&&(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE))||\
-                        ((((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))||\
-                    (comProSts->WorkMode == TYPE_LOADSWTICH_DIVIDE))&&((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||\
-                        (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0))&&(*(comProSts->yx.openingLocked.value) == OFF))||\
-                    ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)))//电压时间判断无压//电压电流分界负荷开关判断过流//任意模式零序过电压保护
-                {
-                    openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1|OPENCLOSELOCKINGSTA2;
-                    openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA11;
-                    addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
-                    *(openCloseLockingSts->valstr.gTime) = 0;
-                }
-            }
-            else
-            {
-                //Y时间外
-                openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1|OPENCLOSELOCKINGSTA3;
-                *(openCloseLockingSts->valstr.gTime) = 0;
-            }
-        }
-//        if(*(openCloseLockingSts->parastr.pSwitchClose) == SWITCH_ON)//合闸闭锁
-        {
-            if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA2)//Y时间内
-            {
-                if((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME))//电压时间型
-                {
-                    if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA11))
-                    {
-                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA11;
-                        if((!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))&&\
-                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0))//无遮断//过零序电压
+                //Y时间内 
+				//电压时间型
+				if((comProSts->WorkMode == TYPE_BREAKER_VOLTIME)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLTIME))
+				{
+					if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)//零序过压
+					{
+						if(!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))	//非遮断
+						{
+							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
+							*(openCloseLockingSts->valstr.gTime) = 0;
+							comProSts->opening(DO_OPEN,LOGIC_ACT);
+							addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+							addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+						}
+						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA2;
+						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+						openCloseLockingSts->valstr.flag |= RESETFLAG;
+						addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
+						if((*(openCloseLockingSts->valstr.getVolCloseflag)&JUDGRFLAG)||\
+                          (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
                         {
-                            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
-                            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
-                            openCloseLockingSts->valstr.flag |= RESETFLAG;
-                            comProSts->opening(DO_OPEN,LOGIC_ACT);
-                            addSOE(comProSts,&comProSts->yx.protectionAct,ON);
-                            addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+                            openCloseLockingSts->valstr.flag |= U0CLOSELOCKINGCLOSELOCK;
                         }
-                    }
-                    if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)//无压
+					}
+					if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)//无压
                     {
-                        openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
+						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
                         openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
                         openCloseLockingSts->valstr.flag |= RESETFLAG;
+						addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
                         if((*(openCloseLockingSts->valstr.getVolCloseflag)&JUDGRFLAG)||\
-                                (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
+                          (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
                         {
                             openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGCLOSELOCK;
                         }
+						*(openCloseLockingSts->valstr.gTime) = 0;
                     }
-                }
-                else if((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))//电压电流型
-                {
-                    if(!(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA11))
-                    {
-                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA11;
-                        if((!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))&&\
-                            ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)||\
-                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||\
-                            (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0)))//无遮断//过零序电压或过流
-                        {
-                            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
-                            openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
-                            openCloseLockingSts->valstr.flag |= RESETFLAG;
-                            comProSts->opening(DO_OPEN,LOGIC_ACT);
-                            addSOE(comProSts,&comProSts->yx.protectionAct,ON);
-                            addSOE(comProSts,&comProSts->yx.closingLocked,ON);
-                        }
-                    }
-                    if((*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)&&\
-                            ((*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOCURRENT)))//无压无流
-                    {
-                        openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
-                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
-                        openCloseLockingSts->valstr.flag |= RESETFLAG;
-                        openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGCLOSELOCK;
-                    }
-                }
-                else//其他模式
-                {
-                    openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
-                    openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
-                }
+				}
+				if((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)||(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR))
+				{
+					//断路器电压电流型  零序过压、过流相序过流
+					if((comProSts->WorkMode == TYPE_BREAKER_VOLCUR)&&((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)||\
+					  (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0)))
+					{
+						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
+						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+						openCloseLockingSts->valstr.flag |= RESETFLAG;
+						comProSts->opening(DO_OPEN,LOGIC_ACT);
+						addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+						addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+						*(openCloseLockingSts->valstr.gTime) = 0;
+					}
+					//负荷开关电压电流型  
+					if(comProSts->WorkMode == TYPE_LOADSWTICH_VOLCUR)
+					{
+						if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)//零序过压
+						{
+							if(!(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEUNBLOCKED))	//非遮断
+							{
+								openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
+								*(openCloseLockingSts->valstr.gTime) = 0;
+								comProSts->opening(DO_OPEN,LOGIC_ACT);
+								addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+								addSOE(comProSts,&comProSts->yx.closingLocked,ON);
+							}
+							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA2;
+							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+							openCloseLockingSts->valstr.flag |= RESETFLAG;
+							addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
+							if((*(openCloseLockingSts->valstr.getVolCloseflag)&JUDGRFLAG)||\
+							  (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
+							{
+								openCloseLockingSts->valstr.flag |= U0CLOSELOCKINGCLOSELOCK;
+							}
+						}
+						//零序过压、过流相序过流
+						if(*(openCloseLockingSts->valstr.stateJudgeflag)&STATENOVOLTAGE)
+						{
+							if(((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERVOLTAGEU0)||\
+							  (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||\
+							  (*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0)))
+							{
+								openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
+								*(openCloseLockingSts->valstr.gTime) = 0;
+								addSOE(comProSts,&comProSts->yx.failAfterClosing,ON);
+								if((*(openCloseLockingSts->valstr.getVolCloseflag)&JUDGRFLAG)||\
+								  (*(openCloseLockingSts->valstr.singleLossCloseflag)&JUDGRFLAG))//得电合闸或失压合闸闭锁
+								{
+									openCloseLockingSts->valstr.flag |= OVERCURRENTCLOSELOCKINGCLOSELOCK;
+								}
+							}
+							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA2;
+							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
+							openCloseLockingSts->valstr.flag |= RESETFLAG;
+						}	
+					}
+				}
+				
+				//分界负荷开关
+				if(comProSts->WorkMode == TYPE_LOADSWTICH_DIVIDE)
+				{}
+				
             }
-        }
-//        else
-//        {
-//            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
-//        }
-//        if(*(openCloseLockingSts->parastr.pSwitchOpen) == SWITCH_ON)//分闸闭锁
-        {
-            if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA3)//Y时间外
+            else                //Y时间外
             {
-                openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA3;
-                openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA5;
-                addSOE(comProSts,&comProSts->yx.openingLocked,ON);
+				if(!(openCloseLockingSts->valstr.flag & OPENCLOSELOCKINGSTA2))
+				{
+					openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA3;
+				}
+                openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
+                *(openCloseLockingSts->valstr.gTime) = 0;
             }
         }
-//        else
-//        {
-//            openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA3;
-//        }
+		if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA3)//Y时间外
+		{
+			openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA3;
+			openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA5;
+			if(!((*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCUR)||(*(openCloseLockingSts->valstr.stateJudgeflag)&STATEOVERCURI0)))
+			{
+				addSOE(comProSts,&comProSts->yx.openingLocked,ON);
+			}
+		}
+
         if(openCloseLockingSts->valstr.flag&OPENCLOSELOCKINGSTA5)//分闸闭锁计时
         {
             if(!(*(openCloseLockingSts->valstr.gTime)&LOAD_ENTIMERS))
@@ -909,6 +931,7 @@ static void openCloseLocking_rest(ComProSts *comProSts,OpenCloseLockingSts *open
     {
         *(openCloseLockingSts->valstr.resetflag) &= ~(1<<LOAD_OPENCLOSELOCK);
         openCloseLockingSts->valstr.flag = OPENCLOSELOCKINGSTA1;//非刚合闸状态
+		openCloseLockingSts->valstr.flag &= ~OPENCLOSELOCKINGSTA2;
         *(openCloseLockingSts->valstr.gTime) = 0;
         addSOE(comProSts,&comProSts->yx.failAfterClosing,OFF);
         addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
@@ -1071,7 +1094,10 @@ static void doubleVol_ctrl(ComProSts *comProSts,DoubleVolSts *doubleVolSts)
         {
             doubleVolSts->valstr.flag = 0;
             addSOE(comProSts,&comProSts->yx.doubleProhibitClossing,OFF);
-            addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+			if(*(comProSts->yx.remainClockClossing.value)==OFF)
+			{
+				addSOE(comProSts,&comProSts->yx.closingLocked,OFF);
+			} 
         }
     }
     else if((*(comProSts->yx.switchOpen.value)==OFF)&&(*(comProSts->yx.switchClose.value)==ON))//合位
