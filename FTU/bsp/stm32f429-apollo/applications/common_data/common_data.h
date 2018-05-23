@@ -1031,11 +1031,12 @@ struct MEMORY_FLAG_Str
 
 /* LOCK ----------------------------------------------------------------------*/
 /* 通讯互锁定时 */
-#define COMMUNICATLOCKFUC         0xF0000000 //功能
-#define COMMUNICATLOCKCLRCON      0x10000000 //清零
-#define COMMUNICATLOCKRESET       0x20000000 //复位标志
-#define COMMUNICATLOCKRECORD      0x40000000 //有数据存贮
-#define COMMUNICATLOCKCLEAR       0x80000000 //清除记录
+#define COMMUNICATLOCKFUC         0xFF000000 //功能
+#define COMMUNICATLOCKCLRCON      0x01000000 //清零
+#define COMMUNICATLOCKRESET       0x02000000 //复位标志
+#define COMMUNICATLOCKRECORD      0x04000000 //有数据存贮
+#define COMMUNICATLOCKCLEAR       0x08000000 //清除记录
+#define COMMUNICATLOCKJSON        0x10000000 //Json填写
 
 #define COMMUNICATLOCKUSERSTA     0x0000FFFF //正在有设备使用
 #define COMMUNICATLOCKUSERCON     0x000000FF //需要超时处理设备
@@ -1047,6 +1048,7 @@ struct MEMORY_FLAG_Str
 #define COMMUNICATLOCKRANDOM      0x00000200 //写SOECO文件
 #define COMMUNICATLOCKMAKEFS      0x00000400 //格式化文件
 #define COMMUNICATLOCKLOSEPOWER   0x00000800 //失电
+#define COMMUNICATLOCKWRITEJSON   0x00001000 //Json填写
 
 enum
 {

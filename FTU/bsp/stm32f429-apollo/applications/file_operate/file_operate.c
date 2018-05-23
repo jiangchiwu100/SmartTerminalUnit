@@ -751,19 +751,30 @@ void file_operate_WriteFileAct(uint8_t dev,uint8_t *pbuf)
   * @return: none
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
-void CreatDoc_Record(void)
+uint8_t CreatDoc_Record(void)
 { 
 	memset(FileName,0,sizeof(DirName));
 	strcpy(FileName,"/sojo");
 	strcat(FileName,"/ConfigurationSet.cfg");
+    
+    unlink(FileName);  //删除文件
 	
 	MyFile = open(FileName, O_RDWR | O_CREAT, 0);
+    
+    if (MyFile == -1)
+    {
+        failnum++;
+        FILE_PRINTF("/sojo/ConfigurationSet.cfg write failed!\n");
+        return 1;
+    }
 	
     write(MyFile,&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
    
     FILE_PRINTF("f_write ConfigurationSet.cfg\n", MyFile );
     
 	close(MyFile);
+    
+    return 0;
 }
 
 /**
@@ -808,8 +819,7 @@ void file_operate_Format(void)
     //创建FEVENT
     CreatDoc_FEVENT();
     
-    //写入文件配置
-    CreatDoc_Record();
+    g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKJSON;
     
 //		//创建EXV目录
 //		CreatDIR_EXV();
@@ -1304,6 +1314,16 @@ void file_operate(void)
             g_CommunicatFlag[COM_FILE] &= ~COMMUNICATLOCKMAKEFS;
             g_CommunicatFlag[COM_FILE] &= ~COMMUNICATLOCKCLEAR;
         }
+        
+        if(g_CommunicatFlag[COM_FILE]&COMMUNICATLOCKJSON)
+        {
+            g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKWRITEJSON;
+            if((!CreatDoc_Record())&&(!Create_JsonFile()))//创建json文件    
+            {                
+                g_CommunicatFlag[COM_FILE] &= ~COMMUNICATLOCKJSON;
+            }
+            g_CommunicatFlag[COM_FILE] &= ~COMMUNICATLOCKWRITEJSON;                        
+        }
     
         if (g_WaveOut != g_WaveIn)
         {
@@ -1362,16 +1382,10 @@ void file_operate_Init(void)
 	
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
-	
-	rt_s2j_init();	//struct2json动态内存申请初始化
-	
-	Create_JsonFile("ParameterCfg", g_ParameterCfg_Len, _CFG_PARAMTER);				//创建定值0区json文件
-	Create_JsonFile("FixedValueCfg1", g_FixedValueCfg1_Len, _CFG_FIXED_VALUE_1);	//创建定值1区json文件
-	Create_JsonFile("FixedValueCfg2", g_FixedValueCfg2_Len, _CFG_FIXED_VALUE_2);	//创建定值2区json文件
-	Create_JsonFile("CalibrateFactorCfg", g_CalibrateFactorCfg_Len, _CFG_CALIBRATE_FACTOR);	//创建校准系数json文件
-	Create_JsonFile("TelemetryCfg", g_TelemetryCfg_Len, _CFG_TELE_METRY);		//创建遥测json文件
-	Create_JsonFile("TelesignalCfg", g_TelesignalCfg_Len, _CFG_TELE_SIGNAL);	//创建遥信json文件
-	
+    
+    rt_s2j_init();	//struct2json动态内存申请初始化 
+    
+    g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKJSON;
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

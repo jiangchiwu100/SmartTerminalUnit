@@ -21,12 +21,21 @@
 	
 static int Json_MyFile; /* File object */
 static char Json_FileName[255]; /* File Name */
-static char Json_DirName[255]; /* Dir Name */
 
-static void Struct_To_Json(uint16_t length, uint8_t name, int file);
+static void Struct_To_Json(int file);
 static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json);
 static void Get_JSON(cJSON * root, uint8_t name);
 static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName);
+
+/**
+ * @fn rt_s2j_malloc_fn
+ * @brief 消除warning
+ * @return  申请空间指针
+ */
+void *rt_s2j_malloc_fn(size_t sz)
+{
+    return(rt_malloc(sz));
+}
 
 /**
  * @fn rt_s2j_init
@@ -38,7 +47,7 @@ rt_err_t rt_s2j_init(void)
 {
 	g_ProductID.productSerialNumber = TERMINAL_PRODUCT_SERIAL_NUMBER;
 
-    s2jHook.malloc_fn = rt_malloc;  //初始化内存申请函数
+    s2jHook.malloc_fn = rt_s2j_malloc_fn;  //初始化内存申请函数
     s2jHook.free_fn = rt_free;
 
     s2j_init(&s2jHook);   //初始化struct2json的内存申请
@@ -54,29 +63,22 @@ rt_err_t rt_s2j_init(void)
  * @param name    需要转换的结构体
  * 
  */
-void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
+uint8_t Create_JsonFile(void)
 {
     //TERMINAL_PRODUCT_SERIAL_NUMBER
     char* string;
-    
-	memset(Json_DirName,0,sizeof(Json_DirName));
-	strcpy(Json_DirName,"/sojo");
-	strcat(Json_DirName,"/HISTORY/Config");//建立JSON文件目录
-	mkdir(Json_DirName,0);//建立目录
-	
+
     strcpy(Json_FileName,"/sojo");
-    strcat(Json_FileName,"/HISTORY/Config/");
-    strcat(Json_FileName, fileName);	
-    strcat(Json_FileName, ".json");	
+	strcat(Json_FileName,"/AllJsonCfg.json");
 
     unlink(Json_FileName);  //删除文件
 
-    if(Get_ID_For_Json(Json_FileName, fileName) == 0)   //ID号能对应上则退出
+    if(Get_ID_For_Json(Json_FileName, "/AllJsonCfg.json") == 0)   //ID号能对应上则退出
     {
-        return;
+        return 0;
     }
      
-    g_ProductID.pointTableType = fileName;    //json内同时写入文件名称以作区分
+    g_ProductID.pointTableType = "/AllJsonCfg.json";    //json内同时写入文件名称以作区分
 
     cJSON *struct_json = ProductID_StructToJson();
     
@@ -84,18 +86,21 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
     
     Json_MyFile = open(Json_FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
     
+    if (Json_MyFile == -1)
+    {
+        return 1;
+    }
+    
     write(Json_MyFile, string, (strlen(string) - 2));  //将硬件版本号写入到config文件中
     write(Json_MyFile, ",\n", 2);  //写入文件
     
-    write(Json_MyFile, " \"PointList\":[  \n", sizeof(" \"PointList\":[ \n") );  //依照标准格式进行写入
-
-    Struct_To_Json(length, name, Json_MyFile);   //结构体转换并写入
+    Struct_To_Json(Json_MyFile);   //结构体转换并写入
     
-    write(Json_MyFile, "]\n", 2);  //依照标准格式进行写入
-
     write(Json_MyFile, "}\n", 2);  //依照标准格式进行写入
     
 	close(Json_MyFile);
+    
+    return 0;
 }
 
 /**
@@ -106,48 +111,56 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
  * @param name    需要转换的结构体
  * 
  */
-static void Struct_To_Json(uint16_t length, uint8_t name, int file)
+static void Struct_To_Json(int file)
 {
     char* string;
     cJSON *struct_json;
+    uint16_t length;
 
-    for(uint16_t i = 0; i < length; i++)
-    {
-        switch(name)
+    for(uint16_t i = 0; i < _CFG_ALL_NUM; i++)
+    {    
+        switch(i)
         {
-            case _CFG_SET_DATA_BASE:
-            {
-                struct_json = SetDatabaseCfg_StructToJson(&SetDatabaseCfg[i]);
-                break;
-            }
             case _CFG_PARAMTER:
             {
-                struct_json = ParameterCfg_StructToJson(&ParameterCfg[i]);
+                write(Json_MyFile, " \"ParameterList\":[  \n", sizeof(" \"ParameterList\":[ \n") );  //依照标准格式进行写入
+                length = g_ParameterCfg_Len;
                 break;
             }
             case _CFG_FIXED_VALUE_1:
             {
-                struct_json = FixedValueCfg1_StructToJson(&FixedValueCfg1[i]);
-                break;
-            }
-            case _CFG_FIXED_VALUE_2:
-            {
-                struct_json = FixedValueCfg2_StructToJson(&FixedValueCfg2[i]);
+                write(Json_MyFile, " \"FixedValue1List\":[  \n", sizeof(" \"FixedValue1List\":[ \n") );  //依照标准格式进行写入
+                length = g_FixedValueCfg1_Len;
                 break;
             }
             case _CFG_CALIBRATE_FACTOR:
             {
-                struct_json = CalibrateFactorCfg_StructToJson(&CalibrateFactorCfg[i]);
+                write(Json_MyFile, " \"CalibrateFactorList\":[  \n", sizeof(" \"CalibrateFactorList\":[ \n") );  //依照标准格式进行写入
+                length = g_CalibrateFactorCfg_Len;
                 break;
             }
             case _CFG_TELE_METRY:
             {
-                struct_json = TelemetryCfg_StructToJson(&TelemetryCfg[i]);
+                write(Json_MyFile, " \"TelemetryList\":[  \n", sizeof(" \"TelemetryList\":[ \n") );  //依照标准格式进行写入
+                length = g_TelemetryCfg_Len;
                 break;
             }
             case _CFG_TELE_SIGNAL:
             {
-                struct_json = TelesignalCfg_StructToJson(&TelesignalCfg[i]);
+                write(Json_MyFile, " \"TelesignalList\":[  \n", sizeof(" \"TelesignalList\":[ \n") );  //依照标准格式进行写入
+                length = g_TelesignalCfg_Len;
+                break;
+            }
+            case _CFG_TELE_CONTROL:
+            {
+                write(Json_MyFile, " \"TelecontrolList\":[  \n", sizeof(" \"TelecontrolList\":[ \n") );  //依照标准格式进行写入
+                length = g_TelecontrolCfg_Len;
+                break;
+            }
+            case _CFG_TELE_INHERENT:
+            {
+                write(Json_MyFile, " \"InherentParaList\":[  \n", sizeof(" \"InherentParaList\":[ \n") );  //依照标准格式进行写入
+                length = g_InherentParaCfg_Len;
                 break;
             }
             default :
@@ -156,22 +169,68 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
             }
         }
         
-        string = rt_Print_cJSON(struct_json);
+        for(uint16_t j = 0; j < length; j++)
+        {
+            switch(i)
+            {
+                case _CFG_PARAMTER:
+                {
+                    struct_json = ParameterCfg_StructToJson(&ParameterCfg[j]);
+                    break;
+                }
+                case _CFG_FIXED_VALUE_1:
+                {
+                    struct_json = FixedValueCfg1_StructToJson(&FixedValueCfg1[j]);
+                    break;
+                }
+                case _CFG_CALIBRATE_FACTOR:
+                {
+                    struct_json = CalibrateFactorCfg_StructToJson(&CalibrateFactorCfg[j]);
+                    break;
+                }
+                case _CFG_TELE_METRY:
+                {
+                    struct_json = TelemetryCfg_StructToJson(&TelemetryCfg[j]);
+                    break;
+                }
+                case _CFG_TELE_SIGNAL:
+                {
+                    struct_json = TelesignalCfg_StructToJson(&TelesignalCfg[j]);
+                    break;
+                }
+                case _CFG_TELE_CONTROL:
+                {
+                    struct_json = TelecontrolCfg_StructToJson(&TelecontrolCfg[j]);
+                    break;
+                }
+                case _CFG_TELE_INHERENT:
+                {
+                    struct_json = InherentParaCfg_StructToJson(&InherentParaCfg[j]);
+                    break;
+                }
+                default :
+                {
+                    break;
+                }
+            }
+            
+            string = rt_Print_cJSON(struct_json);
 
-        write(file, string, strlen(string));  //写入文件
-        
-        if(i < (length - 1))
-        {
-            write(file, ",\n", 2);  //依照标准格式进行写入
+            write(file, string, strlen(string));  //写入文件
+            
+            if(i < (length - 1))
+            {
+                write(file, ",\n", 2);  //依照标准格式进行写入
+            }
+            else
+            {
+                write(file, "\n", 1);  //依照标准格式进行写入
+            }
         }
-        else
-        {
-            write(file, "\n", 1);  //依照标准格式进行写入
-        }
+        write(Json_MyFile, "]\n", 2);  //依照标准格式进行写入
     }
-
 }
-ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];
+//ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];
 /**
  * @fn Struct_To_Json
  * @brief 将获取到的字符串转换为相应的结构体
@@ -184,14 +243,8 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
 {
     switch(name)
     {
-        case _CFG_SET_DATA_BASE:
-        {
-            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
-            break;
-        }
         case _CFG_PARAMTER:
         case _CFG_FIXED_VALUE_1:
-        case _CFG_FIXED_VALUE_2:
         case _CFG_CALIBRATE_FACTOR:
         case _CFG_TELE_METRY:
         case _CFG_TELE_SIGNAL:
@@ -253,14 +306,8 @@ uint8_t GetJsonForFile(char* fileName, uint8_t name)
     static cJSON *readJson;
 
     _string = rt_malloc(1024*1024);     //分配1M的内存
-    
-	memset(Json_DirName,0,sizeof(Json_DirName));
-	strcpy(Json_DirName,"/sojo");
-	strcat(Json_DirName,"/HISTORY/Config");//建立JSON文件目录
-	mkdir(Json_DirName,0);//建立目录
 	
     strcpy(Json_FileName,"/sojo");
-    strcat(Json_FileName,"/HISTORY/Config/");
     strcat(Json_FileName, fileName);	
     strcat(Json_FileName, ".json");	
 

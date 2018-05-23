@@ -23,16 +23,13 @@ typedef struct tagProductID
     
 }ProductID;
 
-extern cJSON *TelesignalCfg_StructToJson(void* struct_obj);         //实现遥测结构体的struct转json
+extern cJSON *InherentParaCfg_StructToJson(void* struct_obj);         //实现固有参数结构体的struct转json
+extern cJSON *TelecontrolCfg_StructToJson(void* struct_obj);         //实现遥控结构体的struct转json
+extern cJSON *TelesignalCfg_StructToJson(void* struct_obj);         //实现遥信结构体的struct转json
 extern cJSON *TelemetryCfg_StructToJson(void* struct_obj);          //实现遥测结构体的struct转json
 extern cJSON *CalibrateFactorCfg_StructToJson(void* struct_obj);    //实现校准系数结构体的struct转json
 extern cJSON *ParameterCfg_StructToJson(void* struct_obj);          //实现定值0区结构体的struct转json
-extern cJSON *FixedValueCfg1_StructToJson(void* struct_obj);        //实现定值一区结构体的struct转json
-extern cJSON *FixedValueCfg2_StructToJson(void* struct_obj);        //实现定值二区结构体的struct转json
-
-
-extern cJSON *SetDatabaseCfg_StructToJson(void* struct_obj);        //实现配置信息结构体的json转struct
-extern ConfigurationSetDatabaseToJson *SetDatabaseCfg_JsonToStruct(cJSON* json_obj);      //实现配置信息结构体的struct转json
+extern cJSON *FixedValueCfg1_StructToJson(void* struct_obj);        //实现定值1区结构体的struct转json
 
 extern cJSON *ProductID_StructToJson(void);     //实现产品ID号的转换
 
