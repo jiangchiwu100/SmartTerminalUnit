@@ -573,11 +573,11 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     
     if (addr >= 0 && addr <= TELESIGNAL_NUM)
     {
-        if (state == g_TelesignalDB[addr - TELESIGNAL_START_ADDR])
+        if (state == g_TelesignalDB[addr])
         {
             return FALSE;
         }
-        g_TelesignalDB[addr - TELESIGNAL_START_ADDR] = state;
+        g_TelesignalDB[addr] = state;
         g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + TELESIGNAL_START_ADDR;		
     }
 	else
@@ -614,14 +614,14 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     
     if (addr >= 0 && addr <= TELESIGNAL_NUM)
     {
-        if(g_NewListTelesignal[addr - TELESIGNAL_START_ADDR].size != 0)//链表不为空
+        if(g_NewListTelesignal[addr].size != 0)//链表不为空
         {
-            element = g_NewListTelesignal[addr - TELESIGNAL_START_ADDR].head;
+            element = g_NewListTelesignal[addr].head;
             do//遍历链表
             {
                 for(value=0,i=0;i<((((rt_uint16_t*)(element->data))[1])>>NEWONEYX_NUM);i++)
                 {
-                    valuetemp = g_TelesignalDB[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - TELESIGNAL_START_ADDR] - 1;//单点
+                    valuetemp = g_TelesignalDB[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR)] - 1;//单点
                     if((((rt_uint16_t*)(element->data))[2+i]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
                     {
                         valuetemp = (~valuetemp)&0x01;                
@@ -757,7 +757,7 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_type = COMMON_DATA_M_DP_NA_1;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx_num = 1;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].addr = yx_addr + TELESIGNAL_START_ADDR; 
-    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].value = g_TelesignalDB[yx_addr - TELESIGNAL_START_ADDR];
+    g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].value = g_TelesignalDB[yx_addr];
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.year = g_SystemTime.year;
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.month = g_SystemTime.month;    
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.dayofWeek = g_SystemTime.day | g_SystemTime.week << 5;
@@ -1348,7 +1348,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         for(j=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            if(!((((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=TELESIGNAL_START_ADDR)&&(((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELESIGNAL_START_ADDR+TELEMETRY_NUM)))
+            if(!((((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=0)&&(((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELEMETRY_NUM)))
             {
                 configureFault = 1;
                 break;
@@ -1570,7 +1570,7 @@ void rt_multi_common_data_config(void)
     {
         for(j=0,value=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            value |= (g_TelesignalDB[((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR]-1);//单点
+            value |= (g_TelesignalDB[((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)]-1);//单点
         }
         value = value + 1;//双点
         g_NewToOldTelesignal[temp2] = (value<<NEWONEYX_VAULE)|((i+TELESIGNAL_START_ADDR)<<NEWONEYX_ADDR);
@@ -1591,7 +1591,7 @@ void rt_multi_common_data_config(void)
             for(j=0;j<(g_NewToOldTelesignal[temp1+1]>>NEWONEYX_NUM);j++)
             {
                 addr = (g_NewToOldTelesignal[temp1+1+j+1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR;
-                list_ins_next(&g_NewListTelesignal[addr - TELESIGNAL_START_ADDR],NULL,&g_NewToOldTelesignal[temp1]);
+                list_ins_next(&g_NewListTelesignal[addr],NULL,&g_NewToOldTelesignal[temp1]);
                 THREAD_PRINTF("%d -> %d\n",addr,(g_NewToOldTelesignal[temp1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR);
             }            
         } 
