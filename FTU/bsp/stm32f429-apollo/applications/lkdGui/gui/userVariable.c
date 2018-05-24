@@ -50,13 +50,11 @@ void GetDisplayTime(SystemTimeDisplay *tim)
 static void YaoxinDisplayInit(void)
 {
 	/* 遥信显示个数 */
-	#define YAOXIN_MAXITEMS 12
-	
 	uint8_t YaoxinItem = 0;
 	uint8_t i = 0;
 	
 	yxInfo.pRoot = TelesignalCfg;
-	for(i = 0; i < YAOXIN_MAXITEMS; i++){//查找可用遥信
+	for(i = 0; i < g_TelesignalCfg_Len; i++){//查找可用遥信
 		if(yxInfo.pRoot[i].enable == 0){
 			continue;
 		}
@@ -69,7 +67,7 @@ static void YaoxinDisplayInit(void)
 		return;
 	}
 	YaoxinItem = 0;
-	for(i = 0; i < YAOXIN_MAXITEMS; i++){//遥信显示缓冲
+	for(i = 0; i < g_TelesignalCfg_Len; i++){//遥信显示缓冲
 		if(yxInfo.pRoot[i].enable == 0){
 			continue;
 		}

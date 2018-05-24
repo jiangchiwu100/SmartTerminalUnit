@@ -25,7 +25,7 @@ static struct DZModfiy dZModfiy;	/* 定值修改 */
 static struct Message MessageIs;	/* 消息管理 */
 static struct PassWordPipe passWordPipe;		/* 密码管理 */
 static enum DingZhiSetOrSee dingZhiSetOrSee;	/* 定值查询或者修改标志 */
-
+static uint8_t stepTab[STEP_ALLNUM];
 /**
   *@brief  获取时钟
   *@param  None
@@ -211,8 +211,12 @@ void GUIWiatMessage(uint8_t x,uint8_t y)
   */
 void GUIDisplayInit(void)
 {
+	
 	MenuManageInit();
 	WinManageInit();
+	for(uint8_t i = 0; i < STEP_ALLNUM; i++){
+		stepTab[i] = 0;
+	}
 	userGUIWindowAdd(&HomeWindow);
 }
 
@@ -262,12 +266,11 @@ void SetPassWordWin(uint8_t type,uint8_t *returnflag)
   */
 void PassWordFun(void)
 {	
-	static uint8_t flag;
 	static uint8_t passWordStr[8];
 	static int8_t currentNum;
 	uint8_t tempStr[2];
 	uint8_t i;
-	if(flag == 0){
+	if(stepTab[STEP_PASSWORD] == 0){
 		currentNum = 0;
 		for(i=0;i<7;i++){
 			passWordStr[i] = '0';
@@ -281,9 +284,9 @@ void PassWordFun(void)
 			PassWordItems[passWordPipe.passWordType].name);//提示语
 		GuiHPointLine(PassWordWin.x+1,PassWordWin.y +34,\
 			PassWordWin.x + PassWordWin.wide - 1,2,forecolor);
-		flag = 1;
+		stepTab[STEP_PASSWORD] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_PASSWORD] == 1){
 		for(i=0;i<6;i++){
 			if(i == currentNum){
 				tempStr[0] = passWordStr[currentNum];
@@ -301,7 +304,7 @@ void PassWordFun(void)
 			}		
 		}
 		GuiUpdateDisplayAll();
-		flag = 2;
+		stepTab[STEP_PASSWORD] = 2;
 	}
 	switch(keyStatus){
 	case LeftKey:
@@ -309,28 +312,28 @@ void PassWordFun(void)
 		if(currentNum < 0){
 			currentNum = 5;
 		}
-		flag = 1;
+		stepTab[STEP_PASSWORD] = 1;
 		break;
 	case DownKey:
 		passWordStr[currentNum] --;
 		if(passWordStr[currentNum]<'0'){
 			passWordStr[currentNum] = '9';
 		}
-		flag = 1;
+		stepTab[STEP_PASSWORD] = 1;
 		break;
 	case RightKey:
 		currentNum ++;
 		if(currentNum >= 6){
 			currentNum = 0;
 		}
-		flag = 1;
+		stepTab[STEP_PASSWORD] = 1;
 		break;
 	case UpKey:
 		passWordStr[currentNum] ++;
 		if(passWordStr[currentNum] > '9'){
 			passWordStr[currentNum] = '0';
 		}
-		flag = 1;
+		stepTab[STEP_PASSWORD] = 1;
 		break;
 	case OkKey:
 		if(strncmp((char *)passWordStr,\
@@ -341,7 +344,7 @@ void PassWordFun(void)
 			*passWordPipe.returnFlag = 0;
 		}//需要执行CancelKey程序，所以没有break
 	case CancelKey:
-		flag = 0; 
+		stepTab[STEP_PASSWORD] = 0; 
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -370,15 +373,14 @@ void SetMessageWin(int16_t x,int16_t y,uint8_t *pStr,uint8_t *flag)
   */
 void MessageFun(void)
 {
-	static uint8_t flag;
 	static int8_t keyFlag;
 	uint8_t winWide;
 	uint8_t winHight;
-	if(flag == 0){
+	if(stepTab[STEP_MESSAGE] == 0){
 		keyFlag = 0;
-		flag = 1;
+		stepTab[STEP_MESSAGE] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_MESSAGE] == 1){
 		GuiFillRect(MessageWin.x+1,MessageWin.y+16,\
 			MessageWin.x + MessageWin.wide - 2,MessageWin.hight - 1, backcolor);
 		GuiHLine(MessageWin.x+1,MessageWin.y+18,\
@@ -402,9 +404,9 @@ void MessageFun(void)
 			GuiButton(winWide,winHight + 3,"取消",0);
 		}
 		GuiUpdateDisplayAll();
-		flag = 2;
+		stepTab[STEP_MESSAGE] = 2;
 	}
-	if(flag == 2){
+	if(stepTab[STEP_MESSAGE] == 2){
 	}
 	switch(keyStatus){
 	case LeftKey:
@@ -412,24 +414,24 @@ void MessageFun(void)
 		if(keyFlag < 0){
 			keyFlag = 1;
 		}
-		flag = 1;break;
+		stepTab[STEP_MESSAGE] = 1;break;
 	case UpKey:break;
 	case RightKey:
 		keyFlag++;
 		if(keyFlag > 1){
 			keyFlag = 0;
 		}
-		flag = 1;break;
+		stepTab[STEP_MESSAGE] = 1;break;
 	case DownKey:break;
 	case OkKey:
 		*MessageIs.flag = keyFlag;
-		flag = 0;
+		stepTab[STEP_MESSAGE] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		break;
 	case CancelKey:
 		*MessageIs.flag = 0;
-		flag = 0;
+		stepTab[STEP_MESSAGE] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		break;
@@ -557,14 +559,13 @@ void DrawModfiyKey(uint8_t key)
   */
 void DZModfiyFun(void)
 {
-	static uint8_t flag = 0;//步骤
 	static uint8_t modfiyStr[16];//修改暂存buff
 	static uint8_t modfiyStrP = 0;
 	static uint8_t keyIs = 0;//按键记录
 	static uint32_t inputCursorTick;//光标闪烁记时
 	int16_t x,y;
 	float fValue;
-	if(flag == 0){//初始化
+	if(stepTab[STEP_DZHIMODFIY] == 0){//初始化
 		DZModfiyInit();
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){
 			keyIs = dZModfiy.str[0];
@@ -574,10 +575,10 @@ void DZModfiyFun(void)
 		}
 		modfiyStrP = 0;
 		modfiyStr[0] = ' ';
-		modfiyStr[0] = '\0';
-		flag = 1;
+		modfiyStr[1] = '\0';
+		stepTab[STEP_DZHIMODFIY] = 1;
 	}
-	if(flag == 1){//显示
+	if(stepTab[STEP_DZHIMODFIY] == 1){//显示
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){//汉字处理
 			GuiExchangeColor();
 			x = DZModfiyWin.x + DZModfiyWin.wide;
@@ -586,7 +587,7 @@ void DZModfiyFun(void)
 			GuiFont12Align(DZModfiyWin.x+18,y + 3,x - DZModfiyWin.x - 40,FONT_MID,\
 				(uint8_t *)dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pContent[keyIs]);
 			GuiExchangeColor();
-			flag = 3;
+			stepTab[STEP_DZHIMODFIY] = 3;
 		}
 		else{//float处理
 			DrawModfiyKey(keyIs);
@@ -594,24 +595,24 @@ void DZModfiyFun(void)
 				DZModfiyWin.x + 128,DZModfiyWin.y + 89, backcolor);
 			GuiFont12Align(DZModfiyWin.x + 50,\
 				DZModfiyWin.y + 77,78,FONT_MID,modfiyStr);
-			flag = 2;
+			stepTab[STEP_DZHIMODFIY] = 2;
 		}
 		GuiUpdateDisplayAll();
 	}
-	if(flag == 2){//光标闪动处理
+	if(stepTab[STEP_DZHIMODFIY] == 2){//光标闪动处理
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType == 0){
 			if(GetIntervalTick(inputCursorTick) < 500){
 				if(modfiyStr[modfiyStrP] != '|'){
 					modfiyStr[modfiyStrP] = '|';
 					modfiyStr[modfiyStrP + 1] = '\0';
-					flag = 1;
+					stepTab[STEP_DZHIMODFIY] = 1;
 				}
 			}
 			else if(GetIntervalTick(inputCursorTick) < 1000){
 				if(modfiyStr[modfiyStrP] != ' '){
 					modfiyStr[modfiyStrP] = ' ';
 					modfiyStr[modfiyStrP + 1] = '\0';
-					flag = 1;
+					stepTab[STEP_DZHIMODFIY] = 1;
 				}
 			}
 			else{
@@ -619,14 +620,14 @@ void DZModfiyFun(void)
 			}				
 		}
 	}
-	if(flag == 3){//等待
+	if(stepTab[STEP_DZHIMODFIY] == 3){//等待
 	}
-	if(flag == 4){//发送命令
+	if(stepTab[STEP_DZHIMODFIY] == 4){//发送命令
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){//汉字		
 			dZModfiy.str[0] = modfiyStr[0];
 			*(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pVal) = (float)modfiyStr[0];
 			dZModfiy.info->SaveModify(0);
-			flag = 5;
+			stepTab[STEP_DZHIMODFIY] = 5;
 		}
 		else{
 			modfiyStr[modfiyStrP] = '\0';
@@ -636,7 +637,7 @@ void DZModfiyFun(void)
 				*(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].pVal) = fValue;
 				strcpy((char *)dZModfiy.str,(char *)modfiyStr);
 				dZModfiy.info->SaveModify(0);
-				flag = 5;
+				stepTab[STEP_DZHIMODFIY] = 5;
 			}
 			else{//超出范围
 				GuiFillRect(DZModfiyWin.x + 57,DZModfiyWin.y + DZModfiyWin.hight - 14,\
@@ -644,26 +645,26 @@ void DZModfiyFun(void)
 				GuiFont12Align(DZModfiyWin.x + 57,DZModfiyWin.y + DZModfiyWin.hight - 14,70,FONT_RIGHT,"超出范围");
 				modfiyStr[modfiyStrP] = ' ';
 				modfiyStr[modfiyStrP + 1] = '\0';
-				flag = 2;
+				stepTab[STEP_DZHIMODFIY] = 2;
 			}
 		}
 	}
-	if(flag == 5){//发送完后等待回复
+	if(stepTab[STEP_DZHIMODFIY] == 5){//发送完后等待回复
 		GuiFillRect(DZModfiyWin.x + 57,DZModfiyWin.y + DZModfiyWin.hight - 14,\
 			DZModfiyWin.x + DZModfiyWin.wide - 2,DZModfiyWin.y + DZModfiyWin.hight - 2, backcolor);
 		GuiFont12Align(DZModfiyWin.x + 57,\
 			DZModfiyWin.y + DZModfiyWin.hight - 14,70,FONT_RIGHT,"修改成功");
 		GuiUpdateDisplayAll();
-		flag = 6;
+		stepTab[STEP_DZHIMODFIY] = 6;
 		inputCursorTick = getCurrentTick();
 	}
-	if(flag == 6){
+	if(stepTab[STEP_DZHIMODFIY] == 6){
 		if(GetIntervalTick(inputCursorTick) > 500){//延时退出
-			flag = 0;
+			stepTab[STEP_DZHIMODFIY] = 0;
 			userGUITopWindowHide();
 		}
 	}
-	if(keyStatus != CancelKey && flag >= 4){
+	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] >= 4){
 		keyStatus = NoKey;
 	}
 	switch(keyStatus){
@@ -674,7 +675,7 @@ void DZModfiyFun(void)
 			else
 				keyIs -= 7;
 		}
-		flag = 1;break;
+		stepTab[STEP_DZHIMODFIY] = 1;break;
 	case DownKey:
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType == 0){
 			if(keyIs >= 7)
@@ -682,7 +683,7 @@ void DZModfiyFun(void)
 			else
 				keyIs += 7;
 		}
-		flag = 1;break;
+		stepTab[STEP_DZHIMODFIY] = 1;break;
 	case LeftKey:
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){
 			if(keyIs == 0)
@@ -698,7 +699,7 @@ void DZModfiyFun(void)
 				keyIs --;
 			}
 		}
-		flag = 1;break;
+		stepTab[STEP_DZHIMODFIY] = 1;break;
 	case RightKey:
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){
 			if(keyIs == (dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType - 1))
@@ -712,11 +713,11 @@ void DZModfiyFun(void)
 			else
 				keyIs ++;
 		}
-		flag = 1;break;
+		stepTab[STEP_DZHIMODFIY] = 1;break;
 	case OkKey:
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){//命令发送
 			modfiyStr[0] = keyIs;
-			flag = 4;
+			stepTab[STEP_DZHIMODFIY] = 4;
 		}
 		else{
 			if(keyIs < 12 && keyIs != 6){
@@ -729,7 +730,7 @@ void DZModfiyFun(void)
 				modfiyStr[1] = '\0';
 				modfiyStrP = 0;
 				keyIs = 0;
-				flag = 0;
+				stepTab[STEP_DZHIMODFIY] = 0;
 				userGUITopWindowHide();
 			}
 			else if(keyIs == 12){
@@ -739,11 +740,11 @@ void DZModfiyFun(void)
 				}			
 			}
 			else if(keyIs == 13){//ok
-				flag = 4;//命令发送
+				stepTab[STEP_DZHIMODFIY] = 4;//命令发送
 			}
 		}break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_DZHIMODFIY] = 0;
 		userGUITopWindowHide();
 		break;
 	default: break;
@@ -896,11 +897,18 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
   */
 void HomeWindowFun(void)
 {
-	static uint8_t flag = 0;
-	SystemTimeDisplay *disTime,DisTime;
-	uint8_t strTime[24];
+	static SystemTimeDisplay *disTime;
+	static uint8_t *strTime;
+	static uint32_t homeTick;
+	static uint8_t tClose;
 	uint8_t i,j;
-	if(flag == 0){//绘制主页
+	uint16_t memMall;
+	if(stepTab[STEP_HOMEWIN] == 0){//绘制主页
+		memMall = 0;
+		strTime = &userGUIBuff[memMall];
+		memMall += 32;
+		disTime = (SystemTimeDisplay *)&userGUIBuff[memMall];
+		
 		lkdBitmap tImage;
 		tImage.number = 1;
 		tImage.wide = 160;
@@ -908,7 +916,7 @@ void HomeWindowFun(void)
 		tImage.beginx = 0;
 		tImage.beginy = 0;
 		tImage.bitmap = NULL;
-		GuiAreaBitMap(&tImage,HomeWindow.x+1,HomeWindow.y+25, 159, 55, 0);
+		GuiAreaBitMap(&tImage,HomeWindow.x+1,HomeWindow.y+25, 159, 55, 1);
 		j = 110;
 		for(i=1;i<24;i+=2){
 			GuiHPointLine(HomeWindow.x+1,i,j,2,forecolor);
@@ -939,38 +947,44 @@ void HomeWindowFun(void)
 		}
 		
 		GuiFont12Align(HomeWindow.x+31,96+34,90,FONT_MID,"开关状态");
-		flag = 1;
+		stepTab[STEP_HOMEWIN] = 1;
 	}
-	if(flag == 1){
-		disTime = &DisTime;
+	if(stepTab[STEP_HOMEWIN] == 1){
 		GuiExchangeColor();
 		GetDisplayTime(disTime);
 		sprintf((char *)strTime,"20%02d-%02d-%02d   %02d:%02d:%02d",disTime->year,\
 			disTime->month,disTime->day,disTime->hour,disTime->min,disTime->s);
 		GuiFont12Align(HomeWindow.x+2,82,156,FONT_MID,strTime);
 		GuiExchangeColor();
-		if(*(yxInfo.pRoot[1].pVal) == 2){
+		tClose = *(yxInfo.pRoot[1].pVal);
+		if(tClose == 2){
 			GuiFont12Align(HomeWindow.x+31+93,96+34,34,FONT_MID,"合");
 		}
 		else{
 			GuiFont12Align(HomeWindow.x+31+93,96+34,34,FONT_MID,"分");
 		}
 		GuiUpdateDisplayAll();
-		flag = 2;
+		stepTab[STEP_HOMEWIN] = 2;
+		homeTick = getCurrentTick();
+	}
+	if(stepTab[STEP_HOMEWIN] == 2){
+		if(GetIntervalTick(homeTick) > 1000 || tClose != *(yxInfo.pRoot[1].pVal)){
+			stepTab[STEP_HOMEWIN] = 1;
+		}
 	}
 	switch(keyStatus){
 	case UpKey:
 	case DownKey:
+		stepTab[STEP_HOMEWIN] = 0;
 		userGUIWindowAdd(&YaoCe2Win);
-		flag = 0;
 		break;
 	case LeftKey:
 	case RightKey:
+		stepTab[STEP_HOMEWIN] = 0;
 		userGUIWindowAdd(&YaoxinWin);
-		flag = 0;
 		break;
 	case OkKey:
-		flag = 0;
+		stepTab[STEP_HOMEWIN] = 0;
 		userGUIWindowAdd(&MenuWindow);
 		break;
 	case CancelKey:break;
@@ -998,37 +1012,36 @@ static void MenuWindowFun(void)
   */
 static void mianMenuFun(void)
 {
-	static uint8_t flag;
 	static uint8_t passWordState;
 	
-	if(flag == 0){
+	if(stepTab[STEP_MAINMENU] == 0){
 		passWordState = 0;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_MAINMENU] == 1){
 		switch(mianMenu.currentItem){
 		case 0://信息查询
 		case 4://版本信息
-			flag = 3;
+			stepTab[STEP_MAINMENU] = 3;
 			break;
 		case 1://定值设置
 		case 2://配置设置
 		case 3://命令下发
 			SetPassWordWin(0,&passWordState);
 			userGUIWindowAdd(&PassWordWin);
-			flag = 2;
+			stepTab[STEP_MAINMENU] = 2;
 			break;
 		default:break;
 		}			
 	}
-	else if(flag == 2){
+	else if(stepTab[STEP_MAINMENU] == 2){
 		if(passWordState == 1){
-			flag = 3;
+			stepTab[STEP_MAINMENU] = 3;
 		}
 		else{
-			flag = 0;
+			stepTab[STEP_MAINMENU] = 0;
 		}
 	}
-	if(flag == 3){
+	if(stepTab[STEP_MAINMENU] == 3){
 		switch(mianMenu.currentItem){
 		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
 		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
@@ -1047,20 +1060,20 @@ static void mianMenuFun(void)
 		break;
 	case LeftKey:
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_MAINMENU] = 0;
 		userGUIMenuHide();
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		break;
 	case RightKey:
 	case OkKey:
-		if(flag == 0){
-			flag = 1;
+		if(stepTab[STEP_MAINMENU] == 0){
+			stepTab[STEP_MAINMENU] = 1;
 		}
 		break;
 	}
-	if(flag == 3){
-		flag = 0;
+	if(stepTab[STEP_MAINMENU] == 3){
+		stepTab[STEP_MAINMENU] = 0;
 	}
 }
 
@@ -1327,16 +1340,15 @@ static void MenuM1S8Fun(void)
 static void CmdSendWinFun(void)
 {
 	const  uint8_t listCol[2][1] = {{156},{FONT_MID}};
-	static uint8_t flag = 0;//步骤标志
 	static SCROLL *Scroll;//进度条
 	static ListColSet colset;
 	static LIST  *list;//列表控件
 	static uint8_t **pText;//列表内容指针
 	static uint8_t messageFlag = 0;//步骤标志
-	uint16_t memMall;
 	static int8_t currentNum;
+	uint16_t memMall;
 	uint8_t i;
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		memMall = 0;	
 		list = (LIST  *)&userGUIBuff[memMall];
 		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
@@ -1362,15 +1374,15 @@ static void CmdSendWinFun(void)
 		list->content = (uint8_t **)pText;
 		list->colSet = &colset;	
 		currentNum = 0;
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){//获取相应数据	
+	if(stepTab[STEP_NORMAL] == 1){//获取相应数据	
 		for(i = 0;i < hcmdInfo.itemsNum;i++){
 			*(pText + i) = hcmdInfo.pHmiCmd[i].name;
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 	}
-	if(flag == 2){//显示
+	if(stepTab[STEP_NORMAL] == 2){//显示
 		list->currentRow = currentNum;
 		Scroll->lump = currentNum + 1;
 		if((list->currentRow /DISPLAYLISTROW)*DISPLAYLISTROW + DISPLAYLISTROW <= list->row){
@@ -1387,15 +1399,15 @@ static void CmdSendWinFun(void)
 		DrawList(list);
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){
+	if(stepTab[STEP_NORMAL] == 3){
 	}
-	if(flag == 4){
+	if(stepTab[STEP_NORMAL] == 4){
 		if(messageFlag == 1){
 			hcmdInfo.cmdfun(hcmdInfo.pHmiCmd[currentNum].cmd);
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 	}
 	switch(keyStatus){
 	case LeftKey:
@@ -1404,7 +1416,7 @@ static void CmdSendWinFun(void)
 		if(currentNum < 0){
 			currentNum = Scroll->max - 1;
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 		break;
 	case RightKey:
 	case DownKey:
@@ -1412,16 +1424,16 @@ static void CmdSendWinFun(void)
 		if(currentNum > Scroll->max - 1){
 			currentNum = 0;
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 		break;
 	case OkKey:
-		flag = 4;
+		stepTab[STEP_NORMAL] = 4;
 		messageFlag = 0;
 		SetMessageWin(23,40,"确定执行?",&messageFlag);
 		userGUIWindowAdd(&MessageWin);
 		break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -1456,13 +1468,12 @@ static void ConstParDataResult(const uint8_t *pData,uint8_t *outData,uint8_t len
   */
 static void VersionWinFun(void)
 {
-	static uint8_t flag = 0;//步骤标志
 	static SCROLL *Scroll;//进度条
 	static uint8_t *col1Data;//显示内容指针		
 	static int8_t currentNum;
 	uint16_t memMall;
 	uint8_t i,y;
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		memMall = 0;
 		col1Data = &userGUIBuff[memMall];
 		memMall += 28;
@@ -1474,12 +1485,12 @@ static void VersionWinFun(void)
 			(versInfo.num % CONSTPARDISPLAYROW > 0 ? 1 : 0);
 		Scroll->lump = 1;
 		currentNum = 0;
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){//获取相应数据
-		flag = 2;
+	if(stepTab[STEP_NORMAL] == 1){//获取相应数据
+		stepTab[STEP_NORMAL] = 2;
 	}
-	if(flag == 2){//显示
+	if(stepTab[STEP_NORMAL] == 2){//显示
 		y = VersionWin.y + 18;
 		GuiFillRect(VersionWin.x+1,y,155,158, backcolor);
 		for(i = 0; i < CONSTPARDISPLAYROW; i++){
@@ -1499,11 +1510,11 @@ static void VersionWinFun(void)
 		Scroll->lump = currentNum + 1;
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){
+	if(stepTab[STEP_NORMAL] == 3){
 	}
-	if(keyStatus != CancelKey && flag <= 1){
+	if(keyStatus != CancelKey && stepTab[STEP_NORMAL] <= 1){
 		keyStatus = NoKey;
 	}
 	switch(keyStatus){
@@ -1513,7 +1524,7 @@ static void VersionWinFun(void)
 		if(currentNum < 0){
 			currentNum = Scroll->max - 1;
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case RightKey:
 	case DownKey:
@@ -1521,11 +1532,11 @@ static void VersionWinFun(void)
 		if(currentNum > Scroll->max - 1){
 			currentNum = 0;
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case OkKey:break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -1541,8 +1552,7 @@ static void VersionWinFun(void)
   */
 static void InterphaseOverFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_INTERGHASE],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_INTERGHASE],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1552,8 +1562,7 @@ static void InterphaseOverFun(void)
   */
 static void ZeroSequenceOverFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_ZERO_SEQUE],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_ZERO_SEQUE],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1563,8 +1572,7 @@ static void ZeroSequenceOverFun(void)
   */
 static void CutoutSwitchFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_OTHER_PROTEC],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_OTHER_PROTEC],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1574,8 +1582,7 @@ static void CutoutSwitchFun(void)
   */
 static void LogicalFunFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_LOGICAL_FUN],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_LOGICAL_FUN],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1585,8 +1592,7 @@ static void LogicalFunFun(void)
   */
 static void OverLineWarnFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_LIMITATION],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_LIMITATION],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1596,8 +1602,7 @@ static void OverLineWarnFun(void)
   */
 static void OverLoadMuchFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_HEAVY_LOAD],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_HEAVY_LOAD],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1607,8 +1612,7 @@ static void OverLoadMuchFun(void)
   */
 static void OverLoadFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_OVERLOAD],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_OVERLOAD],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1618,8 +1622,7 @@ static void OverLoadFun(void)
   */
 static void OverVoltageFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_LIMIT_V_F],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_LIMIT_V_F],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1629,8 +1632,7 @@ static void OverVoltageFun(void)
   */
 static void BatterySetFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_IBATTERY_SET],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_IBATTERY_SET],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1640,8 +1642,7 @@ static void BatterySetFun(void)
   */
 static void AutoResetFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_AUTO_RESET],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_AUTO_RESET],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1651,8 +1652,7 @@ static void AutoResetFun(void)
   */
 static void RingUniteFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_LOOP_CLOSE],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_LOOP_CLOSE],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1662,8 +1662,7 @@ static void RingUniteFun(void)
   */
 static void BreakDownFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi1Info[DZ1_FAULT_SWITCH],&flag);
+	DZModfiyDisplay(&dzhi1Info[DZ1_FAULT_SWITCH],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1674,7 +1673,6 @@ static void BreakDownFun(void)
 static void YaoxinFun(void)
 {
 	const  uint8_t listCol[2][2] = {{90,66},{FONT_LEFT,FONT_MID}};
-	static uint8_t flag = 0;//步骤标志
 	static SCROLL *Scroll;//进度条
 	static ListColSet colset;
 	static LIST  *list;//列表控件
@@ -1686,7 +1684,7 @@ static void YaoxinFun(void)
 	uint8_t i;
 	uint8_t itemsNum;
 	
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		itemsNum = yxInfo.Num;
 		
 		memMall = 0;
@@ -1716,9 +1714,9 @@ static void YaoxinFun(void)
 		list->flag = LIST_USEBORDER_H;
 		list->content = (uint8_t **)pText;
 		list->colSet = &colset;	
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){//获取相应数据
+	if(stepTab[STEP_NORMAL] == 1){//获取相应数据
 		itemsNum = yxInfo.Num;
 		for(i = 0;i < itemsNum;i++){
 			col1Data[i] = (uint8_t )*(yxInfo.pRoot[yxInfo.pBuff[i]].pVal);
@@ -1730,9 +1728,9 @@ static void YaoxinFun(void)
 			else
 				*(pText + i*2 + 1) = (uint8_t *)yxInfo.pRoot[yxInfo.pBuff[i]].pContentYx[1];
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 	}
-	if(flag == 2){//显示
+	if(stepTab[STEP_NORMAL] == 2){//显示
 		if(list->drawRow == list->row - DISPLAYLISTROW){
 			Scroll->lump = Scroll->max;
 		}
@@ -1743,11 +1741,11 @@ static void YaoxinFun(void)
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
 		YaoXinTick = getCurrentTick();
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){//检测遥信变化
+	if(stepTab[STEP_NORMAL] == 3){//检测遥信变化
 		if(GetIntervalTick(YaoXinTick) > 1000){
-			flag = 1;
+			stepTab[STEP_NORMAL] = 1;
 		}
 	}
 
@@ -1757,20 +1755,20 @@ static void YaoxinFun(void)
 			list->drawRow -= DISPLAYLISTROW;
 		else
 			list->drawRow = 0;
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 		break;	
 	case DownKey:	
 		list->drawRow += DISPLAYLISTROW;
 		if(list->drawRow + DISPLAYLISTROW > list->row){
 			list->drawRow = list->row - DISPLAYLISTROW;
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 		break;
 	case LeftKey:break;
 	case RightKey:break;
 	case OkKey:break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -1790,7 +1788,6 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 {
 	const uint8_t listCol[2][YaoCeDISPLAYCOL] = {//表格列修饰
 		{50,75,31},{FONT_LEFT,FONT_MID,FONT_MID}};
-	static uint8_t flag = 0;//步骤标志
 	static SCROLL *Scroll;//进度条
 	static ListColSet colset;
 	static LIST  *list;//列表控件
@@ -1802,7 +1799,7 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 	uint8_t i;
 	uint8_t itemsNum = info->num;/* 可显示条目 */
 	float tempFloat;	
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		memMall = 0;	
 		list = (LIST  *)&userGUIBuff[memMall];
 		memMall += sizeof(LIST) + (4 - sizeof(LIST)%4);
@@ -1831,9 +1828,9 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 		list->content = (uint8_t **)pText;
 		list->colSet = &colset;
 		//获取数据中
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_NORMAL] == 1){
 		for(i = 0;i < itemsNum;i++){
 			tempFloat = *(info->pRoot[info->pBuff[i]].pVal);
 			if(((uint8_t)isnan(tempFloat)) != 0){
@@ -1847,9 +1844,9 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 			*(pText + i*YaoCeDISPLAYCOL + 1) = &col1Data[i*16];
 			*(pText + i*YaoCeDISPLAYCOL + 2) = (uint8_t *)info->pRoot[info->pBuff[i]].pUnit;
 		}
-		flag = 2;
+		stepTab[STEP_NORMAL] = 2;
 	}
-	if(flag == 2){//显示	
+	if(stepTab[STEP_NORMAL] == 2){//显示	
 		if(list->drawRow == list->row - DISPLAYLISTROW){
 			Scroll->lump = Scroll->max;
 		}
@@ -1861,37 +1858,37 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
 		YaoCeTick = getCurrentTick();
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){
+	if(stepTab[STEP_NORMAL] == 3){
 		if(GetIntervalTick(YaoCeTick) > YAOCE_UPDATATIME){//检测更新
-			flag = 1;
+			stepTab[STEP_NORMAL] = 1;
 		}
 	}
 	switch(keyStatus){
 	case UpKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			if(list->drawRow > DISPLAYLISTROW)
 				list->drawRow -= DISPLAYLISTROW;
 			else
 				list->drawRow = 0;
-			flag = 2;
+			stepTab[STEP_NORMAL] = 2;
 			break;
 		}	
 	case DownKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			list->drawRow += DISPLAYLISTROW;
 			if(list->drawRow + DISPLAYLISTROW > list->row){
 				list->drawRow = list->row - DISPLAYLISTROW;
 			}
-			flag = 2;
+			stepTab[STEP_NORMAL] = 2;
 			break;
 		}
 	case LeftKey:break;
 	case RightKey:break;
 	case OkKey:break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -1940,24 +1937,23 @@ static void SOEFun(void)
 	static struct SOEDisplay *soeStr;
 	static SCROLL Scroll ={156,18,141,2,1};//进度条
 	static uint8_t currentNum;
-	static uint8_t flag = 0;
 	SystemTimeDisplay *tTim;
 	uint8_t tRes;
 	uint8_t i;
 	uint16_t y;
 	
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		soeStr = (struct SOEDisplay *)&userGUIBuff[0];
 		soeStr->pRead = 0;
 		soeStr->allNum = GetSoeNum();
 		currentNum = 1;
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_NORMAL] == 1){
 		if(soeStr->allNum == 0){//没有SOE
 			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
 			GuiUpdateDisplayAll();
-			flag = 3;
+			stepTab[STEP_NORMAL] = 3;
 		}
 		else{
 			if(soeStr->allNum % SOEDISPLAYROW){
@@ -1966,13 +1962,13 @@ static void SOEFun(void)
 			else{
 				Scroll.max = soeStr->allNum / SOEDISPLAYROW;
 			}
-			flag = 2;
+			stepTab[STEP_NORMAL] = 2;
 		}
 	}
-	if(flag == 2){
+	if(stepTab[STEP_NORMAL] == 2){
 		soeStr->pRead = (currentNum - 1) * SOEDISPLAYROW;
 		if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
-			flag = 3;
+			stepTab[STEP_NORMAL] = 3;
 		}
 		y = SOEWin.y + 18;
 		GuiFillRect(SOEWin.x+1,y,155,158, backcolor);
@@ -2016,41 +2012,41 @@ static void SOEFun(void)
 		Scroll.lump = currentNum;
 		GuiVScroll(&Scroll);
 		GuiUpdateDisplayAll();
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){
+	if(stepTab[STEP_NORMAL] == 3){
 		if(CheckSoeUpdata()){//SOE有更新
 			soeStr->allNum = GetSoeNum();
 			soeStr->pRead = 0;
 			currentNum = 1;
-			flag = 1;
+			stepTab[STEP_NORMAL] = 1;
 		}
 	}
 	switch(keyStatus){
 	case UpKey:
 	case LeftKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			currentNum --;
 			if(currentNum < 1){
 				currentNum = Scroll.max;
 			}
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case DownKey:
 	case RightKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			currentNum ++;
 			if(currentNum > Scroll.max){
 				currentNum = 1;
 			}
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case OkKey:break;
 	case CancelKey:
 		currentNum = 0;
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -2066,7 +2062,6 @@ static void SOEFun(void)
   */
 static void FaultEventFun(void)
 {
-	static uint8_t flag = 0;
 	static struct EventDisplay *pEventStr;
 	static SCROLL Scroll ={156,18,141,2,1};//进度条
 	static SCROLL yaoCeScroll ={153,47,112,2,1};//进度条
@@ -2075,20 +2070,20 @@ static void FaultEventFun(void)
 	uint8_t i;
 	uint16_t y;
 	
-	if(flag == 0){//初始化，分配内存
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		pEventStr = (struct EventDisplay *)&userGUIBuff[0];
 		pEventStr->pRead = 0;
 		pEventStr->allNum = GetFeventNum();
 		currentNum = 1;
 		yaoCeNum = 1;
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_NORMAL] == 1){
 		if(pEventStr->allNum == 0){//没有故障事件
 			GuiFont12Align(FaultEventWin.x+2,FaultEventWin.y + 50,\
 			FaultEventWin.x+FaultEventWin.wide-4,FONT_MID,"当前没有故障事件");
 			GuiUpdateDisplayAll();
-			flag = 4;
+			stepTab[STEP_NORMAL] = 4;
 		}
 		else{
 			pEventStr->pRead = currentNum - 1;
@@ -2100,10 +2095,10 @@ static void FaultEventFun(void)
 			else{
 				yaoCeScroll.max = pEventStr->pFevent.yaoceNum - 8 + 1;
 			}
-			flag = 2;
+			stepTab[STEP_NORMAL] = 2;
 		}
 	}
-	if(flag == 2){//画图
+	if(stepTab[STEP_NORMAL] == 2){//画图
 		y = FaultEventWin.y + 18;
 		GuiFillRect(FaultEventWin.x+1,y,155,158, backcolor);
 		GuiHLine(FaultEventWin.x,y,155,forecolor);//水平线	
@@ -2127,9 +2122,9 @@ static void FaultEventFun(void)
 		Scroll.lump = currentNum;
 		GuiVScroll(&Scroll);
 		GuiHLine(FaultEventWin.x,y+28,155,forecolor);//水平线	
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(flag == 3){
+	if(stepTab[STEP_NORMAL] == 3){
 		y = FaultEventWin.y + 18 + 29;
 		yaoCeScroll.lump = yaoCeNum;
 		GuiVScroll(&yaoCeScroll);
@@ -2147,55 +2142,55 @@ static void FaultEventFun(void)
 			GuiHPointLine(FaultEventWin.x,y+13+i*14,151,2,forecolor);
 		}
 		GuiUpdateDisplayAll();
-		flag = 4;
+		stepTab[STEP_NORMAL] = 4;
 	}
-	if(flag == 4){
+	if(stepTab[STEP_NORMAL] == 4){
 		if(CheckFeventUpdata()){//SOE有更新
 			currentNum = 1;
-			flag = 1;
+			stepTab[STEP_NORMAL] = 1;
 		}
 	}
 	
 	switch(keyStatus){
 	case UpKey:
-		if(flag > 3){
+		if(stepTab[STEP_NORMAL] > 3){
 			yaoCeNum --;
 			if(yaoCeNum < 1){
 				yaoCeNum = yaoCeScroll.max;
 			}
 		}
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 		break;
 	case LeftKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			currentNum --;
 			if(currentNum < 1){
 				currentNum = Scroll.max;
 			}
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case DownKey:
-		if(flag > 3){
+		if(stepTab[STEP_NORMAL] > 3){
 			yaoCeNum ++;
 			if(yaoCeNum > yaoCeScroll.max){
 				yaoCeNum = 1;
 			}
 		}
-		flag = 3;
+		stepTab[STEP_NORMAL] = 3;
 		break;
 	case RightKey:
-		if(flag > 1){
+		if(stepTab[STEP_NORMAL] > 1){
 			currentNum ++;
 			if(currentNum > Scroll.max){
 				currentNum = 1;
 			}
 		}
-		flag = 1;
+		stepTab[STEP_NORMAL] = 1;
 		break;
 	case OkKey:break;
 	case CancelKey:
-		flag = 0;
+		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
 		userGUIMenuRedraw();
@@ -2211,8 +2206,7 @@ static void FaultEventFun(void)
   */
 static void BasicSetFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi0Info[DZ0_CONFIG],&flag);
+	DZModfiyDisplay(&dzhi0Info[DZ0_CONFIG],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -2222,8 +2216,7 @@ static void BasicSetFun(void)
   */
 static void ZeroDriftFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi0Info[DZ0_ZERODRIFT],&flag);
+	DZModfiyDisplay(&dzhi0Info[DZ0_ZERODRIFT],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -2233,8 +2226,7 @@ static void ZeroDriftFun(void)
   */
 static void DeadZoneFun(void)
 {
-	static uint8_t flag = 0;
-	DZModfiyDisplay(&dzhi0Info[DZ0_DEADEZONE],&flag);
+	DZModfiyDisplay(&dzhi0Info[DZ0_DEADEZONE],&stepTab[STEP_NORMAL]);
 }
 
 /* END */

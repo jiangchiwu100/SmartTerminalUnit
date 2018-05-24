@@ -797,6 +797,14 @@ uint8_t DLT634_HMI_SLAVE_AppInit(uint8_t pdrv)
 uint8_t DLT634_HMI_SLAVE_Clock(uint8_t pdrv)
 {
     uint8_t sta = FALSE;
+	static uint8_t startflag = 1;
+	
+	if(startflag)
+	{
+	      startflag = 0;
+				DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_ASKSTATUS;
+				DLT634_HMISLAVE_App[pdrv].TimeOutTick_AskCount = _DLT634_HMISLAVE_NUMOF_MAXRETRY;
+	}
     
 	DLT634_HMISLAVE_App[pdrv].ClockCounter++;
 	if (DLT634_HMISLAVE_App[pdrv].ClockCounter >= DLT634_HMISLAVE_Pad[pdrv].ClockTimers)

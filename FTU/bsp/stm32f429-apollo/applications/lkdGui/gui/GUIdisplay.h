@@ -82,6 +82,15 @@ struct DZModfiy{
 	uint8_t *str;	/* 要修改的字符串 */
 };
 
+enum RunStepType{
+	STEP_NORMAL,
+	STEP_PASSWORD,
+	STEP_MESSAGE,
+	STEP_DZHIMODFIY,
+	STEP_HOMEWIN,
+	STEP_MAINMENU,
+	STEP_ALLNUM,
+};
 /* 首页界面窗口 */
 static void HomeWindowFun(void);
 /* 菜单窗口 */

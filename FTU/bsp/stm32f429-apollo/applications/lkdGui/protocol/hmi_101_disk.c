@@ -184,8 +184,24 @@ int DLT634_HMI_SLAVE_INIT(void)
 void DLT634_HMI_SlaveTask(void)
 {
     static uint8_t disk0 = DLT634_HMISLAVE_DISK0;
+	
+		static uint8_t hmi_init = 1;
     
-    DLT634_HMI_SLAVE_Clock(disk0);     
+    if(DLT634_HMI_SLAVE_Clock(disk0))
+		{
+				if(hmi_init)
+				{
+						hmi_init = 0;	
+						
+				}					
+		}
+		else
+		{
+				if(hmi_init == 0)
+				{
+						hmi_init = 1;	
+				}		
+		}
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
