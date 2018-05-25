@@ -358,7 +358,7 @@
 #define RT_USING_SLAVE104                                              (1) // 104从站通讯任务
 #define RT_USING_DP83848                                               (1) // LWIP通讯任务DP83848_2404
 #define RT_USING_W5500                                                 (1) // LWIP通讯任务W5500_2404
-#define RT_USING_HMICOM                                                (1) // HMI通讯任务
+#define RT_USING_HMICOM                                                (0) // HMI通讯任务
 #define RT_USING_FTUIDLE                                               (1) // 空闲任务
 
 /* thread parameter Configuration */

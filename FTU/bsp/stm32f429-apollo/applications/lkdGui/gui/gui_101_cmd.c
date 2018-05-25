@@ -597,9 +597,35 @@ static void Hmi101ThreadEntity(void *param)
 	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
 	if (result != RT_EOK){  
 	}
+	cmd101.state = 0;
 	userVariableDisplayInit();
 	GUIDisplayInit();
+	rt_kprintf("\r\n面板初始化完成");
+	for (;;){ 				
+		GUIDisplayMian();
+		rt_thread_delay(20);		
+	}
 }
+
+/**
+  *@brief hmi101线程等相关杀死
+  *@param  None
+  *@retval None
+  */
+void HmiThreadDelete(void)
+{
+	rt_err_t result;
+	result = rt_event_detach(&Cmd101SendEvent);
+	if (result != RT_EOK){  
+	}
+	time_static_detach();
+	if (result != RT_EOK){  
+	}
+	result = rt_thread_detach(&Hmi101Thread);
+	if (result != RT_EOK){  
+	}
+}
+
 /**
   *@brief hmi101初始化
   *@param  None
@@ -608,24 +634,20 @@ static void Hmi101ThreadEntity(void *param)
 void Hmi101Init(void)
 {
 	rt_err_t result;
-	time_static_init();
-	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
-	if (result != RT_EOK){  
+	static uint8_t flag;
+	if(flag == 1){
+		HmiThreadDelete();
+		flag = 0;
 	}
-	result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
-		RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
-	if(result == RT_EOK){
-		rt_thread_startup(&Hmi101Thread);
+	if(flag == 0){
+		rt_kprintf("\r\n面板线程");
+		result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
+			RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
+		if(result == RT_EOK){
+			rt_thread_startup(&Hmi101Thread);
+			flag = 1;
+		}
 	}
 }
 
-void HmiThreadDelete(void)
-{
-	rt_err_t result;
-	rt_event_detach(&Cmd101SendEvent);
-	time_static_detach();
-	if (result != RT_EOK){  
-	}
-	rt_thread_detach(&Hmi101Thread);
-}
 /* END */

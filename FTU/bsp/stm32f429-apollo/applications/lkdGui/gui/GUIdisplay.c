@@ -901,6 +901,7 @@ void HomeWindowFun(void)
 	uint8_t i,j;
 	uint16_t memMall;
 	if(stepTab[STEP_HOMEWIN] == 0){//»æÖÆÖ÷Ò³
+		rt_kprintf("\r\nÖ÷°åflag0");
 		memMall = 0;
 		strTime = &userGUIBuff[memMall];
 		memMall += 32;

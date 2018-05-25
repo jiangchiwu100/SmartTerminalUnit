@@ -35,7 +35,10 @@ void time_static_init(void)
   */
 void time_static_detach(void)
 {
+	rt_err_t result;
 	rt_timer_detach(&Timer1);
+	if (result != RT_EOK){  
+	}
 }
 /**
   *@brief 获取开始计时数
