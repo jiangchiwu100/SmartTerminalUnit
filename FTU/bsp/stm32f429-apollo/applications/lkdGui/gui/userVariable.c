@@ -430,7 +430,7 @@ static void HmiCmdSendFun(uint8_t cmdIs)
 	{
 		case 0:/* Çå³ý¼ÇÂ¼ */
 			DBClear();
-			DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR,ON);
+			DBWriteCO(ADDR_REMOTE_CLEAR,ON);
 			break;
 		case 1:/* ·ÖÕ¢ */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){

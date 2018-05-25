@@ -175,9 +175,6 @@ __packed struct CP56Time2a_t
 #define NVA_MAX_NUM                   64
 #define ULOG_MAX_NUM                  32
 
-#define TELESIGNAL_TOTAL_NUM        (sizeof(TelesignalDatabase) / sizeof(rt_uint8_t)) // 遥信总数
-#define TELEMETRY_TOTAL_NUM         (sizeof(TelemetryDatabase) / sizeof(float))    // 遥测总数	
-#define REMOTE_TOTAL_NUM             10    // 遥控总数	
 #define INHERENT_PARAMETER_NUM      (sizeof(InherentPara) / sizeof(char) / 24)          // 终端固有参数数量
 //#define RUN_PARAMETER_NUM     		(sizeof(RunParameter) / sizeof(float))         // 终端运行参数数量
 ///#define CALIBRATE_FACTOR_NUM        (sizeof(CalibrateFactor) / sizeof(float))      // 校准系数数量
@@ -240,17 +237,6 @@ typedef struct
 #define CALIBRATE_FACTOR_START_ADDR   0x8201    	// 校准系数起始地址
 #define CALIBRATE_VALUE_START_ADDR    0x8240    	// 校准值起始地址
 #define FIXED_VALUE_START_ADDR         0x8301	    // 终端保护定值起始地址
-
-
-#define DISTANT_REMOTE_ADDR           0x6001      // 远方操作
-#define DISTANT_ACTIVE_ADDR           0x6002      // 活化操作
-#define DISTANT_RESET_ADDR            0x6003      // 复归操作
-#define DISTANT_CLAER_HISTORY_ADDR    0x6004      // 远程清除记录
-#define LOCAL_OPERATION_ADDR          0x6005      // 本地操作
-#define LOCAL_RESET_ADDR              0x6006      // 复归操作
-#define LOCAL_CLAER_HISTORY_ADDR      0x6007      // 本地清除记录
-#define LOCAL_REMOTE_ADDR             0x6008      // 本地遥控操作 (小白)
-
 
 #define OPEN_SELECT_FAIL              0x01 | 0x20 // 遥控分闸选择失败  00000001
 #define OPEN_SELECT_SUCCESS           0x05 | 0x20 // 遥控分闸选择成功  00000101
@@ -466,7 +452,7 @@ enum TelesignalAddr
     ADDR_OVERLIMIT_DC_I_DOWN,                             // 直流电流越限
     ADDR_DEVICE_POWER_DOWN,                               // 装置掉电
 	
-	TELESIGNAL_NUM
+	TELESIGNAL_TOTAL_NUM
 };
 
 ///* 遥信数据 */
@@ -633,12 +619,12 @@ enum TelemetryAddr
 	FIFTHHARMONIC_Ic,
 	FIFTHHARMONIC_I0,
 
-    TELEMETRY_NUM
+    TELEMETRY_TOTAL_NUM
 };
  
 enum TelecontrlAddr
 {
-    ADDR_REMOTE_OPERATE = 0x6001, // 遥控操作
+    ADDR_REMOTE_OPERATE,          // 遥控操作
 	ADDR_REMOTE_ACTIVE,           // 电池活化
 	ADDR_REMOTE_RESET,            // 远方复位
 	ADDR_REMOTE_CLEAR,            // 远方清除记录
@@ -646,6 +632,8 @@ enum TelecontrlAddr
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录
 	ADDR_HANDHELD_OPER,           // 手持操作
+    
+    REMOTE_TOTAL_NUM
 };
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \
@@ -1177,28 +1165,28 @@ extern struct ConfigurationSetDatabase *g_ConfigurationSetDB;
 extern struct SD2405Time g_SystemTime;
 
 /* 遥信缓存 */
-extern uint8_t				g_TelesignalDB[TELESIGNAL_NUM];	
+extern uint8_t				g_TelesignalDB[TELESIGNAL_TOTAL_NUM];	
 /* 新遥信点表映射 */
 //extern List NewList_Telesignal[TELESIGNAL_TOTAL_NUM];
 extern rt_uint16_t g_NewMaxNumTelesignal;
 extern rt_uint16_t g_NewToOldTelesignal[];//新点表映射
 
 /* 遥测缓存 */
-extern float g_TelemetryDB[TELEMETRY_NUM];
-extern float g_TelemetryLastDB[TELEMETRY_NUM];
+extern float g_TelemetryDB[TELEMETRY_TOTAL_NUM];
+extern float g_TelemetryLastDB[TELEMETRY_TOTAL_NUM];
 extern float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 #if RT_USING_TELEMETRY_SET
-extern float    g_TelemetrySetEnable[TELEMETRY_NUM];
-extern float    g_TelemetrySetValue[TELEMETRY_NUM];
+extern float    g_TelemetrySetEnable[TELEMETRY_TOTAL_NUM];
+extern float    g_TelemetrySetValue[TELEMETRY_TOTAL_NUM];
 #endif
 
 /* 新遥测点表映射 */
-extern rt_uint16_t g_NewPropertyTelemetry[TELEMETRY_NUM];//新点表属性
-extern float       g_NewMultipleRateTelemetry[TELEMETRY_NUM];//倍率
-extern rt_uint16_t g_NewAddTelemetry[TELEMETRY_NUM];//写入对应新地址
+extern rt_uint16_t g_NewPropertyTelemetry[TELEMETRY_TOTAL_NUM];//新点表属性
+extern float       g_NewMultipleRateTelemetry[TELEMETRY_TOTAL_NUM];//倍率
+extern rt_uint16_t g_NewAddTelemetry[TELEMETRY_TOTAL_NUM];//写入对应新地址
 
 extern rt_uint16_t g_NewMaxNumTelemetry;//新点表个数
-extern rt_uint16_t g_NewToOldTelemetry[TELEMETRY_NUM];//新点表映射，填原点表数组下标
+extern rt_uint16_t g_NewToOldTelemetry[TELEMETRY_TOTAL_NUM];//新点表映射，填原点表数组下标
 
 /* 新遥控点表映射 */
 extern rt_uint16_t g_NewToOldRemote[REMOTE_TOTAL_NUM];//新点表映射，填原点表数组下标

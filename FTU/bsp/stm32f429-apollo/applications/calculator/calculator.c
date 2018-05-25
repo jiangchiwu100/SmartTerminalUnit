@@ -610,7 +610,7 @@ static void CalculateData(void)
     g_TelemetryDB[THIRDHARMONIC_I0] = I05;
     
 #if RT_USING_TELEMETRY_SET    
-    for (i = 0; i < TELEMETRY_NUM; i++)
+    for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)
     {
         if (g_TelemetrySetEnable[i] == SWITCH_ON)
         {

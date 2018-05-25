@@ -186,14 +186,14 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
     
     memcpy(temp_array[pdrv],pbuf,pbuf[0]);
     
-    if(((addr >= REMOTE_START_ADDR)&&(addr < REMOTE_START_ADDR + 10))&&(g_NewToOldRemote[addr - REMOTE_START_ADDR] != 0)&&\
+    if(((addr >= REMOTE_START_ADDR)&&(addr < REMOTE_START_ADDR + REMOTE_TOTAL_NUM))&&(g_NewToOldRemote[addr - REMOTE_START_ADDR] != 0)&&\
         ((g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))||(!(g_CommunicatFlag[COM_YK]&COMMUNICATLOCKUSERSTA))))
     {
         if((g_NewToOldPropertyRemote[addr - REMOTE_START_ADDR]>>NEWPROPERTY_NEG) & NEWPROPERTY_JUDG)
         {
             value = (~value)&0x03;        
         }
-        addr = g_NewToOldRemote[addr - REMOTE_START_ADDR];
+        addr = g_NewToOldRemote[addr - REMOTE_START_ADDR] - REMOTE_START_ADDR;
     }
     else
     {                            
@@ -209,11 +209,11 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
-                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))    				
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != ADDR_REMOTE_OPERATE))    				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
-                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))    
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))    
 		      #endif                              
                 {
                     valuesuc = OFF;
@@ -232,13 +232,13 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
                      && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))     				
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))     				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
                      && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))           
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))           
 		      #endif 				    
                 {
                     valuesuc = ON;
@@ -257,7 +257,7 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
         }
         else
         {
-            DBWriteSOE(DISTANT_REMOTE_ADDR, DISTANT_REMOTE_CANCEL);
+            DBWriteCO(addr, DISTANT_REMOTE_CANCEL);
             valuesuc = 0;
             addrsuc = 0;
             temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_DEACTCON;
@@ -277,27 +277,27 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))    				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
                      && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif   				     
                 {
                     switch(addr)
                     {
-                        case DISTANT_REMOTE_ADDR:
+                        case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_OPEN, DISTANCE);
                             break;
-                        case DISTANT_RESET_ADDR:
+                        case ADDR_REMOTE_ACTIVE:
                             DBRevert(DISTANCE);
-                            DBWriteSOE(DISTANT_RESET_ADDR, ON);
+                            DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case DISTANT_ACTIVE_ADDR:
+                        case ADDR_REMOTE_RESET:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE_END, DISTANCE);
                             break;
-                        case DISTANT_CLAER_HISTORY_ADDR:
+                        case ADDR_REMOTE_CLEAR:
                             DBClear();
-                            DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR, ON);
+                            DBWriteCO(ADDR_REMOTE_CLEAR, ON);
                             break;
                     }
                     valuesuc = 0;
@@ -321,27 +321,27 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))  				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
                           && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif 				  
                 {
                     switch(addr)
                     {
-                        case DISTANT_REMOTE_ADDR:
+                        case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_CLOSE, DISTANCE);
                             break;
-                        case DISTANT_RESET_ADDR:
+                        case ADDR_REMOTE_ACTIVE:
                             DBRevert(DISTANCE);
-                            DBWriteSOE(DISTANT_RESET_ADDR, ON);
+                            DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case DISTANT_ACTIVE_ADDR:
+                        case ADDR_REMOTE_RESET:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE, DISTANCE);
                             break;
-                        case DISTANT_CLAER_HISTORY_ADDR:
+                        case ADDR_REMOTE_CLEAR:
                             DBClear();
-                            DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR, ON);
+                            DBWriteCO(ADDR_REMOTE_CLEAR, ON);
                             break;
                     }
                     valuesuc = 0;
@@ -360,7 +360,7 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
         }
         else
         {
-            DBWriteSOE(DISTANT_REMOTE_ADDR, DISTANT_REMOTE_CANCEL);
+            DBWriteCO(addr, DISTANT_REMOTE_CANCEL);
             valuesuc = 0;
             addrsuc = 0;
             temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_DEACTCON;

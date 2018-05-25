@@ -61,15 +61,15 @@ static rt_uint8_t rt_hw_close_operate(void)
 				switch (DoStr.actSource)
 				{
                     case REMOTE:
-                        DBWriteSOE(LOCAL_REMOTE_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_HANDHELD_OPER, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case LOCAL:
-                        DBWriteSOE(LOCAL_OPERATION_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_LOCAL_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case DISTANCE:
-                        DBWriteSOE(DISTANT_REMOTE_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_REMOTE_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case LOGIC_ACT:
@@ -347,15 +347,15 @@ rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
             switch (DoStr.actSource)
             {
             case REMOTE:
-                DBWriteSOE(LOCAL_REMOTE_ADDR, rtl);
+                DBWriteCO(ADDR_HANDHELD_OPER, rtl);
                 DoStr.actSource = 0;
                 break;
             case LOCAL:
-                DBWriteSOE(LOCAL_OPERATION_ADDR, rtl);
+                DBWriteCO(ADDR_LOCAL_OPERATE, rtl);
                 DoStr.actSource = 0;
                 break;
             case DISTANCE:
-                DBWriteSOE(DISTANT_REMOTE_ADDR, rtl);
+                DBWriteCO(ADDR_REMOTE_OPERATE, rtl);
                 DoStr.actSource = 0;
                 break;
             case LOGIC_ACT:
@@ -380,15 +380,15 @@ rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
             switch (DoStr.actSource)
             {
             case REMOTE:
-                DBWriteSOE(LOCAL_REMOTE_ADDR, rtl);
+                DBWriteCO(ADDR_HANDHELD_OPER, rtl);
                 DoStr.actSource = 0;
                 break;
             case LOCAL:
-                DBWriteSOE(LOCAL_OPERATION_ADDR, rtl);
+                DBWriteCO(ADDR_LOCAL_OPERATE, rtl);
                 DoStr.actSource = 0;
                 break;
             case DISTANCE:
-                DBWriteSOE(DISTANT_REMOTE_ADDR, rtl);
+                DBWriteCO(ADDR_REMOTE_OPERATE, rtl);
                 DoStr.actSource = 0;
                 break;
             case LOGIC_ACT:
@@ -414,7 +414,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
         switch (act)
         {
         case DISTANCE:
-            DBWriteSOE(DISTANT_ACTIVE_ADDR, ON);
+            DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
             break;
 //  			        case LOCAL:
 //                    soe.addr = LOCAL_ACTIVE_ADDR;
@@ -436,7 +436,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
         switch (act)
         {
         case DISTANCE:
-            DBWriteSOE(DISTANT_ACTIVE_ADDR, OFF);
+            DBWriteCO(ADDR_REMOTE_ACTIVE, OFF);
             break;
 //  			        case LOCAL:
 //                    soe.addr = LOCAL_ACTIVE_ADDR;
