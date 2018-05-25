@@ -74,34 +74,33 @@ static enum DingZhiSetOrSee GetDingZhiSetOrSee(void)
 static uint8_t GUIDisplayONOFF(enum KeyStatus *key)
 {
 	static uint32_t LcdDisPlayTick;//计时
-	static uint8_t flag;
 	static uint8_t lcdONOFF;
-	if(flag == 0){
-		LcdDisPlayTick = getCurrentTick();
+	if(stepTab[STEP_UPDATAPRO] == 0){
+		OpenLcdDisplay();
 		lcdONOFF = LCDDISPLAYON;
-		flag = 1;
+		LcdDisPlayTick = getCurrentTick();
+		stepTab[STEP_UPDATAPRO] = 1;
 	}
-	if(flag == 1){
+	if(stepTab[STEP_UPDATAPRO] == 1){
 		if(*key != NoKey){
 			LcdDisPlayTick = getCurrentTick();
 			if(lcdONOFF == LCDDISPLAYOFF){
-				lcdONOFF = LCDDISPLAYON;
 				*key = NoKey;
 				OpenLcdDisplay();
+				lcdONOFF = LCDDISPLAYON;
 			}
 		}
 		else{
 			if(lcdONOFF == LCDDISPLAYON){
 				if(GetIntervalTick(LcdDisPlayTick) > LCDDISPLAYOFFTIME){//时间
-					lcdONOFF = LCDDISPLAYOFF;
 					CloseLcdDisplay();
+					lcdONOFF = LCDDISPLAYOFF;
 				}
 			}
 		}
 	}
 	return lcdONOFF;
 }
-
 
 /**
   *@brief GUI启动界面
@@ -152,7 +151,6 @@ void GUIUpdataProgram(void)
 {
 	uint8_t i,j;
 	lkdBitmap tImage;
-	
 	GuiFillRect(1,1,158,158, backcolor);
 	tImage.number = 1;
 	tImage.wide = 160;
@@ -160,7 +158,7 @@ void GUIUpdataProgram(void)
 	tImage.beginx = 0;
 	tImage.beginy = 0;
 	tImage.bitmap = NULL;
-	GuiAreaBitMap(&tImage,1, 25, 159, 55, 0);
+	GuiAreaBitMap(&tImage,1, 25, 159, 55, 1);
 	j = 110;
 	for(i=1;i<24;i+=2){
 		GuiHPointLine(1,i,j,2,forecolor);
@@ -211,9 +209,10 @@ void GUIWiatMessage(uint8_t x,uint8_t y)
   */
 void GUIDisplayInit(void)
 {
-	
 	MenuManageInit();
 	WinManageInit();
+	GuiSetForecolor(1);
+	GuiSetbackcolor(0);
 	for(uint8_t i = 0; i < STEP_ALLNUM; i++){
 		stepTab[i] = 0;
 	}
@@ -227,24 +226,22 @@ void GUIDisplayInit(void)
   */
 void GUIDisplayMian(void)
 {
-//	static uint8_t flag;
-//	uint8_t upDataProgram;
-//	//upDataProgram = GetDtatUpdateStatus();
+	static uint8_t flag;
 	keyStatus = GetKeyStatus();//获取按键状态
 	SetKeyIsNoKey();
-//	if(flag == 0 && upDataProgram.bit.programUpdate != 0){
-//		OpenLcdDisplay();
-//		GUIUpdataProgram();//在线更新
-//		flag = 1;
-//	}
-//	else if(flag == 1 && upDataProgram.bit.programUpdate == 0){
-//		flag = 0;
-//		//NVIC_SystemReset();//重启
-//	}
-//	else if(flag == 0  && GUIDisplayONOFF(&keyStatus) == LCDDISPLAYON){
-//		
-//	}
-	userGUITopWindowDisplay();
+	if(CheckUpdataProgram() != 0){
+		if(flag == 0){
+			OpenLcdDisplay();
+			GUIUpdataProgram();//在线更新
+			flag = 1;
+		}
+	}
+	else if(GUIDisplayONOFF(&keyStatus) == LCDDISPLAYON){
+		userGUITopWindowDisplay();
+		if(flag == 1){
+			flag = 0;
+		}
+	}
 }
 
 /**

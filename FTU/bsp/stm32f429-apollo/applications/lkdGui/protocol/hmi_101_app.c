@@ -222,6 +222,9 @@ static void DLT634_HMI_SLAVE_StatusReset(uint8_t pdrv)
     DLT634_HMISLAVE_App[pdrv].LinkFlag = 0;
     DLT634_HMISLAVE_App[pdrv].DataFlag = 0;
 	
+		memset((uint8_t *)DLT634_HMISLAVE_App[pdrv].StoreDATABuf,0,sizeof(DLT634_HMISLAVE_App[pdrv].StoreDATABuf)); 
+		DLT634_HMI_SLAVE_EMPTY(pdrv);
+	
 		DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_INITEND;//初始化结束标志
 		DLT634_HMISLAVE_App[pdrv].DataFlag |= _DLT634_HMISLAVE_CALLALLDATA;
 }

@@ -9,5 +9,5 @@ uint32_t GetTimer1Tick(void);/* 获取Timer1当前计数*/
 uint32_t GetTimer1IntervalTick(uint32_t beginTick);
 
 void time_static_init(void); /* Timer1初始化*/
-
+void time_static_detach(void);
 #endif

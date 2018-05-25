@@ -15,16 +15,21 @@
 #include <rtthread.h>
 #include "hmiInOut.h"
 #include "userVariable.h"
+#include "gui_common.h"
+#include "GUIdisplay.h"
+
+/* hmi101线程使用 */
+#define HMI101_STACKSIZE 2048
+#define HMI101_THREADPRIORITY 24
+static struct rt_thread Hmi101Thread;
+static rt_uint8_t Hmi101Threadstack[HMI101_STACKSIZE];
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
-
-
+/* cmd101控制结构 */
 Gui101CmdControl cmd101;
-
 /* 定义前景色/背景色 */
 lkdColour forecolor = 1,backcolor;
-/* 定义按键状态 */
 
 /**
   *@brief  结束101压栈
@@ -89,7 +94,11 @@ void Cmd101SendFinish(void)
 	rt_event_send(&Cmd101SendEvent, (1 << 0));
 }
 
-
+/**
+  *@brief  开始101压栈
+  *@param  None
+  *@retval None
+  */
 void BeginCmd101Down(void)
 {
 	if(cmd101.state != 0){
@@ -367,6 +376,7 @@ void CloseLcdDisplay(void)
 	cmd101.packBuff[cmd101.pIn + CMD104_LEN] = 3;
 	cmd101.pIn += 3;
 	cmd101.cmdNum += 1;
+	EndCmd101Down();
 }
 
 /**
@@ -516,20 +526,6 @@ void GuiExchangeColor(void)
 }
 
 /**
-  *@brief hmi101初始化
-  *@param  None
-  *@retval None
-  */
-void Hmi101Init(void)
-{
-	rt_err_t result;
-	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
-	if (result != RT_EOK){  
-	}
-	userVariableDisplayInit();
-}
-
-/**
   *@brief Gui108命令处理
   *@param  pbuff 内容数组
   *@retval 内容大小
@@ -594,4 +590,42 @@ uint8_t hmi101Scan(uint8_t *pBuff)
 	return 0;
 }
 
+static void Hmi101ThreadEntity(void *param)
+{
+	rt_err_t result;
+	time_static_init();
+	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
+	if (result != RT_EOK){  
+	}
+	userVariableDisplayInit();
+	GUIDisplayInit();
+}
+/**
+  *@brief hmi101初始化
+  *@param  None
+  *@retval None
+  */
+void Hmi101Init(void)
+{
+	rt_err_t result;
+	time_static_init();
+	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
+	if (result != RT_EOK){  
+	}
+	result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
+		RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
+	if(result == RT_EOK){
+		rt_thread_startup(&Hmi101Thread);
+	}
+}
+
+void HmiThreadDelete(void)
+{
+	rt_err_t result;
+	rt_event_detach(&Cmd101SendEvent);
+	time_static_detach();
+	if (result != RT_EOK){  
+	}
+	rt_thread_detach(&Hmi101Thread);
+}
 /* END */
