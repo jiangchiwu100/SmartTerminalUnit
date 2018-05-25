@@ -622,18 +622,18 @@ void ReadDoc_Record(void)
         return;
     }
 	
-    read(MyFile, &g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
+    read(MyFile, g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
    
     FILE_PRINTF("f_read ConfigurationSet.cfg\n", MyFile);
     
 //存储FRAM语句 	
-    if(g_ConfigurationSetDB.ID_Value[0] != 0)
+    if(g_ConfigurationSetDB->ID_Value[0] != 0)
     {
-        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
+        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
     }
     else
     {
-        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB) - sizeof(g_ConfigurationSetDB.ID_Value));
+        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase) - sizeof(g_ConfigurationSetDB->ID_Value));
     }
     
 	close(MyFile);

@@ -1111,9 +1111,9 @@ struct ConfigurationSetDatabase
     uint16_t YXSetNum;//YX设置总数
     uint16_t YXSet[299];//YX设置
 //YC设置
-    uint16_t YCAddr[100];//值
-    uint16_t YCProperty[100];//属性
-    float YCMultipleRate[100];//倍率
+    uint16_t YCAddr[80];//值
+    uint16_t YCProperty[80];//属性
+    float YCMultipleRate[80];//倍率
 //YK设置
     uint16_t YKAddr[10];//值
     uint16_t YKProperty[10];//属性
@@ -1131,7 +1131,6 @@ struct ConfigurationSetDatabase
 //移位
 #define NEWPROPERTY_TI      0 //类型标识
 #define NEWPROPERTY_NEG     2 //取反
-#define NEWPROPERTY_COE     2 //系数
 #define NEWPROPERTY_SOE     4 //上送SOE
 #define NEWPROPERTY_COS     6 //上送COS
 #define NEWONEYX_PROPERTY   0 //属性
@@ -1172,7 +1171,7 @@ extern Queue *g_SampleQueueBuf;// __attribute__((at(SDRAM_ADDR_WAVE)));    // �
 extern uint16_t g_StartWave;
 
 /* 系统配置 */
-extern struct ConfigurationSetDatabase g_ConfigurationSetDB;
+extern struct ConfigurationSetDatabase *g_ConfigurationSetDB;
 
 /* 系统时间 */
 extern struct SD2405Time g_SystemTime;
@@ -1195,6 +1194,7 @@ extern float    g_TelemetrySetValue[TELEMETRY_NUM];
 
 /* 新遥测点表映射 */
 extern rt_uint16_t g_NewPropertyTelemetry[TELEMETRY_NUM];//新点表属性
+extern float       g_NewMultipleRateTelemetry[TELEMETRY_NUM];//倍率
 extern rt_uint16_t g_NewAddTelemetry[TELEMETRY_NUM];//写入对应新地址
 
 extern rt_uint16_t g_NewMaxNumTelemetry;//新点表个数

@@ -946,7 +946,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
         switch(Property)
         {
             case DLT634_5104SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(nva_temp.value/10/(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)*32768);
+                tempu = (int16_t)(nva_temp.value/(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])*32768);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 10] = 0;
@@ -954,7 +954,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
                 memcpy(&temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 11],(uint8_t *)&tempu,sizeof(int16_t));
                 break;
             case DLT634_5104SLAVE_M_ME_NB_1:
-                tempu = (int16_t)(nva_temp.value*(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));            
+                tempu = (int16_t)(nva_temp.value*(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));            
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 10] = 0;
@@ -962,7 +962,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
                 memcpy(&temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 11],(uint8_t *)&tempu,sizeof(int16_t));
                 break;
             case DLT634_5104SLAVE_M_ME_NC_1:
-				tempf = FloatToBin(nva_temp.value*(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)); 
+				tempf = FloatToBin(nva_temp.value*(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])); 
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 10] = 0;
@@ -1170,20 +1170,20 @@ uint16_t DLT634_5104_SLAVE_ReadYcData(uint8_t pdrv, uint16_t addr, uint16_t num,
         switch(Property)
         {
             case DLT634_5104SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/10/\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)*32768);
+                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/\
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])*32768);
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NB_1:
                 tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NC_1:
                 tempf = FloatToBin(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + sizeof(uint32_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + 11],&tempf,sizeof(uint32_t));   
                 break;                    
