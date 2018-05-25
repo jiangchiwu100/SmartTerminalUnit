@@ -1233,44 +1233,6 @@ void rt_multi_common_data_configure_default(void)
 {
     uint16_t i;
     
-//串口配置
-    g_ConfigurationSetDB.UartPort = 1;      //中1，右2
-    g_ConfigurationSetDB.UartBaudRate = 4;  //波特率，1200为1,2400为2,4800为3,9600为4,38400为5,115200为6
-    g_ConfigurationSetDB.UartWordLength = 8;    //数据位
-    g_ConfigurationSetDB.UartStopBits = 1;      //停止位
-    g_ConfigurationSetDB.UartParity = 1;        //无校验1，奇校验2，偶校验3
-//串口设置
-    g_ConfigurationSetDB.UartBalanMode = 1;     //非平衡0，平衡1
-    g_ConfigurationSetDB.UartSourceAddr = 1;    //从站地址
-    g_ConfigurationSetDB.UartLinkAddrSize = 2;  //从站地址长度
-    g_ConfigurationSetDB.UartASDUCotSize = 2;   //传送原因字节数
-    g_ConfigurationSetDB.UartASDUAddr = 1;      //ASDU地址
-    g_ConfigurationSetDB.UartASDUAddrSize = 2;  //ASDU地址长度
-//网口配置
-    g_ConfigurationSetDB.Netip1[0] = 192; //IP上
-    g_ConfigurationSetDB.Netip1[1] = 168; //IP上
-    g_ConfigurationSetDB.Netip1[2] = 60; //IP上
-    g_ConfigurationSetDB.Netip1[3] = 100; //IP上
-    g_ConfigurationSetDB.Netip2[0] = 192; //IP下
-    g_ConfigurationSetDB.Netip2[1] = 168; //IP下
-    g_ConfigurationSetDB.Netip2[2] = 60; //IP下
-    g_ConfigurationSetDB.Netip2[3] = 120; //IP下
-    g_ConfigurationSetDB.Netnetmask[0] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[1] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[2] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[3] = 0; //子网掩码
-    g_ConfigurationSetDB.Netgateway[0] = 192; //网关
-    g_ConfigurationSetDB.Netgateway[1] = 168; //网关
-    g_ConfigurationSetDB.Netgateway[2] = 60; //网关
-    g_ConfigurationSetDB.Netgateway[3] = 254; //网关
-    g_ConfigurationSetDB.Netdns[0] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[1] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[2] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[3] = 114;//DNS
-//网口设置
-    g_ConfigurationSetDB.NetSourceAddr = 1;//从站地址
-    g_ConfigurationSetDB.NetASDUAddr = 1;//ASDU地址
-    
     g_ConfigurationSetDB.YXSetNum = TELESIGNAL_NUM;
     
     for(i=0; i<TELESIGNAL_NUM;i++)
@@ -1339,10 +1301,6 @@ void rt_multi_common_data_read_config_from_fram(void)
     /* 读取配置文件 */
     //FM25VxxReadData(ADDR_FRAM_CONFIG, NULL, (uint8_t *)&, sizeof(g_ConfigurationSetDB));
     rt_multi_common_data_fram_record_read(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB);
-    if(g_ConfigurationSetDB.UartPort == 0)//检查配置文件是否为空
-    {
-        configureFault = 1;
-    }
     
     for(i=0,temp1=0;((i<g_ConfigurationSetDB.YXSetNum)&&(configureFault == 0));i++)//检查遥信
     {
@@ -1436,15 +1394,15 @@ void rt_multi_common_data_para_init(void)
 //    g_EthW5500 = (struct lwip_dev)RT_ETH2_CONFIG_DEFAULT;
 	
     //不同
-    g_EthDP83848.ip[0] = g_ConfigurationSetDB.Netip1[0];
-    g_EthDP83848.ip[1] = g_ConfigurationSetDB.Netip1[1];
-    g_EthDP83848.ip[2] = g_ConfigurationSetDB.Netip1[2];
-    g_EthDP83848.ip[3] = g_ConfigurationSetDB.Netip1[3];
+    g_EthDP83848.ip[0] = (uint8_t)g_Parameter[NET_IP1_0];
+    g_EthDP83848.ip[1] = (uint8_t)g_Parameter[NET_IP1_1];
+    g_EthDP83848.ip[2] = (uint8_t)g_Parameter[NET_IP1_2];
+    g_EthDP83848.ip[3] = (uint8_t)g_Parameter[NET_IP1_3];
     
-    g_EthW5500.ip[0] = g_ConfigurationSetDB.Netip2[0];
-    g_EthW5500.ip[1] = g_ConfigurationSetDB.Netip2[1];
-    g_EthW5500.ip[2] = g_ConfigurationSetDB.Netip2[2];
-    g_EthW5500.ip[3] = g_ConfigurationSetDB.Netip2[3];
+    g_EthW5500.ip[0] = (uint8_t)g_Parameter[NET_IP2_0];
+    g_EthW5500.ip[1] = (uint8_t)g_Parameter[NET_IP2_1];
+    g_EthW5500.ip[2] = (uint8_t)g_Parameter[NET_IP2_2];
+    g_EthW5500.ip[3] = (uint8_t)g_Parameter[NET_IP2_3];
     
     g_EthDP83848.mac[0] = 0x00;
     g_EthDP83848.mac[1] = 0x80;
@@ -1461,36 +1419,37 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.mac[5] = *(rt_uint8_t*)(UID_BASE + 4);
     
     //相同
-    g_EthDP83848.netmask[0] = g_ConfigurationSetDB.Netnetmask[0];
-    g_EthDP83848.netmask[1] = g_ConfigurationSetDB.Netnetmask[1];
-    g_EthDP83848.netmask[2] = g_ConfigurationSetDB.Netnetmask[2];
-    g_EthDP83848.netmask[3] = g_ConfigurationSetDB.Netnetmask[3];
-    g_EthDP83848.gateway[0] = g_ConfigurationSetDB.Netgateway[0];
-    g_EthDP83848.gateway[1] = g_ConfigurationSetDB.Netgateway[1];
-    g_EthDP83848.gateway[2] = g_ConfigurationSetDB.Netgateway[2];
-    g_EthDP83848.gateway[3] = g_ConfigurationSetDB.Netgateway[3];
-    g_EthDP83848.dns[0] = g_ConfigurationSetDB.Netdns[0];
-    g_EthDP83848.dns[1] = g_ConfigurationSetDB.Netdns[1];
-    g_EthDP83848.dns[2] = g_ConfigurationSetDB.Netdns[2];
-    g_EthDP83848.dns[3] = g_ConfigurationSetDB.Netdns[3];
+    g_EthDP83848.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
+    g_EthDP83848.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
+    g_EthDP83848.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
+    g_EthDP83848.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthDP83848.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
+    g_EthDP83848.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
+    g_EthDP83848.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
+    g_EthDP83848.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+    g_EthDP83848.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
+    g_EthDP83848.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
+    g_EthDP83848.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
+    g_EthDP83848.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
     g_EthDP83848.remoteip[0] = 192;
     g_EthDP83848.remoteip[1] = 168;
     g_EthDP83848.remoteip[2] = 60;
     g_EthDP83848.remoteip[3] = 115;
     g_EthDP83848.dhcpstatus = 0;
     
-    g_EthW5500.netmask[0] = g_ConfigurationSetDB.Netnetmask[0];
-    g_EthW5500.netmask[1] = g_ConfigurationSetDB.Netnetmask[1];
-    g_EthW5500.netmask[2] = g_ConfigurationSetDB.Netnetmask[2];
-    g_EthW5500.netmask[3] = g_ConfigurationSetDB.Netnetmask[3];
-    g_EthW5500.gateway[0] = g_ConfigurationSetDB.Netgateway[0];
-    g_EthW5500.gateway[1] = g_ConfigurationSetDB.Netgateway[1];
-    g_EthW5500.gateway[2] = g_ConfigurationSetDB.Netgateway[2];
-    g_EthW5500.gateway[3] = g_ConfigurationSetDB.Netgateway[3];
-    g_EthW5500.dns[0] = g_ConfigurationSetDB.Netdns[0];
-    g_EthW5500.dns[1] = g_ConfigurationSetDB.Netdns[1];
-    g_EthW5500.dns[2] = g_ConfigurationSetDB.Netdns[2];
-    g_EthW5500.dns[3] = g_ConfigurationSetDB.Netdns[3];
+    g_EthW5500.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
+    g_EthW5500.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
+    g_EthW5500.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
+    g_EthW5500.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthW5500.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
+    g_EthW5500.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
+    g_EthW5500.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
+    g_EthW5500.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+    g_EthW5500.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
+    g_EthW5500.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
+    g_EthW5500.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
+    g_EthW5500.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
+
     g_EthW5500.remoteip[0] = 192;
     g_EthW5500.remoteip[1] = 168;
     g_EthW5500.remoteip[2] = 60;

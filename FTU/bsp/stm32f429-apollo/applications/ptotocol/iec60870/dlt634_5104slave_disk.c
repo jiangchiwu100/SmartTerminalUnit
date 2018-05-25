@@ -1489,8 +1489,8 @@ int DLT634_5104_ParaInit(void)
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5104Slave_Pad[pdrv].Port = SLAVE104_ID0; // 端口号
 
-                DLT634_5104Slave_Pad[pdrv].LinkAddress = g_ConfigurationSetDB.NetSourceAddr; // 链路地址
-                DLT634_5104Slave_Pad[pdrv].PubAddress  = g_ConfigurationSetDB.NetASDUAddr; // 公共地址
+                DLT634_5104Slave_Pad[pdrv].LinkAddress = (uint16_t)g_Parameter[NET_SOURCEADDR]; // 链路地址
+                DLT634_5104Slave_Pad[pdrv].PubAddress  = (uint16_t)g_Parameter[NET_ASDUADDR]; // 公共地址
                     
                 DLT634_5104Slave_Pad[pdrv].CotSize = 2;        // 传输原因字节数
                 DLT634_5104Slave_Pad[pdrv].InfoAddrSize = 3;   // 信息体地址字节数
@@ -1515,8 +1515,8 @@ int DLT634_5104_ParaInit(void)
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5104Slave_Pad[pdrv].Port = SLAVE104_ID1; // 端口号
 
-                DLT634_5104Slave_Pad[pdrv].LinkAddress = g_ConfigurationSetDB.NetSourceAddr; // 链路地址
-                DLT634_5104Slave_Pad[pdrv].PubAddress  = g_ConfigurationSetDB.NetASDUAddr; // 公共地址
+                DLT634_5104Slave_Pad[pdrv].LinkAddress = (uint16_t)g_Parameter[NET_SOURCEADDR]; // 链路地址
+                DLT634_5104Slave_Pad[pdrv].PubAddress  = (uint16_t)g_Parameter[NET_ASDUADDR]; // 公共地址
                     
                 DLT634_5104Slave_Pad[pdrv].CotSize = 2;        // 传输原因字节数
                 DLT634_5104Slave_Pad[pdrv].InfoAddrSize = 3;   // 信息体地址字节数

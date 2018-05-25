@@ -320,15 +320,16 @@ enum ActReasion
 #define ADDR_FRAM_CURRENT_SN            0x00004  // 当前定值区号 1个字节
 
 #define ADDR_FRAM_CALI_FACTOR           0x00050  // 校准系数存储起始地址 0x50
-#define ADDR_FRAM_AREA0                 0x00100	 // FRAM参数存储起始地址 运行参数0区     0x200
-#define ADDR_FRAM_AREA1		            0x00300	 // FRAM参数存储起始地址	定值区一     0x300
-#define ADDR_FRAM_AREA2		            0x00600	 // FRAM参数存储起始地址	定值区二     0x300
-#define ADDR_FRAM_SOE                   0x00900  // FRAM参数存储起始地址 SOE  // 0x1400
-#define ADDR_FRAM_SOE_NEW               0x01D00  // FRAM参数存储起始地址 SOE  // 0x1400
-#define ADDR_FRAM_FEVENT                0x03100  // 故障事件起始地址 0x500
-#define ADDR_FRAM_CO                    0x03600  // 操作记录起始地址 0x300
-#define ADDR_FRAM_LOG                   0x03900  // 日志起始地址 0x1000
-#define ADDR_FRAM_MEMORY                0x04900  // 日志起始地址 0x100
+#define ADDR_FRAM_AREA0                 0x00100	 // FRAM参数存储起始地址 运行参数0区     0x300
+#define ADDR_FRAM_AREA1		            0x00400	 // FRAM参数存储起始地址	定值区一     0x300
+#define ADDR_FRAM_AREA2		            0x00700	 // FRAM参数存储起始地址	定值区二     0x300
+
+#define ADDR_FRAM_SOE                   0x00A00  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_SOE_NEW               0x01E00  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_FEVENT                0x03200  // 故障事件起始地址 0x500
+#define ADDR_FRAM_CO                    0x03700  // 操作记录起始地址 0x300
+#define ADDR_FRAM_LOG                   0x03A00  // 日志起始地址 0x1000
+#define ADDR_FRAM_MEMORY                0x04A00  // 状态标志地址 0x100
 #define ADDR_FRAM_TELISIGNAL            0x05000  // 遥信起始地址 0x100
 
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x400
@@ -759,6 +760,39 @@ enum AddrRunParameter
     DEADZONE_DC1,                         // 直流电压死区
     DEADZONE_DC2,                         // 直流量2死区
     DEADZONE_T,				              // 温度死区	
+    UART_PORT,                            // 串口号
+    UART_BAUDRATE,                        // 波特率
+    UART_WORDLENGTH,                      // 数据位
+    UART_STOPBITS,                        // 停止位
+    UART_PARITY,                          // 校验位
+    UART_BALANMODE,                       // 串口模式
+    UART_SOURCEADDR,                      // 从站地址
+    UART_LINKADDRSIZE,                    // 从站地址长度
+    UART_ASDUCOTSIZE,                     // 传送原因字节数
+    UART_ASDUADDR,                        // ASDU地址
+    UART_ASDUADDRSIZE,                    // ASDU地址长度
+    NET_IP1_0,                            // IP上
+    NET_IP1_1,                            // IP上
+    NET_IP1_2,                            // IP上
+    NET_IP1_3,                            // IP上
+    NET_IP2_0,                            // IP下
+    NET_IP2_1,                            // IP下
+    NET_IP2_2,                            // IP下
+    NET_IP2_3,                            // IP下
+    NET_NETMASK_0,                        // 子网掩码
+    NET_NETMASK_1,                        // 子网掩码
+    NET_NETMASK_2,                        // 子网掩码
+    NET_NETMASK_3,                        // 子网掩码
+    NET_GATEWAY_0,                        // 网关
+    NET_GATEWAY_1,                        // 网关
+    NET_GATEWAY_2,                        // 网关
+    NET_GATEWAY_3,                        // 网关
+    NET_DNS_0,                            // DNS
+    NET_DNS_1,                            // DNS
+    NET_DNS_2,                            // DNS
+    NET_DNS_3,                            // DNS    
+    NET_SOURCEADDR,                       // 从站地址
+    NET_ASDUADDR,                         // ASDU地址   
 	
     RUN_PARAMETER_NUM,	                  // 运行参数数量
 };
@@ -1073,34 +1107,13 @@ struct lwip_dev
 
 struct ConfigurationSetDatabase
 {
-//串口配置
-    uint16_t UartPort;      //左1，中2，右3
-    uint16_t UartBaudRate;      //波特率 1200.2400,4800,9600,38400,115200
-    uint16_t UartWordLength;    //数据位
-    uint16_t UartStopBits;      //停止位
-    uint16_t UartParity;        //无校验1，奇校验2，偶校验3
-//串口设置
-    uint16_t UartBalanMode;     //非平衡0，平衡1
-    uint16_t UartSourceAddr;    //从站地址
-    uint16_t UartLinkAddrSize;  //从站地址长度
-    uint16_t UartASDUCotSize;   //传送原因字节数
-    uint16_t UartASDUAddr;      //ASDU地址
-    uint16_t UartASDUAddrSize;  //ASDU地址长度
-//网口配置
-    uint16_t Netip1[4]; //IP上
-    uint16_t Netip2[4]; //IP下·
-    uint16_t Netnetmask[4]; //子网掩码
-    uint16_t Netgateway[4]; //网关
-    uint16_t Netdns[4];//DNS
-//网口设置
-    uint16_t NetSourceAddr;//从站地址
-    uint16_t NetASDUAddr;//ASDU地址
 //YX设置
     uint16_t YXSetNum;//YX设置总数
     uint16_t YXSet[299];//YX设置
 //YC设置
-    uint16_t YCAddr[50];//值
-    uint16_t YCProperty[50];//属性
+    uint16_t YCAddr[100];//值
+    uint16_t YCProperty[100];//属性
+    float YCMultipleRate[100];//倍率
 //YK设置
     uint16_t YKAddr[10];//值
     uint16_t YKProperty[10];//属性

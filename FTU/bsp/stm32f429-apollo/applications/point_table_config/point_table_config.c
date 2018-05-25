@@ -298,7 +298,40 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,  ME_DEADEZONE,   "功率因数死区",    &g_Parameter[DEADZONE_PF],                  "%",      99.99f,     0.00f,   5,          0,     {"-",  "-"         },   " "    },	
     { 1,  ME_DEADEZONE,   "直流1死区",       &g_Parameter[DEADZONE_DC1],                 "%",      99.99f,     0.00f,   99.99f,     0,     {"-",  "-"         },   " "    },	
     { 1,  ME_DEADEZONE,   "直流2死区",       &g_Parameter[DEADZONE_DC2],                 "%",      99.99f,     0.00f,   99.99f,     0,     {"-",  "-"         },   " "    },	
-    { 1,  ME_DEADEZONE,   "温度死区",        &g_Parameter[DEADZONE_T],                   "%",      99.99f,     0.00f,   99.99f,     0,     {"-",  "-"         },   " "    },		
+    { 1,  ME_DEADEZONE,   "温度死区",        &g_Parameter[DEADZONE_T],                   "%",      99.99f,     0.00f,   99.99f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_UART_COM,    "串口号",          &g_Parameter[UART_PORT],                    "-",       1,           0,     0,          2,     {"串口1", "串口2"},   " "   }, 
+    { 1,  ME_UART_COM,    "波特率",          &g_Parameter[UART_BAUDRATE],                "-",       4,           0,     2,          5,     {"2400", "4800", "9600", "38400", "11520"},   " "   }, 
+    { 1,  ME_UART_COM,    "数据位",          &g_Parameter[UART_WORDLENGTH],              "-",       9.00f,     5.00f,    9.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_UART_COM,    "停止位",          &g_Parameter[UART_STOPBITS],                "-",       3.00f,     0.00f,    1.00f,     0,     {"-",  "-"         },   " "    },                    
+    { 1,  ME_UART_COM,    "校验位",          &g_Parameter[UART_PARITY],                  "-",       2,           0,     0,          3,     {"无校验", "奇校验", "偶校验"},   " "   },                      
+    { 1,  ME_UART_COM,    "101模式",         &g_Parameter[UART_BALANMODE],               "-",       1,           0,     1,          2,     {"非平衡", "平衡"},   " "   },                 
+    { 1,  ME_UART_COM,    "从站地址",        &g_Parameter[UART_SOURCEADDR],              "-",   65535.00f,     1.00f,    1.00f,     0,     {"-",  "-"         },   " "    },                 
+    { 1,  ME_UART_COM,    "地址长度",        &g_Parameter[UART_LINKADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,     {"-",  "-"         },   " "    },                    
+    { 1,  ME_UART_COM,    "原因长度",        &g_Parameter[UART_ASDUCOTSIZE],             "-",       2.00f,     1.00f,    2.00f,     0,     {"-",  "-"         },   " "    },              
+    { 1,  ME_UART_COM,    "ASDU地址",        &g_Parameter[UART_ASDUADDR],                "-",   65535.00f,     1.00f,    1.00f,     0,     {"-",  "-"         },   " "    },                
+    { 1,  ME_UART_COM,    "ASDU长度",        &g_Parameter[UART_ASDUADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,     {"-",  "-"         },   " "    },                         
+    { 1,  ME_NET_COM,     "上IP_1",         &g_Parameter[NET_IP1_0],                     "-",     255.00f,     0.00f,  192.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "上IP_2",         &g_Parameter[NET_IP1_1],                     "-",     255.00f,     0.00f,  168.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "上IP_3",         &g_Parameter[NET_IP1_2],                     "-",     255.00f,     0.00f,   60.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "上IP_4",         &g_Parameter[NET_IP1_3],                     "-",     255.00f,     0.00f,  100.00f,     0,     {"-",  "-"         },   " "    },    
+    { 1,  ME_NET_COM,     "下IP_1",         &g_Parameter[NET_IP2_0],                     "-",     255.00f,     0.00f,  192.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "下IP_2",         &g_Parameter[NET_IP2_1],                     "-",     255.00f,     0.00f,  168.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "下IP_3",         &g_Parameter[NET_IP2_2],                     "-",     255.00f,     0.00f,   60.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "下IP_4",         &g_Parameter[NET_IP2_3],                     "-",     255.00f,     0.00f,  120.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "子网_1",         &g_Parameter[NET_NETMASK_0],                 "-",     255.00f,     0.00f,  255.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "子网_2",         &g_Parameter[NET_NETMASK_1],                 "-",     255.00f,     0.00f,  255.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "子网_3",         &g_Parameter[NET_NETMASK_2],                 "-",     255.00f,     0.00f,  255.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "子网_4",         &g_Parameter[NET_NETMASK_3],                 "-",     255.00f,     0.00f,  255.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "网关_1",         &g_Parameter[NET_GATEWAY_0],                 "-",     255.00f,     0.00f,  192.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "网关_2",         &g_Parameter[NET_GATEWAY_1],                 "-",     255.00f,     0.00f,  168.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "网关_3",         &g_Parameter[NET_GATEWAY_2],                 "-",     255.00f,     0.00f,   60.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "网关_4",         &g_Parameter[NET_GATEWAY_3],                 "-",     255.00f,     0.00f,  254.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "DNS_1",          &g_Parameter[NET_DNS_0],                     "-",     255.00f,     0.00f,  114.00f,     0,     {"-",  "-"         },   " "    }, 
+    { 1,  ME_NET_COM,     "DNS_2",          &g_Parameter[NET_DNS_1],                     "-",     255.00f,     0.00f,  114.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "DNS_3",          &g_Parameter[NET_DNS_2],                     "-",     255.00f,     0.00f,  114.00f,     0,     {"-",  "-"         },   " "    },
+    { 1,  ME_NET_COM,     "DNS_4",          &g_Parameter[NET_DNS_3],                     "-",     255.00f,     0.00f,  114.00f,     0,     {"-",  "-"         },   " "    },                           
+    { 1,  ME_UART_COM,    "从站地址",       &g_Parameter[NET_SOURCEADDR],                "-",   65535.00f,     1.00f,    1.00f,     0,     {"-",  "-"         },   " "    },                
+    { 1,  ME_UART_COM,    "ASDU地址",       &g_Parameter[NET_ASDUADDR],                  "-",   65535.00f,     1.00f,    1.00f,     0,     {"-",  "-"         },   " "    },                                                                               
 }; 
 
 /* 定值一区 */
@@ -545,53 +578,12 @@ struct tagValueParaCfg FixedValueCfg2[] =
     { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue2[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,     {"-",  "-"         },   " "    },	
 };
 
-//配置信息
-ConfigurationSetDatabaseToJson SetDatabaseCfg[] = {
-//    名称                    数据长度            数据
-//串口配置
-    {.name = "串口配置",          .dataLen = 1,       .value = {1.00f}   },
-    {.name = "波特率",            .dataLen = 1,       .value = {0.0f}   },
-    {.name = "数据位",            .dataLen = 1,       .value = {0.0f}   },
-    {.name = "停止位",            .dataLen = 1,       .value = {0.0f}   },
-    {.name = "校验",              .dataLen = 1,       .value = {0.0f}   },
-//串口设置
-    {.name = "通讯模式",          .dataLen = 1,       .value = {0.0f}   },
-    {.name = "从站地址",          .dataLen = 2,       .value = {0.0f}   },
-    {.name = "从站地址长度",      .dataLen = 1,       .value = {0.0f}   },
-    {.name = "传送原因字节数",    .dataLen = 1,       .value = {0.0f}   },
-    {.name = "ASDU地址",         .dataLen = 2,       .value = {0.0f}   },
-    {.name = "ASDU地址长度",     .dataLen = 1,       .value = {0.0f}   },
-//网口配置
-    {.name = "上行IP",           .dataLen = 4,       .value = {0.0f}   },
-    {.name = "下行IP",           .dataLen = 4,       .value = {0.0f}   },
-    {.name = "子网掩码",         .dataLen = 4,       .value = {0.0f}   },
-    {.name = "网关",             .dataLen = 4,       .value = {0.0f}   },
-    {.name = "DNS",             .dataLen = 4,       .value = {0.0f}   },
-//网口设置
-    {.name = "从站地址",         .dataLen = 2,       .value = {0.0f}   },
-    {.name = "ASDU地址",         .dataLen = 2,       .value = {0.0f}   },
-//YX设置
-    {.name = "YX设置总数",       .dataLen = 1,       .value = {0.0f}   },
-    {.name = "YX设置",           .dataLen = 200,     .value = {0.0f}   },
-//YC设置
-    {.name = "YC值",            .dataLen = 100,      .value = {0.0f}   },
-    {.name = "属性",            .dataLen = 100,      .value = {0.0f}   },
-    {.name = "倍率",            .dataLen = 100,      .value = {0.0f}   },
-//YK设置
-    {.name = "YK值",           .dataLen = 1,         .value = {0.0f}   },
-    {.name = "属性",           .dataLen = 1,         .value = {0.0f}   },
-    //ID设置 
-    {.name = "ID",             .dataLen = 12,       .value = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f}   },
-
-};
-
 unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0]);
 unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
 unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0]);
 unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
 unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
 unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
-unsigned int g_SetDatabaseCfg_Len = sizeof(SetDatabaseCfg) / sizeof(SetDatabaseCfg[0]);
 unsigned int g_TelecontrolCfg_Len = sizeof(TelecontrolCfg) / sizeof(TelecontrolCfg[0]);
 unsigned int g_InherentParaCfg_Len = sizeof(InherentParaCfg) / sizeof(InherentParaCfg[0]);
 /* END OF FILE ---------------------------------------------------------------*/

@@ -1402,32 +1402,29 @@ int DLT634_5101_SLAVE_INIT(void)
     uint32_t UartBaudRate;
     uint32_t UartParity;
     
-    switch(g_ConfigurationSetDB.UartBaudRate)
+    switch((uint16_t)g_Parameter[UART_BAUDRATE])
     {
-        case 1: 
-            UartBaudRate = BAUD_RATE_1200;
-        break;
-        case 2: 
+        case 0: 
             UartBaudRate = BAUD_RATE_2400;
         break;
-        case 3: 
+        case 1: 
             UartBaudRate = BAUD_RATE_4800;
         break;
-        case 4: 
+        case 2: 
             UartBaudRate = BAUD_RATE_9600;
         break;
-        case 5: 
+        case 3: 
             UartBaudRate = BAUD_RATE_38400;
         break;
-        case 6: 
+        case 4: 
             UartBaudRate = BAUD_RATE_115200;
         break; 
         default:
-            UartBaudRate = BAUD_RATE_1200;
+            UartBaudRate = BAUD_RATE_9600;
         break;
     }
     
-    switch(g_ConfigurationSetDB.UartParity)
+    switch((uint16_t)g_Parameter[UART_PARITY])
     {
         case 1: 
             UartParity = PARITY_NONE;
@@ -1479,17 +1476,17 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101_SLAVE_AppInit(pdrv);
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID1;   
-                if(g_ConfigurationSetDB.UartPort == 1)
+                if((uint16_t)g_Parameter[UART_PORT])
                 {dev[pdrv] = rt_device_find(RT_USART3_NAME);}
                 else
                 {dev[pdrv] = rt_device_find(RT_USART1_NAME);}
                 serial = (struct rt_serial_device *)(dev[pdrv]);
                 serial->config.baud_rate = UartBaudRate;
                 serial->config.parity = UartParity;
-                serial->config.data_bits = g_ConfigurationSetDB.UartWordLength;
-                serial->config.stop_bits = g_ConfigurationSetDB.UartStopBits;
+                serial->config.data_bits = (uint16_t)g_Parameter[UART_WORDLENGTH];
+                serial->config.stop_bits = (uint16_t)g_Parameter[UART_STOPBITS];
                 rt_device_open(dev[pdrv], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);               
-                DLT634_5101Slave_Pad[pdrv].BalanMode = g_ConfigurationSetDB.UartBalanMode;
+                DLT634_5101Slave_Pad[pdrv].BalanMode = (uint8_t)g_Parameter[UART_BALANMODE];
                 DLT634_5101Slave_Pad[pdrv].Encrypt = 0;
                 if (DLT634_5101Slave_Pad[pdrv].Encrypt)
                 {
@@ -1497,11 +1494,11 @@ int DLT634_5101_SLAVE_INIT(void)
                     {DLT634_5101Slave_Pad[pdrv].Encrypt = 0;}
                 }
                 DLT634_5101Slave_Pad[pdrv].IEC_DIR = 0x80;
-                DLT634_5101Slave_Pad[pdrv].SourceAddr = g_ConfigurationSetDB.UartSourceAddr;
-                DLT634_5101Slave_Pad[pdrv].LinkAddrSize = g_ConfigurationSetDB.UartLinkAddrSize;//1:97,2:02
-                DLT634_5101Slave_Pad[pdrv].ASDUCotSize = g_ConfigurationSetDB.UartASDUCotSize;//1:97,2:02 
-                DLT634_5101Slave_Pad[pdrv].ASDUAddr = g_ConfigurationSetDB.UartASDUAddr;
-                DLT634_5101Slave_Pad[pdrv].ASDUAddrSize = g_ConfigurationSetDB.UartASDUAddrSize;//1:97,2:02
+                DLT634_5101Slave_Pad[pdrv].SourceAddr = (uint16_t)g_Parameter[UART_SOURCEADDR];
+                DLT634_5101Slave_Pad[pdrv].LinkAddrSize = (uint16_t)g_Parameter[UART_LINKADDRSIZE];//1:97,2:02
+                DLT634_5101Slave_Pad[pdrv].ASDUCotSize = (uint16_t)g_Parameter[UART_ASDUCOTSIZE];//1:97,2:02 
+                DLT634_5101Slave_Pad[pdrv].ASDUAddr = (uint16_t)g_Parameter[UART_ASDUADDR];
+                DLT634_5101Slave_Pad[pdrv].ASDUAddrSize = (uint16_t)g_Parameter[UART_ASDUADDRSIZE];//1:97,2:02
                 DLT634_5101Slave_Pad[pdrv].FixFrmLength = 4 + DLT634_5101Slave_Pad[pdrv].LinkAddrSize;//5:97,6:02
                 DLT634_5101Slave_Pad[pdrv].ClockTimers = 300*1000/DLT_101SLAVE_MS/UartBaudRate + 1;
                 DLT634_5101Slave_Pad[pdrv].YX_AllNum = g_NewMaxNumTelesignal;
