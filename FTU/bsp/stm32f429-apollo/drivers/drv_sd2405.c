@@ -107,15 +107,15 @@ static rt_size_t rt_hw_sd2405_write(rt_device_t dev, rt_off_t pos, const void* b
 {
 	/* sec, min, hour, week, day, mon, year */
     rt_uint8_t calendar[8] = {0};
-	rt_uint8_t *time = (rt_uint8_t *)buffer;
-	
-    calendar[1] = DecimalToBCD(*(time + 1));
-    calendar[2] = DecimalToBCD(*(time + 2));
-    calendar[3] = DecimalToBCD(*(time + 3)) | 0x80;
-    calendar[4] = DecimalToBCD(*(time + 4));
-    calendar[5] = DecimalToBCD(*(time + 5));
-    calendar[6] = DecimalToBCD(*(time + 6));
-    calendar[7] = DecimalToBCD(*(time + 7));
+    struct SD2405Time *time = (struct SD2405Time *)buffer;
+
+    calendar[1] = DecimalToBCD(time->second);
+    calendar[2] = DecimalToBCD(time->minute);
+    calendar[3] = DecimalToBCD(time->hour) | 0x80;
+    calendar[4] = DecimalToBCD(time->week);
+    calendar[5] = DecimalToBCD(time->day);
+    calendar[6] = DecimalToBCD(time->month);
+    calendar[7] = DecimalToBCD(time->year);
 
     rt_i2c_master_send(i2c_bus_device, SD2405_DEV_ADDR, RT_I2C_WR, calendar, 8);	
 	

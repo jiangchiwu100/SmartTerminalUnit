@@ -681,14 +681,17 @@ static void DLT634_5101_SLAVE_ReadMISIData(uint8_t pdrv)
     }
     
     count = DLT634_5101_SLAVE_ReadData(pdrv,(uint8_t *)&DLT634_5101Slave_App[pdrv].RxdBuf[DLT634_5101Slave_App[pdrv].RxdTail], _DLT634_5101SLAVE_LPDUSIZE);
-    if (count > 0)
+//    if (count > 0)
     {
-        if(!(DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(pdrv, DLT634_5101, DLT634_5101Slave_App[pdrv].RxdBuf, _DLT634_5101SLAVE_LPDUSIZE)))    //无监听时启动
+        if(!(DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(pdrv, DLT634_5101, DLT634_5101Slave_App[pdrv].RxdBuf, count)))    //无监听时启动
         {
             DLT634_5101Slave_App[pdrv].RxdTail += count;			
             DLT634_5101_SLAVE_SearchValidFrame(pdrv);
         }
-        DLT634_5101Slave_App[pdrv].TimeOutLink = DLT634_5101Slave_Pad[pdrv].TimeOutLink;
+        if (count > 0)
+        {
+            DLT634_5101Slave_App[pdrv].TimeOutLink = DLT634_5101Slave_Pad[pdrv].TimeOutLink;
+        }
     }
 }
 

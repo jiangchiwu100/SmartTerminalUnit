@@ -11847,7 +11847,7 @@ Image Symbol Table
     DLT634_5101_SLAVE_ReadAllDataProcess     0x080104ed   Thumb Code   558  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_ReadAllDataProcess)
     i.DLT634_5101_SLAVE_ReadData             0x08010724   Section        0  dlt634_5101slave_disk.o(i.DLT634_5101_SLAVE_ReadData)
     i.DLT634_5101_SLAVE_ReadMISIData         0x080107bc   Section        0  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_ReadMISIData)
-    DLT634_5101_SLAVE_ReadMISIData           0x080107bd   Thumb Code   416  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_ReadMISIData)
+    DLT634_5101_SLAVE_ReadMISIData           0x080107bd   Thumb Code   414  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_ReadMISIData)
     i.DLT634_5101_SLAVE_Read_drv             0x08010964   Section        0  dlt634_5101slave_disk.o(i.DLT634_5101_SLAVE_Read_drv)
     i.DLT634_5101_SLAVE_RestReply            0x08010984   Section        0  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_RestReply)
     DLT634_5101_SLAVE_RestReply              0x08010985   Thumb Code   178  dlt634_5101slave_app.o(i.DLT634_5101_SLAVE_RestReply)
@@ -20353,7 +20353,7 @@ Image component sizes
       1948        380        164          0          0      13193   dfs_posix.o
        786          4        103          0          0      11115   dfs_romfs.o
       2168         84        103          0       3464      36031   dfs_uffs.o
-     14552        276          0          4         80      28396   dlt634_5101slave_app.o
+     14552        278          0          4         80      28396   dlt634_5101slave_app.o
       9766        462          0         17       1024      23091   dlt634_5101slave_disk.o
      11016        224          0          8         90      29414   dlt634_5104slave_app.o
      10510        398          0          7       1024      22716   dlt634_5104slave_disk.o
@@ -20370,7 +20370,7 @@ Image component sizes
        656         52         23         16          0       2810   drv_led.o
        184         14         23          0          0       1311   drv_mpu.o
        784        112         82          8         88      10049   drv_sc1161y.o
-      1018        116        112         12         76       6876   drv_sd2405.o
+      1018        116        112         12         76       6884   drv_sd2405.o
        616         40         25          0         68       4129   drv_sdram.o
        908        132          0        272        360       7650   drv_spi.o
        264         56         63          8         88       8392   drv_spi_flash.o
@@ -20506,7 +20506,7 @@ Image component sizes
       4800        544         21         64        300      14250   wave_recording.o
 
     ----------------------------------------------------------------------
-    379582      42370      35388      48160   24583260    3050747   Object Totals
+    379582      42372      35388      48160   24583260    3050755   Object Totals
          0          0         64          0          0          0   (incl. Generated)
        312          0         58         43         14          0   (incl. Padding)
 
@@ -20724,9 +20724,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-    410188      44236      71752      48172   24583724    2893876   Grand Totals
-    410188      44236      71752       7456   24583724    2893876   ELF Image Totals (compressed)
-    410188      44236      71752       7456          0          0   ROM Totals
+    410188      44238      71752      48172   24583724    2893884   Grand Totals
+    410188      44238      71752       7456   24583724    2893884   ELF Image Totals (compressed)
+    410188      44238      71752       7456          0          0   ROM Totals
 
 ==============================================================================
 
