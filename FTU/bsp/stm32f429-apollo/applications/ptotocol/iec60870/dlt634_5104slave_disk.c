@@ -303,11 +303,11 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
                         case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_OPEN, DISTANCE);
                             break;
-                        case ADDR_REMOTE_ACTIVE:
+                        case ADDR_REMOTE_RESET:
                             DBRevert(DISTANCE);
                             DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case ADDR_REMOTE_RESET:
+                        case ADDR_REMOTE_ACTIVE:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE_END, DISTANCE);
                             break;
                         case ADDR_REMOTE_CLEAR:
@@ -347,11 +347,11 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
                         case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_CLOSE, DISTANCE);
                             break;
-                        case ADDR_REMOTE_ACTIVE:
+                        case ADDR_REMOTE_RESET:
                             DBRevert(DISTANCE);
                             DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case ADDR_REMOTE_RESET:
+                        case ADDR_REMOTE_ACTIVE:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE, DISTANCE);
                             break;
                         case ADDR_REMOTE_CLEAR:

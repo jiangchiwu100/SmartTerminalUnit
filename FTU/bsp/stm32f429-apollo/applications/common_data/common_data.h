@@ -451,6 +451,7 @@ enum TelesignalAddr
     ADDR_OVERLIMIT_DC_I_UP,                               // 直流电流越限
     ADDR_OVERLIMIT_DC_I_DOWN,                             // 直流电流越限
     ADDR_DEVICE_POWER_DOWN,                               // 装置掉电
+    ADDR_TELECONTROL_PRO_OUT,                             // 遥控保护退出
 	
 	TELESIGNAL_TOTAL_NUM
 };
@@ -567,11 +568,11 @@ enum TelemetryAddr
     ADDR_IC,
     ADDR_I0,
     ADDR_Uab,
-    ADDR_Ubc,
-    ADDR_Uca,
+    ADDR_Ucb,
+    ADDR_Uac,
     ADDR_U0,
     ADDR_UAB,
-    ADDR_UBC,
+    ADDR_UCB,
 	ADDR_P,
     ADDR_Q,
     ADDR_S,
@@ -579,11 +580,10 @@ enum TelemetryAddr
     ADDR_DC1,
     ADDR_DC2,
     ADDR_T,
-	ADDR_AIPHY_Ua_Ia,
-	ADDR_AIPHY_Ub_Ib,
-	ADDR_AIPHY_UC_Ic,
+	ADDR_AIPHY_Uab_Ia,
+	ADDR_AIPHY_Ucb_Ic,
     ADDR_AIPHY_U0_I0,
-    ADDR_ALPHY_Uab_UBC,		
+    ADDR_ALPHY_Ux_Ux,		
 	ADDR_Ia_ONCE,
 	ADDR_Ib_ONCE,
 	ADDR_Ic_ONCE,
@@ -691,6 +691,10 @@ typedef union TagInherentPara
 
 enum AddrRunParameter
 {
+    CFG_POW_VOL_AB,                       // 功率电压AB
+    CFG_POW_VOL_CB,                       // 功率电压CB
+    CFG_PRO_VOL_M,                        // M侧保护电压
+    CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
 	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
 	BREAK_WORK_MODE,                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
@@ -718,11 +722,11 @@ enum AddrRunParameter
     ZERODRIFT_Ic,                         // C相电流零漂
     ZERODRIFT_I0,                         // 零序电流零漂
     ZERODRIFT_Uab,                        // 线电压Uab零漂
-    ZERODRIFT_Ubc,                        // 线电压Ubc零漂
-    ZERODRIFT_Uca,                        // 线电压Uac零漂
+    ZERODRIFT_Ucb,                        // 线电压Ucb零漂
+    ZERODRIFT_Uac,                        // 线电压Uac零漂
     ZERODRIFT_U0,                         // 零序电压零漂
-    ZERODRIFT_UAB,                        // 线电压Uab零漂
-    ZERODRIFT_UBC,                        // 线电压Ubc零漂
+    ZERODRIFT_UAB,                        // 线电压UAB零漂
+    ZERODRIFT_UCB,                        // 线电压UCB零漂
     ZERODRIFT_P,                          // 有功功率零漂
     ZERODRIFT_Q,                          // 无功功率零漂
     ZERODRIFT_S,                          // 视在功率零漂
@@ -736,11 +740,11 @@ enum AddrRunParameter
     DEADZONE_Ic,                          // C相电流死区
     DEADZONE_I0,                          // 零序电流死区
     DEADZONE_Uab,                         // 线电压Uab死区
-    DEADZONE_Ubc,                         // 线电压Ubc死区
-    DEADZONE_Uca,                         // 线电压Uac死区
+    DEADZONE_Ucb,                         // 线电压Ucb死区
+    DEADZONE_Uac,                         // 线电压Uac死区
     DEADZONE_U0,                          // 零序电压死区
-    DEADZONE_UAB,                         // 线电压Ubc死区
-    DEADZONE_UBC,                         // 线电压Uac死区
+    DEADZONE_UAB,                         // 线电压UAB死区
+    DEADZONE_UCB,                         // 线电压UCB死区
     DEADZONE_P,                           // 有功功率死区
     DEADZONE_Q,                           // 无功功率死区
     DEADZONE_S,                           // 视在功率死区
@@ -780,7 +784,7 @@ enum AddrRunParameter
     NET_DNS_2,                            // DNS
     NET_DNS_3,                            // DNS    
     NET_SOURCEADDR,                       // 从站地址
-    NET_ASDUADDR,                         // ASDU地址   
+    NET_ASDUADDR,                         // ASDU地址  
 	
     RUN_PARAMETER_NUM,	                  // 运行参数数量
 };
@@ -793,11 +797,11 @@ enum AddrCalibrateFactor
     CALIFACTOR_Ic,                       // C相电流(Ic)校准系数
 	CALIFACTOR_I0,                       // 零序电流(I0)校准系数
     CALIFACTOR_Uab,                      // 线电压(Uab)校准系数
-	CALIFACTOR_Ubc,                      // 线电压(Ubc)校准系数
-    CALIFACTOR_Uca,                      // 线电压(Uca)校准系数
+	CALIFACTOR_Ucb,                      // 线电压(Ucb)校准系数
+    CALIFACTOR_Uac,                      // 线电压(Uac)校准系数
 	CALIFACTOR_U0,                       // 零序电压(U0)校准系数
-    CALIFACTOR_UAB,                      // 线电压(Uab)校准系数
-	CALIFACTOR_UBC,                      // 线电压(Ubc)校准系数
+    CALIFACTOR_UAB,                      // 线电压(UAB)校准系数
+	CALIFACTOR_UCB,                      // 线电压(UCB)校准系数
     CALIFACTOR_P,                        // 有功功率(p)校准系数（无效）
 	CALIFACTOR_Q,                        // 无功功率(Q)校准系数（无效）
     CALIFACTOR_S,                        // 视在功率(S)校准系数（无效）
@@ -805,11 +809,10 @@ enum AddrCalibrateFactor
     CALIFACTOR_DC1,                      // 直流电压(V)校准系数
 	CALIFACTOR_DC2,                      // 直流电压(V)校准系数
     CALIFACTOR_T,			             // 温度(T)校准系数
-	CALIFACTOR_ALPHA_UaIa,	             // 角UaIa校准系数
-	CALIFACTOR_ALPHA_UbIb,	             // 角UbIb校准系数
-	CALIFACTOR_ALPHA_UCIc,	             // 角UcIc校准系数
+	CALIFACTOR_ALPHA_UabIa,	             // 角UaIa校准系数
+	CALIFACTOR_ALPHA_UcbIc,	             // 角UcIc校准系数
 	CALIFACTOR_ALPHA_U0I0,	             // 角U0I0校准系数
-	CALIFACTOR_ALPHA_UaUb,	             // 角UaUb校准系数		
+	CALIFACTOR_ALPHA_UxUx,	             // 角UxUx校准系数		
 	
 	CALIFACTOR_NUM
 };

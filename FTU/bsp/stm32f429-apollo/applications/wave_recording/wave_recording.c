@@ -297,8 +297,8 @@ char *CreatConfigurationHandler(char *firsttime, char *triggertime, int *configD
 	ConfigurationData->AnalogChannelData[2] = *InitAnalogChannelData("3", "IC", "C", "A", g_CalibrateFactor[CALIFACTOR_Ic]);
 	ConfigurationData->AnalogChannelData[3] = *InitAnalogChannelData("4", "IZ", "Z", "A", g_CalibrateFactor[CALIFACTOR_I0]);
 	ConfigurationData->AnalogChannelData[4] = *InitAnalogChannelData("5", "UA", "A", "v", g_CalibrateFactor[CALIFACTOR_Uab]);
-	ConfigurationData->AnalogChannelData[5] = *InitAnalogChannelData("6", "UB", "B", "v", g_CalibrateFactor[CALIFACTOR_Uca]);
-	ConfigurationData->AnalogChannelData[6] = *InitAnalogChannelData("7", "UC", "C", "v", g_CalibrateFactor[CALIFACTOR_Ubc]);
+	ConfigurationData->AnalogChannelData[5] = *InitAnalogChannelData("6", "UB", "B", "v", g_CalibrateFactor[CALIFACTOR_Uac]);
+	ConfigurationData->AnalogChannelData[6] = *InitAnalogChannelData("7", "UC", "C", "v", g_CalibrateFactor[CALIFACTOR_Ucb]);
 	ConfigurationData->AnalogChannelData[7] = *InitAnalogChannelData("8", "UZ", "Z", "v", g_CalibrateFactor[CALIFACTOR_U0]);
 
 	ConfigurationData->DigitalChannelData[0] = *InitDigitalChannelData("1", "KG", "0");

@@ -288,11 +288,11 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                         case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_OPEN, DISTANCE);
                             break;
-                        case ADDR_REMOTE_ACTIVE:
+                        case ADDR_REMOTE_RESET:
                             DBRevert(DISTANCE);
                             DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case ADDR_REMOTE_RESET:
+                        case ADDR_REMOTE_ACTIVE:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE_END, DISTANCE);
                             break;
                         case ADDR_REMOTE_CLEAR:
@@ -332,11 +332,11 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                         case ADDR_REMOTE_OPERATE:
                             rt_hw_do_operate(DO_CLOSE, DISTANCE);
                             break;
-                        case ADDR_REMOTE_ACTIVE:
+                        case ADDR_REMOTE_RESET:
                             DBRevert(DISTANCE);
                             DBWriteCO(ADDR_REMOTE_ACTIVE, ON);
                             break;
-                        case ADDR_REMOTE_RESET:
+                        case ADDR_REMOTE_ACTIVE:
                             rt_hw_do_operate(DO_BATTERY_ACTIVE, DISTANCE);
                             break;
                         case ADDR_REMOTE_CLEAR:

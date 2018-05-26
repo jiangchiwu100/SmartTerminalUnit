@@ -15,7 +15,7 @@
 
 
 /* PRIVATE VARIABLES --------------------------------------------------------*/
-static uint32_t s_timers[LOAD_DEVMAXNUM][LOAD_MAXTIMERS];   //0x80000000使能位
+static List s_ListTimers[LOAD_DEVMAXNUM];//定时器链表链表//0x80000000使能位
 
 static ComProSts s_ComProSts[LOAD_DEVMAXNUM];
 
@@ -37,19 +37,37 @@ static SingleLossCloseSts s_SingleLossClose[LOAD_DEVMAXNUM];
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-static uint8_t addtimers(uint8_t pdrv,uint32_t **dev)
+static void addtimers(uint8_t pdrv,uint32_t **dev)
 {
-    uint8_t res = LOAD_FALSE;
+    uint32_t *s_timer;
+        
+    s_timer = rt_malloc(sizeof(uint32_t));
+    
+    *dev = s_timer;
+    *s_timer = 0;
+    
+    list_ins_next(&s_ListTimers[pdrv],NULL,s_timer); 
+}
 
-    static uint8_t i[LOAD_DEVMAXNUM]={0};
-
-    if (i[pdrv] < LOAD_MAXTIMERS)
+/**
+  * @Description: 定时器增加.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void add_timers(uint8_t pdrv)
+{
+    ListElmt *element;
+    
+    element = s_ListTimers[pdrv].head;
+    while(element != NULL)
     {
-        *dev = &s_timers[pdrv][i[pdrv]++];
-        s_timers[pdrv][i[pdrv]] = 0;
-        res = LOAD_TRUE;
+        if((*((uint32_t *)(element->data)))&LOAD_ENTIMERS)
+        {
+            (*((uint32_t *)(element->data)))++;
+        }
+        element = element->next;
     }
-    return(res);
 }
 
 /**
@@ -1237,6 +1255,7 @@ void LoadSwitchCtrlInit(void)
         switch(pdrv)
         {
         case LOAD_DEV0:
+            list_init(&s_ListTimers[pdrv]);
             //通用
 			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
 			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
@@ -1246,6 +1265,7 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[ADDR_CLOSE];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP];
             s_ComProSts[pdrv].yx.FA_HardStrap.value = &g_TelesignalDB[ADDR_RECLOSE_FA_STRAP];
+            s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[ADDR_TELECONTROL_PRO_OUT];
 
             s_ComProSts[pdrv].yx.breakContact.addr =  ADDR_BREAK_CONTACT;
             s_ComProSts[pdrv].yx.closingLocked.addr = ADDR_CLOSING_LOCK;
@@ -1305,17 +1325,30 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB[ADDR_IB];
             s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB[ADDR_IC];
             s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[ADDR_I0];
-            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Uab];
-            s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[ADDR_UBC];
+            if(g_Parameter[CFG_PRO_VOL_M] == 0)
+            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Uab];}
+            else
+            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Ucb];}
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[ADDR_UAB];}
+            else
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[ADDR_UCB];}
+            
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[ADDR_U0];
             
             s_ComProSts[pdrv].fevent_yc_addr[0] = ADDR_IA;
             s_ComProSts[pdrv].fevent_yc_addr[1] = ADDR_IB;
             s_ComProSts[pdrv].fevent_yc_addr[2] = ADDR_IC;
             s_ComProSts[pdrv].fevent_yc_addr[3] = ADDR_I0;
-            s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;
-            s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UBC;
-            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uca;
+            if(g_Parameter[CFG_PRO_VOL_M] == 0)
+            {s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;}
+            else
+            {s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Ucb;}
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UAB;}
+            else
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UCB;}            
+            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uac;
             s_ComProSts[pdrv].fevent_yc_addr[7] = ADDR_U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
@@ -1436,18 +1469,11 @@ void LoadSwitchCtrlInit(void)
   */
 void LoadSwitchCtrlClock(void)
 {
-    uint8_t i=0;
     uint8_t pdrv;
 
     for(pdrv=0; pdrv<LOAD_DEVMAXNUM; pdrv++)
     {
-        for(i=0; i<LOAD_MAXTIMERS; i++) //定时增加
-        {
-            if(s_timers[pdrv][i]&LOAD_ENTIMERS)
-            {
-                s_timers[pdrv][i]++;
-            }
-        }
+        add_timers(pdrv);//定时增加
 
 		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
 		{
@@ -1465,7 +1491,7 @@ void LoadSwitchCtrlClock(void)
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_NONE))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_LOADSWTICH_NONE)))
 			{
-				if(*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)//保护压板
+				if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板
 				{
 					state_judge(&s_ComProSts[pdrv],&s_stateJudge[pdrv]);//状态判断
 				  #ifdef FAPROTECTIONENABLING

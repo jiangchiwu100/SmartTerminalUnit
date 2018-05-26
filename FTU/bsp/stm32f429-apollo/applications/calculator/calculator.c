@@ -38,12 +38,14 @@ static float FFT_InputBufUC[CALC_TIMES][FFT_LENGTH * 2];
 // 计算三次的模值
 static float VUa[CALC_TIMES], VUb[CALC_TIMES], VUc[CALC_TIMES], VU0[CALC_TIMES];
 static float VIa[CALC_TIMES], VIb[CALC_TIMES], VIc[CALC_TIMES], VI0[CALC_TIMES];
-static float VUA[CALC_TIMES], VUC[CALC_TIMES];
 //static float VPa[CALC_TIMES], VPb[CALC_TIMES], VPc[CALC_TIMES];
 //static float VQa[CALC_TIMES], VQb[CALC_TIMES], VQc[CALC_TIMES];
 //static float VSa[CALC_TIMES], VSb[CALC_TIMES], VSc[CALC_TIMES];
 static float VUa3[CALC_TIMES],VUb3[CALC_TIMES],VUc3[CALC_TIMES],VU03[CALC_TIMES]; // 电压三次谐波
 static float VUa5[CALC_TIMES],VUb5[CALC_TIMES],VUc5[CALC_TIMES],VU05[CALC_TIMES]; // 电压五次谐波
+static float VUA[CALC_TIMES], VUC[CALC_TIMES];
+static float VUA3[CALC_TIMES],VUC3[CALC_TIMES]; // 电压三次谐波
+static float VUA5[CALC_TIMES],VUC5[CALC_TIMES]; // 电压五次谐波
 static float VIa2[CALC_TIMES],VIb2[CALC_TIMES],VIc2[CALC_TIMES]; // 电流二次谐波
 static float VIa3[CALC_TIMES],VIb3[CALC_TIMES],VIc3[CALC_TIMES],VI03[CALC_TIMES]; // 电流三次谐波
 static float VIa5[CALC_TIMES],VIb5[CALC_TIMES],VIc5[CALC_TIMES],VI05[CALC_TIMES]; // 电流五次谐波
@@ -59,6 +61,8 @@ static float Qa, Qb, Qc;
 //static float Fa, Fb, Fc;
 static float Ua3,Ub3,Uc3,U03;
 static float Ua5,Ub5,Uc5,U05;
+static float UA3,UC3;
+static float UA5,UC5;
 static float Ia2,Ib2,Ic2;
 static float Ia3,Ib3,Ic3,I03;
 static float Ia5,Ib5,Ic5,I05;
@@ -335,15 +339,36 @@ static void CalculateData(void)
         VUb[i] = sqrt(FFT_InputBufUb[i][2] * FFT_InputBufUb[i][2] + FFT_InputBufUb[i][3] * FFT_InputBufUb[i][3]);
         VUc[i] = sqrt(FFT_InputBufUc[i][2] * FFT_InputBufUc[i][2] + FFT_InputBufUc[i][3] * FFT_InputBufUc[i][3]);
         VU0[i] = sqrt(FFT_InputBufU0[i][2] * FFT_InputBufU0[i][2] + FFT_InputBufU0[i][3] * FFT_InputBufU0[i][3]);
-
-        VUa3[i] = sqrt(FFT_InputBufUa[i][6] * FFT_InputBufUa[i][6] + FFT_InputBufUa[i][7] * FFT_InputBufUa[i][7]);
-        VUb3[i] = sqrt(FFT_InputBufUb[i][6] * FFT_InputBufUb[i][6] + FFT_InputBufUb[i][7] * FFT_InputBufUb[i][7]);
-        VUc3[i] = sqrt(FFT_InputBufUc[i][6] * FFT_InputBufUc[i][6] + FFT_InputBufUc[i][7] * FFT_InputBufUc[i][7]);
+        VUA[i] = sqrt(FFT_InputBufUA[i][2] * FFT_InputBufUA[i][2] + FFT_InputBufUA[i][3] * FFT_InputBufUA[i][3]);
+        VUC[i] = sqrt(FFT_InputBufUC[i][2] * FFT_InputBufUC[i][2] + FFT_InputBufUC[i][3] * FFT_InputBufUC[i][3]);
+        
+        if(g_Parameter[CFG_POW_VOL_AB] == 0)
+        {
+            VUa3[i] = sqrt(FFT_InputBufUa[i][6] * FFT_InputBufUa[i][6] + FFT_InputBufUa[i][7] * FFT_InputBufUa[i][7]);
+            VUa5[i] = sqrt(FFT_InputBufUa[i][10] * FFT_InputBufUa[i][10] + FFT_InputBufUa[i][11] * FFT_InputBufUa[i][11]);
+        }
+        else
+        {
+            VUA3[i] = sqrt(FFT_InputBufUA[i][6] * FFT_InputBufUA[i][6] + FFT_InputBufUA[i][7] * FFT_InputBufUA[i][7]);
+            VUA5[i] = sqrt(FFT_InputBufUA[i][10] * FFT_InputBufUA[i][10] + FFT_InputBufUA[i][11] * FFT_InputBufUA[i][11]);        
+        }
+ 
+        if(g_Parameter[CFG_POW_VOL_CB] == 0)
+        {
+            VUc3[i] = sqrt(FFT_InputBufUc[i][6] * FFT_InputBufUc[i][6] + FFT_InputBufUc[i][7] * FFT_InputBufUc[i][7]);
+            VUc5[i] = sqrt(FFT_InputBufUc[i][10] * FFT_InputBufUc[i][10] + FFT_InputBufUc[i][11] * FFT_InputBufUc[i][11]);
+        }
+        else
+        {
+            VUC3[i] = sqrt(FFT_InputBufUC[i][6] * FFT_InputBufUC[i][6] + FFT_InputBufUC[i][7] * FFT_InputBufUC[i][7]);
+            VUC5[i] = sqrt(FFT_InputBufUC[i][10] * FFT_InputBufUC[i][10] + FFT_InputBufUC[i][11] * FFT_InputBufUC[i][11]);        
+        }
+        
+        VUb3[i] = sqrt(FFT_InputBufUb[i][6] * FFT_InputBufUb[i][6] + FFT_InputBufUb[i][7] * FFT_InputBufUb[i][7]);        
         VU03[i] = sqrt(FFT_InputBufU0[i][6] * FFT_InputBufU0[i][6] + FFT_InputBufU0[i][7] * FFT_InputBufU0[i][7]);
 
-        VUa5[i] = sqrt(FFT_InputBufUa[i][10] * FFT_InputBufUa[i][10] + FFT_InputBufUa[i][11] * FFT_InputBufUa[i][11]);
-        VUb5[i] = sqrt(FFT_InputBufUb[i][10] * FFT_InputBufUb[i][10] + FFT_InputBufUb[i][11] * FFT_InputBufUb[i][11]);
-        VUc5[i] = sqrt(FFT_InputBufUc[i][10] * FFT_InputBufUc[i][10] + FFT_InputBufUc[i][11] * FFT_InputBufUc[i][11]);
+        
+        VUb5[i] = sqrt(FFT_InputBufUb[i][10] * FFT_InputBufUb[i][10] + FFT_InputBufUb[i][11] * FFT_InputBufUb[i][11]);        
         VU05[i] = sqrt(FFT_InputBufU0[i][10] * FFT_InputBufU0[i][10] + FFT_InputBufU0[i][11] * FFT_InputBufU0[i][11]);
 
         VIa[i] = sqrt(FFT_InputBufIa[i][2] * FFT_InputBufIa[i][2] + FFT_InputBufIa[i][3] * FFT_InputBufIa[i][3]);
@@ -376,9 +401,6 @@ static void CalculateData(void)
         FFT_InputBufI0[i][11] += (FFT_InputBufIa[i][11] + FFT_InputBufIb[i][11] + FFT_InputBufIc[i][11]);
 	  #endif		
         VI05[i] = sqrt(FFT_InputBufI0[i][10] * FFT_InputBufI0[i][10] + FFT_InputBufI0[i][11] * FFT_InputBufI0[i][11]);
-        
-        VUA[i] = sqrt(FFT_InputBufUA[i][2] * FFT_InputBufUA[i][2] + FFT_InputBufUA[i][3] * FFT_InputBufUA[i][3]);
-        VUC[i] = sqrt(FFT_InputBufUC[i][2] * FFT_InputBufUC[i][2] + FFT_InputBufUC[i][3] * FFT_InputBufUC[i][3]);
     }
 
 //  ParameterCheck(CALIBRATE_FACTOR);
@@ -387,26 +409,84 @@ static void CalculateData(void)
     if (++k % 10 == 1)
     {
         k = 0;
-        g_Alpha[0] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufIa[1][3], FFT_InputBufIa[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UaIa];
-        g_Alpha[1] = CalculateAngleU_I(FFT_InputBufUb[1][3], FFT_InputBufUb[1][2], FFT_InputBufIb[1][3], FFT_InputBufIb[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UbIb];
-        g_Alpha[2] = CalculateAngleU_I(FFT_InputBufUC[1][3], FFT_InputBufUC[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UCIc];
-        g_Alpha[3] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0];
-		g_Alpha[4] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UaUb];
+        if(g_Parameter[CFG_POW_VOL_AB] == 0)
+        {
+            g_Alpha[ALPHA_UabIa] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufIa[1][3], FFT_InputBufIa[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UabIa];
+        }
+        else
+        {
+            g_Alpha[ALPHA_UabIa] = CalculateAngleU_I(FFT_InputBufUA[1][3], FFT_InputBufUA[1][2], FFT_InputBufIa[1][3], FFT_InputBufIa[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UabIa];
+        }
+        if(g_Parameter[CFG_POW_VOL_CB] == 0)
+        {
+            g_Alpha[ALPHA_UcbIc] = CalculateAngleU_I(FFT_InputBufUc[1][3], FFT_InputBufUc[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UcbIc];
+        }
+        else
+        {
+            g_Alpha[ALPHA_UcbIc] = CalculateAngleU_I(FFT_InputBufUC[1][3], FFT_InputBufUC[1][2], FFT_InputBufIc[1][3], FFT_InputBufIc[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UcbIc];
+        } 
+        
+        g_Alpha[ALPHA_U0I0] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0];
+        
+        if(g_Parameter[CFG_PRO_VOL_M] == 0)
+        {
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {
+                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUA[1][3], FFT_InputBufUA[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
+            }
+            else
+            {
+                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
+            }        
+        }
+        else
+        {
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {
+                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUc[1][3], FFT_InputBufUc[1][2], FFT_InputBufUA[1][3], FFT_InputBufUA[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
+            }
+            else
+            {
+                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUc[1][3], FFT_InputBufUc[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
+            }        
+        }
     }
 
-    Ua = CalcAverage(VUa, CALC_TIMES) * VOLTAGE_RADIO;
-    Ub = CalcAverage(VUb, CALC_TIMES) * VOLTAGE_RADIO;
-    Uc = CalcAverage(VUc, CALC_TIMES) * VOLTAGE_RADIO;
+    if(g_Parameter[CFG_POW_VOL_AB] == 0)
+    {
+        Ua = CalcAverage(VUa, CALC_TIMES) * VOLTAGE_RADIO;
+        Ua3 = CalcAverage(VUa3, CALC_TIMES) * VOLTAGE_RADIO;
+        Ua5 = CalcAverage(VUa5, CALC_TIMES) * VOLTAGE_RADIO;       
+    }
+    else
+    {
+        UA = CalcAverage(VUA, CALC_TIMES) * VOLTAGE_RADIO;
+        UA3 = CalcAverage(VUA3, CALC_TIMES) * VOLTAGE_RADIO;
+        UA5 = CalcAverage(VUA5, CALC_TIMES) * VOLTAGE_RADIO; 
+    }
+
+    if(g_Parameter[CFG_POW_VOL_CB] == 0)
+    {
+        Uc = CalcAverage(VUc, CALC_TIMES) * VOLTAGE_RADIO;
+        Uc3 = CalcAverage(VUc3, CALC_TIMES) * VOLTAGE_RADIO;
+        Uc5 = CalcAverage(VUc5, CALC_TIMES) * VOLTAGE_RADIO;
+    } 
+    else
+    {
+        UC = CalcAverage(VUC, CALC_TIMES) * VOLTAGE_RADIO;
+        UC3 = CalcAverage(VUC3, CALC_TIMES) * VOLTAGE_RADIO;
+        UC5 = CalcAverage(VUC5, CALC_TIMES) * VOLTAGE_RADIO;    
+    }
+    
+    Ub = CalcAverage(VUb, CALC_TIMES) * VOLTAGE_RADIO;    
     U0 = CalcAverage(VU0, CALC_TIMES) * VOLTAGE_RADIO;
 
-    Ua3 = CalcAverage(VUa3, CALC_TIMES) * VOLTAGE_RADIO;
-    Ub3 = CalcAverage(VUb3, CALC_TIMES) * VOLTAGE_RADIO;
-    Uc3 = CalcAverage(VUc3, CALC_TIMES) * VOLTAGE_RADIO;
+    
+    Ub3 = CalcAverage(VUb3, CALC_TIMES) * VOLTAGE_RADIO;    
     U03 = CalcAverage(VU03, CALC_TIMES) * VOLTAGE_RADIO;
 
-    Ua5 = CalcAverage(VUa5, CALC_TIMES) * VOLTAGE_RADIO;
-    Ub5 = CalcAverage(VUb5, CALC_TIMES) * VOLTAGE_RADIO;
-    Uc5 = CalcAverage(VUc5, CALC_TIMES) * VOLTAGE_RADIO;
+    
+    Ub5 = CalcAverage(VUb5, CALC_TIMES) * VOLTAGE_RADIO;    
     U05 = CalcAverage(VU05, CALC_TIMES) * VOLTAGE_RADIO;
 
     Ia = CalcAverage(VIa, CALC_TIMES) * CURRENT_RADIO;
@@ -440,16 +520,33 @@ static void CalculateData(void)
 	
 	Udc1 /= ADC_SAMPLE_NUM;
 	Udc2 /= ADC_SAMPLE_NUM;
-	
-    Ua = Ua * g_CalibrateFactor[CALIFACTOR_Uab];
-    Ua3 = Ua3 * g_CalibrateFactor[CALIFACTOR_Uab];
-    Ua5 = Ua5 * g_CalibrateFactor[CALIFACTOR_Uab];
-    Ub = Ub * g_CalibrateFactor[CALIFACTOR_Uca];
-    Ub3 = Ub3 * g_CalibrateFactor[CALIFACTOR_Uca];
-    Ub5 = Ub5 * g_CalibrateFactor[CALIFACTOR_Uca];    
-    Uc = Uc * g_CalibrateFactor[CALIFACTOR_Ubc];
-    Uc3 = Uc3 * g_CalibrateFactor[CALIFACTOR_Ubc];
-    Uc5 = Uc5 * g_CalibrateFactor[CALIFACTOR_Ubc];    
+
+    if(g_Parameter[CFG_POW_VOL_AB] == 0)
+    {
+        Ua3 = Ua3 * g_CalibrateFactor[CALIFACTOR_Uab];
+        Ua5 = Ua5 * g_CalibrateFactor[CALIFACTOR_Uab];
+    }
+    else
+    {
+        UA3 = UA3 * g_CalibrateFactor[CALIFACTOR_Uab];
+        UA5 = UA5 * g_CalibrateFactor[CALIFACTOR_Uab];   
+    }	
+    if(g_Parameter[CFG_POW_VOL_CB] == 0)
+    {
+        Uc3 = Uc3 * g_CalibrateFactor[CALIFACTOR_Ucb];
+        Uc5 = Uc5 * g_CalibrateFactor[CALIFACTOR_Ucb];
+    }
+    else
+    {
+        UC3 = UC3 * g_CalibrateFactor[CALIFACTOR_Ucb];
+        UC5 = UC5 * g_CalibrateFactor[CALIFACTOR_Ucb];    
+    }
+        
+    Ua = Ua * g_CalibrateFactor[CALIFACTOR_Uab];    
+    Ub = Ub * g_CalibrateFactor[CALIFACTOR_Uac];
+    Ub3 = Ub3 * g_CalibrateFactor[CALIFACTOR_Uac];
+    Ub5 = Ub5 * g_CalibrateFactor[CALIFACTOR_Uac];    
+    Uc = Uc * g_CalibrateFactor[CALIFACTOR_Ucb];     
     U0 = U0 * g_CalibrateFactor[CALIFACTOR_U0];
     U03 = U03 * g_CalibrateFactor[CALIFACTOR_U0];
     U05 = U05 * g_CalibrateFactor[CALIFACTOR_U0];    
@@ -469,33 +566,51 @@ static void CalculateData(void)
     I03 = I03 * g_CalibrateFactor[CALIFACTOR_I0];
     I05 = I05 * g_CalibrateFactor[CALIFACTOR_I0];    
     UA = UA * g_CalibrateFactor[CALIFACTOR_UAB];
-    UC = UC * g_CalibrateFactor[CALIFACTOR_UBC];   
+    UC = UC * g_CalibrateFactor[CALIFACTOR_UCB];   
     Udc1 = Udc1 * g_CalibrateFactor[CALIFACTOR_DC1];
     Udc2 = Udc2 * g_CalibrateFactor[CALIFACTOR_DC2];  
 
 //    ParameterCheck(ZERODRIFT);
 
     if (Ua < g_Parameter[ZERODRIFT_Uab])Ua = 0;
-    if (Ub < g_Parameter[ZERODRIFT_Uca])Ub = 0;
-    if (Uc < g_Parameter[ZERODRIFT_Ubc])Uc = 0;
+    if (Ub < g_Parameter[ZERODRIFT_Uac])Ub = 0;
+    if (Uc < g_Parameter[ZERODRIFT_Ucb])Uc = 0;
     if (U0 < g_Parameter[ZERODRIFT_U0]) U0 = 0;
     if (Ia < g_Parameter[ZERODRIFT_Ia]) Ia = 0;
     if (Ib < g_Parameter[ZERODRIFT_Ib]) Ib = 0;
     if (Ic < g_Parameter[ZERODRIFT_Ic]) Ic = 0;
     if (I0 < g_Parameter[ZERODRIFT_I0]) I0 = 0;
     if (UA < g_Parameter[ZERODRIFT_UAB])UA = 0;
-    if (UC < g_Parameter[ZERODRIFT_UBC])UC = 0;
+    if (UC < g_Parameter[ZERODRIFT_UCB])UC = 0;
     if (Udc1 < g_Parameter[ZERODRIFT_DC1])Udc1 = 0;
     if (Udc2 < g_Parameter[ZERODRIFT_DC2])Udc2 = 0;
-
-    Pa = Ua * Ia * cos(g_Alpha[0] * FACTOR_ANGLE_TO_RAD);
+    
+    if(g_Parameter[CFG_POW_VOL_AB] == 0)
+    {
+        Pa = Ua * Ia * cos(g_Alpha[ALPHA_UabIa] * FACTOR_ANGLE_TO_RAD);  
+        Qa = Ua * Ia * sin(g_Alpha[ALPHA_UabIa] * FACTOR_ANGLE_TO_RAD);        
+    }
+    else
+    {
+        Pa = UA * Ia * cos(g_Alpha[ALPHA_UabIa] * FACTOR_ANGLE_TO_RAD); 
+        Qa = UA * Ia * sin(g_Alpha[ALPHA_UabIa] * FACTOR_ANGLE_TO_RAD);        
+    }
+        
+    if(g_Parameter[CFG_POW_VOL_CB] == 0)
+    {  
+        Pc = Uc * Ic * cos(g_Alpha[ALPHA_UcbIc] * FACTOR_ANGLE_TO_RAD);
+        Qc = Uc * Ic * sin(g_Alpha[ALPHA_UcbIc] * FACTOR_ANGLE_TO_RAD);
+    }
+    else
+    {
+        Pc = UC * Ic * cos(g_Alpha[ALPHA_UcbIc] * FACTOR_ANGLE_TO_RAD);
+        Qc = UC * Ic * sin(g_Alpha[ALPHA_UcbIc] * FACTOR_ANGLE_TO_RAD);    
+    }
+   
     Pb = 0; //Ub * Ib * cos(g_Alpha[1] * FACTOR_ANGLE_TO_RAD);
-    Pc = UC * Ic * cos(g_Alpha[2] * FACTOR_ANGLE_TO_RAD);
     P = (Pa + Pb + Pc) / 1000.0f;
-
-    Qa = Ua * Ia * sin(g_Alpha[0] * FACTOR_ANGLE_TO_RAD);
+   
     Qb = 0; //Ub * Ib * sin(g_Alpha[1] * FACTOR_ANGLE_TO_RAD);
-    Qc = UC * Ic * sin(g_Alpha[2] * FACTOR_ANGLE_TO_RAD);
     Q = (Qa + Qb + Qc) / 1000.0f;
 
     S = sqrt(P * P + Q * Q);
@@ -506,12 +621,12 @@ static void CalculateData(void)
     S = fabs(S) < g_Parameter[ZERODRIFT_S] ? 0 : S;
 
     g_TelemetryDB[ADDR_Uab]= Ua;
-    g_TelemetryDB[ADDR_Ubc] = Uc;
-    g_TelemetryDB[ADDR_Uca] = Ub;
-    g_TelemetryDB[ADDR_Uca] = U0;
+    g_TelemetryDB[ADDR_Ucb] = Uc;
+    g_TelemetryDB[ADDR_Uac] = Ub;
+    g_TelemetryDB[ADDR_U0] = U0;
 
     g_TelemetryDB[ADDR_UAB] = UA;
-    g_TelemetryDB[ADDR_UBC] = UC;
+    g_TelemetryDB[ADDR_UCB] = UC;
     
     g_TelemetryDB[ADDR_IA] = Ia;
     g_TelemetryDB[ADDR_IB] = Ib;
@@ -530,22 +645,25 @@ static void CalculateData(void)
     {g_TelemetryDB[ADDR_AIPHY_U0_I0] = 0;}
     else       
     {
-//        while(g_Alpha[3]<-180)
-//        {g_Alpha[3] += 360;}
-//        while(g_Alpha[3]>180)
-//        {g_Alpha[3] -= 360;}
-        g_TelemetryDB[ADDR_AIPHY_U0_I0] = g_Alpha[3];
+        while(g_Alpha[ALPHA_U0I0]<-180)
+        {g_Alpha[ALPHA_U0I0] += 360;}
+        while(g_Alpha[ALPHA_U0I0]>180)
+        {g_Alpha[ALPHA_U0I0] -= 360;}
+        g_TelemetryDB[ADDR_AIPHY_U0_I0] = g_Alpha[ALPHA_U0I0];
     }
 
-	if((g_TelemetryDB[ADDR_Uab] == 0)||(g_TelemetryDB[ADDR_UBC] == 0))
-    {g_TelemetryDB[ADDR_ALPHY_Uab_UBC] = 0;}
+    if((((g_Parameter[CFG_PRO_VOL_M] == 0)&&(g_TelemetryDB[ADDR_Uab] == 0))||\
+        ((g_Parameter[CFG_PRO_VOL_M] == 1)&&(g_TelemetryDB[ADDR_Ucb] == 0)))||\
+        (((g_Parameter[CFG_PRO_VOL_N] == 0)&&(g_TelemetryDB[ADDR_UAB] == 0))||\
+        ((g_Parameter[CFG_PRO_VOL_N] == 1)&&(g_TelemetryDB[ADDR_UCB] == 0))))
+    {g_TelemetryDB[ADDR_ALPHY_Ux_Ux] = 0;}
     else       
     {
-        if(g_Alpha[4]<-180)
-        {g_Alpha[4] += 360;}
-        if(g_Alpha[4]>180)
-        {g_Alpha[4] -= 360;}
-        g_TelemetryDB[ADDR_ALPHY_Uab_UBC] = g_Alpha[4];
+        if(g_Alpha[ALPHA_UxIx]<-180)
+        {g_Alpha[ALPHA_UxIx] += 360;}
+        if(g_Alpha[ALPHA_UxIx]>180)
+        {g_Alpha[ALPHA_UxIx] -= 360;}
+        g_TelemetryDB[ADDR_ALPHY_Ux_Ux] = g_Alpha[ALPHA_UxIx];
     }
 	
     g_TelemetryDB[ADDR_Uab_ONCE] = Ua * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
@@ -564,11 +682,31 @@ static void CalculateData(void)
     g_TelemetryDB[ADDR_Q_ONCE] = Q * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
     g_TelemetryDB[ADDR_S_ONCE] = S * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
 
-    if (Ua3 < g_Parameter[ZERODRIFT_Uab])Ua3 = 0;
-    if (Ub3 < g_Parameter[ZERODRIFT_Uca])Ub3 = 0;
-    if (Uc3 < g_Parameter[ZERODRIFT_Ubc])Uc3 = 0;
+    if(g_Parameter[CFG_POW_VOL_AB] == 0)
+    {
+        if (Ua3 < g_Parameter[ZERODRIFT_Uab])Ua3 = 0;
+        if (Ua5 < g_Parameter[ZERODRIFT_Uab])Ua5 = 0;
+    }
+    else
+    {
+        if (UA3 < g_Parameter[ZERODRIFT_Uab])UA3 = 0;
+        if (UA5 < g_Parameter[ZERODRIFT_Uab])UA5 = 0;
+    }
+
+    if(g_Parameter[CFG_POW_VOL_CB] == 0)
+    {
+        if (Uc3 < g_Parameter[ZERODRIFT_Ucb])Uc3 = 0;
+        if (Uc5 < g_Parameter[ZERODRIFT_Ucb])Uc5 = 0;
+    }
+    else
+    {
+        if (UC3 < g_Parameter[ZERODRIFT_Ucb])UC3 = 0;
+        if (UC5 < g_Parameter[ZERODRIFT_Ucb])UC5 = 0;
+    }
+        
+    if (Ub3 < g_Parameter[ZERODRIFT_Uac])Ub3 = 0;    
     if (U03 < g_Parameter[ZERODRIFT_U0]) U03 = 0;
-	
+    	
 	if (Ia2 < g_Parameter[ZERODRIFT_Ia]) Ia2 = 0;
 	if (Ib2 < g_Parameter[ZERODRIFT_Ib]) Ib2 = 0;
 	if (Ic2 < g_Parameter[ZERODRIFT_Ic]) Ic2 = 0;
@@ -578,30 +716,46 @@ static void CalculateData(void)
     if (Ic3 < g_Parameter[ZERODRIFT_Ic]) Ic3 = 0;
     if (I03 < g_Parameter[ZERODRIFT_I0]) I03 = 0;
 
-    if (Ua5 < g_Parameter[ZERODRIFT_Uab])Ua5 = 0;
-    if (Ub5 < g_Parameter[ZERODRIFT_Uca])Ub5 = 0;
-    if (Uc5 < g_Parameter[ZERODRIFT_Ubc])Uc5 = 0;
+    
+    if (Ub5 < g_Parameter[ZERODRIFT_Uac])Ub5 = 0;    
     if (U05 < g_Parameter[ZERODRIFT_U0]) U05 = 0;
     if (Ia5 < g_Parameter[ZERODRIFT_Ia]) Ia5 = 0;
     if (Ib5 < g_Parameter[ZERODRIFT_Ib]) Ib5 = 0;
     if (Ic5 < g_Parameter[ZERODRIFT_Ic]) Ic5 = 0;
     if (I05 < g_Parameter[ZERODRIFT_I0]) I05 = 0;
-
+    
     g_secondHarmonicIa = Ia2;
 	g_secondHarmonicIb = Ib2;
 	g_secondHarmonicIc = Ic2;
-    
-	g_TelemetryDB[THIRDHARMONIC_Uab] = Ua3;    
-    g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc3;
+
+    if(g_Parameter[CFG_POW_VOL_AB] == 0)
+    {
+        g_TelemetryDB[THIRDHARMONIC_Uab] = Ua3; 
+        g_TelemetryDB[THIRDHARMONIC_Uab] = Ua5;
+    }
+    else
+    {
+        g_TelemetryDB[THIRDHARMONIC_Uab] = UA3; 
+        g_TelemetryDB[THIRDHARMONIC_Uab] = UA5;    
+    }
+    if(g_Parameter[CFG_POW_VOL_CB] == 0)
+    {
+        g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc3;
+        g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc5;
+    }
+    else
+    {
+        g_TelemetryDB[THIRDHARMONIC_Ubc] = UC3;
+        g_TelemetryDB[THIRDHARMONIC_Ubc] = UC5;    
+    }
+            
     g_TelemetryDB[THIRDHARMONIC_Uca] = Ub3;
     g_TelemetryDB[THIRDHARMONIC_U0] = U03;
     g_TelemetryDB[THIRDHARMONIC_Ia] = Ia3;
     g_TelemetryDB[THIRDHARMONIC_Ib] = Ib3;
     g_TelemetryDB[THIRDHARMONIC_Ic] = Ic3;
     g_TelemetryDB[THIRDHARMONIC_I0] = I03;
-
-    g_TelemetryDB[THIRDHARMONIC_Uab] = Ua5;
-    g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc5;
+    
     g_TelemetryDB[THIRDHARMONIC_Uca] = Ub5;
     g_TelemetryDB[THIRDHARMONIC_U0] = U05;
     g_TelemetryDB[THIRDHARMONIC_Ia] = Ia5;

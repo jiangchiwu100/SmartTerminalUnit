@@ -469,7 +469,7 @@ void GetFrequency(void)
         TIM5->ARR = 6250 - 1; // 若Uab未接入，设定采集PWM为初始值
 		g_FreGather.freValueProtect = 0;
 		
-        if (g_TelemetryDB[ADDR_UBC] <= 1)
+        if (g_TelemetryDB[ADDR_UCB] <= 1)
         {
             g_TelemetryDB[ADDR_F] = 0;
         }

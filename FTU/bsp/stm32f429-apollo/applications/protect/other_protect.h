@@ -17,12 +17,11 @@
 #include "stm32f4xx_hal.h"
 
 /* DEFINE --------------------------------------------------------------------*/
-#define COUNTER_MAX                   80          // 系统计数器总数
 #define DB_COUNTER_EN                 0x80000000  // 计数器使能
 #define DB_COUNTER                    0x7fffffff  // 计数器
 
 
-#define CHARGE_TIME           10000
+#define CHARGE_TIME           5000
 #define MEMORY_TIME           5000
 
 #define MONI_FRAM             0x01

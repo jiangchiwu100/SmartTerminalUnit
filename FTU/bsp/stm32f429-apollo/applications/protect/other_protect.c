@@ -24,7 +24,7 @@
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 static rt_device_t device_fram = RT_NULL; 
-static rt_uint32_t s_Counter[DB_DEV_MAX_NUM][COUNTER_MAX];   //0x80000000使能位
+static List s_ListTimers[DB_DEV_MAX_NUM];//定时器链表链表//0x80000000使能位
 
 static struct OverLimit OverLimitUab;
 static struct OverLimit OverLimitUBC;
@@ -100,19 +100,16 @@ static void SysMonitorTask(void)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-static rt_uint8_t ApplyForCounter(rt_uint8_t pdrv, rt_uint32_t **dev)
+static void ApplyForCounter(rt_uint8_t pdrv, rt_uint32_t **dev)
 {
-    rt_uint8_t res = FALSE;
-
-    static rt_uint8_t i = 0;
-
-    if (i < COUNTER_MAX)
-    {
-        *dev = &s_Counter[pdrv][i++];
-        s_Counter[pdrv][i] = 0;
-        res = TRUE;
-    }
-    return(res);
+    rt_uint32_t *s_timer;
+        
+    s_timer = rt_malloc(sizeof(rt_uint32_t));
+    
+    *dev = s_timer;
+    *s_timer = 0;
+    
+    list_ins_next(&s_ListTimers[pdrv],NULL,s_timer); 
 }
 
 /**
@@ -397,7 +394,7 @@ static void TelemetryAbnormalCheck(void)
 	    DownVoltageCheck(&DownVoltageUab);
 	}
 
-	if (g_TelemetryDB[ADDR_UBC] >= 10.0f)
+	if (g_TelemetryDB[ADDR_UCB] >= 10.0f)
 	{
 	    DownVoltageCheck(&DownVoltageUBC);
 	}
@@ -499,6 +496,8 @@ void other_protect_init(void)
 {
     rt_uint8_t pdrv = 0;
 	
+    list_init(&s_ListTimers[pdrv]);
+    
     ApplyForCounter(pdrv, &OverLimitUab.counterUp);
     ApplyForCounter(pdrv, &OverLimitUab.counterDown);
     ApplyForCounter(pdrv, &OverLimitUab.counterUpReverse);
@@ -527,7 +526,7 @@ void other_protect_init(void)
     OverLimitUBC.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUBC.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUBC.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_UBC];
-    OverLimitUBC.telemetry = &g_TelemetryDB[ADDR_UBC];
+    OverLimitUBC.telemetry = &g_TelemetryDB[ADDR_UCB];
     OverLimitUBC.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUBC.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -543,7 +542,7 @@ void other_protect_init(void)
     OverLimitUac.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUac.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUac.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Uca];
-    OverLimitUac.telemetry = &g_TelemetryDB[ADDR_Uca];
+    OverLimitUac.telemetry = &g_TelemetryDB[ADDR_Uac];
     OverLimitUac.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUac.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -710,7 +709,7 @@ void other_protect_init(void)
     OverVoltageUBC.soeAddr = ADDR_OVER_VOLTAGE_PROTECTION;
     OverVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    OverVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UBC];
+    OverVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UCB];
     OverVoltageUBC.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
 
     ApplyForCounter(pdrv, &DownVoltageUBC.counter);
@@ -720,7 +719,7 @@ void other_protect_init(void)
     DownVoltageUBC.soeAddr = ADDR_DOWN_VOLTAGE_PROTECTION;
     DownVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     DownVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    DownVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UBC];
+    DownVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UCB];
     DownVoltageUBC.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
 
     ApplyForCounter(pdrv, &OverFrequency.counter);
@@ -828,17 +827,18 @@ static void RecoedMemory(void)
   * @return: none
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
-static void SystemCounterTask(void)
+static void SystemCounterTask(rt_uint8_t pdrv)
 {
-    rt_uint8_t i;
-    rt_uint8_t pdrv = 0;
-
-    for (i = 0; i < COUNTER_MAX; i++)//定时增加
+    ListElmt *element;
+    
+    element = s_ListTimers[pdrv].head;
+    while(element != NULL)
     {
-        if (s_Counter[pdrv][i] & DB_COUNTER_EN)
+        if((*((uint32_t *)(element->data)))&DB_COUNTER_EN)
         {
-            s_Counter[pdrv][i]++;
+            (*((uint32_t *)(element->data)))++;
         }
+        element = element->next;
     }
 }
 
@@ -853,7 +853,7 @@ static void SystemCounterTask(void)
 void other_protect_clock(void)
 {
     /* 系统计数器 */
-    SystemCounterTask();	
+    SystemCounterTask(DB_DEV0);	
 
     /* 记录存储处理 */
     RecoedMemory();	
