@@ -15,14 +15,27 @@
 #define USERKEY_DOWN	1
 #define USERKEY_UP 		0
 
-/* ²Ëµ¥°´¼üÓ³Éä */
-enum UserMenuKey{
+/* °´¼üÓ³Éä */
+enum UserKeyNomberMap{
+	/* ²Ëµ¥°´¼üÓ³Éä */
 	MENUKEY_UP = 0,
 	MENUKEY_LEFT = 1,
 	MENUKEY_DOWN = 2,
 	MENUKEY_RIGHT = 3,
 	MENUKEY_ESC = 4,
 	MENUKEY_OK = 5,
+	/* Ò£¿Ø°´¼üÓ³Éä */
+	YK_RESET = 6,
+	YK_CLOSESWITCH = 7,
+	YK_SHFITSWITCH = 8,
+	YK_OPENSWITCH = 9,
+	/* ¿ª¹ØÓ³Éä */
+	SW_LOCAL = 50,
+	SW_REMORE = 51,
+	SW_RECLOSE = 52,
+	SW_PROTECT = 53,
+	SW_CONTACT = 54,
+	SW_SECTION = 55,
 };
 /* °´¼üÃ¶¾Ù */
 enum KeyStatus{
@@ -44,10 +57,42 @@ struct MenuKeyValue{
 	uint8_t esc:1;
 	enum KeyStatus keyIs;
 };
+/* Ò£¿Ø°´¼ü×´Ì¬ */
+struct YKKeyValue{
+	uint8_t open:1;
+	uint8_t close:1;
+	uint8_t shift:1;
+	uint8_t reset:1;
+	enum KeyStatus keyIs;
+};
+
+/* ¿ª³öÓ³Éä */
+enum UserOutputNoMap{
+	/* LED Ó³Éä */
+	LED_BEGIN_NO = 2,
+	LED_END_NO = 50,
+};
+
+#define ULED_ALLNUM 9
+enum UserLedDefine{
+	ULED_0,
+	ULED_1,
+	ULED_2,
+	ULED_3,
+	ULED_4,
+};
+enum UserLedState{
+	ULED_OFF,
+	ULED_ON,
+};
 
 enum KeyStatus GetKeyStatus(void);
 void SetKeyIsNoKey(void);
 void KeyCmdResult(uint8_t keyNo, uint8_t state);
+void LedChangeCheck(void);
+
+extern uint32_t GetTimer1Tick(void);
+extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);
 #endif /* __HMIINOUT_H */
 
 /* END */
