@@ -306,17 +306,17 @@ enum Frequency
 #define ADDR_FRAM_CURRENT_SN            0x00004  // 当前定值区号 1个字节
 
 #define ADDR_FRAM_CALI_FACTOR           0x00050  // 校准系数存储起始地址 0x50
-#define ADDR_FRAM_AREA0                 0x00100	 // FRAM参数存储起始地址 运行参数0区     0x300
-#define ADDR_FRAM_AREA1		            0x00400	 // FRAM参数存储起始地址	定值区一     0x300
-#define ADDR_FRAM_AREA2		            0x00700	 // FRAM参数存储起始地址	定值区二     0x300
+#define ADDR_FRAM_AREA0                 0x00100	 // FRAM参数存储起始地址 运行参数0区     0x600
+#define ADDR_FRAM_AREA1		            0x00700	 // FRAM参数存储起始地址	定值区一     0x600
+#define ADDR_FRAM_AREA2		            0x00D00	 // FRAM参数存储起始地址	定值区二     0x600
 
-#define ADDR_FRAM_SOE                   0x00A00  // FRAM参数存储起始地址 SOE  // 0x1400
-#define ADDR_FRAM_SOE_NEW               0x01E00  // FRAM参数存储起始地址 SOE  // 0x1400
-#define ADDR_FRAM_FEVENT                0x03200  // 故障事件起始地址 0x500
-#define ADDR_FRAM_CO                    0x03700  // 操作记录起始地址 0x300
-#define ADDR_FRAM_LOG                   0x03A00  // 日志起始地址 0x1000
-#define ADDR_FRAM_MEMORY                0x04A00  // 状态标志地址 0x100
-#define ADDR_FRAM_TELISIGNAL            0x05000  // 遥信起始地址 0x100
+#define ADDR_FRAM_SOE                   0x01300  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_SOE_NEW               0x02700  // FRAM参数存储起始地址 SOE  // 0x1400
+#define ADDR_FRAM_FEVENT                0x03B00  // 故障事件起始地址 0x500
+#define ADDR_FRAM_CO                    0x04000  // 操作记录起始地址 0x300
+#define ADDR_FRAM_LOG                   0x04300  // 日志起始地址 0x1000
+#define ADDR_FRAM_MEMORY                0x05300  // 状态标志地址 0x100
+#define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x100
 
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x400
 
