@@ -201,14 +201,14 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
     
     memcpy(temp_array[pdrv],pbuf,pbuf[0]);
     
-    if(((addr >= REMOTE_START_ADDR)&&(addr < REMOTE_START_ADDR + 10))&&(g_NewToOldRemote[addr - REMOTE_START_ADDR] != 0)&&\
+    if(((addr >= REMOTE_START_ADDR)&&(addr < REMOTE_START_ADDR + REMOTE_TOTAL_NUM))&&(g_NewToOldRemote[addr - REMOTE_START_ADDR] != 0)&&\
         ((g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port))||(!(g_CommunicatFlag[COM_YK]&COMMUNICATLOCKUSERSTA))))
     {
         if((g_NewToOldPropertyRemote[addr - REMOTE_START_ADDR]>>NEWPROPERTY_NEG) & NEWPROPERTY_JUDG)
         {
             value = (~value)&0x03;        
         }
-        addr = g_NewToOldRemote[addr - REMOTE_START_ADDR];
+        addr = g_NewToOldRemote[addr - REMOTE_START_ADDR] - REMOTE_START_ADDR;
     }
     else
     {                            
@@ -224,11 +224,11 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
-                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != DISTANT_REMOTE_ADDR))    				
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != ADDR_REMOTE_OPERATE))    				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
-                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))    
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))    
 		      #endif 				                                
                 {
                     valuesuc = OFF;
@@ -247,13 +247,13 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
                      && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))     				
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))     				
 		      #else
-                if(((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
                      && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != DISTANT_REMOTE_ADDR))           
+                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))           
 		      #endif 				      
                 {
                     valuesuc = ON;
@@ -272,7 +272,7 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
         }
         else
         {
-            DBWriteSOE(DISTANT_REMOTE_ADDR, DISTANT_REMOTE_CANCEL);
+            DBWriteCO(addr, DISTANT_REMOTE_CANCEL);
             valuesuc = 0;
             addrsuc = 0;
             temp_array[pdrv][4] = DLT634_5104SLAVE_COT_DEACTCON;
@@ -287,14 +287,14 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
                      && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))    				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
                      && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))             
 		      #endif      
                 {
@@ -316,14 +316,14 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF\
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF\
                           && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB.Str.operatingMechanism == ON && g_TelesignalDB.Str.deviceFault == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))  				
 		      #else
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
                           && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
-                    (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
+                    (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))             
 		      #endif   
                 {
@@ -345,7 +345,7 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
         }
         else
         {
-            DBWriteSOE(DISTANT_REMOTE_ADDR, DISTANT_REMOTE_CANCEL);
+            DBWriteCO(addr, DISTANT_REMOTE_CANCEL);
             valuesuc = 0;
             addrsuc = 0;
             temp_array[pdrv][4] = DLT634_5104SLAVE_COT_DEACTCON;
@@ -916,7 +916,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
         switch(Property)
         {
             case DLT634_5104SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(nva_temp.value/10/(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)*32768);
+                tempu = (int16_t)(nva_temp.value/(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])*32768);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 10] = 0;
@@ -924,7 +924,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
                 memcpy(&temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 11],(uint8_t *)&tempu,sizeof(int16_t));
                 break;
             case DLT634_5104SLAVE_M_ME_NB_1:
-                tempu = (int16_t)(nva_temp.value*(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));            
+                tempu = (int16_t)(nva_temp.value*(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));            
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 10] = 0;
@@ -932,7 +932,7 @@ void DLT634_5104_SLAVE_R_NVA(uint8_t pdrv, uint8_t *pbuf)//读NVA
                 memcpy(&temp_array[pdrv][sendnum*(sizeof(nva_temp.addr)+ sizeof(int16_t)+1+1) + 11],(uint8_t *)&tempu,sizeof(int16_t));
                 break;
             case DLT634_5104SLAVE_M_ME_NC_1:
-				tempf = FloatToBin(nva_temp.value*(g_NewPropertyTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)); 
+				tempf = FloatToBin(nva_temp.value*(g_NewMultipleRateTelemetry[g_NVADB[g_NVADBOut[DLT634_5104Slave_Pad[pdrv].Port]].addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])); 
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 8] = LOBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 9] = HIBYTE(nva_temp.addr);
                 temp_array[pdrv][sendnum*(sizeof(struct NVA_Str)+1+1) + 10] = 0;
@@ -1140,20 +1140,20 @@ uint16_t DLT634_5104_SLAVE_ReadYcData(uint8_t pdrv, uint16_t addr, uint16_t num,
         switch(Property)
         {
             case DLT634_5104SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/10/\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE)*32768);
+                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]/\
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr])*32768);
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NB_1:
                 tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 11],&tempu,sizeof(uint16_t)); 
                 break;
             case DLT634_5104SLAVE_M_ME_NC_1:
                 tempf = FloatToBin(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]*\
-                        (g_NewPropertyTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]>>NEWPROPERTY_COE));
+                        (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + sizeof(uint32_t) + 11] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + 11],&tempf,sizeof(uint32_t));   
                 break;                    
@@ -1459,8 +1459,8 @@ int DLT634_5104_ParaInit(void)
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5104Slave_Pad[pdrv].Port = SLAVE104_ID0; // 端口号
 
-                DLT634_5104Slave_Pad[pdrv].LinkAddress = g_ConfigurationSetDB.NetSourceAddr; // 链路地址
-                DLT634_5104Slave_Pad[pdrv].PubAddress  = g_ConfigurationSetDB.NetASDUAddr; // 公共地址
+                DLT634_5104Slave_Pad[pdrv].LinkAddress = (uint16_t)g_Parameter[NET_SOURCEADDR]; // 链路地址
+                DLT634_5104Slave_Pad[pdrv].PubAddress  = (uint16_t)g_Parameter[NET_ASDUADDR]; // 公共地址
                     
                 DLT634_5104Slave_Pad[pdrv].CotSize = 2;        // 传输原因字节数
                 DLT634_5104Slave_Pad[pdrv].InfoAddrSize = 3;   // 信息体地址字节数
@@ -1485,8 +1485,8 @@ int DLT634_5104_ParaInit(void)
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5104Slave_Pad[pdrv].Port = SLAVE104_ID1; // 端口号
 
-                DLT634_5104Slave_Pad[pdrv].LinkAddress = g_ConfigurationSetDB.NetSourceAddr; // 链路地址
-                DLT634_5104Slave_Pad[pdrv].PubAddress  = g_ConfigurationSetDB.NetASDUAddr; // 公共地址
+                DLT634_5104Slave_Pad[pdrv].LinkAddress = (uint16_t)g_Parameter[NET_SOURCEADDR]; // 链路地址
+                DLT634_5104Slave_Pad[pdrv].PubAddress  = (uint16_t)g_Parameter[NET_ASDUADDR]; // 公共地址
                     
                 DLT634_5104Slave_Pad[pdrv].CotSize = 2;        // 传输原因字节数
                 DLT634_5104Slave_Pad[pdrv].InfoAddrSize = 3;   // 信息体地址字节数

@@ -16,7 +16,7 @@
 
 
 /* PRIVATE VARIABLES --------------------------------------------------------*/
-static uint32_t s_timers[BRE_DEVMAXNUM][BRE_MAXTIMERS]; // 0x80000000使能位
+static List s_ListTimers[BRE_DEVMAXNUM];//定时器链表链表//0x80000000使能位
 static ComProSts s_ComProSts[BRE_DEVMAXNUM];
 static RestSts s_Rest[BRE_DEVMAXNUM];
 static InrushSts s_Inrush[BRE_DEVMAXNUM];
@@ -37,19 +37,37 @@ static RecloseI0Sts s_RecloseI0[BRE_DEVMAXNUM];
   * @return: none
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
-static uint8_t addtimers(uint8_t pdrv, uint32_t **dev)
+static void addtimers(uint8_t pdrv, uint32_t **dev)
 {
-    uint8_t res = BRE_FALSE;
+    uint32_t *s_timer;
+        
+    s_timer = rt_malloc(sizeof(uint32_t));
+    
+    *dev = s_timer;
+    *s_timer = 0;
+    
+    list_ins_next(&s_ListTimers[pdrv],NULL,s_timer); 
+}
 
-    static uint8_t i[BRE_DEVMAXNUM]={0};
-
-    if(i[pdrv]<BRE_MAXTIMERS)
+/**
+  * @Description: 定时器增加.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void add_timers(uint8_t pdrv)
+{
+    ListElmt *element;
+    
+    element = s_ListTimers[pdrv].head;
+    while(element != NULL)
     {
-        *dev = &s_timers[pdrv][i[pdrv]++];
-        s_timers[pdrv][i[pdrv]] = 0;
-        res = BRE_TRUE;
+        if((*((uint32_t *)(element->data)))&BRE_ENTIMERS)
+        {
+            (*((uint32_t *)(element->data)))++;
+        }
+        element = element->next;
     }
-    return(res);
 }
 
 /**
@@ -961,6 +979,7 @@ void BreakerCtrlInit(void)
         switch(pdrv)
         {
         case BRE_DEV0:
+            list_init(&s_ListTimers[pdrv]);
             //通用
 			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
 			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
@@ -969,6 +988,7 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[ADDR_CLOSE];
             s_ComProSts[pdrv].yx.recloseHardStrap.value = &g_TelesignalDB[ADDR_RECLOSE_FA_STRAP];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP];
+            s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[ADDR_TELECONTROL_PRO_OUT];
 
             s_ComProSts[pdrv].yx.shortCircuitFault.addr = ADDR_SHORT_CIRCUIT_FAULT;
             s_ComProSts[pdrv].yx.earthingFault.addr = ADDR_EARTHING_FAULT;
@@ -1039,18 +1059,30 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yc.Ib2 = &g_secondHarmonicIb;
             s_ComProSts[pdrv].yc.Ic2 = &g_secondHarmonicIc;
             s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[ADDR_I0];
-            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Uab];
-            s_ComProSts[pdrv].yc.Ubc = &g_TelemetryDB[ADDR_Ubc];
-            s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[ADDR_Uca];
+            if(g_Parameter[CFG_PRO_VOL_M] == 0)
+            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Uab];}
+            else
+            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[ADDR_Ucb];}
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[ADDR_UAB];}
+            else
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[ADDR_UCB];}
+            s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[ADDR_Uac];
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[ADDR_U0];
             
             s_ComProSts[pdrv].fevent_yc_addr[0] = ADDR_IA;
             s_ComProSts[pdrv].fevent_yc_addr[1] = ADDR_IB;
             s_ComProSts[pdrv].fevent_yc_addr[2] = ADDR_IC;
             s_ComProSts[pdrv].fevent_yc_addr[3] = ADDR_I0;
-            s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;
-            s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UBC;
-            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uca;
+            if(g_Parameter[CFG_PRO_VOL_M] == 0)
+            {s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Uab;}
+            else
+            {s_ComProSts[pdrv].fevent_yc_addr[4] = ADDR_Ucb;}
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UAB;}
+            else
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = ADDR_UCB;}           
+            s_ComProSts[pdrv].fevent_yc_addr[6] = ADDR_Uac;
             s_ComProSts[pdrv].fevent_yc_addr[7] = ADDR_U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
@@ -1219,18 +1251,11 @@ void BreakerCtrlInit(void)
   */
 void BreakerCtrlClock(void)
 {
-    uint8_t i=0;
     uint8_t pdrv;
 	
     for(pdrv=0; pdrv<BRE_DEVMAXNUM; pdrv++)
     {
-        for(i=0; i<BRE_MAXTIMERS; i++) //定时增加
-        {
-            if(s_timers[pdrv][i]&BRE_ENTIMERS)
-            {
-                s_timers[pdrv][i]++;
-            }
-        }
+        add_timers(pdrv);//定时增加
 		
 		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
 		{
@@ -1246,7 +1271,7 @@ void BreakerCtrlClock(void)
 			case BRE_DEV0:
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{
-					if(*(s_ComProSts[pdrv].yx.functionHardStrap.value) == ON)
+					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板
 					{
 						inrush_ctrl(&s_ComProSts[pdrv],&s_Inrush[pdrv]);//涌流抑制
 						iACC_ctrl(&s_ComProSts[pdrv],&s_IACC[pdrv]);//后加速

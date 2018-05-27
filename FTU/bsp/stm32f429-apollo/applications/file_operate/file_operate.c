@@ -24,8 +24,6 @@
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 static int MyFile; /* File object */
-static int MyFile_SOE; /* File object */
-static int MyFile_CO; /* File object */
 static struct stat FileSta;
 static char content[512];
 static char FileName[255]; /* File Name */
@@ -622,18 +620,18 @@ void ReadDoc_Record(void)
         return;
     }
 	
-    read(MyFile, &g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
+    read(MyFile, g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
    
     FILE_PRINTF("f_read ConfigurationSet.cfg\n", MyFile);
     
 //存储FRAM语句 	
-    if(g_ConfigurationSetDB.ID_Value[0] != 0)
+    if(g_ConfigurationSetDB->ID_Value[0] != 0)
     {
-        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
+        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
     }
     else
     {
-        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB) - sizeof(g_ConfigurationSetDB.ID_Value));
+        rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase) - sizeof(g_ConfigurationSetDB->ID_Value));
     }
     
 	close(MyFile);
@@ -952,63 +950,172 @@ uint8_t AddDoc_FEVNET(void)
 }
 
 /**
-  * @brief : AddDoc_SOE_CO.
+  * @brief : AddDoc_SOE.
   * @return: none
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
-uint8_t AddDoc_SOE_CO(void)
+uint8_t AddDoc_SOE(void)
 {
 	char tabs = 0;
 	char tempstr[20];
-    char have_soe=0,have_co=0;
     
     if(g_FlagDB.queue_soe.in != g_FlagDB.queue_soe.out[FLASH_ID])
     {	
         strcpy(FileName,"/sojo");
         strcat(FileName,"/HISTORY/SOE");
         strcat(FileName,"/soe.xml");	
-        MyFile_SOE = open(FileName, O_RDWR, 0);
-        if(MyFile_SOE == -1)
+        MyFile = open(FileName, O_RDWR, 0);
+        if(MyFile == -1)
         {
             failnum++;
             FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml open failed!\n");
             return(1);
         }
-     
+        
+        while(g_FlagDB.queue_soe.in != g_FlagDB.queue_soe.out[FLASH_ID])
+        {
+            
+            tabs = 2;
+            lseek(MyFile, 0x86+0x34*(g_FlagDB.fatfs_soe.currentnum), SEEK_SET);
+            strcpy(content,"DI ioa=\"00001\" tm=\"160813_180000_011\" val=\"0\"");
+            sprintf(tempstr,"%05d",g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].addr);
+            memcpy((content+strlen("DI ioa=\"")),tempstr,5);
+            sprintf(tempstr,"%01d",(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value - 1));
+            memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" val=\"")),tempstr,1);
+            TIME_TO_STR(tempstr,g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].time);
+            memcpy((content+strlen("DI ioa=\"00001\" tm=\"")),tempstr,17);
+            tag_value(content,&tabs);
+            write(MyFile,content, strlen(content));
+            if(MyFile == -1)
+            {
+                failnum++;
+                FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
+                return(1);
+            }
+            
+            if(++g_FlagDB.fatfs_soe.fullnum >= SOE_FILE_MAXNUM)
+            {
+                g_FlagDB.fatfs_soe.fullnum = SOE_FILE_MAXNUM;
+            }
+            
+            if(++g_FlagDB.fatfs_soe.currentnum >= SOE_FILE_MAXNUM)
+            {
+                g_FlagDB.fatfs_soe.currentnum = 0;
+                strcpy(content,"DataRec");
+                tag_end(content,&tabs);
+                write(MyFile,content, strlen(content));
+                if(MyFile == -1)
+                {
+                    failnum++;
+                    FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+                    return(1);
+                }
+                
+                strcpy(content,"DataFile");
+                tag_end(content,&tabs);
+                write(MyFile,content, strlen(content));
+                if(MyFile == -1)
+                {
+                    failnum++;
+                    FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+                    return(1);
+                }
+            }
+
+            if (++(g_FlagDB.queue_soe.out[FLASH_ID]) >= SOE_MAX_NUM)
+            {
+                g_FlagDB.queue_soe.out[FLASH_ID] = 0;
+            }    
+        }   
+
+        if(g_FlagDB.fatfs_soe.fullnum < SOE_FILE_MAXNUM)
+        {
+            strcpy(content,"DataRec");
+            tag_end(content,&tabs);
+            write(MyFile,content, strlen(content));
+            if(MyFile == -1)
+            {
+                failnum++;
+                FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+                return(1);
+            }
+            
+            strcpy(content,"DataFile");
+            tag_end(content,&tabs);
+            write(MyFile,content, strlen(content));
+            if(MyFile == -1)
+            {
+                failnum++;
+                FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+                return(1);
+            }
+        }
+        
+        tabs = 1;
+        lseek(MyFile, 0x6f+1, SEEK_SET);
+        strcpy(content,"DataRec num=\"0010\"");
+        sprintf(tempstr,"%04d",g_FlagDB.fatfs_soe.fullnum);
+        memcpy((content+strlen("DataRec num=\"")),tempstr,4);
+        tag_start(content,&tabs);
+        write(MyFile,content, strlen(content));	
+        if(MyFile == -1)
+        {
+            failnum++;
+            FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+            return(1);
+        }
+        FILE_PRINTF("Write SOE \r\n");
+        
+        close(MyFile);
+        
+        failnum = 0;
+    }
+    return(0);
+}
+
+/**
+  * @brief : AddDoc_CO.
+  * @return: none
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+uint8_t AddDoc_CO(void)
+{
+	char tabs = 0;
+	char tempstr[20];
+    
+    if(g_FlagDB.queue_co.in != g_FlagDB.queue_co.out[FLASH_ID])
+    {	     
         strcpy(FileName,"/sojo");
         strcat(FileName,"/HISTORY/CO");
         strcat(FileName,"/co.xml"); 
-        MyFile_CO = open(FileName, O_RDWR, 0);        
-        if(MyFile_CO == -1)
+        MyFile = open(FileName, O_RDWR, 0);        
+        if(MyFile == -1)
         {
             failnum++;
             FILE_PRINTF("/sojo/HISTORY/CO/co.xml open failed!\n");
             return(1);
         }
         
-        while(g_FlagDB.queue_soe.in != g_FlagDB.queue_soe.out[FLASH_ID])
+        while(g_FlagDB.queue_co.in != g_FlagDB.queue_co.out[FLASH_ID])
         {
-            if(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].addr >= REMOTE_START_ADDR)//操作记录
-            {
-                have_co = 1;
                 tabs = 2;
-                lseek(MyFile_CO, 0x85+0x49*(g_FlagDB.fatfs_co.currentnum), SEEK_SET);
+                lseek(MyFile, 0x85+0x49*(g_FlagDB.fatfs_co.currentnum), SEEK_SET);
                 strcpy(content,"DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"0\"");
-                sprintf(tempstr,"%05d",g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].addr);
+                sprintf(tempstr,"%05d",g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].addr);
                 memcpy((content+strlen("DI ioa=\"")),tempstr,5);
-                if((g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value)>=0x20)
+                if((g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value)>=0x20)
                 {
-                    if(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value&0x10)
+                    if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x10)
                     {
                         strcpy(tempstr,"cancle        ");
                     }
                     else
                     {
-                        if(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value&0x08)
+                        if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x08)
                         {strcpy(tempstr,"oper   ");}
                         else
                         {strcpy(tempstr,"select ");}
-                        if(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value&0x04)
+                        if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x04)
                         {strcat(tempstr,"success");}
                         else
                         {strcat(tempstr,"fail   ");}            
@@ -1019,13 +1126,13 @@ uint8_t AddDoc_SOE_CO(void)
                     {strcpy(tempstr,"oper   success");} 
                 }
                 memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"")),tempstr,14);
-                sprintf(tempstr,"%01d",((g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value >> 1)&0x01));
+                sprintf(tempstr,"%01d",((g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value >> 1)&0x01));
                 memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"")),tempstr,1);
-                TIME_TO_STR(tempstr,g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].time);
+                TIME_TO_STR(tempstr,g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].time);
                 memcpy((content+strlen("DI ioa=\"00001\" tm=\"")),tempstr,17);
                 tag_value(content,&tabs);
-                write(MyFile_CO,content, strlen(content));        
-                if(MyFile_CO == -1)
+                write(MyFile,content, strlen(content));        
+                if(MyFile == -1)
                 {
                     failnum++;
                     FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
@@ -1042,8 +1149,8 @@ uint8_t AddDoc_SOE_CO(void)
                     g_FlagDB.fatfs_co.currentnum = 0;
                     strcpy(content,"DataRec");
                     tag_end(content,&tabs);
-                    write(MyFile_CO,content, strlen(content)); 
-                    if(MyFile_CO == -1)
+                    write(MyFile,content, strlen(content)); 
+                    if(MyFile == -1)
                     {
                         failnum++;
                         FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
@@ -1052,154 +1159,54 @@ uint8_t AddDoc_SOE_CO(void)
                     
                     strcpy(content,"DataFile");
                     tag_end(content,&tabs);
-                    write(MyFile_CO,content, strlen(content));
-                    if(MyFile_CO == -1)
+                    write(MyFile,content, strlen(content));
+                    if(MyFile == -1)
                     {
                         failnum++;
                         FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
                         return(1);
                     }
-                }     
-            }           
-            else//SOE
-            {
-                have_soe = 1;
-                tabs = 2;
-                lseek(MyFile_SOE, 0x86+0x34*(g_FlagDB.fatfs_soe.currentnum), SEEK_SET);
-                strcpy(content,"DI ioa=\"00001\" tm=\"160813_180000_011\" val=\"0\"");
-                sprintf(tempstr,"%05d",g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].addr);
-                memcpy((content+strlen("DI ioa=\"")),tempstr,5);
-                sprintf(tempstr,"%01d",(g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].value - 1));
-                memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" val=\"")),tempstr,1);
-                TIME_TO_STR(tempstr,g_SOEDB[g_FlagDB.queue_soe.out[FLASH_ID]].time);
-                memcpy((content+strlen("DI ioa=\"00001\" tm=\"")),tempstr,17);
-                tag_value(content,&tabs);
-                write(MyFile_SOE,content, strlen(content));
-                if(MyFile_SOE == -1)
-                {
-                    failnum++;
-                    FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
-                    return(1);
-                }
-                
-                if(++g_FlagDB.fatfs_soe.fullnum >= SOE_FILE_MAXNUM)
-                {
-                    g_FlagDB.fatfs_soe.fullnum = SOE_FILE_MAXNUM;
-                }
-                
-                if(++g_FlagDB.fatfs_soe.currentnum >= SOE_FILE_MAXNUM)
-                {
-                    g_FlagDB.fatfs_soe.currentnum = 0;
-                    strcpy(content,"DataRec");
-                    tag_end(content,&tabs);
-                    write(MyFile_SOE,content, strlen(content));
-                    if(MyFile_SOE == -1)
-                    {
-                        failnum++;
-                        FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
-                        return(1);
-                    }
-                    
-                    strcpy(content,"DataFile");
-                    tag_end(content,&tabs);
-                    write(MyFile_SOE,content, strlen(content));
-                    if(MyFile_SOE == -1)
-                    {
-                        failnum++;
-                        FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
-                        return(1);
-                    }
-                }
-            }
-            if (++(g_FlagDB.queue_soe.out[FLASH_ID]) >= SOE_MAX_NUM)
-            {
-                g_FlagDB.queue_soe.out[FLASH_ID] = 0;
-            }    
+                }               
         }
       
-        if(have_co)
+        if(g_FlagDB.fatfs_co.fullnum < CO_FILE_MAXNUM)
         {
-            if(g_FlagDB.fatfs_co.fullnum < CO_FILE_MAXNUM)
-            {
-                strcpy(content,"DataRec");
-                tag_end(content,&tabs);
-                write(MyFile_CO,content, strlen(content));
-                if(MyFile_CO == -1)
-                {
-                    failnum++;
-                    FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
-                    return(1);
-                }
-                
-                strcpy(content,"DataFile");
-                tag_end(content,&tabs);
-                write(MyFile_CO,content, strlen(content));
-                if(MyFile_CO == -1)
-                {
-                    failnum++;
-                    FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
-                    return(1);
-                }
-            }
-            tabs = 1;
-            lseek(MyFile_CO, 0x6f+1, SEEK_SET);
-            strcpy(content,"DataRec num=\"0010\"");
-            sprintf(tempstr,"%04d",g_FlagDB.fatfs_co.fullnum);
-            memcpy((content+strlen("DataRec num=\"")),tempstr,4);
-            tag_start(content,&tabs);
-            write(MyFile_CO,content, strlen(content)); 
-            if(MyFile_CO == -1)
+            strcpy(content,"DataRec");
+            tag_end(content,&tabs);
+            write(MyFile,content, strlen(content));
+            if(MyFile == -1)
             {
                 failnum++;
                 FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
                 return(1);
             }
-            FILE_PRINTF("Write CO \r\n");
-        }    
-
-        if(have_soe)
-        {
-            if(g_FlagDB.fatfs_soe.fullnum < SOE_FILE_MAXNUM)
-            {
-                strcpy(content,"DataRec");
-                tag_end(content,&tabs);
-                write(MyFile_SOE,content, strlen(content));
-                if(MyFile_SOE == -1)
-                {
-                    failnum++;
-                    FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
-                    return(1);
-                }
-                
-                strcpy(content,"DataFile");
-                tag_end(content,&tabs);
-                write(MyFile_SOE,content, strlen(content));
-                if(MyFile_SOE == -1)
-                {
-                    failnum++;
-                    FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
-                    return(1);
-                }
-            }
             
-            tabs = 1;
-            lseek(MyFile_SOE, 0x6f+1, SEEK_SET);
-            strcpy(content,"DataRec num=\"0010\"");
-            sprintf(tempstr,"%04d",g_FlagDB.fatfs_soe.fullnum);
-            memcpy((content+strlen("DataRec num=\"")),tempstr,4);
-            tag_start(content,&tabs);
-            write(MyFile_SOE,content, strlen(content));	
-            if(MyFile_SOE == -1)
+            strcpy(content,"DataFile");
+            tag_end(content,&tabs);
+            write(MyFile,content, strlen(content));
+            if(MyFile == -1)
             {
                 failnum++;
-                FILE_PRINTF("/sojo/HISTORY/SOE/soe.xml write failed!\n");
+                FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
                 return(1);
             }
-            FILE_PRINTF("Write SOE \r\n");
         }
+        tabs = 1;
+        lseek(MyFile, 0x6f+1, SEEK_SET);
+        strcpy(content,"DataRec num=\"0010\"");
+        sprintf(tempstr,"%04d",g_FlagDB.fatfs_co.fullnum);
+        memcpy((content+strlen("DataRec num=\"")),tempstr,4);
+        tag_start(content,&tabs);
+        write(MyFile,content, strlen(content)); 
+        if(MyFile == -1)
+        {
+            failnum++;
+            FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
+            return(1);
+        }
+        FILE_PRINTF("Write CO \r\n");   
         
-        close(MyFile_CO);
-        close(MyFile_SOE);
+        close(MyFile);
         
         failnum = 0;
     }
@@ -1213,7 +1220,9 @@ uint8_t AddDoc_SOE_CO(void)
   */	
 uint8_t AddDoc_Random(void)
 {
-    if(AddDoc_SOE_CO())
+    if(AddDoc_SOE())
+    {return(1);}
+    if(AddDoc_CO())
     {return(1);}
     if(AddDoc_FEVNET())
     {return(1);}

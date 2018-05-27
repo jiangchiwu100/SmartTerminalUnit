@@ -29,31 +29,32 @@
 uint16_t                            g_ThreadRunSta;
 uint16_t                            g_AddrCount;
 uint16_t                            g_StartWave;
-struct ConfigurationSetDatabase     g_ConfigurationSetDB; // 系统配置结构
+struct ConfigurationSetDatabase     *g_ConfigurationSetDB; // 系统配置结构
 struct SD2405Time                   g_SystemTime; // 系统时间
 //TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
-uint8_t								g_TelesignalDB[TELESIGNAL_NUM];						
+uint8_t								g_TelesignalDB[TELESIGNAL_TOTAL_NUM];						
  /* 新遥信点表映射 */
-List                                g_NewListTelesignal[TELESIGNAL_NUM];
+List                                g_NewListTelesignal[TELESIGNAL_TOTAL_NUM];
 rt_uint16_t                         g_NewMaxNumTelesignal;
-rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_NUM]; // 新点表映射，填原点表数组下标
+rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_TOTAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 遥测缓存 */
-float                               g_TelemetryDB[TELEMETRY_NUM];
-float                               g_TelemetryLastDB[TELEMETRY_NUM];
+float                               g_TelemetryDB[TELEMETRY_TOTAL_NUM];
+float                               g_TelemetryLastDB[TELEMETRY_TOTAL_NUM];
 float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
 
 #if RT_USING_TELEMETRY_SET
-float                   g_TelemetrySetEnable[TELEMETRY_NUM];
-float                   g_TelemetrySetValue[TELEMETRY_NUM];
+float                   g_TelemetrySetEnable[TELEMETRY_TOTAL_NUM];
+float                   g_TelemetrySetValue[TELEMETRY_TOTAL_NUM];
 #endif /* RT_USING_TELEMETRY_SET */
 
 /* 新遥测点表映射 */
-rt_uint16_t                         g_NewPropertyTelemetry[TELEMETRY_NUM];//新点表属性//低6位类型，变化，取反
-rt_uint16_t                         g_NewAddTelemetry[TELEMETRY_NUM];//写入对应新地址
+rt_uint16_t                         g_NewPropertyTelemetry[TELEMETRY_TOTAL_NUM];//低6位类型
+float                               g_NewMultipleRateTelemetry[TELEMETRY_TOTAL_NUM];//倍率
+rt_uint16_t                         g_NewAddTelemetry[TELEMETRY_TOTAL_NUM];//写入对应新地址
 
 rt_uint16_t                         g_NewMaxNumTelemetry; // 新点表个数
-rt_uint16_t                         g_NewToOldTelemetry[TELEMETRY_NUM]; // 新点表映射，填原点表数组下标
+rt_uint16_t                         g_NewToOldTelemetry[TELEMETRY_TOTAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 新遥控点表映射 */
 rt_uint16_t                         g_NewToOldRemote[REMOTE_TOTAL_NUM]; // 新点表映射，填原点表数组下标
@@ -272,13 +273,13 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         offset = addr - FIXED_VALUE_START_ADDR;
     }
     #if RT_USING_TELEMETRY_SET
-    else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_NUM)))
+    else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_TOTAL_NUM)))
     {
         // 强制遥测地址
         array = g_TelemetrySetEnable;
         offset = addr - TELEMETRY_SETENABLE_START_ADDR;
     }
-    else if((TELEMETRY_SETVALUE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETVALUE_START_ADDR + TELEMETRY_NUM)))
+    else if((TELEMETRY_SETVALUE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETVALUE_START_ADDR + TELEMETRY_TOTAL_NUM)))
     {
         // 强制遥测值
         array = g_TelemetrySetValue;
@@ -507,7 +508,7 @@ void CalibrationFactorCal(uint8_t num)
     uint8_t i, offset;
     static uint8_t complate = 0;
     static float telemetry[AVERAGE_TIMER];
-    static uint8_t counter[TELEMETRY_NUM];
+    static uint8_t counter[TELEMETRY_TOTAL_NUM];
 
     if (g_ValueParaOperateInfo.calibratFlag)
     {
@@ -571,20 +572,12 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     rt_uint8_t Property;
     uint16_t newaddr;
     
-    if (addr >= 0 && addr <= TELESIGNAL_NUM)
+    if (state == g_TelesignalDB[addr])
     {
-        if (state == g_TelesignalDB[addr])
-        {
-            return FALSE;
-        }
-        g_TelesignalDB[addr] = state;
-        g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + TELESIGNAL_START_ADDR;		
+        return FALSE;
     }
-	else
-	{
-	    g_SOEDB[g_FlagDB.queue_soe.in].addr = addr;
-	}
-
+    g_TelesignalDB[addr] = state;
+    g_SOEDB[g_FlagDB.queue_soe.in].addr = addr + TELESIGNAL_START_ADDR;		
 
     g_SOEDB[g_FlagDB.queue_soe.in].value = state;
     g_SOEDB[g_FlagDB.queue_soe.in].time.year = g_SystemTime.year;
@@ -612,7 +605,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
 
     //*MemoryCounter.soe = DB_COUNTER_EN;	
     
-    if (addr >= 0 && addr <= TELESIGNAL_NUM)
+    if (addr < TELESIGNAL_TOTAL_NUM)
     {
         if(g_NewListTelesignal[addr].size != 0)//链表不为空
         {
@@ -713,7 +706,7 @@ rt_uint8_t DBWriteCO(uint16_t addr, rt_uint8_t state)
 {
     rt_uint32_t i;
 
-    g_CoDB[g_FlagDB.queue_co.in].addr = addr + TELESIGNAL_START_ADDR;
+    g_CoDB[g_FlagDB.queue_co.in].addr = addr + REMOTE_START_ADDR;
     g_CoDB[g_FlagDB.queue_co.in].value = state;
     g_CoDB[g_FlagDB.queue_co.in].time.year = g_SystemTime.year;
     g_CoDB[g_FlagDB.queue_co.in].time.month = g_SystemTime.month;
@@ -1186,7 +1179,7 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
     switch(type)
     {        
         case TELESIGNAL:
-            rt_device_read(device_fram, ADDR_FRAM_TELISIGNAL, pBuf, TELESIGNAL_NUM);
+            rt_device_read(device_fram, ADDR_FRAM_TELISIGNAL, pBuf, TELESIGNAL_TOTAL_NUM);
             break;
 
         case SOE_RECODE:
@@ -1214,7 +1207,7 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
             break;
 		
         case CFG_RECODE:
-            rt_device_read(device_fram, ADDR_FRAM_CONFIG, pBuf, sizeof(g_ConfigurationSetDB));									
+            rt_device_read(device_fram, ADDR_FRAM_CONFIG, pBuf, sizeof(struct ConfigurationSetDatabase));									
             break;
        
         default:
@@ -1251,67 +1244,30 @@ void rt_multi_common_data_configure_default(void)
 {
     uint16_t i;
     
-//串口配置
-    g_ConfigurationSetDB.UartPort = 2;      //左1，中2，右3
-    g_ConfigurationSetDB.UartBaudRate = 4;  //波特率，1200为1,2400为2,4800为3,9600为4,38400为5,115200为6
-    g_ConfigurationSetDB.UartWordLength = 8;    //数据位
-    g_ConfigurationSetDB.UartStopBits = 1;      //停止位
-    g_ConfigurationSetDB.UartParity = 1;        //无校验1，奇校验2，偶校验3
-//串口设置
-    g_ConfigurationSetDB.UartBalanMode = 1;     //非平衡0，平衡1
-    g_ConfigurationSetDB.UartSourceAddr = 1;    //从站地址
-    g_ConfigurationSetDB.UartLinkAddrSize = 2;  //从站地址长度
-    g_ConfigurationSetDB.UartASDUCotSize = 2;   //传送原因字节数
-    g_ConfigurationSetDB.UartASDUAddr = 1;      //ASDU地址
-    g_ConfigurationSetDB.UartASDUAddrSize = 2;  //ASDU地址长度
-//网口配置
-    g_ConfigurationSetDB.Netip1[0] = 192; //IP上
-    g_ConfigurationSetDB.Netip1[1] = 168; //IP上
-    g_ConfigurationSetDB.Netip1[2] = 60; //IP上
-    g_ConfigurationSetDB.Netip1[3] = 100; //IP上
-    g_ConfigurationSetDB.Netip2[0] = 192; //IP下
-    g_ConfigurationSetDB.Netip2[1] = 168; //IP下
-    g_ConfigurationSetDB.Netip2[2] = 60; //IP下
-    g_ConfigurationSetDB.Netip2[3] = 120; //IP下
-    g_ConfigurationSetDB.Netnetmask[0] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[1] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[2] = 255; //子网掩码
-    g_ConfigurationSetDB.Netnetmask[3] = 0; //子网掩码
-    g_ConfigurationSetDB.Netgateway[0] = 192; //网关
-    g_ConfigurationSetDB.Netgateway[1] = 168; //网关
-    g_ConfigurationSetDB.Netgateway[2] = 60; //网关
-    g_ConfigurationSetDB.Netgateway[3] = 254; //网关
-    g_ConfigurationSetDB.Netdns[0] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[1] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[2] = 114;//DNS
-    g_ConfigurationSetDB.Netdns[3] = 114;//DNS
-//网口设置
-    g_ConfigurationSetDB.NetSourceAddr = 1;//从站地址
-    g_ConfigurationSetDB.NetASDUAddr = 1;//ASDU地址
+    g_ConfigurationSetDB->YXSetNum = TELESIGNAL_TOTAL_NUM;
     
-    g_ConfigurationSetDB.YXSetNum = TELESIGNAL_NUM;
-    
-    for(i=0; i<TELESIGNAL_NUM;i++)
+    for(i=0; i<TELESIGNAL_TOTAL_NUM;i++)
     {
-        g_ConfigurationSetDB.YXSet[2*i] = (1<<NEWONEYX_NUM)|(COMMON_DATA_M_SP_NA_1<<NEWPROPERTY_TI)|(1<<NEWPROPERTY_SOE)|(1<<NEWPROPERTY_COS);
-        g_ConfigurationSetDB.YXSet[2*i + 1] = (0<<NEWONEYX_CAL)|((TELESIGNAL_START_ADDR + i)<<NEWONEYX_ADDR);
+        g_ConfigurationSetDB->YXSet[2*i] = (1<<NEWONEYX_NUM)|(COMMON_DATA_M_SP_NA_1<<NEWPROPERTY_TI)|(1<<NEWPROPERTY_SOE)|(1<<NEWPROPERTY_COS);
+        g_ConfigurationSetDB->YXSet[2*i + 1] = (0<<NEWONEYX_CAL)|((TELESIGNAL_START_ADDR + i)<<NEWONEYX_ADDR);
     }
     
-    for(i=0;i<TELEMETRY_NUM;i++)
+    for(i=0;i<TELEMETRY_TOTAL_NUM;i++)
     {
-        g_ConfigurationSetDB.YCAddr[i] = TELEMETRY_START_ADDR + i;
-        g_ConfigurationSetDB.YCProperty[i] = (1<<NEWPROPERTY_COE)|(2<<NEWPROPERTY_TI);
+        g_ConfigurationSetDB->YCAddr[i] = TELEMETRY_START_ADDR + i;
+        g_ConfigurationSetDB->YCProperty[i] = 2<<NEWPROPERTY_TI;
+        g_ConfigurationSetDB->YCMultipleRate[i] = 1;
     }
     
-    for(i=0;i<sizeof(g_ConfigurationSetDB.YKAddr)/sizeof(uint16_t);i++)
+    for(i=0;i<sizeof(g_ConfigurationSetDB->YKAddr)/sizeof(uint16_t);i++)
     {
-        g_ConfigurationSetDB.YKAddr[i] = REMOTE_START_ADDR + i;
-        g_ConfigurationSetDB.YKProperty[i] = 0;
+        g_ConfigurationSetDB->YKAddr[i] = REMOTE_START_ADDR + i;
+        g_ConfigurationSetDB->YKProperty[i] = 0;
     }
 
-    memcpy(&g_ConfigurationSetDB.ID_Value, (char *)&("F31xxxxxxxxx20171211xxxx"), sizeof("F31xxxxxxxxx20171211xxxx"));   
+    memcpy(&g_ConfigurationSetDB->ID_Value, (char *)&("F31xxxxxxxxx20171211xxxx"), sizeof("F31xxxxxxxxx20171211xxxx"));   
         
-    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));    
+    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));    
 }
 
 /**
@@ -1355,35 +1311,31 @@ void rt_multi_common_data_read_config_from_fram(void)
     rt_multi_common_data_fram_record_read(MEMORY_FLAG, (uint8_t *)&g_FlagDB);
 		
     /* 读取配置文件 */
-    //FM25VxxReadData(ADDR_FRAM_CONFIG, NULL, (uint8_t *)&, sizeof(g_ConfigurationSetDB));
-    rt_multi_common_data_fram_record_read(CFG_RECODE, (uint8_t *)&g_ConfigurationSetDB);
-    if(g_ConfigurationSetDB.UartPort == 0)//检查配置文件是否为空
-    {
-        configureFault = 1;
-    }
+    //FM25VxxReadData(ADDR_FRAM_CONFIG, NULL, (uint8_t *)&, sizeof(struct ConfigurationSetDatabase));
+    rt_multi_common_data_fram_record_read(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB);
     
-    for(i=0,temp1=0;((i<g_ConfigurationSetDB.YXSetNum)&&(configureFault == 0));i++)//检查遥信
+    for(i=0,temp1=0;((i<g_ConfigurationSetDB->YXSetNum)&&(configureFault == 0));i++)//检查遥信
     {
-        for(j=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
+        for(j=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            if(!((((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=0)&&(((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELEMETRY_NUM)))
+            if(!((((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=0)&&(((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELEMETRY_TOTAL_NUM)))
             {
                 configureFault = 1;
                 break;
             }
         }
-        temp1 += (g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM) + 1;
+        temp1 += (g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM) + 1;
     }
-    for(;temp1<sizeof(g_ConfigurationSetDB.YXSet)/sizeof(uint16_t);temp1++)
+    for(;temp1<sizeof(g_ConfigurationSetDB->YXSet)/sizeof(uint16_t);temp1++)
     {
-        g_ConfigurationSetDB.YXSet[temp1] = 0;
+        g_ConfigurationSetDB->YXSet[temp1] = 0;
     }
     
-    for(i=0;((i<sizeof(g_ConfigurationSetDB.YCAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥测
+    for(i=0;((i<sizeof(g_ConfigurationSetDB->YCAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥测
     {
-        if(!((g_ConfigurationSetDB.YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB.YCAddr[i]<TELEMETRY_START_ADDR+TELEMETRY_NUM)))
+        if(!((g_ConfigurationSetDB->YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB->YCAddr[i]<TELEMETRY_START_ADDR+TELEMETRY_TOTAL_NUM)))
         {
-            if(g_ConfigurationSetDB.YCAddr[i] != 0)
+            if(g_ConfigurationSetDB->YCAddr[i] != 0)
             {
                 configureFault = 1;
                 break;
@@ -1391,11 +1343,11 @@ void rt_multi_common_data_read_config_from_fram(void)
         }
     }
  
-    for(i=0;((i<sizeof(g_ConfigurationSetDB.YKAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥控
+    for(i=0;((i<sizeof(g_ConfigurationSetDB->YKAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥控
     {
-        if(!((g_ConfigurationSetDB.YKAddr[i]>=REMOTE_START_ADDR)&&(g_ConfigurationSetDB.YKAddr[i]<REMOTE_START_ADDR+REMOTE_TOTAL_NUM)))
+        if(!((g_ConfigurationSetDB->YKAddr[i]>=REMOTE_START_ADDR)&&(g_ConfigurationSetDB->YKAddr[i]<REMOTE_START_ADDR+REMOTE_TOTAL_NUM)))
         {
-            if(g_ConfigurationSetDB.YKAddr[i] != 0)
+            if(g_ConfigurationSetDB->YKAddr[i] != 0)
             {
                 configureFault = 1;
                 break;
@@ -1454,15 +1406,15 @@ void rt_multi_common_data_para_init(void)
 //    g_EthW5500 = (struct lwip_dev)RT_ETH2_CONFIG_DEFAULT;
 	
     //不同
-    g_EthDP83848.ip[0] = g_ConfigurationSetDB.Netip1[0];
-    g_EthDP83848.ip[1] = g_ConfigurationSetDB.Netip1[1];
-    g_EthDP83848.ip[2] = g_ConfigurationSetDB.Netip1[2];
-    g_EthDP83848.ip[3] = g_ConfigurationSetDB.Netip1[3];
+    g_EthDP83848.ip[0] = (uint8_t)g_Parameter[NET_IP1_0];
+    g_EthDP83848.ip[1] = (uint8_t)g_Parameter[NET_IP1_1];
+    g_EthDP83848.ip[2] = (uint8_t)g_Parameter[NET_IP1_2];
+    g_EthDP83848.ip[3] = (uint8_t)g_Parameter[NET_IP1_3];
     
-    g_EthW5500.ip[0] = g_ConfigurationSetDB.Netip2[0];
-    g_EthW5500.ip[1] = g_ConfigurationSetDB.Netip2[1];
-    g_EthW5500.ip[2] = g_ConfigurationSetDB.Netip2[2];
-    g_EthW5500.ip[3] = g_ConfigurationSetDB.Netip2[3];
+    g_EthW5500.ip[0] = (uint8_t)g_Parameter[NET_IP2_0];
+    g_EthW5500.ip[1] = (uint8_t)g_Parameter[NET_IP2_1];
+    g_EthW5500.ip[2] = (uint8_t)g_Parameter[NET_IP2_2];
+    g_EthW5500.ip[3] = (uint8_t)g_Parameter[NET_IP2_3];
     
     g_EthDP83848.mac[0] = 0x00;
     g_EthDP83848.mac[1] = 0x80;
@@ -1479,36 +1431,37 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.mac[5] = *(rt_uint8_t*)(UID_BASE + 4);
     
     //相同
-    g_EthDP83848.netmask[0] = g_ConfigurationSetDB.Netnetmask[0];
-    g_EthDP83848.netmask[1] = g_ConfigurationSetDB.Netnetmask[1];
-    g_EthDP83848.netmask[2] = g_ConfigurationSetDB.Netnetmask[2];
-    g_EthDP83848.netmask[3] = g_ConfigurationSetDB.Netnetmask[3];
-    g_EthDP83848.gateway[0] = g_ConfigurationSetDB.Netgateway[0];
-    g_EthDP83848.gateway[1] = g_ConfigurationSetDB.Netgateway[1];
-    g_EthDP83848.gateway[2] = g_ConfigurationSetDB.Netgateway[2];
-    g_EthDP83848.gateway[3] = g_ConfigurationSetDB.Netgateway[3];
-    g_EthDP83848.dns[0] = g_ConfigurationSetDB.Netdns[0];
-    g_EthDP83848.dns[1] = g_ConfigurationSetDB.Netdns[1];
-    g_EthDP83848.dns[2] = g_ConfigurationSetDB.Netdns[2];
-    g_EthDP83848.dns[3] = g_ConfigurationSetDB.Netdns[3];
+    g_EthDP83848.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
+    g_EthDP83848.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
+    g_EthDP83848.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
+    g_EthDP83848.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthDP83848.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
+    g_EthDP83848.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
+    g_EthDP83848.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
+    g_EthDP83848.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+    g_EthDP83848.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
+    g_EthDP83848.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
+    g_EthDP83848.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
+    g_EthDP83848.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
     g_EthDP83848.remoteip[0] = 192;
     g_EthDP83848.remoteip[1] = 168;
     g_EthDP83848.remoteip[2] = 60;
     g_EthDP83848.remoteip[3] = 115;
     g_EthDP83848.dhcpstatus = 0;
     
-    g_EthW5500.netmask[0] = g_ConfigurationSetDB.Netnetmask[0];
-    g_EthW5500.netmask[1] = g_ConfigurationSetDB.Netnetmask[1];
-    g_EthW5500.netmask[2] = g_ConfigurationSetDB.Netnetmask[2];
-    g_EthW5500.netmask[3] = g_ConfigurationSetDB.Netnetmask[3];
-    g_EthW5500.gateway[0] = g_ConfigurationSetDB.Netgateway[0];
-    g_EthW5500.gateway[1] = g_ConfigurationSetDB.Netgateway[1];
-    g_EthW5500.gateway[2] = g_ConfigurationSetDB.Netgateway[2];
-    g_EthW5500.gateway[3] = g_ConfigurationSetDB.Netgateway[3];
-    g_EthW5500.dns[0] = g_ConfigurationSetDB.Netdns[0];
-    g_EthW5500.dns[1] = g_ConfigurationSetDB.Netdns[1];
-    g_EthW5500.dns[2] = g_ConfigurationSetDB.Netdns[2];
-    g_EthW5500.dns[3] = g_ConfigurationSetDB.Netdns[3];
+    g_EthW5500.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
+    g_EthW5500.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
+    g_EthW5500.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
+    g_EthW5500.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthW5500.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
+    g_EthW5500.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
+    g_EthW5500.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
+    g_EthW5500.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+    g_EthW5500.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
+    g_EthW5500.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
+    g_EthW5500.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
+    g_EthW5500.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
+
     g_EthW5500.remoteip[0] = 192;
     g_EthW5500.remoteip[1] = 168;
     g_EthW5500.remoteip[2] = 60;
@@ -1567,14 +1520,14 @@ void rt_multi_common_data_config(void)
     sprintf(tempstr,"%02X",(g_EthDP83848.mac[5]));
     strcat(buf,tempstr);
 
-    memcpy(&g_InherentPara.terminalID, &g_ConfigurationSetDB.ID_Value, sizeof(g_ConfigurationSetDB.ID_Value));   
+    memcpy(&g_InherentPara.terminalID, &g_ConfigurationSetDB->ID_Value, sizeof(g_ConfigurationSetDB->ID_Value));   
     memcpy(&g_InherentPara.terminalMAC, &buf, 17);
     memcpy(&g_InherentPara.terminalManufacturer, &buf1, 8);  
     
     memset(g_CommunicatFlag,0,sizeof(g_CommunicatFlag));//清除通讯互锁标志
     
     /* 遥信变双点 */
-    for (i = 0; i < TELESIGNAL_NUM; i++)
+    for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)
     {
         if (g_TelesignalDB[i] != ON && g_TelesignalDB[i] != OFF)
         {
@@ -1583,21 +1536,21 @@ void rt_multi_common_data_config(void)
     }	
     
     //遥信配置  
-    g_NewMaxNumTelesignal = g_ConfigurationSetDB.YXSetNum;//新点表总数
+    g_NewMaxNumTelesignal = g_ConfigurationSetDB->YXSetNum;//新点表总数
     for(i=0,temp1=0,temp2=0,value=0;i<g_NewMaxNumTelesignal;i++)//原点表内添加地址和初始遥信
     {
-        for(j=0,value=0;j<(g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM);j++)
+        for(j=0,value=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            value |= (g_TelesignalDB[((g_ConfigurationSetDB.YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)]-1);//单点
+            value |= (g_TelesignalDB[((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)]-1);//单点
         }
         value = value + 1;//双点
         g_NewToOldTelesignal[temp2] = (value<<NEWONEYX_VAULE)|((i+TELESIGNAL_START_ADDR)<<NEWONEYX_ADDR);
-        memcpy(&g_NewToOldTelesignal[temp2+1],&g_ConfigurationSetDB.YXSet[temp1],((g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM)+1)*sizeof(uint16_t));
-        temp1 += (g_ConfigurationSetDB.YXSet[temp1]>>NEWONEYX_NUM) + 1;
+        memcpy(&g_NewToOldTelesignal[temp2+1],&g_ConfigurationSetDB->YXSet[temp1],((g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM)+1)*sizeof(uint16_t));
+        temp1 += (g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM) + 1;
         temp2 += (g_NewToOldTelesignal[temp2+1]>>NEWONEYX_NUM) + 1 + 1;
     }
        
-    for(i=0;i<TELESIGNAL_NUM;i++)//建立空链表
+    for(i=0;i<TELESIGNAL_TOTAL_NUM;i++)//建立空链表
     {
         list_init(&g_NewListTelesignal[i]);
     }
@@ -1617,30 +1570,31 @@ void rt_multi_common_data_config(void)
     }
 	
     //遥测配置
-    for(i=0;i<sizeof(g_ConfigurationSetDB.YCAddr)/sizeof(uint16_t);i++)
+    for(i=0;i<sizeof(g_ConfigurationSetDB->YCAddr)/sizeof(uint16_t);i++)
     {
-        if(g_ConfigurationSetDB.YCAddr[i] != 0)
+        if(g_ConfigurationSetDB->YCAddr[i] != 0)
         {
             g_NewMaxNumTelemetry = i+1;
-            g_NewToOldTelemetry[i] = g_ConfigurationSetDB.YCAddr[i];
+            g_NewToOldTelemetry[i] = g_ConfigurationSetDB->YCAddr[i];
         }
     }
     
     for(i=0;i<g_NewMaxNumTelemetry;i++)
     {
-        if(g_ConfigurationSetDB.YCAddr[i] != 0)
+        if(g_ConfigurationSetDB->YCAddr[i] != 0)
         {
-            g_NewAddTelemetry[g_ConfigurationSetDB.YCAddr[i] - TELEMETRY_START_ADDR] = TELEMETRY_START_ADDR + i;
-            g_NewPropertyTelemetry[g_ConfigurationSetDB.YCAddr[i] - TELEMETRY_START_ADDR] = g_ConfigurationSetDB.YCProperty[i];
-            THREAD_PRINTF("%d -> %d\n",g_ConfigurationSetDB.YCAddr[i],TELEMETRY_START_ADDR + i);
+            g_NewAddTelemetry[g_ConfigurationSetDB->YCAddr[i] - TELEMETRY_START_ADDR] = TELEMETRY_START_ADDR + i;
+            g_NewPropertyTelemetry[g_ConfigurationSetDB->YCAddr[i] - TELEMETRY_START_ADDR] = g_ConfigurationSetDB->YCProperty[i];
+            g_NewMultipleRateTelemetry[g_ConfigurationSetDB->YCAddr[i] - TELEMETRY_START_ADDR] = g_ConfigurationSetDB->YCMultipleRate[i];
+            THREAD_PRINTF("%d -> %d\n",g_ConfigurationSetDB->YCAddr[i],TELEMETRY_START_ADDR + i);
         }
     }
     
     //遥控配置
-    for(i=0;i<sizeof(g_ConfigurationSetDB.YKAddr)/sizeof(uint16_t);i++)
+    for(i=0;i<sizeof(g_ConfigurationSetDB->YKAddr)/sizeof(uint16_t);i++)
     {
-        g_NewToOldRemote[i] = g_ConfigurationSetDB.YKAddr[i];
-        g_NewToOldPropertyRemote[i] = g_ConfigurationSetDB.YKProperty[i];
+        g_NewToOldRemote[i] = g_ConfigurationSetDB->YKAddr[i];
+        g_NewToOldPropertyRemote[i] = g_ConfigurationSetDB->YKProperty[i];
     }
     
     //清除存储标志
@@ -1668,6 +1622,8 @@ void rt_multi_common_data_config(void)
   */
 int rt_multi_common_data_init(void)
 {
+    g_ConfigurationSetDB = rt_malloc(sizeof(struct ConfigurationSetDatabase));
+    
     device_fram = rt_device_find(RT_SPI_FRAM_NAME);
 	
     if (device_fram == NULL)

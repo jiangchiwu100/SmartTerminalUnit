@@ -28,7 +28,16 @@
 
 #define UDC_SMOOTH_TIMES                           10 // 平滑次数
 
-#define ALPHA_NUM                            5
+enum
+{
+    ALPHA_UabIa,
+    ALPHA_UcbIc,
+    ALPHA_U0I0,
+    ALPHA_UxIx,
+    
+    ALPHA_NUM,
+};
+
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
 extern float g_Alpha[ALPHA_NUM];
 

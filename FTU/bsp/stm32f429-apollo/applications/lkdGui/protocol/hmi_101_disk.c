@@ -55,7 +55,7 @@ uint16_t DLT634_HMI_SLAVE_ReadData(uint8_t pdrv, uint8_t *pbuf, uint16_t count)
   */
 uint16_t DLT634_HMI_SLAVE_WriteData(uint8_t pdrv, uint8_t *pbuf, uint16_t count)
 { 	
-uint16_t i = 0;
+//uint16_t i = 0;
 	
     rt_device_write(dev[pdrv],0,pbuf,count);
 //	  rt_kprintf("\r\n--ZK   ");
@@ -158,6 +158,7 @@ int DLT634_HMI_SLAVE_INIT(void)
                 DLT634_HMI_SLAVE_AppInit(pdrv);        
                 dev[pdrv] = rt_device_find(RT_USART6_NAME);
                 serial = (struct rt_serial_device *)(dev[pdrv]);
+                serial->config.baud_rate = BAUD_RATE_230400;
                 rt_device_open(dev[pdrv], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);            
                 DLT634_HMISLAVE_Pad[pdrv].IEC_DIR = 0x80;
                 DLT634_HMISLAVE_Pad[pdrv].SourceAddr = 0x01;

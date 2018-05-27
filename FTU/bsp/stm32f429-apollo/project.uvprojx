@@ -1790,4 +1790,10 @@
     </Target>
   </Targets>
 
+  <RTE>
+    <apis/>
+    <components/>
+    <files/>
+  </RTE>
+
 </Project>

@@ -6,8 +6,6 @@
 
 #include "stm32f4xx_hal.h"
 
-#define LOAD_MAXTIMERS (20)
-
 #define LOAD_ENTIMERS 0x80000000
 #define LOAD_TITIMERS 0x7fffffff
 
@@ -50,7 +48,8 @@ typedef struct
     STelesignalStr switchClose;            // 开关合位    
     STelesignalStr breakContact;           //类型
     STelesignalStr functionHardStrap;      // 功能投退硬压板 
-	STelesignalStr FA_HardStrap;           // FA功能投退硬压板 	
+	STelesignalStr FA_HardStrap;           // FA功能投退硬压板 
+    STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	
 
     STelesignalStr closingLocked;
     STelesignalStr openingLocked;

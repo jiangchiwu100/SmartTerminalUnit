@@ -7,9 +7,6 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
 
-
-#define BRE_MAXTIMERS (20)
-
 #define BRE_ENTIMERS 0x80000000
 #define BRE_TITIMERS 0x7fffffff
 
@@ -52,7 +49,8 @@ typedef struct
     STelesignalStr switchOpen;             // 开关分位
     STelesignalStr switchClose;            // 开关合位
     STelesignalStr recloseHardStrap;       // 重合闸硬压板
-    STelesignalStr functionHardStrap;      // 功能投退硬压板    
+    STelesignalStr functionHardStrap;      // 功能投退硬压板  
+    STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	    
     
     STelesignalStr shortCircuitFault;        // 短路故障   
     STelesignalStr earthingFault;            // 接地故障
@@ -85,7 +83,7 @@ typedef struct
     float *Ic2;                      // C相二次谐波电流 
     float *I0;                       // 零序电流
     float *Uab;                      // 线电压Uab
-    float *Ubc;                      // 线电压Ubc
+    float *Ucb;                      // 线电压Ucb
     float *Uac;                      // 线电压Uac
     float *U0;                       // 零序电压                    
 }TelemetryStr;

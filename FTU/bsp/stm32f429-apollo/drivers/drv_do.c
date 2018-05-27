@@ -54,22 +54,22 @@ static rt_uint8_t rt_hw_close_operate(void)
 {
     if (g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF && !CLOSING && !OPENING && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF)
     {
-		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UBC] >= g_pFixedValue[VOLTAGE_VALUE])
+		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UCB] >= g_pFixedValue[VOLTAGE_VALUE])
 		{
-	        if (fabs(g_TelemetryDB[ADDR_ALPHY_Uab_UBC]) > g_pFixedValue[PHASEANGLE_DIFFERENCE] || fabs(g_TelemetryDB[ADDR_Uab] - g_TelemetryDB[ADDR_UBC]) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
+	        if (fabs(g_TelemetryDB[ADDR_ALPHY_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE] || fabs(g_TelemetryDB[ADDR_Uab] - g_TelemetryDB[ADDR_UCB]) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
 			{
 				switch (DoStr.actSource)
 				{
                     case HANDHELD:
-                        DBWriteSOE(LOCAL_REMOTE_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_HANDHELD_OPER, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case LOCAL:
-                        DBWriteSOE(LOCAL_OPERATION_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_LOCAL_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case DISTANCE:
-                        DBWriteSOE(DISTANT_REMOTE_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
+                        DBWriteCO(ADDR_REMOTE_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
                     case LOGIC_ACT:
@@ -172,7 +172,7 @@ static rt_uint8_t rt_hw_close_recovery(void)
             CLOSING = 0;
             s_fault_counter = 0;
             
-		    if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UBC] >= g_pFixedValue[VOLTAGE_VALUE])
+		    if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UCB] >= g_pFixedValue[VOLTAGE_VALUE])
 			{
 			    rlt = CLOSE_LOOP_EXECUTE_FAIL;
 			}
@@ -462,7 +462,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_CLOSE_RECOVERY);
         }
 
-        if ((g_TelemetryDB[ADDR_Uab] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U] && g_TelemetryDB[ADDR_UBC] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U]))
+        if ((g_TelemetryDB[ADDR_Uab] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U] && g_TelemetryDB[ADDR_UCB] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U]))
         {
             /* AC disappeared, stop activation */
             rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_OPEN);                

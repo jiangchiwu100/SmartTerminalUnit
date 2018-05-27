@@ -23,6 +23,8 @@ enum PARAMETER_MENU
     ME_BASIC_SET = 1,   // 基本设置
     ME_ZERODRIFT,       // 零漂
     ME_DEADEZONE,       // 死区
+    ME_UART_COM,        // UART通讯参数
+    ME_NET_COM,         // NET通讯参数
 };
 
 enum FIXED_VALUE_MENU
