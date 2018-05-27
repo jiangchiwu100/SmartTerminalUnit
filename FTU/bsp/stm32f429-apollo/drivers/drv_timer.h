@@ -80,7 +80,7 @@ enum OS_TMR
 
 
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
-extern struct TagFreGather g_FreGather; // 频率采集
+extern struct TagFreGather g_FreGather[FRE_NUM]; // 频率采集
 
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
 int rt_hw_tim1ms_init(void);
@@ -89,8 +89,8 @@ void TIM7_Init(rt_uint16_t arr,rt_uint16_t psc);
 void TIM5_PWM_Init(rt_uint16_t arr,rt_uint16_t psc);
 //void TIM3_CH2_Cap_Init(rt_uint32_t arr,rt_uint16_t psc);
 
-void GetFrequency(void);
-void FreGatherHandle(void);
+void GetFrequency(uint8_t pdrv);
+void FreGatherHandle(uint8_t pdrv);
 
 void rt_ostimer_init(rt_uint8_t timer);
 

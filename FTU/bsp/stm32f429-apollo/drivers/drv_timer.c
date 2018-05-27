@@ -22,7 +22,7 @@
 #if RT_USING_HWTIMER
 
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
-struct TagFreGather g_FreGather; // 频率采集
+struct TagFreGather g_FreGather[FRE_NUM]; // 频率采集
 
 //static SystemCounter SysCounter;
 
@@ -379,54 +379,54 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void FreGatherHandle(void)
+void FreGatherHandle(uint8_t pdrv)
 {
     uint8_t i;
     uint32_t fre = 0;
 
-    switch (g_FreGather.sta)
+    switch (g_FreGather[pdrv].sta)
     {
     case FRISTTIME:
-        memset(&g_FreGather, 0, sizeof(struct TagFreGather));
-        g_FreGather.lastValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
-        g_FreGather.sta = PREPARE;
+        memset(&g_FreGather[pdrv], 0, sizeof(struct TagFreGather));
+        g_FreGather[pdrv].lastValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
+        g_FreGather[pdrv].sta = PREPARE;
         break;
 
     case PREPARE:
-        g_FreGather.curValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
-        if (g_FreGather.curValue > g_FreGather.lastValue) // 一个周期内
+        g_FreGather[pdrv].curValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
+        if (g_FreGather[pdrv].curValue > g_FreGather[pdrv].lastValue) // 一个周期内
         {
-            g_FreGather.data[g_FreGather.count] = g_FreGather.curValue - g_FreGather.lastValue;
+            g_FreGather[pdrv].data[g_FreGather[pdrv].count] = g_FreGather[pdrv].curValue - g_FreGather[pdrv].lastValue;
         }
         else // 跨周期
         {
-            g_FreGather.data[g_FreGather.count] = 0xffff - g_FreGather.lastValue + g_FreGather.curValue;
+            g_FreGather[pdrv].data[g_FreGather[pdrv].count] = 0xffff - g_FreGather[pdrv].lastValue + g_FreGather[pdrv].curValue;
         }
-        g_FreGather.count = (g_FreGather.count + 1) % (FRE_GATHER_NUM);
-        g_FreGather.num < FRE_GATHER_NUM ? g_FreGather.num++ : (g_FreGather.sta = VALID);
-        g_FreGather.lastValue = g_FreGather.curValue;
+        g_FreGather[pdrv].count = (g_FreGather[pdrv].count + 1) % (FRE_GATHER_NUM);
+        g_FreGather[pdrv].num < FRE_GATHER_NUM ? g_FreGather[pdrv].num++ : (g_FreGather[pdrv].sta = VALID);
+        g_FreGather[pdrv].lastValue = g_FreGather[pdrv].curValue;
         break;
 
     case VALID:
-        g_FreGather.curValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
+        g_FreGather[pdrv].curValue = HAL_TIM_ReadCapturedValue(&TIM3_Handler,TIM_CHANNEL_1);
 
-        if (g_FreGather.curValue > g_FreGather.lastValue) // 一个周期内
+        if (g_FreGather[pdrv].curValue > g_FreGather[pdrv].lastValue) // 一个周期内
         {
-            g_FreGather.data[g_FreGather.count] = g_FreGather.curValue - g_FreGather.lastValue;
+            g_FreGather[pdrv].data[g_FreGather[pdrv].count] = g_FreGather[pdrv].curValue - g_FreGather[pdrv].lastValue;
         }
         else // 跨周期
         {
-            g_FreGather.data[g_FreGather.count] = 0xffff - g_FreGather.lastValue + g_FreGather.curValue;
+            g_FreGather[pdrv].data[g_FreGather[pdrv].count] = 0xffff - g_FreGather[pdrv].lastValue + g_FreGather[pdrv].curValue;
         }
-        g_FreGather.count = (g_FreGather.count + 1) % (FRE_GATHER_NUM);
-        g_FreGather.lastValue = g_FreGather.curValue;
+        g_FreGather[pdrv].count = (g_FreGather[pdrv].count + 1) % (FRE_GATHER_NUM);
+        g_FreGather[pdrv].lastValue = g_FreGather[pdrv].curValue;
 
         for (i = 0; i < FRE_GATHER_NUM; i++)
         {
-            fre += g_FreGather.data[i];
+            fre += g_FreGather[pdrv].data[i];
         }
 
-        g_FreGather.freValue = ((float)(FRE_GATHER_NUM * 1000000) / (float)fre);
+        g_FreGather[pdrv].freValue = ((float)(FRE_GATHER_NUM * 1000000) / (float)fre);
         break;
     }
 }
@@ -437,7 +437,7 @@ void FreGatherHandle(void)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void GetFrequency(void)
+void GetFrequency(uint8_t pdrv)
 {
 //	static uint32_t arr;
 	uint32_t arr = 0, ccr1 = 0;
@@ -446,7 +446,7 @@ void GetFrequency(void)
 	
 //    rt_enter_critical(); // 进入临界区
 
-    g_TelemetryDB[ADDR_F] = g_FreGather.freValue; // 写入数据缓冲区
+    g_TelemetryDB[ADDR_F] = g_FreGather[pdrv].freValue; // 写入数据缓冲区
 
     if (g_CalibrateFactor[CALIFACTOR_F] != 0)
     {
@@ -462,12 +462,12 @@ void GetFrequency(void)
         g_TelemetryDB[ADDR_F] = 0;
     }
 	
-	g_FreGather.freValueProtect = g_TelemetryDB[ADDR_F];
+	g_FreGather[pdrv].freValueProtect = g_TelemetryDB[ADDR_F];
 	
     if (g_TelemetryDB[ADDR_Uab] <= 1)
     {
         TIM5->ARR = 6250 - 1; // 若Uab未接入，设定采集PWM为初始值
-		g_FreGather.freValueProtect = 0;
+		g_FreGather[pdrv].freValueProtect = 0;
 		
         if (g_TelemetryDB[ADDR_UBC] <= 1)
         {
@@ -523,7 +523,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance== TIM3)
     {
-        FreGatherHandle();
+        FreGatherHandle(0);
     }
 
     if (htim->Instance== TIM2)

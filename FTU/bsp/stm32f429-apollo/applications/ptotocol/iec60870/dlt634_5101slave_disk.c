@@ -283,23 +283,8 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif   				     
                 {
-                    switch(addr)
-                    {
-                        case DISTANT_REMOTE_ADDR:
-                            rt_hw_do_operate(DO_OPEN, DISTANCE);
-                            break;
-                        case DISTANT_RESET_ADDR:
-                            DBRevert(DISTANCE);
-                            DBWriteSOE(DISTANT_RESET_ADDR, ON);
-                            break;
-                        case DISTANT_ACTIVE_ADDR:
-                            rt_hw_do_operate(DO_BATTERY_ACTIVE_END, DISTANCE);
-                            break;
-                        case DISTANT_CLAER_HISTORY_ADDR:
-                            DBClear();
-                            DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR, ON);
-                            break;
-                    }
+					rt_multi_telecontrl_operate(addr, DO_OPEN);
+					
                     valuesuc = 0;
                     addrsuc = 0;
                     temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;
@@ -327,23 +312,8 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif 				  
                 {
-                    switch(addr)
-                    {
-                        case DISTANT_REMOTE_ADDR:
-                            rt_hw_do_operate(DO_CLOSE, DISTANCE);
-                            break;
-                        case DISTANT_RESET_ADDR:
-                            DBRevert(DISTANCE);
-                            DBWriteSOE(DISTANT_RESET_ADDR, ON);
-                            break;
-                        case DISTANT_ACTIVE_ADDR:
-                            rt_hw_do_operate(DO_BATTERY_ACTIVE, DISTANCE);
-                            break;
-                        case DISTANT_CLAER_HISTORY_ADDR:
-                            DBClear();
-                            DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR, ON);
-                            break;
-                    }
+					rt_multi_telecontrl_operate(addr, DO_CLOSE);
+
                     valuesuc = 0;
                     addrsuc = 0;
                     temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;

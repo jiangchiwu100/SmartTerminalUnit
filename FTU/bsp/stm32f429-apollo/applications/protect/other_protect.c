@@ -27,8 +27,10 @@ static rt_device_t device_fram = RT_NULL;
 static rt_uint32_t s_Counter[DB_DEV_MAX_NUM][COUNTER_MAX];   //0x80000000使能位
 
 static struct OverLimit OverLimitUab;
-static struct OverLimit OverLimitUBC;
+static struct OverLimit OverLimitUbc;
 static struct OverLimit OverLimitUac;
+static struct OverLimit OverLimitUAB;
+static struct OverLimit OverLimitUBC;
 static struct OverLimit OverLimitIa;
 static struct OverLimit OverLimitIb;
 static struct OverLimit OverLimitIc;
@@ -232,7 +234,7 @@ static void OverVoltageCheck(struct OverVoltage *over)
                 *over->counter = 0;
                 DBWriteSOE(over->soeAddr, ON);
 
-				if (*over->funSwitch == 1)
+				if (*over->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
 				{
 				    rt_hw_do_operate(DO_OPEN, 0);
 				}
@@ -287,7 +289,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
                 *down->counter = 0;
                 DBWriteSOE(down->soeAddr, ON);
 				
-				if (*down->funSwitch == 1)
+				if (*down->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
 				{
 				    rt_hw_do_operate(DO_OPEN, 0);
 				}
@@ -373,6 +375,8 @@ static void TelemetryAbnormalCheck(void)
 {
     /* 遥测越限 */
     TelemetryOverLimit(&OverLimitUab);
+    TelemetryOverLimit(&OverLimitUbc);
+    TelemetryOverLimit(&OverLimitUAB);	
     TelemetryOverLimit(&OverLimitUBC);
     TelemetryOverLimit(&OverLimitUac);
     TelemetryOverLimit(&OverLimitU0);
@@ -515,6 +519,38 @@ void other_protect_init(void)
     OverLimitUab.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUab.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
+	ApplyForCounter(pdrv, &OverLimitUbc.counterUp);
+    ApplyForCounter(pdrv, &OverLimitUbc.counterDown);
+    ApplyForCounter(pdrv, &OverLimitUbc.counterUpReverse);
+    ApplyForCounter(pdrv, &OverLimitUbc.counterDownReverse);	
+    OverLimitUbc.delay = &g_pFixedValue[OVERLIMIT_TIME];
+    OverLimitUbc.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_Ubc_UP];
+    OverLimitUbc.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_Ubc_DOWN];
+    OverLimitUbc.soeAddrUp = ADDR_OVERLIMIT_Ubc_UP;
+    OverLimitUbc.soeAddrDown = ADDR_OVERLIMIT_Ubc_DOWN;
+    OverLimitUbc.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
+    OverLimitUbc.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
+    OverLimitUbc.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Ubc];
+    OverLimitUbc.telemetry = &g_TelemetryDB[ADDR_Ubc];
+    OverLimitUbc.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
+    OverLimitUbc.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
+
+    ApplyForCounter(pdrv, &OverLimitUAB.counterUp);
+    ApplyForCounter(pdrv, &OverLimitUAB.counterDown);
+    ApplyForCounter(pdrv, &OverLimitUAB.counterUpReverse);
+    ApplyForCounter(pdrv, &OverLimitUAB.counterDownReverse);	
+    OverLimitUAB.delay = &g_pFixedValue[OVERLIMIT_TIME];
+    OverLimitUAB.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_UAB_UP];
+    OverLimitUAB.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_UAB_DOWN];
+    OverLimitUAB.soeAddrUp = ADDR_OVERLIMIT_UAB_UP;
+    OverLimitUAB.soeAddrDown = ADDR_OVERLIMIT_UAB_DOWN;
+    OverLimitUAB.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
+    OverLimitUAB.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
+    OverLimitUAB.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_UAB];
+    OverLimitUAB.telemetry = &g_TelemetryDB[ADDR_UAB];
+    OverLimitUAB.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
+    OverLimitUAB.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
+	
     ApplyForCounter(pdrv, &OverLimitUBC.counterUp);
     ApplyForCounter(pdrv, &OverLimitUBC.counterDown);
     ApplyForCounter(pdrv, &OverLimitUBC.counterUpReverse);
@@ -730,7 +766,7 @@ void other_protect_init(void)
     OverFrequency.soeAddr = ADDR_OVER_FREQUEBNCY_PROTECTION;
     OverFrequency.value = &g_pFixedValue[OVERFREQUENCY_VALUE];
     OverFrequency.funSwitch = &g_pFixedValue[OVERFREQUENCY_SWITCH];
-    OverFrequency.telemetry = &g_FreGather.freValueProtect;
+    OverFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
     OverFrequency.factor = &g_pFixedValue[OVERFREQUENCY_FACTOR];
 
     ApplyForCounter(pdrv, &DownFrequency.counter);
@@ -740,7 +776,7 @@ void other_protect_init(void)
     DownFrequency.soeAddr = ADDR_DOWN_FREQUEBNCY_PROTECTION;
     DownFrequency.value = &g_pFixedValue[DOWNFREQUENCY_VALUE];
     DownFrequency.funSwitch = &g_pFixedValue[DOWNFREQUENCY_SWITCH];
-    DownFrequency.telemetry = &g_FreGather.freValueProtect;
+    DownFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
     DownFrequency.factor = &g_pFixedValue[DOWNFREQUENCY_FACTOR];
 
     ApplyForCounter(pdrv, &MemoryCounter.counterSave);

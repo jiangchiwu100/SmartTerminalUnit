@@ -94,7 +94,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_OPEN_EXECUTE].status)
             {
-                s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, rt_hw_do_operate(DO_OPEN, REMOTE) : s_open_shake_timer++;
+                s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, rt_hw_do_operate(DO_OPEN, HANDHELD) : s_open_shake_timer++;
             }
         }
     }
@@ -118,7 +118,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_CLOSE_EXECUTE].status)
             {
-                s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, rt_hw_do_operate(DO_CLOSE, REMOTE) : s_close_shake_timer++;
+                s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, rt_hw_do_operate(DO_CLOSE, HANDHELD) : s_close_shake_timer++;
             }
         }
     }

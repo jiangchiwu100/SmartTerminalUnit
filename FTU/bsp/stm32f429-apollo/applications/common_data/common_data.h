@@ -296,23 +296,23 @@ enum DoOperateType
     DO_OPEN_RECOVERY,                  // 分闸收回
     DO_COIL_ENERGY_STORAGE,            // 线圈储能
     DO_ALARM_LED,                      // 告警灯
-    DO_BATTERY_ACTIVE,                 // 电池活化启动
-    DO_BATTERY_ACTIVE_RECOVERY,	       // 活化启动收回
-    DO_BATTERY_ACTIVE_END,             // 电池活化结束
-    DO_BATTERY_ACTIVE_END_RECOVERY,    // 活化结束收回
-    DO_BATTERY_DROP_OUT,               // 电池退出
-    DO_BATTERY_DROP_OUT_RECOVERY,	   // 电池退出收回
 };
 /* 遥控操作动作类型 */
 enum ActReasion
 {
-    REMOTE = 1,                // 遥控
+    HANDHELD = 1,              // 手持遥控
     LOCAL,                     // 本地操作
     DISTANCE,                  // 远方
     LOGIC_ACT,                 // 逻辑动作
     OTHER                      // 其他
 };
 
+enum Frequency
+{
+    FRE_Uab,
+	FRE_UBC,
+	FRE_NUM
+};
 /* FRAM----------------------------------------------------------------------*/
 #define ADDR_FRAM_MONITOR               0x00000  // FRAM自检
 #define ADDR_FRAM_UPDATE                0x00001  // 在线更新 2字节
@@ -443,12 +443,16 @@ enum TelesignalAddr
 	ADDR_OVER_FREQUEBNCY_PROTECTION,                      // 过频
     ADDR_DOWN_VOLTAGE_PROTECTION,                         // 低压保护
 	ADDR_DOWN_FREQUEBNCY_PROTECTION,                      // 低频		
-    ADDR_OVERLIMIT_Uab_UP,                                // A相电压越限
-    ADDR_OVERLIMIT_Uab_DOWN,                              // A相电压越限
-    ADDR_OVERLIMIT_UBC_UP,                                // B相电压越限
-    ADDR_OVERLIMIT_UBC_DOWN,                              // B相电压越限
-    ADDR_OVERLIMIT_Uca_UP,                                // C相电压越限
-    ADDR_OVERLIMIT_Uca_DOWN,                              // C相电压越限
+    ADDR_OVERLIMIT_Uab_UP,                                // Uab越限
+    ADDR_OVERLIMIT_Uab_DOWN,                              // Uab越限
+    ADDR_OVERLIMIT_Ubc_UP,                                // Ubc越限
+    ADDR_OVERLIMIT_Ubc_DOWN,                              // Ubc越限
+    ADDR_OVERLIMIT_Uca_UP,                                // Uca越限
+    ADDR_OVERLIMIT_Uca_DOWN,                              // Uca越限	
+    ADDR_OVERLIMIT_UAB_UP,                                // UAB越限
+    ADDR_OVERLIMIT_UAB_DOWN,                              // UAB越限	
+    ADDR_OVERLIMIT_UBC_UP,                                // UBC越限
+    ADDR_OVERLIMIT_UBC_DOWN,                              // UBC越限
     ADDR_OVERLIMIT_U0_UP,                                 // 零序电压越限
     ADDR_OVERLIMIT_U0_DOWN,                               // 零序电压越限
     ADDR_OVERLIMIT_IA_UP,                                 // A相电流越限
@@ -817,8 +821,10 @@ enum AddrFixedValue
 	DOWNLIMIT_FACTOR,                    // 越限下限系数
     OVERLIMIT_TIME,                      // 越限延时
 	OVERLIMIT_ALARM_SWITCH_Uab,          // Uab越限报警投退 
-	OVERLIMIT_ALARM_SWITCH_UBC,          // Ubc越限报警投退
-	OVERLIMIT_ALARM_SWITCH_Uca,          // Uac越限报警投退
+	OVERLIMIT_ALARM_SWITCH_Ubc,          // Ubc越限报警投退
+	OVERLIMIT_ALARM_SWITCH_Uca,          // Uca越限报警投退	
+	OVERLIMIT_ALARM_SWITCH_UAB,          // UAB越限报警投退 	
+	OVERLIMIT_ALARM_SWITCH_UBC,          // UBC越限报警投退
 	UPLIMIT_VOLTAGE_U,                   // 电压上限定值
 	DOWNLIMIT_VOLTAGE_U,                 // 电压下限定值
 	OVERLIMIT_ALARM_SWITCH_IA,           // Ia越限报警投退
@@ -1262,9 +1268,8 @@ extern void rt_multi_common_data_powerdown_storage(void);
 
 
 extern int rt_multi_common_data_init(void);
+extern void rt_multi_telecontrl_operate(uint16_t addr, rt_uint8_t operate_type);
 extern float* GetValueArray(uint16_t addr, uint8_t sn);
-extern void DBRevert(uint8_t act);
-extern void DBClear(void);
 extern void ParameterCheck(void);
 
 extern uint8_t DBReadValueAreaSN(void);

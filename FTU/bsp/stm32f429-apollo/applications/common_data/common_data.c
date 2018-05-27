@@ -920,7 +920,7 @@ void DBWriteSystemTime(struct CP56Time2a_t *pTime)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void DBRevert(uint8_t act)
+static void DBRevert(uint16_t addr)
 {
     if (g_TelesignalDB[ADDR_DEVICE_FAULT] == ON)
     {
@@ -932,20 +932,7 @@ void DBRevert(uint8_t act)
 
     rt_hw_alarm_led_operate(OFF);	// 底部告警灯灭
 
-    switch (act)
-    {
-    case LOCAL:
-        DBWriteSOE(LOCAL_RESET_ADDR, ON);
-        break;
-    case DISTANCE:
-        DBWriteSOE(DISTANT_RESET_ADDR, ON);
-        break;
-    case LOGIC_ACT:
-
-        break;
-    default:
-        break;
-    }
+    DBWriteSOE(addr, ON);
     
     DBWriteSOE(ADDR_BATTERY_FAULT_ALARM, OFF); // 电池故障复归    
 }
@@ -956,10 +943,41 @@ void DBRevert(uint8_t act)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void DBClear(void)
+static void DBClear(uint16_t addr)
 {
     rt_device_control(device_fram, FM_CLEAR_RECORD, RT_NULL);       
     g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKCLEAR; 
+	
+	DBWriteSOE(addr, ON);
+}
+
+/**
+  * @brief : 遥控操作（包括远程与本地操作）
+  * @param : [addr]-遥控地址
+  * @param : [operate_type]-操作类型（包括DO_CLOSE/DO_CLOSE_RECOVERY/DO_OPEN/DO_OPEN_RECOVERY/DO_COIL_ENERGY_STORAGE/DO_ALARM_LED/DO_BATTERY_ACTIVE/
+                           DO_BATTERY_ACTIVE_RECOVERY/DO_BATTERY_ACTIVE_END/DO_BATTERY_ACTIVE_END_RECOVERY/DO_BATTERY_DROP_OUT/DO_BATTERY_DROP_OUT_RECOVERY）
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
+{
+    switch (addr)     
+	{
+		case DISTANT_REMOTE_ADDR:
+	    case DISTANT_ACTIVE_ADDR:
+        case LOCAL_OPERATION_ADDR:		
+		case LOCAL_REMOTE_ADDR:			
+			rt_hw_do_operate(addr, operate_type);
+			break;
+		case LOCAL_RESET_ADDR:		
+		case DISTANT_RESET_ADDR:
+			DBRevert(addr);
+			break;
+		case LOCAL_CLAER_HISTORY_ADDR:
+		case DISTANT_CLAER_HISTORY_ADDR:
+			DBClear(addr);
+			break;	   		
+	}
 }
 /* FRAM ------------------------------------------------------------------*/
 /**

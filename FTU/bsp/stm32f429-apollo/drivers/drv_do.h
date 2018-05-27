@@ -101,14 +101,14 @@ typedef struct TagDoFlag
 
 typedef struct TagDoSrtuct
 {
-    rt_uint8_t actSource; // 动作来源 遥控/本地/逻辑
+    rt_uint16_t actSource; // 动作来源 遥控/本地/逻辑
     float openingDelay;
     float closingDelay;	
 }DoSrtuct;
 	
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
 int rt_hw_do_init(void);
-rt_uint8_t rt_hw_do_operate(rt_uint8_t operateType, rt_uint8_t act);
+rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type);
 void rt_hw_battery_activation(rt_uint8_t clock);
 
 

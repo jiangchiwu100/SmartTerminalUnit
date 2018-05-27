@@ -332,6 +332,7 @@ static void rt_hmicom_thread_entry(void *param)
 #if RT_USING_WATCH
 static void rt_watch_thread_entry(void *param)
 {  
+	uint8_t i;
     rt_err_t result;
     rt_device_t sd2405_device;
     
@@ -365,7 +366,10 @@ static void rt_watch_thread_entry(void *param)
             DB_NVA_Check(); 
 			
             /* 获取频率 */
-            GetFrequency();
+			for (i = 0; i < 2; i++)
+			{
+			    GetFrequency(i);
+			}           
             
             /* 小白 */
             rt_hw_handheld_remote_task(1);	

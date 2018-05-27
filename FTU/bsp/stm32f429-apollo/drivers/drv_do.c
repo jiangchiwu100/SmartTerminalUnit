@@ -60,7 +60,7 @@ static rt_uint8_t rt_hw_close_operate(void)
 			{
 				switch (DoStr.actSource)
 				{
-                    case REMOTE:
+                    case HANDHELD:
                         DBWriteSOE(LOCAL_REMOTE_ADDR, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
@@ -329,132 +329,83 @@ static void rt_hw_coil_energy_storage(void)
   * @return: [none].
   * @updata: [2017-12-21][Sunxr][newly increased]
   */
-rt_uint8_t rt_hw_do_operate(rt_uint8_t operate_type, rt_uint8_t act)
+rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 {
     rt_uint8_t rtl = 0;
 
-    switch (operate_type)
-    {
-    case DO_CLOSE:
-        rtl = rt_hw_close_operate();
-        DoStr.actSource = act;
-        break;
-		
-    case DO_CLOSE_RECOVERY:
-        rtl = rt_hw_close_recovery();
-        if (rtl != 0xff)
-        {
-            switch (DoStr.actSource)
-            {
-            case REMOTE:
-                DBWriteSOE(LOCAL_REMOTE_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case LOCAL:
-                DBWriteSOE(LOCAL_OPERATION_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case DISTANCE:
-                DBWriteSOE(DISTANT_REMOTE_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case LOGIC_ACT:
-                DoStr.actSource = 0;
-                break;
-            default:
-                break;
-            }
-        }
-        break;
-				
-    case DO_OPEN:
-        rtl = rt_hw_open_operate();
-        DoStr.actSource = act;
-        break;
-		
-    case DO_OPEN_RECOVERY:
-        rtl = rt_hw_open_recovery();
+	switch (addr)
+	{
+	    case DISTANT_REMOTE_ADDR:
+		case LOCAL_OPERATION_ADDR:	
+		case LOCAL_REMOTE_ADDR:	
+            switch (operate_type)	
+			{
+				case DO_CLOSE: // 合闸
+					rtl = rt_hw_close_operate();
+					DoStr.actSource = addr;
+					break;
+					
+				case DO_CLOSE_RECOVERY: // 合闸收回
+					rtl = rt_hw_close_recovery();
+					if (rtl != 0xff)
+					{
+						DBWriteSOE(addr, rtl);
+						DoStr.actSource = 0;
+					}
+					break;
+							
+				case DO_OPEN: // 分闸
+					rtl = rt_hw_open_operate();
+					DoStr.actSource = addr;
+					break;
+					
+				case DO_OPEN_RECOVERY: // 分闸收回
+					rtl = rt_hw_open_recovery();
 
-        if (rtl != 0xff)
-        {
-            switch (DoStr.actSource)
-            {
-            case REMOTE:
-                DBWriteSOE(LOCAL_REMOTE_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case LOCAL:
-                DBWriteSOE(LOCAL_OPERATION_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case DISTANCE:
-                DBWriteSOE(DISTANT_REMOTE_ADDR, rtl);
-                DoStr.actSource = 0;
-                break;
-            case LOGIC_ACT:
-                DoStr.actSource = 0;
-                break;
-            default:
-                break;
-            }
-        }
-        break;
-				
-    case DO_COIL_ENERGY_STORAGE:
-        /* Permanent magnet mechanism */
-        if (g_Parameter[OPERATING_MECHANISM] != MAGNET)
-        {
-            rt_hw_coil_energy_storage();
-        }                
-        break;
-				
-    case DO_BATTERY_ACTIVE:
-        pin_status[INDEX_ACTIVATE_START_DO].status = DO_SET;			
-        rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));	
-        switch (act)
-        {
-        case DISTANCE:
-            DBWriteSOE(DISTANT_ACTIVE_ADDR, ON);
-            break;
-//  			        case LOCAL:
-//                    soe.addr = LOCAL_ACTIVE_ADDR;
-//                    DBWriteSOE(&soe, 1);
-//				            break;
-        default:
-            break;
-        }
-        break;
-				
-    case DO_BATTERY_ACTIVE_RECOVERY:
-        pin_status[INDEX_ACTIVATE_START_DO].status = DO_CLR;			
-        rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));		
-        break;
-		
-    case DO_BATTERY_ACTIVE_END:
-        pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_SET;			
-        rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	    
-        switch (act)
-        {
-        case DISTANCE:
-            DBWriteSOE(DISTANT_ACTIVE_ADDR, OFF);
-            break;
-//  			        case LOCAL:
-//                    soe.addr = LOCAL_ACTIVE_ADDR;
-//                    DBWriteSOE(&soe, 1);
-//				            break;
-        default:
-            break;
-        }    
-        break;
-        
-    case DO_BATTERY_ACTIVE_END_RECOVERY:
-        pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_CLR;			
-        rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	
-        break;    
-		
-    default:
-        break;
-    }
+					if (rtl != 0xff)
+					{
+						DBWriteSOE(addr, rtl);
+						DoStr.actSource = 0;
+					}
+					break;			
+			}				
+		    break;
+	    case DISTANT_ACTIVE_ADDR:
+            switch (operate_type)	
+			{
+				case DO_CLOSE: // 电池活化
+					pin_status[INDEX_ACTIVATE_START_DO].status = DO_SET;			
+					rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));	
+					DBWriteSOE(addr, ON);
+					break;
+							
+				case DO_CLOSE_RECOVERY: // 活化收回
+					pin_status[INDEX_ACTIVATE_START_DO].status = DO_CLR;			
+					rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));		
+					break;
+					
+				case DO_OPEN: // 活化结束
+					pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_SET;			
+					rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	    
+					DBWriteSOE(addr, ON);    
+					break;
+					
+				case DO_OPEN_RECOVERY: // 活化结束收回
+					pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_CLR;			
+					rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	
+					break;  		
+			}						
+		    break;
+	 
+	    default:
+		//case DO_COIL_ENERGY_STORAGE:
+			/* Permanent magnet mechanism */
+			if (g_Parameter[OPERATING_MECHANISM] != MAGNET)
+			{
+				rt_hw_coil_energy_storage(); // 储能操作
+			}                		
+		    break;		
+	}
 
     return rtl;
 }
@@ -477,7 +428,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
         if (++s_recover_counter > 400)
         {
             s_recover_counter = 0;
-            rt_hw_do_operate(DO_BATTERY_ACTIVE_END_RECOVERY, 0);
+            rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_OPEN_RECOVERY);
         }         
         
 	 	if (g_pFixedValue[BATTERY_ACTIVE_SWITCH])
@@ -485,7 +436,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             if (s_cycle_counter >= g_pFixedValue[BATTERY_ACTIVE_CYCLE] * 24 * 3600 * 1000 / clock) // 换算为小时
             {
                 s_cycle_counter = 0;
-                rt_hw_do_operate(DO_BATTERY_ACTIVE, 0);
+                rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_CLOSE);
             }
             else
             {
@@ -508,13 +459,13 @@ void rt_hw_battery_activation(rt_uint8_t clock)
         
         if (s_act_counter > 500)
         {
-            rt_hw_do_operate(DO_BATTERY_ACTIVE_RECOVERY, 0);
+            rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_CLOSE_RECOVERY);
         }
 
         if ((g_TelemetryDB[ADDR_Uab] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U] && g_TelemetryDB[ADDR_UBC] < g_pFixedValue[DOWNLIMIT_VOLTAGE_U]))
         {
             /* AC disappeared, stop activation */
-            rt_hw_do_operate(DO_BATTERY_ACTIVE_END, 0);                
+            rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_OPEN);                
         }
             
         if (g_pFixedValue[BATTERY_ACTIVE_SWITCH] && s_act_counter >= g_pFixedValue[BATTERY_ACTIVE_TIME] * 60 * 1000)
@@ -522,7 +473,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
             s_act_counter = 0;
 
             /* stop activation */
-            rt_hw_do_operate(DO_BATTERY_ACTIVE_END, 0);
+            rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_OPEN);
         }
         else
         {
@@ -535,7 +486,7 @@ void rt_hw_battery_activation(rt_uint8_t clock)
                 {
                     s_fault_counter = 0;
                     /* stop activation */
-                    rt_hw_do_operate(DO_BATTERY_ACTIVE_END, 0);
+                    rt_hw_do_operate(DISTANT_ACTIVE_ADDR, DO_OPEN);
                     DBWriteSOE(ADDR_BATTERY_FAULT_ALARM, ON); // battery fault
                 }
             }           

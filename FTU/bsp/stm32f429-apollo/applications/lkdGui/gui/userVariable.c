@@ -426,24 +426,27 @@ uint16_t GetFeventNum(void)
   */
 static void HmiCmdSendFun(uint8_t cmdIs)
 {
+	uint16_t addr;
+	
 	switch(cmdIs)
 	{
 		case 0:/* 清除记录 */
-			DBClear();
-			DBWriteSOE(DISTANT_CLAER_HISTORY_ADDR,ON);
+            rt_multi_telecontrl_operate(LOCAL_CLAER_HISTORY_ADDR, 0);		
 			break;
 		case 1:/* 分闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
-				rt_hw_do_operate(DO_OPEN, LOCAL);
+				rt_multi_telecontrl_operate(LOCAL_OPERATION_ADDR, DO_OPEN);
 			}break;
 		case 2:/* 合闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
-				rt_hw_do_operate(DO_CLOSE, LOCAL);
+				rt_multi_telecontrl_operate(LOCAL_OPERATION_ADDR, DO_CLOSE);
 			}break;
 		case 3:/* 复归 */
-			DBRevert(LOCAL);break;
+			rt_multi_telecontrl_operate(LOCAL_RESET_ADDR, 0);
+		    break;
 		default:break;
 	}
+	
 }
 
 /**
