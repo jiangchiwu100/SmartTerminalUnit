@@ -431,18 +431,18 @@ static void HmiCmdSendFun(uint8_t cmdIs)
 	switch(cmdIs)
 	{
 		case 0:/* 清除记录 */
-            rt_multi_telecontrl_operate(LOCAL_CLAER_HISTORY_ADDR, 0);		
+            rt_multi_telecontrl_operate(ADDR_LOCAL_CLEAR, 0);		
 			break;
 		case 1:/* 分闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
-				rt_multi_telecontrl_operate(LOCAL_OPERATION_ADDR, DO_OPEN);
+				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}break;
 		case 2:/* 合闸 */
 			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
-				rt_multi_telecontrl_operate(LOCAL_OPERATION_ADDR, DO_CLOSE);
+				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}break;
 		case 3:/* 复归 */
-			rt_multi_telecontrl_operate(LOCAL_RESET_ADDR, 0);
+			rt_multi_telecontrl_operate(ADDR_LOCAL_RESET, 0);
 		    break;
 		default:break;
 	}

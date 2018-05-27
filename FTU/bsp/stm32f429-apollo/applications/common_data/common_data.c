@@ -925,7 +925,7 @@ static void DBRevert(uint16_t addr)
 
     rt_hw_alarm_led_operate(OFF);	// 底部告警灯灭
 
-    DBWriteSOE(addr, ON);
+    DBWriteCO(addr, ON);
     
     DBWriteSOE(ADDR_BATTERY_FAULT_ALARM, OFF); // 电池故障复归    
 }
@@ -941,7 +941,7 @@ static void DBClear(uint16_t addr)
     rt_device_control(device_fram, FM_CLEAR_RECORD, RT_NULL);       
     g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKCLEAR; 
 	
-	DBWriteSOE(addr, ON);
+	DBWriteCO(addr, ON);
 }
 
 /**
@@ -956,18 +956,18 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 {
     switch (addr)     
 	{
-		case DISTANT_REMOTE_ADDR:
-	    case DISTANT_ACTIVE_ADDR:
-        case LOCAL_OPERATION_ADDR:		
-		case LOCAL_REMOTE_ADDR:			
+		case ADDR_REMOTE_OPERATE:
+	    case ADDR_REMOTE_ACTIVE:
+        case ADDR_LOCAL_OPERATE:		
+		case ADDR_HANDHELD_OPER:			
 			rt_hw_do_operate(addr, operate_type);
 			break;
-		case LOCAL_RESET_ADDR:		
-		case DISTANT_RESET_ADDR:
+		case ADDR_REMOTE_RESET:		
+		case ADDR_LOCAL_RESET:
 			DBRevert(addr);
 			break;
-		case LOCAL_CLAER_HISTORY_ADDR:
-		case DISTANT_CLAER_HISTORY_ADDR:
+		case ADDR_REMOTE_CLEAR:
+		case ADDR_LOCAL_CLEAR:
 			DBClear(addr);
 			break;	   		
 	}

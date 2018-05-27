@@ -530,7 +530,7 @@ void other_protect_init(void)
     OverLimitUbc.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUbc.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUbc.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Ubc];
-    OverLimitUbc.telemetry = &g_TelemetryDB[ADDR_Ubc];
+    OverLimitUbc.telemetry = &g_TelemetryDB[ADDR_Ucb];
     OverLimitUbc.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUbc.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
