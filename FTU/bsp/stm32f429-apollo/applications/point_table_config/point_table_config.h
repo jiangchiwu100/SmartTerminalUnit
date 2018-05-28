@@ -74,7 +74,8 @@ struct tagTelemetryCfg
 {
 	unsigned char enable;  // 使能
 	unsigned char menuNum; // 菜单编号	
-    char *pName;           // 名称
+    char *pName;           // 面板名称
+    char *pNameUp;         // 上位机名称
     float *pVal;           // 值	
     char *pUnit;           // 单位
     float *pCalifactor;    // 校准系数		

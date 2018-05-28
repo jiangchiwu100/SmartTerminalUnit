@@ -233,7 +233,7 @@ static void OverVoltageCheck(struct OverVoltage *over)
 
 				if (*over->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
 				{
-				    rt_hw_do_operate(DO_OPEN, 0);
+				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
 				}
             }
         }
@@ -288,7 +288,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
 				
 				if (*down->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
 				{
-				    rt_hw_do_operate(DO_OPEN, 0);
+				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
 				}
             }
         }

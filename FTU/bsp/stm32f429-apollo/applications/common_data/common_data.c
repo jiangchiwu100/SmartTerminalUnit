@@ -308,9 +308,9 @@ void ParameterCheck(void)
 
 	for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
 	{
-		if (CalibrateFactorCfg[i].calibrateVal > CalibrateFactorCfg[i].factorMax || CalibrateFactorCfg[i].calibrateVal < CalibrateFactorCfg[i].factorMin)
+		if (*(CalibrateFactorCfg[i].factorVal) > CalibrateFactorCfg[i].factorMax || *(CalibrateFactorCfg[i].factorVal) < CalibrateFactorCfg[i].factorMin)
 		{
-		    CalibrateFactorCfg[i].calibrateVal = CalibrateFactorCfg[i].factorDefault; 
+		    *(CalibrateFactorCfg[i].factorVal) = CalibrateFactorCfg[i].factorDefault; 
 		}
 	}
 	

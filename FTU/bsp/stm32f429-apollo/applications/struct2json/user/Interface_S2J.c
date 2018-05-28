@@ -81,7 +81,7 @@ cJSON *TelecontrolCfg_StructToJson(void* struct_obj)
 
 /**
  * @fn TelesignalCfg_StructToJson
- * @brief 实现遥测结构体的struct转json
+ * @brief 实现遥信结构体的struct转json
  * @param struct_obj 指向结构体的指针
  * @return 返回指向转换后的json指针
  *
@@ -120,7 +120,7 @@ cJSON *TelemetryCfg_StructToJson(void* struct_obj)
 
 	/* serialize data to Student JSON object. */
 	s2j_json_set_basic_element(json_obj, fixedValueCfg, int, enable);				//使能
-	s2j_json_set_basic_element(json_obj, fixedValueCfg, string, pName);			//名称
+	s2j_json_set_basic_element(json_obj, fixedValueCfg, string, pNameUp);			//名称
 //	s2j_json_set_array_element(json_obj, fixedValueCfg, double, pVal, 1);			//值    使用数组思想
 	s2j_json_set_basic_element(json_obj, fixedValueCfg, string, pUnit);			//单位
 //	s2j_json_set_array_element(json_obj, fixedValueCfg, double, pCalifactor, 1);	//校准系数
