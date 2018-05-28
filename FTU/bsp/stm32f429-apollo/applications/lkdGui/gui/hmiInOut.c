@@ -12,7 +12,7 @@
 
 const uint8_t LedBitLook[] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};
 uint8_t Ledstate[ULED_ALLNUM / 8 + 1] = {0}; 
-
+uint8_t *RealYxLed[ULED_ALLNUM],LastYxLed[ULED_ALLNUM];
 struct MenuKeyValue menuKey;
 struct YKKeyValue ykKeyValue;
 /**
@@ -102,7 +102,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 		}
 	}
 	else if(keyNo == YK_RESET){//¸´¹é
-		DBRevert(LOCAL);
+		rt_multi_telecontrl_operate(ADDR_LOCAL_RESET, 0);
 	}
 }
 /**
@@ -240,26 +240,46 @@ void ULedStateSend(void)
   */
 void LedChangeCheck(void)
 {
-	static uint32_t TestTick;
-	static uint8_t flag;
-	uint8_t i;
-	if(GetTimer1IntervalTick(TestTick) > 500){
-		TestTick = GetTimer1Tick();
-		if(flag == 0){
-			for(i = 0; i < ULED_ALLNUM; i++){
-				ULedStateSet(i,ULED_ON);
-			}
-			ULedStateSend();
-			flag = 1;
-		}
-		else if(flag == 1){
-			for(i = 0; i < ULED_ALLNUM; i++){
-				ULedStateSet(i,ULED_OFF);
-			}
-			ULedStateSend();
-			flag = 0;
-		}
-	}
+//	static uint32_t TestTick;
+//	static uint8_t flag;
+//	uint8_t i;
+//	if(GetTimer1IntervalTick(TestTick) > 500){
+//		TestTick = GetTimer1Tick();
+//		if(flag == 0){
+//			for(i = 0; i < ULED_ALLNUM; i++){
+//				ULedStateSet(i,ULED_ON);
+//			}
+//			ULedStateSend();
+//			flag = 1;
+//		}
+//		else if(flag == 1){
+//			for(i = 0; i < ULED_ALLNUM; i++){
+//				ULedStateSet(i,ULED_OFF);
+//			}
+//			ULedStateSend();
+//			flag = 0;
+//		}
+//	}
 }
 
+void YaoxinMapToLed(void)
+{
+	RealYxLed[ULED_COMMUN] = &g_TelesignalDB[ADDR_COMMUNICATION];
+	RealYxLed[ULED_NOENERGY] = &g_TelesignalDB[ADDR_OPERATING_MECHANISM];
+	RealYxLed[ULED_SWITCHOPEN] = &g_TelesignalDB[ADDR_OPEN];
+	RealYxLed[ULED_LowPa] = &g_TelesignalDB[ADDR_LOW_PRESSURE];
+	RealYxLed[ULED_SWITCHCLOSE] = &g_TelesignalDB[ADDR_CLOSE];
+	RealYxLed[ULED_CLOSELOCK] = &g_TelesignalDB[ADDR_CLOSING_LOCK];
+	RealYxLed[ULED_OVERALARM] = &g_TelesignalDB[ADDR_SHORT_CIRCUIT_FAULT];
+	RealYxLed[ULED_OPENLOCK] = &g_TelesignalDB[ADDR_OPENING_LOCK];
+	RealYxLed[ULED_ZEROALARM] = &g_TelesignalDB[ADDR_EARTHING_FAULT];
+	RealYxLed[ULED_DEVICEFAULT] = &g_TelesignalDB[ADDR_DEVICE_FAULT];
+	RealYxLed[ULED_SELFCHECK] = &g_TelesignalDB[ADDR_SELF_CHECK_ABNOMAL];
+	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[ADDR_RECLOSE_LOCK];
+	
+	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
+		LastYxLed[i] = *(RealYxLed[i]);
+	}
+	ULedStateSend();
+}
 /* END */

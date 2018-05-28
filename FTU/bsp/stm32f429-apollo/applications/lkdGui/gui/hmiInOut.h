@@ -73,13 +73,20 @@ enum UserOutputNoMap{
 	LED_END_NO = 50,
 };
 
-#define ULED_ALLNUM 9
 enum UserLedDefine{
-	ULED_0,
-	ULED_1,
-	ULED_2,
-	ULED_3,
-	ULED_4,
+	ULED_COMMUN,			/* 通信 */
+	ULED_NOENERGY,		/* 未储能 */
+	ULED_SWITCHOPEN,	/* 开关分位 */
+	ULED_LowPa,				/* 低气压 */
+	ULED_SWITCHCLOSE,	/* 开关合位 */
+	ULED_CLOSELOCK,		/* 合闸闭锁 */
+	ULED_OVERALARM,		/* 过流告警 */
+	ULED_OPENLOCK,		/* 分闸闭锁 */
+	ULED_ZEROALARM,		/* 零序告警 */
+	ULED_DEVICEFAULT,	/* 装置故障 */
+	ULED_SELFCHECK,		/* 自检异常 */
+	ULED_RECLOSELOCK,	/* 重合闭锁 */
+	ULED_ALLNUM
 };
 enum UserLedState{
 	ULED_OFF,
