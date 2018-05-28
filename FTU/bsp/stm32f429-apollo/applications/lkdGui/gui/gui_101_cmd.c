@@ -392,6 +392,7 @@ void OpenLcdDisplay(void)
 	cmd101.packBuff[cmd101.pIn + CMD104_LEN] = 3;
 	cmd101.pIn += 3;
 	cmd101.cmdNum += 1;
+	EndCmd101Down();
 }
 
 /**
@@ -631,6 +632,7 @@ static void Hmi101ThreadEntity(void *param)
 	cmd101.state = 0;
 	userVariableDisplayInit();
 	GUIDisplayInit();
+	HmiInOutInit();
 	rt_kprintf("\r\n面板初始化完成");
 	for (;;){ 				
 		GUIDisplayMian();

@@ -256,6 +256,8 @@ enum HmiGuiCmdTab{
 uint8_t hmi101Scan(uint8_t *pBuff);
 void Hmi101Main(void);
 void Cmd101SendFinish(void);
+void Hmi101Init(void);
+uint8_t SwitchAllStateCmdSend(uint8_t num, uint8_t beginNumber,uint8_t *pBuff);
 
 extern uint32_t GetTimer1Tick(void);
 extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);

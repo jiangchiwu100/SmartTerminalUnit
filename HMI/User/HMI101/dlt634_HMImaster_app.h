@@ -69,7 +69,7 @@ typedef struct
 extern DLT634_HMIMASTER_PAD      DLT634_HMIMaster_Pad[_DLT634_HMIMASTER_VOLUMES];
 
 /* PUBLIC FUNCTION DECLARATION -----------------------------------------------*/
-extern void DLT634_HMI_MASTER_Clock(uint8_t pdrv);
+extern uint8_t DLT634_HMI_MASTER_Clock(uint8_t pdrv);
 extern uint8_t DLT634_HMI_MASTER_REPLY(uint8_t pdrv, uint8_t *pbuf);//»Ø¸´
 
 #endif /* END _DLT634_HMI_APP_H_ */

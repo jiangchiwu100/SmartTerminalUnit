@@ -22,9 +22,9 @@
 
 /* LED GPIO口时钟-APB2 */
 #define RCC_APB2Periph_LED (RCC_APB2Periph_GPIOD |\
-	RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOA)
+	RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOE)
 
-#define LED_ALLNUM		11
+#define LED_ALLNUM		16
 
 #define PORT_LED0		GPIOC
 #define PIN_LED0		GPIO_Pin_9
@@ -48,6 +48,16 @@
 #define PIN_LED9		GPIO_Pin_12
 #define PORT_LED10		GPIOD
 #define PIN_LED10			GPIO_Pin_9
+#define PORT_LED11		GPIOD
+#define PIN_LED11			GPIO_Pin_10
+#define PORT_LED12		GPIOB
+#define PIN_LED12			GPIO_Pin_15
+#define PORT_LED13		GPIOD
+#define PIN_LED13			GPIO_Pin_8
+#define PORT_LED14		GPIOE
+#define PIN_LED14			GPIO_Pin_10
+#define PORT_LED15		GPIOE
+#define PIN_LED15			GPIO_Pin_9
 
 /* 和硬件相关 */
 #define LED_HARDWARE_OFF		1

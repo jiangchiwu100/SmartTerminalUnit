@@ -63,6 +63,7 @@ extern uint16_t WriteX(uint8_t *pbuf, uint16_t count);
 /* √¸¡Ó¥¶¿Ì */
 extern uint8_t hmi101Scan(uint8_t *pBuff);
 extern void Cmd101SendFinish(void);
+extern void Hmi101Init(void);
 #endif /* END _DLT634_HMI_APP_H_ */
     
 

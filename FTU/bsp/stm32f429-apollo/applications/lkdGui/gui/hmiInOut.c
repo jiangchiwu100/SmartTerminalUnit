@@ -11,9 +11,13 @@
 #include "gui_101_cmd.h"
 
 const uint8_t LedBitLook[] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};
-uint8_t Ledstate[ULED_ALLNUM / 8 + 1] = {0}; 
+/* 灯状态 */
+uint8_t Ledstate[ULED_ALLNUM / 8 + 1] = {0};
+/* 遥信与灯映射 */
 uint8_t *RealYxLed[ULED_ALLNUM],LastYxLed[ULED_ALLNUM];
+/* 菜单按键 */
 struct MenuKeyValue menuKey;
+/* 遥控按键值 */
 struct YKKeyValue ykKeyValue;
 /**
   *@brief  菜单按键处理
@@ -145,29 +149,27 @@ void YaoKongKeyResult(uint8_t keyNo, uint8_t state)
   */
 void SwitchResult(uint8_t switchNo, uint8_t state)
 {
-	if(state == 1){
+	if(state == 1){//0为有效状态
 		switch(switchNo){
-			case SW_LOCAL:break;
-			case SW_REMORE:break;
-			case SW_RECLOSE:break;
-			case SW_PROTECT:break;
-			case SW_CONTACT:break;
-			case SW_SECTION:break;
-			case YK_RESET:break;
+			/* 他俩为一个点 统一放在有效状态处理 */
+//			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
+//			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
+			case SW_RECLOSE:DBWriteSOE(ADDR_RECLOSE_FA_STRAP, OFF);break;
+			case SW_PROTECT:DBWriteSOE(ADDR_FUNCTION_HARDSTRAP, OFF);break;
+			/* 他俩为一个点 统一放在有效状态处理 */
+//			case SW_CONTACT:DBWriteSOE(ADDR_BREAK_CONTACT, ON);break;
+//			case SW_SECTION:DBWriteSOE(ADDR_BREAK_CONTACT, OFF);break;
 		}
-		rt_kprintf("\r\nSwitch:%d -> %d ",switchNo,state);
 	}
 	else{
 		switch(switchNo){
-			case SW_LOCAL:break;
-			case SW_REMORE:break;
-			case SW_RECLOSE:break;
-			case SW_PROTECT:break;
-			case SW_CONTACT:break;
-			case SW_SECTION:break;
-			case YK_RESET:break;
+			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
+			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
+			case SW_RECLOSE:DBWriteSOE(ADDR_RECLOSE_FA_STRAP, ON);break;
+			case SW_PROTECT:DBWriteSOE(ADDR_FUNCTION_HARDSTRAP, ON);break;
+			case SW_CONTACT:DBWriteSOE(ADDR_BREAK_CONTACT, ON);break;
+			case SW_SECTION:DBWriteSOE(ADDR_BREAK_CONTACT, OFF);break;
 		}
-		rt_kprintf("\r\nSwitch:%d -> %d ",switchNo,state);
 	}
 }
 /**
@@ -240,28 +242,45 @@ void ULedStateSend(void)
   */
 void LedChangeCheck(void)
 {
-//	static uint32_t TestTick;
-//	static uint8_t flag;
-//	uint8_t i;
-//	if(GetTimer1IntervalTick(TestTick) > 500){
-//		TestTick = GetTimer1Tick();
-//		if(flag == 0){
-//			for(i = 0; i < ULED_ALLNUM; i++){
-//				ULedStateSet(i,ULED_ON);
-//			}
-//			ULedStateSend();
-//			flag = 1;
-//		}
-//		else if(flag == 1){
-//			for(i = 0; i < ULED_ALLNUM; i++){
-//				ULedStateSet(i,ULED_OFF);
-//			}
-//			ULedStateSend();
-//			flag = 0;
-//		}
-//	}
+	uint8_t sendFlag = 0;
+	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
+		if(LastYxLed[i] != *(RealYxLed[i])){
+			LastYxLed[i] = *RealYxLed[i];
+			if(LastYxLed[i] == OFF){
+				if(i == ULED_NOENERGY){
+					ULedStateSet(i,ULED_ON);
+				}
+				else{
+					ULedStateSet(i,ULED_OFF);
+				}
+			}
+			else{
+				if(i == ULED_NOENERGY){
+					ULedStateSet(i,ULED_OFF);
+				}
+				else{
+					ULedStateSet(i,ULED_ON);
+				}
+			}
+			sendFlag = 1;
+		}
+	}
+	if(sendFlag == 1){
+		if(LastYxLed[ULED_NOENERGY] == OFF){
+			ULedStateSet(ULED_NOENERGY,ULED_ON);
+		}
+		else{
+			ULedStateSet(ULED_NOENERGY,ULED_OFF);
+		}
+		ULedStateSend();
+	}
 }
 
+/**
+  *@brief  led和灯映射
+  *@param  None
+  *@retval None
+  */
 void YaoxinMapToLed(void)
 {
 	RealYxLed[ULED_COMMUN] = &g_TelesignalDB[ADDR_COMMUNICATION];
@@ -279,7 +298,33 @@ void YaoxinMapToLed(void)
 	
 	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
 		LastYxLed[i] = *(RealYxLed[i]);
+		if(LastYxLed[i] == OFF){
+			if(i == ULED_NOENERGY){//取反
+				ULedStateSet(i,ULED_ON);
+			}
+			else{
+				ULedStateSet(i,ULED_OFF);
+			}
+		}
+		else{
+			if(i == ULED_NOENERGY){//取反
+				ULedStateSet(i,ULED_OFF);
+			}
+			else{
+				ULedStateSet(i,ULED_ON);
+			}
+		}
 	}
 	ULedStateSend();
+}
+
+/**
+  *@brief  HmiOut初始化
+  *@param  None
+  *@retval None
+  */
+void HmiInOutInit(void)
+{
+	YaoxinMapToLed();
 }
 /* END */

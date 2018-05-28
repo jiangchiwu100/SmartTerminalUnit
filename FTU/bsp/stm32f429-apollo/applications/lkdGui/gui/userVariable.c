@@ -433,8 +433,6 @@ uint16_t GetFeventNum(void)
   */
 static void HmiCmdSendFun(uint8_t cmdIs)
 {
-	uint16_t addr;
-	
 	switch(cmdIs)
 	{
 		case 0:/* Çå³ý¼ÇÂ¼ */
