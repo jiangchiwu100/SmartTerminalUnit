@@ -335,9 +335,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 
 	switch (addr)
 	{
-	    case ADDR_REMOTE_OPERATE:
-		case ADDR_LOCAL_OPERATE:	
-		case ADDR_HANDHELD_OPER:	
+		case ADDR_LOGIC_ACT:
             switch (operate_type)	
 			{
 				case DO_CLOSE: // 合闸
@@ -367,7 +365,30 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 						DBWriteCO(addr, rtl);
 						DoStr.actSource = 0;
 					}
-					break;			
+					break;
+				case DO_COIL_ENERGY_STORAGE: // 储能
+					/* Permanent magnet mechanism */
+					if (g_Parameter[OPERATING_MECHANISM] != MAGNET)
+					{
+						rt_hw_coil_energy_storage(); // 储能操作
+					}
+					break;					
+			}				
+		    break;
+	    case ADDR_REMOTE_OPERATE:
+		case ADDR_LOCAL_OPERATE:	
+		case ADDR_HANDHELD_OPER:	
+            switch (operate_type)	
+			{
+				case DO_CLOSE: // 合闸
+					rtl = rt_hw_close_operate();
+					DoStr.actSource = addr;
+					break;
+							
+				case DO_OPEN: // 分闸
+					rtl = rt_hw_open_operate();
+					DoStr.actSource = addr;
+					break;		
 			}				
 		    break;
 	    case ADDR_REMOTE_ACTIVE:
@@ -397,13 +418,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 			}						
 		    break;
 	 
-	    default:
-		//case DO_COIL_ENERGY_STORAGE:
-			/* Permanent magnet mechanism */
-			if (g_Parameter[OPERATING_MECHANISM] != MAGNET)
-			{
-				rt_hw_coil_energy_storage(); // 储能操作
-			}                		
+	    default:             		
 		    break;		
 	}
 

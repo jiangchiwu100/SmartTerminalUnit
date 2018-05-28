@@ -326,8 +326,8 @@ typedef struct
 	float *pBreakWorkMode;                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	float *pLoadWorkMode;                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
     float *pConnectSwitchRecognize; //联络开关自动识别（0-手动，1-自动）
-    uint8_t (*opening)(uint8_t operateType, uint8_t act);
-    uint8_t (*closing)(uint8_t operateType, uint8_t act);
+    uint8_t (*opening)(uint16_t addr, uint8_t operateType);
+    uint8_t (*closing)(uint16_t addr, uint8_t operateType);
     uint8_t (*outputSoe)(uint16_t addr, uint8_t state);
     uint8_t (*outputFevent)(uint16_t yx_addr, uint16_t *yc_addr, uint16_t yc_num);
 }ComProSts;

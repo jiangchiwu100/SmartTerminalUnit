@@ -636,8 +636,8 @@ enum TelecontrlAddr
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录
 	ADDR_HANDHELD_OPER,           // 手持操作
-    
-    REMOTE_TOTAL_NUM
+    REMOTE_TOTAL_NUM,
+	ADDR_LOGIC_ACT,               // 逻辑动作	
 };
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \

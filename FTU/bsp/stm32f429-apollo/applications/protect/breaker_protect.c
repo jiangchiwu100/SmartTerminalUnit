@@ -262,7 +262,7 @@ static void iACC_ctrl(ComProSts *comProSts, IACCSts *iACCSts)
 					if((*(iACCSts->valstr.gTime[0])&BRE_TITIMERS)>=(uint32_t)(*(iACCSts->parastr.pTime)*1000))
 					{
 						iACCSts->valstr.flag |= IACCCUR|IACCCURSTA1;
-						comProSts->opening(DO_OPEN,LOGIC_ACT);
+						comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
 						iACCSts->valstr.flag |= RESETFLAG;
 						if(*(comProSts->yc.Ia)>*(iACCSts->parastr.pValue))
 						{
@@ -390,7 +390,7 @@ static void inverse_ctrl(ComProSts *comProSts,InverseSts *inverseSts)
             if((*(inverseSts->valstr.gTime)&BRE_TITIMERS)>=(uint32_t)(curtime))
             {
                 inverseSts->valstr.flag |= INVERSECUR|INVERSECURSTA1;
-                comProSts->opening(DO_OPEN,LOGIC_ACT);
+                comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                 inverseSts->valstr.flag |= RESETFLAG;
                 if(*(comProSts->yc.Ia)>*(inverseSts->parastr.pValue))
                 {
@@ -490,7 +490,7 @@ static void overcur_ctrl(ComProSts *comProSts,OvercurSts *overcurSts)
                 if((*(overcurSts->valstr.gTime[i])&BRE_TITIMERS)>=(uint32_t)(*(overcurSts->parastr.pTime[i])*1000))
                 {
                     overcurSts->valstr.flag |= (OVERCUR1<<i)|OVERCURSTA1;
-                    comProSts->opening(DO_OPEN,LOGIC_ACT);
+                    comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                     overcurSts->valstr.flag |= RESETFLAG;
                     if(*(comProSts->yc.Ia)>*(overcurSts->parastr.pValue[i]))
                     {
@@ -595,7 +595,7 @@ static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
                     overcurI0Sts->valstr.flag |= RESETFLAG;
                     if(*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ON)
                     {
-                        comProSts->opening(DO_OPEN,LOGIC_ACT);
+                        comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                         addSOE(comProSts,&comProSts->yx.protectionAct,ON);
                     }
                     if(*(comProSts->yc.I0)>*(overcurI0Sts->parastr.pValue[i]))

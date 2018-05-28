@@ -50,6 +50,8 @@ int rt_hw_wdg_deal_init(void)
 {               
     rt_hw_iwdg_init(IWDG_PRESCALER_64, 1000); // 2s
 	HAL_IWDG_Refresh(&IWDG_Handler); 
+	
+	return 0;
 }
 
 //INIT_PREV_EXPORT(rt_hw_wdg_deal_init);

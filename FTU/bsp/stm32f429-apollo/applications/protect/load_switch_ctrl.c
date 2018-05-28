@@ -507,7 +507,7 @@ static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
             if(!(*(overcurI0Sts->valstr.stateJudgeflag)&STATEUNBLOCKED)&&\
                     (*(comProSts->yx.openingLocked.value) == OFF))//非遮断
             {
-                comProSts->opening(DO_OPEN,LOGIC_ACT);
+                comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                 addSOE(comProSts,&comProSts->yx.protectionAct,ON);
                 overcurI0Sts->valstr.flag |= OVERCURI0STA1|RESETFLAG;
             }
@@ -596,7 +596,7 @@ static void lossTrip_ctrl(ComProSts *comProSts,LossTripSts *lossTripSts)
                 }
                 if((*(lossTripSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(lossTripSts->parastr.pTime)*1000))
                 {
-                    comProSts->opening(DO_OPEN,LOGIC_ACT);
+                    comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                     lossTripSts->valstr.flag |= LOSSTRIP|LOSSTRIPSTA1|RESETFLAG;
                     addSOE(comProSts,&comProSts->yx.lossTrip,ON);
                     if((lossTripSts->valstr.flag&LOSSTRIPSTA3)||(*(lossTripSts->valstr.openCloseLockingflag)&JUDGRFLAG))
@@ -808,7 +808,7 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
 						{
 							openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
 							*(openCloseLockingSts->valstr.gTime) = 0;
-							comProSts->opening(DO_OPEN,LOGIC_ACT);
+							comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
 							addSOE(comProSts,&comProSts->yx.protectionAct,ON);
 							addSOE(comProSts,&comProSts->yx.closingLocked,ON);
 						}
@@ -845,7 +845,7 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
 						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
 						openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA4;
 						openCloseLockingSts->valstr.flag |= RESETFLAG;
-						comProSts->opening(DO_OPEN,LOGIC_ACT);
+						comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
 						addSOE(comProSts,&comProSts->yx.protectionAct,ON);
 						addSOE(comProSts,&comProSts->yx.closingLocked,ON);
 						*(openCloseLockingSts->valstr.gTime) = 0;
@@ -859,7 +859,7 @@ static void openCloseLocking_ctrl(ComProSts *comProSts,OpenCloseLockingSts *open
 							{
 								openCloseLockingSts->valstr.flag |= OPENCLOSELOCKINGSTA1;
 								*(openCloseLockingSts->valstr.gTime) = 0;
-								comProSts->opening(DO_OPEN,LOGIC_ACT);
+								comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
 								addSOE(comProSts,&comProSts->yx.protectionAct,ON);
 								addSOE(comProSts,&comProSts->yx.closingLocked,ON);
 							}

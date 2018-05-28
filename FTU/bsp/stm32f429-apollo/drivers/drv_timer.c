@@ -307,13 +307,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		rt_hw_di_check_task(1);
 		
 		/* 线圈储能操作 */ 
-		rt_hw_do_operate(DO_COIL_ENERGY_STORAGE, 0);
+		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_COIL_ENERGY_STORAGE);
 		
 		/* 分闸收回 */
-		rt_hw_do_operate(DO_OPEN_RECOVERY, 0); 
+		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN_RECOVERY); 
 				  
 		/* 合闸收回 */
-		rt_hw_do_operate(DO_CLOSE_RECOVERY, 0); 	
+		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_CLOSE_RECOVERY); 	
 		
 		if (s_run_cnt < 5000)
 		{
