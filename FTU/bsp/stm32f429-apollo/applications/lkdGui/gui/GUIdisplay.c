@@ -103,46 +103,6 @@ static uint8_t GUIDisplayONOFF(enum KeyStatus *key)
 }
 
 /**
-  *@brief GUI启动界面
-  *@param  None
-  *@retval None
-  */
-void GUIStartInterface(void)
-{
-	uint8_t i,j;
-	lkdBitmap tImage;
-	GuiSetbackcolor(0);
-	GuiSetForecolor(1);
-	tImage.number = 1;
-	tImage.wide = 160;
-	tImage.high = 30;
-	tImage.beginx = 0;
-	tImage.beginy = 0;
-	tImage.bitmap = NULL;
-	GuiAreaBitMap(&tImage,1, 25, 159, 55, 0);
-	j = 110;
-	for(i=1;i<24;i+=2){
-		GuiHPointLine(1,i,j,2,forecolor);
-		j -= 2;
-	}
-	for(i=25;i<55;i+=2){
-		GuiHPointLine(1,i,159,2,forecolor);
-	}
-	j = 70;
-	for(i=55;i<78;i+=2){
-		GuiHPointLine(j,i,159,2,forecolor);
-		j -= 2;
-	}
-	GuiHLine(1,78,158,forecolor);
-	GuiFillRect(1,81,159,94, forecolor);
-	GuiHLine(1,96,158,forecolor);
-	GuiExchangeColor();
-	GuiFont12Align(2,82,156,FONT_MID,"正在启动......");
-	GuiExchangeColor();
-	GuiUpdateDisplayAll();
-}
-
-/**
   *@brief GUI在线更新
   *@param  None
   *@retval None
@@ -1167,6 +1127,8 @@ static void MenuM2Fun(void)
 		case 0:userGUIWindowAdd(&BasicSetWin);break;
 		case 1:userGUIWindowAdd(&ZeroDriftWin);break;
 		case 2:userGUIWindowAdd(&DeadZoneWin);break;
+		case 3:userGUIWindowAdd(&SerialWin);break;
+		case 4:userGUIWindowAdd(&InternetWin);break;
 		default:break;
 		}
 	}
@@ -1255,6 +1217,8 @@ static void MenuM0S5Fun(void)
 		case 0:userGUIWindowAdd(&BasicSetWin);break;
 		case 1:userGUIWindowAdd(&ZeroDriftWin);break;
 		case 2:userGUIWindowAdd(&DeadZoneWin);break;
+		case 3:userGUIWindowAdd(&SerialWin);break;
+		case 4:userGUIWindowAdd(&InternetWin);break;
 		default:break;
 		}
 	}
@@ -2225,6 +2189,25 @@ static void ZeroDriftFun(void)
 static void DeadZoneFun(void)
 {
 	DZModfiyDisplay(&dzhi0Info[DZ0_DEADEZONE],&stepTab[STEP_NORMAL]);
+}
+
+/**
+  *@brief 串口设置处理函数
+  *@param  None
+  *@retval None
+  */
+static void SerialFun(void)
+{
+	DZModfiyDisplay(&dzhi0Info[DZ0_SERIAL],&stepTab[STEP_NORMAL]);
+}
+/**
+  *@brief 网口设置处理函数
+  *@param  None
+  *@retval None
+  */
+static void InternetFun(void)
+{
+	DZModfiyDisplay(&dzhi0Info[DZ0_INTERNET],&stepTab[STEP_NORMAL]);
 }
 
 /* END */

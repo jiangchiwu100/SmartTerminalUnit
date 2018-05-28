@@ -21,8 +21,8 @@ MENU MenuM1 = {
 	MenuM1Fun/* itemFunction */
 };
 MENU MenuM2 = {
-	0,0,&mianMenu,0,3,{0,0,0},//x,y,fatherMenu,currentItem,mun
-	{"基本设置","零漂设置","死区设置",NULL,NULL,NULL,NULL,NULL,NULL,NULL},
+	0,0,&mianMenu,0,5,{0,0,0},//x,y,fatherMenu,currentItem,mun
+	{"基本设置","零漂设置","死区设置","串口设置","网口设置",NULL,NULL,NULL,NULL,NULL},
 	MenuM2Fun/* itemFunction */
 };
 MENU MenuM0S1 = {
@@ -36,8 +36,8 @@ MENU MenuM0S4 = {
 	MenuM0S4Fun/* itemFunction */
 };
 MENU MenuM0S5 = {
-	0,0,&MenuM0,0,3,{0,0,0},//x,y,fatherMenu,currentItem,mun
-	{"基本查询","零漂查询","死区查询",NULL,NULL,NULL,NULL,NULL,NULL,NULL},
+	0,0,&MenuM0,0,5,{0,0,0},//x,y,fatherMenu,currentItem,mun
+	{"基本查询","零漂查询","死区查询","串口查询","网口查询",NULL,NULL,NULL,NULL,NULL},
 	MenuM0S5Fun/* itemFunction */
 };
 MENU MenuM0S4S0 = {
@@ -94,6 +94,9 @@ WINDOW AutoResetWin    = {0,0,160,160,NULL,"自动复归窗口",AutoResetFun};
 WINDOW BasicSetWin   = {0,0,160,160,NULL,"基本设置窗口",BasicSetFun};
 WINDOW ZeroDriftWin  = {0,0,160,160,NULL,"零漂设置窗口",ZeroDriftFun};
 WINDOW DeadZoneWin 	 = {0,0,160,160,NULL,"死区设置窗口",DeadZoneFun};
+
+WINDOW SerialWin  = {0,0,160,160,NULL,"串口设置窗口",SerialFun};
+WINDOW InternetWin 	 = {0,0,160,160,NULL,"网口设置窗口",InternetFun};
 
 WINDOW DZModfiyWin = {14,19,130,134,NULL,"定值修改窗口",DZModfiyFun};
 /* 公用窗口 */

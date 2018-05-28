@@ -131,6 +131,8 @@ static void MenuM2Fun(void);
 	static void BasicSetFun(void);		//基本设置
 	static void ZeroDriftFun(void);		//零漂设置
 	static void DeadZoneFun(void);		//死区设置
+	static void SerialFun(void);			//串口设置
+	static void InternetFun(void);		//网口设置
 /* 命令下发  */
 static void CmdSendWinFun(void);
 /* 版本信息 */	

@@ -8,6 +8,7 @@
 #include "hmi101.h"
 #include "switchDriver.h"
 #include "keyDriver.h"
+#include "GuiDisplay.h"
 
 int main(void)
 {
@@ -21,8 +22,8 @@ int main(void)
 	LcdInit();
 	ZiKuInit();
 	OPEN_ALL_INT();
-	GuiUpdateDisplayAll();
-
+	GUIStartInterface();
+//	GuiUpdateDisplayAll();
 	DLT634_HMI_MASTER_INIT(0);
 	
 	while(1)                            
@@ -33,4 +34,4 @@ int main(void)
 	}
 }
 
-
+/* END */

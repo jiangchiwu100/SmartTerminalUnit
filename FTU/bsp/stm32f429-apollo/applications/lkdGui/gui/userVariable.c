@@ -152,6 +152,24 @@ static void Dzhi1ModfiySave(uint16_t addr)
 	addr = addr;
 	rt_multi_common_data_save_value_to_fram(g_ValueParaOperateInfo.currentSN);
 }
+
+/**
+  *@brief  运行定值类型重映射
+  *@param  i 当前序列号 type 原始类型
+  *@retval None
+  */
+static void Dzhi0TypeRemap(uint16_t i,uint16_t *type)
+{
+	switch(i)
+	{
+		case DZ0_CONFIG:*type = ME_BASIC_SET;break;
+		case DZ0_ZERODRIFT:*type = ME_ZERODRIFT;break;
+		case DZ0_DEADEZONE:*type = ME_DEADEZONE;break;
+		case DZ0_SERIAL:*type = ME_UART_COM;break;
+		case DZ0_INTERNET:*type = ME_NET_COM;break;
+		default:*type = ME_BASIC_SET;break;
+	}
+}
 /**
   *@brief  配置显示初始化
   *@param  None
@@ -164,15 +182,7 @@ static void Dzhi0DisplayInit(void)
 	uint16_t i,j;
 	dzhiItemsAll = g_ParameterCfg_Len;
 	for(i = 0 ; i < DZ0_ALLNUM; i++){
-		if(i == 0){
-			typeIs = ME_BASIC_SET;
-		}
-		else if(i == 1){
-			typeIs = ME_ZERODRIFT;
-		}
-		else{
-			typeIs = ME_DEADEZONE;
-		}
+		Dzhi0TypeRemap(i,&typeIs);
 		dzhiItem = 0;
 		dzhi0Info[i].SaveModify = Dzhi0ModfiySave;
 		dzhi0Info[i].pRoot = ParameterCfg;

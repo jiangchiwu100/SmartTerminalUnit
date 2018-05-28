@@ -72,6 +72,8 @@ enum Dzhi0OffsetNumber{
 	DZ0_CONFIG,/* 配置 */
 	DZ0_ZERODRIFT,/* 零漂 */
 	DZ0_DEADEZONE,/* 死区 */
+	DZ0_SERIAL,		/* 串口 */
+	DZ0_INTERNET,	/* 网口 */
 	DZ0_ALLNUM,/* 定值总数 */
 };
 enum Dzhi1OffsetNumber{
