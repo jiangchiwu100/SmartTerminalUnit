@@ -32,6 +32,7 @@ uint8_t DLT634_HMI_SLAVE_C_REPLY(uint8_t drvid,uint8_t *pbuf);
 /* 调用外部 */
 extern uint8_t hmi101Scan(uint8_t *pBuff);
 extern void Cmd101SendFinish(void);
+extern void Hmi101Init(void);
 #endif /* END _HMI_101_DISK_H_ */
     
 

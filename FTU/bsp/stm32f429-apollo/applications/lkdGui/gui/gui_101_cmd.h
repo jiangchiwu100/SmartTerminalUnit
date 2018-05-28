@@ -84,6 +84,7 @@ void OpenLcdDisplay(void);
 void CloseLcdDisplay(void);
 void GuiButton(int16_t x,int16_t y,uint8_t *keyName,uint8_t flag);
 void GuiVScroll(SCROLL *pScroll);
+void HmiCmd001Fill(uint8_t type, uint8_t num,uint8_t *pBuff);
 
 /* 由发送完成函数调用 */
 void Cmd101SendFinish(void);

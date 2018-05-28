@@ -28,7 +28,18 @@ void time_static_init(void)
 				   RT_NULL,1,RT_TIMER_FLAG_PERIODIC);	
 	rt_timer_start(&Timer1);
 }
-
+/**
+  *@brief 定时器1删除函数
+  *@param  None 
+  *@retval None
+  */
+void time_static_detach(void)
+{
+	rt_err_t result;
+	rt_timer_detach(&Timer1);
+	if (result != RT_EOK){  
+	}
+}
 /**
   *@brief 获取开始计时数
   *@param  None

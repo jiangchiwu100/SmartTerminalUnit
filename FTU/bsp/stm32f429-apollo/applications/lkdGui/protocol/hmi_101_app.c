@@ -222,6 +222,8 @@ static void DLT634_HMI_SLAVE_StatusReset(uint8_t pdrv)
     DLT634_HMISLAVE_App[pdrv].LinkFlag = 0;
     DLT634_HMISLAVE_App[pdrv].DataFlag = 0;
 	
+		memset((uint8_t *)DLT634_HMISLAVE_App[pdrv].StoreDATABuf,0,sizeof(DLT634_HMISLAVE_App[pdrv].StoreDATABuf)); 
+	
 		DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_INITEND;//初始化结束标志
 		DLT634_HMISLAVE_App[pdrv].DataFlag |= _DLT634_HMISLAVE_CALLALLDATA;
 }
@@ -256,6 +258,7 @@ static void DLT634_HMI_SLAVE_DecodeFrame10(uint8_t pdrv)
 										
                 case _DLT634_HMISLAVE_M_FUN9: // 召唤链路状态
 					DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_REQSTATUS;
+								DLT634_HMISLAVE_App[pdrv].LinkFlag &= ~_DLT634_HMISLAVE_INITEND;
 								    /* 可以避免答非所问的过程，尽快建立链路 */ 
                     while (((DLT634_HMISLAVE_App[pdrv].RxdTail - DLT634_HMISLAVE_App[pdrv].RxdHead) >= DLT634_HMISLAVE_Pad[pdrv].FixFrmLength) && (stop == 0)) // 收到召唤链路状态命令时，清掉后续相同命令。
                     {
@@ -271,7 +274,6 @@ static void DLT634_HMI_SLAVE_DecodeFrame10(uint8_t pdrv)
                     break;
 
                 case _DLT634_HMISLAVE_M_FUN0: // 复位链路					
-                    DLT634_HMI_SLAVE_StatusReset(pdrv);
             
                     DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_RECONFIRM;
                     DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_ASKSTATUS;
@@ -797,6 +799,14 @@ uint8_t DLT634_HMI_SLAVE_AppInit(uint8_t pdrv)
 uint8_t DLT634_HMI_SLAVE_Clock(uint8_t pdrv)
 {
     uint8_t sta = FALSE;
+	static uint8_t startflag = 1;
+	
+	if(startflag)
+	{
+	      startflag = 0;
+				DLT634_HMISLAVE_App[pdrv].LinkFlag |= _DLT634_HMISLAVE_ASKSTATUS;
+				DLT634_HMISLAVE_App[pdrv].TimeOutTick_AskCount = _DLT634_HMISLAVE_NUMOF_MAXRETRY;
+	}
     
 	DLT634_HMISLAVE_App[pdrv].ClockCounter++;
 	if (DLT634_HMISLAVE_App[pdrv].ClockCounter >= DLT634_HMISLAVE_Pad[pdrv].ClockTimers)

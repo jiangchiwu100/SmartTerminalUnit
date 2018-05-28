@@ -6,9 +6,21 @@
   * @brief  hmi按键开关等处理
   */
 #include "hmiInOut.h"
+#include "common_data.h"
+#include "drv_do.h"
+#include "gui_101_cmd.h"
+
+const uint8_t LedBitLook[] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01};
+uint8_t Ledstate[ULED_ALLNUM / 8 + 1] = {0}; 
 
 struct MenuKeyValue menuKey;
-	
+struct YKKeyValue ykKeyValue;
+/**
+  *@brief  菜单按键处理
+  *@param  keyNo 按键号
+  *@param  state 值
+  *@retval None
+  */
 void MenuKeyResult(uint8_t keyNo, uint8_t state)
 {
 	if(state == USERKEY_DOWN){
@@ -46,15 +58,123 @@ void MenuKeyResult(uint8_t keyNo, uint8_t state)
 		}
 	}
 }
+
+/**
+  *@brief  获取菜单当前按键值
+  *@param  None
+  *@retval None
+  */
 enum KeyStatus GetKeyStatus(void)
 {
 	return menuKey.keyIs;
 }
+
+/**
+  *@brief  清除菜单按键
+  *@param  None
+  *@retval None
+  */
 void SetKeyIsNoKey(void)
 {
 	menuKey.keyIs = NoKey;
 }
-
+/**
+  *@brief  遥控按键命令处理
+  *@param  keyNo 按键号
+  *@retval None
+  */
+void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
+{
+	if(keyNo == YK_OPENSWITCH){
+		if(ykKeyValue.shift == 1){
+			ykKeyValue.shift = 0;
+			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){//分闸
+				rt_hw_do_operate(DO_OPEN, LOCAL);
+			}
+		}
+	}
+	else if(keyNo == YK_CLOSESWITCH){//合闸
+		if(ykKeyValue.shift == 1){
+			ykKeyValue.shift = 0;
+			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+				rt_hw_do_operate(DO_CLOSE, LOCAL);
+			}
+		}
+	}
+	else if(keyNo == YK_RESET){//复归
+		DBRevert(LOCAL);
+	}
+}
+/**
+  *@brief  遥控按键处理
+  *@param  keyNo 按键号
+  *@param  state 状态
+  *@retval None
+  */
+void YaoKongKeyResult(uint8_t keyNo, uint8_t state)
+{
+	if(state == USERKEY_DOWN){
+		switch(keyNo){
+			case YK_OPENSWITCH:
+			case YK_CLOSESWITCH:
+			case YK_RESET:
+				YaoKongKeyCmdResult((enum UserKeyNomberMap)keyNo);break;
+			case YK_SHFITSWITCH:
+				ykKeyValue.shift = 1;break;
+			default:break;
+		}
+	}
+	else{
+		switch(keyNo){
+			case YK_OPENSWITCH:
+				ykKeyValue.open = 0;break;
+			case YK_CLOSESWITCH:
+				ykKeyValue.close = 0;break;
+			case YK_SHFITSWITCH:
+				ykKeyValue.shift = 0;break;
+			case YK_RESET:
+				ykKeyValue.reset = 0;break;
+			default:break;
+		}
+	}
+}
+/**
+  *@brief  开关命令处理
+  *@param  None
+  *@retval None
+  */
+void SwitchResult(uint8_t switchNo, uint8_t state)
+{
+	if(state == 1){
+		switch(switchNo){
+			case SW_LOCAL:break;
+			case SW_REMORE:break;
+			case SW_RECLOSE:break;
+			case SW_PROTECT:break;
+			case SW_CONTACT:break;
+			case SW_SECTION:break;
+			case YK_RESET:break;
+		}
+		rt_kprintf("\r\nSwitch:%d -> %d ",switchNo,state);
+	}
+	else{
+		switch(switchNo){
+			case SW_LOCAL:break;
+			case SW_REMORE:break;
+			case SW_RECLOSE:break;
+			case SW_PROTECT:break;
+			case SW_CONTACT:break;
+			case SW_SECTION:break;
+			case YK_RESET:break;
+		}
+		rt_kprintf("\r\nSwitch:%d -> %d ",switchNo,state);
+	}
+}
+/**
+  *@brief  按键命令处理
+  *@param  None
+  *@retval None
+  */
 void KeyCmdResult(uint8_t keyNo, uint8_t state)
 {
 	switch(keyNo){
@@ -64,5 +184,82 @@ void KeyCmdResult(uint8_t keyNo, uint8_t state)
 		case MENUKEY_RIGHT:
 		case MENUKEY_ESC:
 		case MENUKEY_OK:MenuKeyResult(keyNo,state);break;
+		case YK_OPENSWITCH:
+		case YK_CLOSESWITCH:
+		case YK_SHFITSWITCH:
+		case YK_RESET:YaoKongKeyResult(keyNo,state);break;
+		case SW_LOCAL:
+		case SW_REMORE:
+		case SW_RECLOSE:
+		case SW_PROTECT:
+		case SW_CONTACT:
+		case SW_SECTION:SwitchResult(keyNo,state);break;
 	}
 }
+
+/**
+  *@brief  设置Led状态
+  *@param  ledNo led号
+  *@param  state 状态
+  *@retval 0 成功 1失败
+  */
+uint8_t ULedStateSet(uint8_t ledNo,enum UserLedState state)
+{
+	if(ledNo >= ULED_ALLNUM){
+		return 1;
+	}
+	if(state == ULED_ON){
+		Ledstate[ledNo / 8] |= LedBitLook[ledNo % 8]; 
+	}
+	else{
+		Ledstate[ledNo / 8] &= ~LedBitLook[ledNo % 8]; 
+	}
+	return 0;
+}
+/**
+  *@brief  Led状态发送
+  *@param  None
+  *@retval None
+  */
+void ULedStateSend(void)
+{
+	uint8_t i,tNum;
+	uint8_t tBuff[ULED_ALLNUM / 8 + 2];
+	tBuff[0] = LED_BEGIN_NO;
+	tNum = ULED_ALLNUM / 8 + (ULED_ALLNUM % 8 ? 1:0);
+	for(i = 0; i < tNum; i ++){
+		tBuff[i + 1] = Ledstate[i];
+	}
+	HmiCmd001Fill(1, ULED_ALLNUM,tBuff);
+}
+
+/**
+  *@brief  Led状态变化检测
+  *@param  None
+  *@retval None
+  */
+void LedChangeCheck(void)
+{
+	static uint32_t TestTick;
+	static uint8_t flag;
+	uint8_t i;
+	if(GetTimer1IntervalTick(TestTick) > 500){
+		TestTick = GetTimer1Tick();
+		if(flag == 0){
+			for(i = 0; i < ULED_ALLNUM; i++){
+				ULedStateSet(i,ULED_ON);
+			}
+			ULedStateSend();
+			flag = 1;
+		}
+		else if(flag == 1){
+			for(i = 0; i < ULED_ALLNUM; i++){
+				ULedStateSet(i,ULED_OFF);
+			}
+			ULedStateSend();
+			flag = 0;
+		}
+	}
+}
+
+/* END */

@@ -15,16 +15,21 @@
 #include <rtthread.h>
 #include "hmiInOut.h"
 #include "userVariable.h"
+#include "gui_common.h"
+#include "GUIdisplay.h"
+
+/* hmi101线程使用 */
+#define HMI101_STACKSIZE 2048
+#define HMI101_THREADPRIORITY 24
+static struct rt_thread Hmi101Thread;
+static rt_uint8_t Hmi101Threadstack[HMI101_STACKSIZE];
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
-
-
+/* cmd101控制结构 */
 Gui101CmdControl cmd101;
-
 /* 定义前景色/背景色 */
 lkdColour forecolor = 1,backcolor;
-/* 定义按键状态 */
 
 /**
   *@brief  结束101压栈
@@ -89,7 +94,11 @@ void Cmd101SendFinish(void)
 	rt_event_send(&Cmd101SendEvent, (1 << 0));
 }
 
-
+/**
+  *@brief  开始101压栈
+  *@param  None
+  *@retval None
+  */
 void BeginCmd101Down(void)
 {
 	if(cmd101.state != 0){
@@ -367,6 +376,7 @@ void CloseLcdDisplay(void)
 	cmd101.packBuff[cmd101.pIn + CMD104_LEN] = 3;
 	cmd101.pIn += 3;
 	cmd101.cmdNum += 1;
+	EndCmd101Down();
 }
 
 /**
@@ -514,23 +524,40 @@ void GuiExchangeColor(void)
 	cmd101.pIn += cmd101.packBuff[cmd101.pIn + CMD109_LEN];
 	cmd101.cmdNum += 1;
 }
-
 /**
-  *@brief hmi101初始化
-  *@param  None
+  *@brief cmd101命令填充
+  *@param  type 开入填充类型 0 非连续 1 连续
+  *@param  num 开入个数
+  *@param  pBuff 如果 type = 0 pBuff[i*2 + 0] = 开入号 pBuff[i*2 + 1] = 开入号对应状态 (i = num -1)
+  *@param  pBuff 如果 type = 1 pBuff[0] = 开入号 pBuff[1] = 组长度 pBuff[2..] 组状态
   *@retval None
   */
-void Hmi101Init(void)
+void HmiCmd001Fill(uint8_t type, uint8_t num,uint8_t *pBuff)
 {
-	rt_err_t result;
-	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
-	if (result != RT_EOK){  
+	Cmd101DownControl(4);
+	cmd101.packBuff[cmd101.pIn + CMD001_CMD] = 1;
+	cmd101.packBuff[cmd101.pIn + CMD001_NUM] = num;
+	if(type == C001TYPE_DISCRETE){
+		cmd101.packBuff[cmd101.pIn + CMD001_TYPE] = C001TYPE_DISCRETE;
+		memcpy((char *)cmd101.packBuff[cmd101.pIn + CMD001_NUMBER],(char *)pBuff,num*2);
+		cmd101.packBuff[cmd101.pIn + CMD001_LEN] = 4 + num*2;
 	}
-	userVariableDisplayInit();
+	else if(type == C001TYPE_CONTINUOUS){
+		uint8_t tNum = num / 8 + (num % 8 ? 1:0);
+		cmd101.packBuff[cmd101.pIn + CMD001_TYPE] = C001TYPE_CONTINUOUS;
+		cmd101.packBuff[cmd101.pIn + CMD001_NUMBER] = pBuff[0];
+		memcpy((char *)&cmd101.packBuff[cmd101.pIn + CMD001_VALUE],(char *)&pBuff[1],tNum);
+		cmd101.packBuff[cmd101.pIn + CMD001_LEN] = 5 + tNum;
+	}
+	else{
+		return;
+	}
+	cmd101.pIn += cmd101.packBuff[cmd101.pIn + CMD001_LEN];
+	cmd101.cmdNum += 1;
+	EndCmd101Down();
 }
-
 /**
-  *@brief Gui108命令处理
+  *@brief 102开出命令处理
   *@param  pbuff 内容数组
   *@retval 内容大小
   */
@@ -552,7 +579,7 @@ uint16_t HmiCmd002Fun(uint8_t *pbuff)
 	return pbuff[CMD002_LEN];
 }
 /**
-  *@brief Gui命令处理
+  *@brief Hmi10Cmd解析命令处理
   *@param  pbuff 内容数组
   *@retval None
   */
@@ -592,6 +619,67 @@ uint8_t hmi101Scan(uint8_t *pBuff)
 		frameIs.cmdNum --;
 	}
 	return 0;
+}
+
+static void Hmi101ThreadEntity(void *param)
+{
+	rt_err_t result;
+	time_static_init();
+	result = rt_event_init(&Cmd101SendEvent, "hmi101", RT_IPC_FLAG_PRIO);
+	if (result != RT_EOK){  
+	}
+	cmd101.state = 0;
+	userVariableDisplayInit();
+	GUIDisplayInit();
+	rt_kprintf("\r\n面板初始化完成");
+	for (;;){ 				
+		GUIDisplayMian();
+		LedChangeCheck();
+		rt_thread_delay(20);		
+	}
+}
+
+/**
+  *@brief hmi101线程等相关杀死
+  *@param  None
+  *@retval None
+  */
+void HmiThreadDelete(void)
+{
+	rt_err_t result;
+	result = rt_event_detach(&Cmd101SendEvent);
+	if (result != RT_EOK){  
+	}
+	time_static_detach();
+	if (result != RT_EOK){  
+	}
+	result = rt_thread_detach(&Hmi101Thread);
+	if (result != RT_EOK){  
+	}
+}
+
+/**
+  *@brief hmi101初始化
+  *@param  None
+  *@retval None
+  */
+void Hmi101Init(void)
+{
+	rt_err_t result;
+	static uint8_t flag;
+	if(flag == 1){
+		HmiThreadDelete();
+		flag = 0;
+	}
+	if(flag == 0){
+		rt_kprintf("\r\n面板线程");
+		result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
+			RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
+		if(result == RT_EOK){
+			rt_thread_startup(&Hmi101Thread);
+			flag = 1;
+		}
+	}
 }
 
 /* END */
