@@ -237,7 +237,24 @@ void DLT634_HMI_MASTER_INIT(uint8_t pdrv)//≥ı ºªØ
 ** ---------------------------------------------------------------------------*/
 void DLT634_HMI_MasterTask(void* arg)
 {
-	DLT634_HMI_MASTER_Clock(DLT634_HMIMASTER_DISK0);
+
+		static uint8_t hmi_init = 1;
+    
+    if(DLT634_HMI_MASTER_Clock(DLT634_HMIMASTER_DISK0))
+		{
+				if(hmi_init)
+				{
+						hmi_init = 0;	
+						Hmi101Init();	
+				}					
+		}
+		else
+		{
+				if(hmi_init == 0)
+				{
+						hmi_init = 1;	
+				}		
+		}
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

@@ -18,7 +18,7 @@
 Hmi101CmdSend hmiSendInfo;
 /* Hmi101接收处理信息结构 */
 static struct Hmi101Rev hmiRevInfo;
-
+static uint8_t FirstRunState;
 /**
   *@brief 接收接口
   *@param  pbuf 接收buff
@@ -467,6 +467,50 @@ void SwitchChangeCmdSend(void)
 }
 
 /**
+  *@brief 开关变位下发
+  *@param  None
+  *@retval 0 成功 1 不可以压栈 2 参数有错
+  */
+uint8_t SwitchAllStateCmdSend(uint8_t num, uint8_t beginNumber,uint8_t *pBuff)
+{
+	if(num == 0){
+		return 2;
+	}
+	if(Cmd101DownControl(num + 5) != 0){
+		return 1;
+	}
+	hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_CMD] = 2;
+	hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_TYPE] = C002TYPE_CONTINUOUS;
+	hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_NUM] = num;
+	hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_NUMBER] = beginNumber + 50;
+	memcpy(&hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_VALUE],pBuff,num);
+	hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_LEN] = num + 5;
+	hmiSendInfo.pIn += hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_LEN];
+	hmiSendInfo.cmdNum += 1;
+	EndCmd101Down();
+	return 0;
+}
+/**
+  *@brief 开关全体状态下发
+  *@param  None
+  *@retval 0 成功 1 不可以压栈 2 参数有错
+  */
+void SwitchAllStateSendControl(uint8_t *flag)
+{
+	static uint32_t sendTick;
+	if(*flag == 0){
+		if(SwitchAllStateFill() == 0){
+			sendTick = GetTimer1Tick();
+			*flag = 1;
+		}
+	}
+	else if(*flag == 1 && GetTimer1IntervalTick(sendTick) > 10000){
+		if(SwitchAllStateFill() == 0){
+			sendTick = GetTimer1Tick();
+		}
+	}
+}
+/**
   *@brief 按键变位下发
   *@param  None
   *@retval None
@@ -506,13 +550,30 @@ void KeyChangeCmdSend(void)
 void Hmi101Main(void)
 {
 	static uint32_t hmi101Tick;
-
+	static uint8_t switchflag;
+	if(FirstRunState == 0){
+		KeyQueueInit();
+		SwitchQueueInit();
+		switchflag = 0;
+		FirstRunState = 1;
+	}
 	if(GetTimer1IntervalTick(hmi101Tick) > 10){
 		hmi101Tick = GetTimer1Tick();
 		DLT634_HMI_MasterTask(0);
 	}
 	KeyChangeCmdSend();
 	SwitchChangeCmdSend();
+	SwitchAllStateSendControl(&switchflag);
+}
+
+/**
+  *@brief hmi101初始化
+  *@param  None
+  *@retval None
+  */
+void Hmi101Init(void)
+{
+	FirstRunState = 0;
 }
 
 /* END */

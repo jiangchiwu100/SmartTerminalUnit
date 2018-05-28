@@ -30,8 +30,8 @@ enum UserKeyNomberMap{
 	YK_SHFITSWITCH = 8,
 	YK_OPENSWITCH = 9,
 	/* 开关映射 */
-	SW_LOCAL = 50,
-	SW_REMORE = 51,
+	SW_REMORE = 50,
+	SW_LOCAL = 51,
 	SW_RECLOSE = 52,
 	SW_PROTECT = 53,
 	SW_CONTACT = 54,
@@ -73,8 +73,8 @@ enum UserOutputNoMap{
 	LED_END_NO = 50,
 };
 
+/* Led使用定义 */
 enum UserLedDefine{
-	ULED_COMMUN,			/* 通信 */
 	ULED_NOENERGY,		/* 未储能 */
 	ULED_SWITCHOPEN,	/* 开关分位 */
 	ULED_LowPa,				/* 低气压 */
@@ -85,6 +85,7 @@ enum UserLedDefine{
 	ULED_ZEROALARM,		/* 零序告警 */
 	ULED_DEVICEFAULT,	/* 装置故障 */
 	ULED_SELFCHECK,		/* 自检异常 */
+	ULED_COMMUN,			/* 通信 */
 	ULED_RECLOSELOCK,	/* 重合闭锁 */
 	ULED_ALLNUM
 };
@@ -97,6 +98,7 @@ enum KeyStatus GetKeyStatus(void);
 void SetKeyIsNoKey(void);
 void KeyCmdResult(uint8_t keyNo, uint8_t state);
 void LedChangeCheck(void);
+void HmiInOutInit(void);
 
 extern uint32_t GetTimer1Tick(void);
 extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);

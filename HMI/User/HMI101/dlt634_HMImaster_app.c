@@ -983,8 +983,10 @@ uint8_t DLT634_HMI_MASTER_REPLY(uint8_t pdrv, uint8_t *pbuf)//回复
 ** 修改内容:
 ** 日　  期: 
 ** ---------------------------------------------------------------------------*/
-void DLT634_HMI_MASTER_Clock(uint8_t pdrv)
+uint8_t DLT634_HMI_MASTER_Clock(uint8_t pdrv)
 {
+	uint8_t sta = 0;
+	
 	DLT634_HMIMaster_App[pdrv].ClockCounter++;
 	if (DLT634_HMIMaster_App[pdrv].ClockCounter >= DLT634_HMIMaster_Pad[pdrv].ClockTimers)
 	{
@@ -998,6 +1000,10 @@ void DLT634_HMI_MASTER_Clock(uint8_t pdrv)
         // 链路层定时器
         DLT634_HMI_MASTER_LinkOnTimer(pdrv);
 	}
+	
+	if(DLT634_HMIMaster_App[pdrv].LinkFlag&_DLT634_HMIMASTER_INITEND)
+	{sta = 1;}
+	return(sta);
 }
 
 

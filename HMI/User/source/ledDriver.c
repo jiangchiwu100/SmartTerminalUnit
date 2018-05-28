@@ -126,6 +126,24 @@ void LedGpioInit(void)
 	/* LED10 */
 	GPIO_InitStructure.GPIO_Pin = PIN_LED10;
 	GPIO_Init(PORT_LED10, &GPIO_InitStructure);
+	/* LED11 */
+	GPIO_InitStructure.GPIO_Pin = PIN_LED11;
+	GPIO_Init(PORT_LED11, &GPIO_InitStructure);
+	/* LED12 */
+	GPIO_InitStructure.GPIO_Pin = PIN_LED12;
+	GPIO_Init(PORT_LED12, &GPIO_InitStructure);
+	/* LED13 */
+	GPIO_InitStructure.GPIO_Pin = PIN_LED13;
+	GPIO_Init(PORT_LED13, &GPIO_InitStructure);
+	/* LED14 */
+	GPIO_InitStructure.GPIO_Pin = PIN_LED14;
+	GPIO_Init(PORT_LED14, &GPIO_InitStructure);
+	/* LED15 */
+	GPIO_InitStructure.GPIO_Pin = PIN_LED15;
+	GPIO_Init(PORT_LED15, &GPIO_InitStructure);
+	for(uint8_t i = 0; i < LED_ALLNUM; i++){
+		SetLedState(i, LEDOFF);
+	}
 }
 
 /**
@@ -154,6 +172,11 @@ void SetLedState(uint8_t ledNum, LedStatus ledIs)
 			case 8:GPIO_SetBits(PORT_LED8, PIN_LED8);break;
 			case 9:GPIO_SetBits(PORT_LED9, PIN_LED9);break;
 			case 10:GPIO_SetBits(PORT_LED10, PIN_LED10);break;
+			case 11:GPIO_SetBits(PORT_LED11, PIN_LED11);break;
+			case 12:GPIO_SetBits(PORT_LED12, PIN_LED12);break;
+			case 13:GPIO_SetBits(PORT_LED13, PIN_LED13);break;
+			case 14:GPIO_SetBits(PORT_LED14, PIN_LED14);break;
+			case 15:GPIO_SetBits(PORT_LED15, PIN_LED15);break;
 			default:break;
 		}
 	}
@@ -175,6 +198,11 @@ void SetLedState(uint8_t ledNum, LedStatus ledIs)
 			case 8:GPIO_ResetBits(PORT_LED8, PIN_LED8);break;
 			case 9:GPIO_ResetBits(PORT_LED9, PIN_LED9);break;
 			case 10:GPIO_ResetBits(PORT_LED10, PIN_LED10);break;
+			case 11:GPIO_ResetBits(PORT_LED11, PIN_LED11);break;
+			case 12:GPIO_ResetBits(PORT_LED12, PIN_LED12);break;
+			case 13:GPIO_ResetBits(PORT_LED13, PIN_LED13);break;
+			case 14:GPIO_ResetBits(PORT_LED14, PIN_LED14);break;
+			case 15:GPIO_ResetBits(PORT_LED15, PIN_LED15);break;
 			default:break;
 		}
 	}
@@ -200,6 +228,11 @@ LedStatus GetLedStatus(uint8_t ledNum)
 		case 8:tledstatus = GPIO_ReadOutputDataBit(PORT_LED8, PIN_LED8);break;
 		case 9:tledstatus = GPIO_ReadOutputDataBit(PORT_LED9, PIN_LED9);break;
 		case 10:tledstatus = GPIO_ReadOutputDataBit(PORT_LED10, PIN_LED10);break;
+		case 11:tledstatus = GPIO_ReadOutputDataBit(PORT_LED11, PIN_LED11);break;
+		case 12:tledstatus = GPIO_ReadOutputDataBit(PORT_LED12, PIN_LED12);break;
+		case 13:tledstatus = GPIO_ReadOutputDataBit(PORT_LED13, PIN_LED13);break;
+		case 14:tledstatus = GPIO_ReadOutputDataBit(PORT_LED14, PIN_LED14);break;
+		case 15:tledstatus = GPIO_ReadOutputDataBit(PORT_LED15, PIN_LED15);break;
 		default:tledstatus = 2;break;
 	}
 	if(tledstatus == LED_HARDWARE_NO){
