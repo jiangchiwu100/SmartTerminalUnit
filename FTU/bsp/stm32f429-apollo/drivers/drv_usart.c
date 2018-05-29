@@ -791,7 +791,7 @@ int rt_hw_usart_init(void)
 
     /* register USART6 device */
 //    rt_hw_serial_register(&serial6, "uart6", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
-    rt_hw_serial_register(&serial6, RT_USART6_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
+    rt_hw_serial_register(&serial6, RT_USART6_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_DMA_TX, uart);
 #endif /* RT_USING_USART6 */
 
     return(0);

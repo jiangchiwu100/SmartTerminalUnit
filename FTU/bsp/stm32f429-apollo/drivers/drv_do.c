@@ -359,7 +359,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 					rtl = rt_hw_close_recovery();
 					if (rtl != 0xff)
 					{
-						DBWriteCO(addr, rtl);
+						DBWriteCO(DoStr.actSource, rtl);
 						DoStr.actSource = 0;
 					}
 					break;
@@ -374,7 +374,7 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 
 					if (rtl != 0xff)
 					{
-						DBWriteCO(addr, rtl);
+						DBWriteCO(DoStr.actSource, rtl);
 						DoStr.actSource = 0;
 					}
 					break;

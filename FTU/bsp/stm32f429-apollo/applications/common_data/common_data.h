@@ -231,26 +231,26 @@ typedef struct
 #define TELEMETRY_SETENABLE_START_ADDR    0x4801      // 遥测置数使能起始地址
 #define TELEMETRY_SETVALUE_START_ADDR     0x4881      // 遥测置数值起始地址
 #endif
-#define REMOTE_START_ADDR             0x6001      // 遥测起始地址
+#define REMOTE_START_ADDR             0x6001      // 遥控起始地址
 #define INTRIPARAME_START_ADDR        0x8001      // 终端固有参数起始地址
 #define RUNPARAMETER_START_ADDR       0x8101      // 终端运行参数起始地址
 #define CALIBRATE_FACTOR_START_ADDR   0x8201    	// 校准系数起始地址
 #define CALIBRATE_VALUE_START_ADDR    0x8240    	// 校准值起始地址
 #define FIXED_VALUE_START_ADDR         0x8301	    // 终端保护定值起始地址
 
-#define OPEN_SELECT_FAIL              0x01 | 0x20 // 遥控分闸选择失败  00000001
-#define OPEN_SELECT_SUCCESS           0x05 | 0x20 // 遥控分闸选择成功  00000101
-#define OPEN_EXECUTE_FAIL             0x09 | 0x20 // 遥控分闸执行失败  00001001						   
-#define OPEN_EXECUTE_SUCCESS          0x0D | 0x20 // 遥控分闸执行成功  00001101						   							  							   
-#define CLOSE_SELECT_FAIL             0x02 | 0x20 // 遥控合闸选择失败  00000010
-#define CLOSE_SELECT_SUCCESS          0x06 | 0x20 // 遥控合闸选择成功  00000110
-#define CLOSE_EXECUTE_FAIL            0x0A | 0x20 // 遥控合闸执行失败  00001010
-#define CLOSE_EXECUTE_SUCCESS         0x0E | 0x20 // 遥控合闸执行成功  00001110
-#define CLOSE_LOOP_SELECT_FAIL        0x03 | 0x20 // 合环选择失败      00000011
-#define CLOSE_LOOP_SELECT_SUCCESS     0x07 | 0x20 // 合环选择成功      00000111
-#define CLOSE_LOOP_EXECUTE_FAIL       0x0B | 0x20 // 合环执行失败      00001011
-#define CLOSE_LOOP_EXECUTE_SUCCESS    0x0F | 0x20 // 合环执行成功      00001111
-#define DISTANT_REMOTE_CANCEL         0x10        // 遥控取消
+#define OPEN_SELECT_FAIL              (0x01 | 0x20) // 遥控分闸选择失败  00000001
+#define OPEN_SELECT_SUCCESS           (0x05 | 0x20) // 遥控分闸选择成功  00000101
+#define OPEN_EXECUTE_FAIL             (0x09 | 0x20) // 遥控分闸执行失败  00001001						   
+#define OPEN_EXECUTE_SUCCESS          (0x0D | 0x20) // 遥控分闸执行成功  00001101						   							  							   
+#define CLOSE_SELECT_FAIL             (0x02 | 0x20) // 遥控合闸选择失败  00000010
+#define CLOSE_SELECT_SUCCESS          (0x06 | 0x20) // 遥控合闸选择成功  00000110
+#define CLOSE_EXECUTE_FAIL            (0x0A | 0x20) // 遥控合闸执行失败  00001010
+#define CLOSE_EXECUTE_SUCCESS         (0x0E | 0x20) // 遥控合闸执行成功  00001110
+#define CLOSE_LOOP_SELECT_FAIL        (0x03 | 0x20) // 合环选择失败      00000011
+#define CLOSE_LOOP_SELECT_SUCCESS     (0x07 | 0x20) // 合环选择成功      00000111
+#define CLOSE_LOOP_EXECUTE_FAIL       (0x0B | 0x20) // 合环执行失败      00001011
+#define CLOSE_LOOP_EXECUTE_SUCCESS    (0x0F | 0x20) // 合环执行成功      00001111
+#define DISTANT_REMOTE_CANCEL         (0x10 | 0x20) // 遥控取消          00010000
 
 /* VALUE ----------------------------------------------------------------------*/
 #define PULSE_TIME                    100.0f      // 分合闸脉宽时间

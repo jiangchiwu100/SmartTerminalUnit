@@ -706,6 +706,11 @@ rt_uint8_t DBWriteCO(uint16_t addr, rt_uint8_t state)
 {
     rt_uint32_t i;
 
+    if (addr >= ADDR_LOGIC_ACT)
+    {
+        return FALSE;
+    }
+    
     g_CoDB[g_FlagDB.queue_co.in].addr = addr + REMOTE_START_ADDR;
     g_CoDB[g_FlagDB.queue_co.in].value = state;
     g_CoDB[g_FlagDB.queue_co.in].time.year = g_SystemTime.year;
