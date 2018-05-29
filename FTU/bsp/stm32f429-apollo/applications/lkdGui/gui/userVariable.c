@@ -386,7 +386,7 @@ uint8_t GetCoNoContent(uint16_t coNo,SoeContent *pSoe)
 	pSoe->time.s = tms / 1000;
 	pSoe->time.ms = tms % 1000;
 	tAddr = g_CoDB[pNo].addr - REMOTE_START_ADDR;
-	if(g_CoDB[pNo].addr <= g_TelecontrolCfg_Len){	
+	if(tAddr <= g_TelecontrolCfg_Len){	
 		pSoe->pName = (uint8_t *)TelecontrolCfg[tAddr].pName;
 		uint8_t label = 255;
 		if(g_CoDB[pNo].value >= 0x20){
@@ -570,11 +570,11 @@ static void HmiCmdSendFun(uint8_t cmdIs)
             rt_multi_telecontrl_operate(ADDR_LOCAL_CLEAR, 0);		
 			break;
 		case 1:/* ∑÷’¢ */
-			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
 				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}break;
 		case 2:/* ∫œ’¢ */
-			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
 				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}break;
 		case 3:/* ∏¥πÈ */

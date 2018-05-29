@@ -64,6 +64,7 @@ struct tagTelesignalCfg
 {
 	unsigned char enable;   // 使能
     char *pName;            // 名称
+    unsigned short *pAddr;  // 点号
     unsigned char *pVal;    // 值	
 	char *pContentYx[2];    // 数据显示内容	
 	char *pContentSoe[2];   // 数据显示内容		
@@ -76,6 +77,7 @@ struct tagTelemetryCfg
 	unsigned char menuNum; // 菜单编号	
     char *pName;           // 面板名称
     char *pNameUp;         // 上位机名称
+    unsigned short *pAddr;  // 点号
     float *pVal;           // 值	
     char *pUnit;           // 单位
     float *pCalifactor;    // 校准系数		
@@ -98,7 +100,7 @@ struct tagCalibrateFactor
 	unsigned char enable;  // 使能
     char *pName;           // 名称
     float calibrateVal;    // 校准值
-    float *telemetry;	   // 遥测
+    unsigned short *pAddr;  // 点号
     float *factorVal;      // 系数值	
     float factorMax;	   // 系数上限值	
     float factorMin;       // 系数下限值
@@ -129,7 +131,7 @@ struct tagInherentParaCfg
     char *pName;           // 名称
     char *pVal;            // 值	
 };
-
+    
 extern struct tagTelesignalCfg TelesignalCfg[];
 extern struct tagTelemetryCfg TelemetryCfg[];
 extern struct tagCalibrateFactor CalibrateFactorCfg[];

@@ -224,11 +224,11 @@ static void rt_protect_thread_entry(void *param)
 			
             if (g_Parameter[SWITCH_TYPE] == SWITCH_OFF)
             {
-                DBWriteSOE(ADDR_SWTICHCLASS, TYPE_BREAKER);
+                DBWriteSOE(g_TelesignalAddr.swtichclass, TYPE_BREAKER);
             }
             else
             {
-                DBWriteSOE(ADDR_SWTICHCLASS, TYPE_LOADSWTICH);
+                DBWriteSOE(g_TelesignalAddr.swtichclass, TYPE_LOADSWTICH);
             }
             //if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
             {

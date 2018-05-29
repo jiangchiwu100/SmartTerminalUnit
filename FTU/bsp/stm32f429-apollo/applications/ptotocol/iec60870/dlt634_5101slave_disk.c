@@ -209,11 +209,11 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
                            && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != ADDR_REMOTE_OPERATE))    				
 		      #else
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON && g_TelesignalDB[ADDR_OPEN] == OFF\
-                           && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))    
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
+                           && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))    
 		      #endif                              
                 {
                     valuesuc = OFF;
@@ -232,13 +232,13 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
-                     && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))     				
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))     				
 		      #else
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON 
-                     && g_TelesignalDB[ADDR_CLOSE] == OFF && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON 
-                     && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||(addr != ADDR_REMOTE_OPERATE))           
+                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))           
 		      #endif 				    
                 {
                     valuesuc = ON;
@@ -272,13 +272,13 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
-                     && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
+                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))    				
 		      #else
-                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_CLOSE] == ON 
-                     && g_TelesignalDB[ADDR_OPEN] == OFF && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
+                     && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif   				     
@@ -306,8 +306,8 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))  				
 		      #else
-                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[ADDR_REMOTE_EARTH] == ON && g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF\
-                          && g_TelesignalDB[ADDR_OPERATING_MECHANISM] == ON && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF))||\
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF\
+                          && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
 		      #endif 				  
@@ -1515,13 +1515,13 @@ void DLT634_5101_SlaveTask(void)
     
     if(g_ComLed)
     {
-        if(g_TelesignalDB[ADDR_COMMUNICATION] != ON)
-        {DBWriteSOE(ADDR_COMMUNICATION, ON);}
+        if(g_TelesignalDB[g_TelesignalAddr.communication] != ON)
+        {DBWriteSOE(g_TelesignalAddr.communication, ON);}
     }
     else
     {
-        if(g_TelesignalDB[ADDR_COMMUNICATION] != OFF)
-        {DBWriteSOE(ADDR_COMMUNICATION, OFF);}
+        if(g_TelesignalDB[g_TelesignalAddr.communication] != OFF)
+        {DBWriteSOE(g_TelesignalAddr.communication, OFF);}
     }      
 }
 

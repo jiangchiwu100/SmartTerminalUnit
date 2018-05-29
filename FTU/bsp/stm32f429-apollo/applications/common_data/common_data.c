@@ -31,7 +31,9 @@ uint16_t                            g_AddrCount;
 uint16_t                            g_StartWave;
 struct ConfigurationSetDatabase     *g_ConfigurationSetDB; // 系统配置结构
 struct SD2405Time                   g_SystemTime; // 系统时间
-//TelesignalDatabase                  g_TelesignalDB; // 遥信缓存
+
+// 遥信缓存
+TelesignalAddr                      g_TelesignalAddr;
 uint8_t								g_TelesignalDB[TELESIGNAL_TOTAL_NUM];						
  /* 新遥信点表映射 */
 List                                g_NewListTelesignal[TELESIGNAL_TOTAL_NUM];
@@ -39,6 +41,7 @@ rt_uint16_t                         g_NewMaxNumTelesignal;
 rt_uint16_t                         g_NewToOldTelesignal[299 + TELESIGNAL_TOTAL_NUM]; // 新点表映射，填原点表数组下标
 
 /* 遥测缓存 */
+TelemetryAddr                       g_TelemetryAddr;
 float                               g_TelemetryDB[TELEMETRY_TOTAL_NUM];
 float                               g_TelemetryLastDB[TELEMETRY_TOTAL_NUM];
 float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
@@ -516,8 +519,8 @@ void CalibrationFactorCal(uint8_t num)
         {
             if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
             {
-                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;
-                telemetry[offset] += (*CalibrateFactorCfg[offset].telemetry);
+                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;                
+                telemetry[offset] += g_TelemetryDB[*CalibrateFactorCfg[offset].pAddr];
                 counter[offset]++;
 
                 if (counter[offset] >= AVERAGE_TIMER)
@@ -859,8 +862,8 @@ uint8_t DB_NVA_Check(void)
                 {
                     g_NVADBIn = 0;
                 }
-                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i + (&g_TelemetryDB[ADDR_Ia_ONCE] - &g_TelemetryDB[ADDR_IA]);
-                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i + (&g_TelemetryDB[ADDR_Ia_ONCE] - &g_TelemetryDB[ADDR_IA])];
+                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i + (&g_TelemetryDB[g_TelemetryAddr.IaOnce] - &g_TelemetryDB[g_TelemetryAddr.Ia]);
+                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i + (&g_TelemetryDB[g_TelemetryAddr.IaOnce] - &g_TelemetryDB[g_TelemetryAddr.Ia])];
 
                 if (++g_NVADBIn >= NVA_MAX_NUM)
                 {
@@ -920,9 +923,9 @@ void DBWriteSystemTime(struct CP56Time2a_t *pTime)
   */
 static void DBRevert(uint16_t addr)
 {
-    if (g_TelesignalDB[ADDR_DEVICE_FAULT] == ON)
+    if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == ON)
     {
-        DBWriteSOE(ADDR_DEVICE_FAULT, OFF);
+        DBWriteSOE(g_TelesignalAddr.deviceFault, OFF);
     }
 
     BreakerCtrlReset(BRE_DEV0);
@@ -932,7 +935,7 @@ static void DBRevert(uint16_t addr)
 
     DBWriteCO(addr, ON);
     
-    DBWriteSOE(ADDR_BATTERY_FAULT_ALARM, OFF); // 电池故障复归    
+    DBWriteSOE(g_TelesignalAddr.batteryFaultAlarm, OFF); // 电池故障复归    
 }
 
 /**
@@ -1285,8 +1288,20 @@ void rt_multi_common_data_read_config_from_fram(void)
 {
     uint32_t i,j,temp1;
     uint8_t sn =0,configureFault=0;
-
-    /* 读取遥信 */
+    
+    for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)//初始化遥信
+    {
+        *TelesignalCfg[i].pAddr = i;
+        TelesignalCfg[i].pVal = &g_TelesignalDB[i];
+    }
+    
+    for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)//初始化遥测
+    {
+        *TelemetryCfg[i].pAddr = i;
+        TelemetryCfg[i].pVal = &g_TelemetryDB[i];
+    } 
+    
+    /* 读取遥信 */    
 	rt_multi_common_data_fram_record_read(TELESIGNAL, (uint8_t *)&g_TelesignalDB);
     
     for (i = 0; i < DI_NUM; i++)

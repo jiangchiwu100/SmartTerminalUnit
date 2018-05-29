@@ -620,67 +620,67 @@ static void CalculateData(void)
     Q = fabs(Q) < g_Parameter[ZERODRIFT_Q] ? 0 : Q;
     S = fabs(S) < g_Parameter[ZERODRIFT_S] ? 0 : S;
 
-    g_TelemetryDB[ADDR_Uab]= Ua;
-    g_TelemetryDB[ADDR_Ucb] = Uc;
-    g_TelemetryDB[ADDR_Uac] = Ub;
-    g_TelemetryDB[ADDR_U0] = U0;
+    g_TelemetryDB[g_TelemetryAddr.Uab]= Ua;
+    g_TelemetryDB[g_TelemetryAddr.Ucb] = Uc;
+    g_TelemetryDB[g_TelemetryAddr.Uac] = Ub;
+    g_TelemetryDB[g_TelemetryAddr.U0] = U0;
 
-    g_TelemetryDB[ADDR_UAB] = UA;
-    g_TelemetryDB[ADDR_UCB] = UC;
+    g_TelemetryDB[g_TelemetryAddr.UAB] = UA;
+    g_TelemetryDB[g_TelemetryAddr.UCB] = UC;
     
-    g_TelemetryDB[ADDR_IA] = Ia;
-    g_TelemetryDB[ADDR_IB] = Ib;
-    g_TelemetryDB[ADDR_IC] = Ic;
-    g_TelemetryDB[ADDR_I0] = I0;
+    g_TelemetryDB[g_TelemetryAddr.Ia] = Ia;
+    g_TelemetryDB[g_TelemetryAddr.Ib] = Ib;
+    g_TelemetryDB[g_TelemetryAddr.Ic] = Ic;
+    g_TelemetryDB[g_TelemetryAddr.I0] = I0;
 
-    g_TelemetryDB[ADDR_P] = P;
-    g_TelemetryDB[ADDR_Q] = Q;
-    g_TelemetryDB[ADDR_S] = S;
-    g_TelemetryDB[ADDR_PF] = F;
+    g_TelemetryDB[g_TelemetryAddr.P] = P;
+    g_TelemetryDB[g_TelemetryAddr.Q] = Q;
+    g_TelemetryDB[g_TelemetryAddr.S] = S;
+    g_TelemetryDB[g_TelemetryAddr.PF] = F;
 
-	g_TelemetryDB[ADDR_DC1] = Udc1;
-	g_TelemetryDB[ADDR_DC2] = Udc2;
+	g_TelemetryDB[g_TelemetryAddr.DC1] = Udc1;
+	g_TelemetryDB[g_TelemetryAddr.DC2] = Udc2;
 	
-    if((g_TelemetryDB[ADDR_U0] == 0)||(g_TelemetryDB[ADDR_I0] == 0))
-    {g_TelemetryDB[ADDR_AIPHY_U0_I0] = 0;}
+    if((g_TelemetryDB[g_TelemetryAddr.U0] == 0)||(g_TelemetryDB[g_TelemetryAddr.I0] == 0))
+    {g_TelemetryDB[g_TelemetryAddr.alphy_U0_I0] = 0;}
     else       
     {
         while(g_Alpha[ALPHA_U0I0]<-180)
         {g_Alpha[ALPHA_U0I0] += 360;}
         while(g_Alpha[ALPHA_U0I0]>180)
         {g_Alpha[ALPHA_U0I0] -= 360;}
-        g_TelemetryDB[ADDR_AIPHY_U0_I0] = g_Alpha[ALPHA_U0I0];
+        g_TelemetryDB[g_TelemetryAddr.alphy_U0_I0] = g_Alpha[ALPHA_U0I0];
     }
 
-    if((((g_Parameter[CFG_PRO_VOL_M] == 0)&&(g_TelemetryDB[ADDR_Uab] == 0))||\
-        ((g_Parameter[CFG_PRO_VOL_M] == 1)&&(g_TelemetryDB[ADDR_Ucb] == 0)))||\
-        (((g_Parameter[CFG_PRO_VOL_N] == 0)&&(g_TelemetryDB[ADDR_UAB] == 0))||\
-        ((g_Parameter[CFG_PRO_VOL_N] == 1)&&(g_TelemetryDB[ADDR_UCB] == 0))))
-    {g_TelemetryDB[ADDR_ALPHY_Ux_Ux] = 0;}
+    if((((g_Parameter[CFG_PRO_VOL_M] == 0)&&(g_TelemetryDB[g_TelemetryAddr.Uab] == 0))||\
+        ((g_Parameter[CFG_PRO_VOL_M] == 1)&&(g_TelemetryDB[g_TelemetryAddr.Ucb] == 0)))||\
+        (((g_Parameter[CFG_PRO_VOL_N] == 0)&&(g_TelemetryDB[g_TelemetryAddr.UAB] == 0))||\
+        ((g_Parameter[CFG_PRO_VOL_N] == 1)&&(g_TelemetryDB[g_TelemetryAddr.UCB] == 0))))
+    {g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] = 0;}
     else       
     {
         if(g_Alpha[ALPHA_UxIx]<-180)
         {g_Alpha[ALPHA_UxIx] += 360;}
         if(g_Alpha[ALPHA_UxIx]>180)
         {g_Alpha[ALPHA_UxIx] -= 360;}
-        g_TelemetryDB[ADDR_ALPHY_Ux_Ux] = g_Alpha[ALPHA_UxIx];
+        g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] = g_Alpha[ALPHA_UxIx];
     }
 	
-    g_TelemetryDB[ADDR_Uab_ONCE] = Ua * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
-    g_TelemetryDB[ADDR_Ubc_ONCE] = Uc * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
-    g_TelemetryDB[ADDR_Uca_ONCE] = Ub * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
-    g_TelemetryDB[ADDR_U0_ONCE] = U0 * (g_Parameter[RATIO_U0_ONE_TURN] / g_Parameter[RATIO_U0_SECONDARY]) / 1000.0f;
-    g_TelemetryDB[ADDR_UBC_ONCE] = UC * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
-    g_TelemetryDB[ADDR_UAB_ONCE] = UA * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.UabOnce] = Ua * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.UbcOnce] = Uc * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.UcaOnce] = Ub * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.U0Once] = U0 * (g_Parameter[RATIO_U0_ONE_TURN] / g_Parameter[RATIO_U0_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.UBCOnce] = UC * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
+    g_TelemetryDB[g_TelemetryAddr.UABOnce] = UA * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
 	
-    g_TelemetryDB[ADDR_Ia_ONCE] = Ia * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
-    g_TelemetryDB[ADDR_Ib_ONCE] = Ib * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);    
-    g_TelemetryDB[ADDR_Ic_ONCE] = Ic * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
-    g_TelemetryDB[ADDR_I0_ONCE] = I0 * (g_Parameter[RATIO_I0_ONE_TURN] / g_Parameter[RATIO_I0_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.IaOnce] = Ia * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.IbOnce] = Ib * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);    
+    g_TelemetryDB[g_TelemetryAddr.IcOnce] = Ic * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.I0Once] = I0 * (g_Parameter[RATIO_I0_ONE_TURN] / g_Parameter[RATIO_I0_SECONDARY]);
 
-    g_TelemetryDB[ADDR_P_ONCE] = P * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
-    g_TelemetryDB[ADDR_Q_ONCE] = Q * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
-    g_TelemetryDB[ADDR_S_ONCE] = S * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.POnce] = P * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.QOnce] = Q * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
+    g_TelemetryDB[g_TelemetryAddr.SOnce] = S * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]);
 
     if(g_Parameter[CFG_POW_VOL_AB] == 0)
     {
@@ -730,38 +730,38 @@ static void CalculateData(void)
 
     if(g_Parameter[CFG_POW_VOL_AB] == 0)
     {
-        g_TelemetryDB[THIRDHARMONIC_Uab] = Ua3; 
-        g_TelemetryDB[THIRDHARMONIC_Uab] = Ua5;
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = Ua3; 
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = Ua5;
     }
     else
     {
-        g_TelemetryDB[THIRDHARMONIC_Uab] = UA3; 
-        g_TelemetryDB[THIRDHARMONIC_Uab] = UA5;    
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = UA3; 
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = UA5;    
     }
     if(g_Parameter[CFG_POW_VOL_CB] == 0)
     {
-        g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc3;
-        g_TelemetryDB[THIRDHARMONIC_Ubc] = Uc5;
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = Uc3;
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = Uc5;
     }
     else
     {
-        g_TelemetryDB[THIRDHARMONIC_Ubc] = UC3;
-        g_TelemetryDB[THIRDHARMONIC_Ubc] = UC5;    
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = UC3;
+        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = UC5;    
     }
             
-    g_TelemetryDB[THIRDHARMONIC_Uca] = Ub3;
-    g_TelemetryDB[THIRDHARMONIC_U0] = U03;
-    g_TelemetryDB[THIRDHARMONIC_Ia] = Ia3;
-    g_TelemetryDB[THIRDHARMONIC_Ib] = Ib3;
-    g_TelemetryDB[THIRDHARMONIC_Ic] = Ic3;
-    g_TelemetryDB[THIRDHARMONIC_I0] = I03;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicUca] = Ub3;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicU0] = U03;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIa] = Ia3;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIb] = Ib3;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIc] = Ic3;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicI0] = I03;
     
-    g_TelemetryDB[THIRDHARMONIC_Uca] = Ub5;
-    g_TelemetryDB[THIRDHARMONIC_U0] = U05;
-    g_TelemetryDB[THIRDHARMONIC_Ia] = Ia5;
-    g_TelemetryDB[THIRDHARMONIC_Ib] = Ib5;
-    g_TelemetryDB[THIRDHARMONIC_Ic] = Ic5;
-    g_TelemetryDB[THIRDHARMONIC_I0] = I05;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicUca] = Ub5;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicU0] = U05;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIa] = Ia5;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIb] = Ib5;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIc] = Ic5;
+    g_TelemetryDB[g_TelemetryAddr.thirdharmonicI0] = I05;
     
 #if RT_USING_TELEMETRY_SET    
     for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)
