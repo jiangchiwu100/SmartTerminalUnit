@@ -573,7 +573,7 @@ uint16_t HmiCmd002Fun(uint8_t *pbuff)
 		}break;
 	case C002TYPE_CONTINUOUS://Á¬ÐøµÄ
 		for(i = 0; i < pbuff[CMD002_NUM]; i++){
-			KeyCmdResult(pbuff[CMD002_NUMBER] + i, pbuff[CMD002_VALUE] + i);
+			KeyCmdResult(pbuff[CMD002_NUMBER] + i, pbuff[CMD002_VALUE + i]);
 		}break;
 	default:break;
 	}

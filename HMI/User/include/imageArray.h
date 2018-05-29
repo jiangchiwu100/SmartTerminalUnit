@@ -19,6 +19,10 @@ typedef struct{
 	uint8_t imageNumber;
 }ImageInfo;
 
+enum ImageName{
+	IMAGE_DEFAULT,
+	IMAGE_SOJO,
+};
 extern ImageInfo imageTab[];
 extern const uint8_t imageTabItems;
 #endif /* END __IMAGEARRAY_H */

@@ -49,6 +49,9 @@ typedef struct{
 typedef struct{
 	uint16_t num;		/* soe总数 */
 	uint16_t in;
+	uint16_t (* GetNum)(void);
+	uint8_t (* CheckUpdata)(void);
+	uint8_t (* GetNoContent)(uint16_t soeNo,SoeContent *pSoe);
 }SoeDisplayInfo;
 
 /* 故障事件显示结构体 */
@@ -72,6 +75,8 @@ enum Dzhi0OffsetNumber{
 	DZ0_CONFIG,/* 配置 */
 	DZ0_ZERODRIFT,/* 零漂 */
 	DZ0_DEADEZONE,/* 死区 */
+	DZ0_SERIAL,		/* 串口 */
+	DZ0_INTERNET,	/* 网口 */
 	DZ0_ALLNUM,/* 定值总数 */
 };
 enum Dzhi1OffsetNumber{
@@ -121,6 +126,10 @@ extern YaoceDisplayInfo yceInfo[3];
 /* 定值信息结构 */
 extern DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
 extern DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
+/* Soe显示信息 */
+extern SoeDisplayInfo soeInfo;
+/* Co显示信息 */
+extern SoeDisplayInfo coInfo;
 /* 命令下发结构体 */
 extern HmiCmdSendInfo hcmdInfo;
 /* 版本信息结构体 */
@@ -139,6 +148,8 @@ uint8_t GetSoeNoContent(uint16_t soeNo,SoeContent *pSoe);
 uint8_t CheckSoeUpdata(void);
 /* 获取SOE数量 */
 uint16_t GetSoeNum(void);
+/* 获取CO数量 */
+uint16_t GetCoNum(void);
 /* 获取故障事件数量 */
 uint16_t GetFeventNum(void);
 /* 获取故障事件内容 */

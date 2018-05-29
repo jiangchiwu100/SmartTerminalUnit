@@ -14,6 +14,8 @@ DzhiDisplayInfo dzhi0Info[DZ0_ALLNUM];
 DzhiDisplayInfo dzhi1Info[DZ1_ALLNUM];
 /* Soe显示信息 */
 SoeDisplayInfo soeInfo;
+/* Co显示信息 */
+SoeDisplayInfo coInfo;
 /* 故障事件显示信息 */
 FeventDisplayInfo fEventInfo;
 /* 命令下发 */
@@ -152,6 +154,24 @@ static void Dzhi1ModfiySave(uint16_t addr)
 	addr = addr;
 	rt_multi_common_data_save_value_to_fram(g_ValueParaOperateInfo.currentSN);
 }
+
+/**
+  *@brief  运行定值类型重映射
+  *@param  i 当前序列号 type 原始类型
+  *@retval None
+  */
+static void Dzhi0TypeRemap(uint16_t i,uint16_t *type)
+{
+	switch(i)
+	{
+		case DZ0_CONFIG:*type = ME_BASIC_SET;break;
+		case DZ0_ZERODRIFT:*type = ME_ZERODRIFT;break;
+		case DZ0_DEADEZONE:*type = ME_DEADEZONE;break;
+		case DZ0_SERIAL:*type = ME_UART_COM;break;
+		case DZ0_INTERNET:*type = ME_NET_COM;break;
+		default:*type = ME_BASIC_SET;break;
+	}
+}
 /**
   *@brief  配置显示初始化
   *@param  None
@@ -164,15 +184,7 @@ static void Dzhi0DisplayInit(void)
 	uint16_t i,j;
 	dzhiItemsAll = g_ParameterCfg_Len;
 	for(i = 0 ; i < DZ0_ALLNUM; i++){
-		if(i == 0){
-			typeIs = ME_BASIC_SET;
-		}
-		else if(i == 1){
-			typeIs = ME_ZERODRIFT;
-		}
-		else{
-			typeIs = ME_DEADEZONE;
-		}
+		Dzhi0TypeRemap(i,&typeIs);
 		dzhiItem = 0;
 		dzhi0Info[i].SaveModify = Dzhi0ModfiySave;
 		dzhi0Info[i].pRoot = ParameterCfg;
@@ -275,6 +287,20 @@ uint8_t CheckSoeUpdata(void)
 }
 
 /**
+  *@brief  检测CO更新
+  *@param  None
+  *@retval 0 无更新 1有更新
+  */
+uint8_t CheckCoUpdata(void)
+{
+	if(coInfo.in != g_FlagDB.queue_co.in){
+		coInfo.in = g_FlagDB.queue_co.in;
+		return 1;
+	}
+	return 0;
+}
+
+/**
   *@brief  获取SOE
   *@param  soeNo soe号
   *@retval 0 成功 1 失败
@@ -327,6 +353,77 @@ uint8_t GetSoeNoContent(uint16_t soeNo,SoeContent *pSoe)
 }
 
 /**
+  *@brief  获取CO
+  *@param  soeNo co号
+  *@retval 0 成功 1 失败
+  */
+uint8_t GetCoNoContent(uint16_t coNo,SoeContent *pSoe)
+{
+	uint16_t pNo,tms;
+	uint32_t tAddr;
+	GetCoNum();
+	if(coNo >= coInfo.num){
+		return 1;
+	}
+	if(g_FlagDB.queue_co.full == FULL){//换算映射地址
+		if(coNo < g_FlagDB.queue_co.in){
+			pNo = g_FlagDB.queue_co.in - coNo - 1;
+		}
+		else{
+			pNo = coInfo.num - coNo + g_FlagDB.queue_co.in - 1;
+		}
+	}
+	else{
+		pNo = g_FlagDB.queue_co.in - 1 - coNo;
+	}
+	pSoe->highlight = 0;
+	pSoe->time.year = g_CoDB[pNo].time.year;
+	pSoe->time.month = g_CoDB[pNo].time.month;
+	pSoe->time.day = g_CoDB[pNo].time.dayofWeek & 0x1F;
+	pSoe->time.hour = g_CoDB[pNo].time.hour;
+	pSoe->time.min = g_CoDB[pNo].time.minute;
+	tms = (g_CoDB[pNo].time.msecondH << 8) + g_CoDB[pNo].time.msecondL;
+	pSoe->time.s = tms / 1000;
+	pSoe->time.ms = tms % 1000;
+	tAddr = g_CoDB[pNo].addr - REMOTE_START_ADDR;
+	if(g_CoDB[pNo].addr <= g_TelecontrolCfg_Len){	
+		pSoe->pName = (uint8_t *)TelecontrolCfg[tAddr].pName;
+		uint8_t label = 255;
+		if(g_CoDB[pNo].value >= 0x20){
+			switch(g_CoDB[pNo].value){
+				case OPEN_SELECT_FAIL:label = 0;break;
+				case OPEN_SELECT_SUCCESS:label = 1;break;
+				case OPEN_EXECUTE_FAIL:label = 2;break;
+				case OPEN_EXECUTE_SUCCESS:label = 3;break;
+				case CLOSE_SELECT_FAIL:label = 4;break;
+				case CLOSE_SELECT_SUCCESS:label = 5;break;
+				case CLOSE_EXECUTE_FAIL:label = 6;break;
+				case CLOSE_EXECUTE_SUCCESS:label = 7;break;
+				case DISTANT_REMOTE_CANCEL:label = 8;break;		
+				case CLOSE_LOOP_SELECT_FAIL:label = 9;break;
+				case CLOSE_LOOP_SELECT_SUCCESS:label = 10;break;
+				case CLOSE_LOOP_EXECUTE_FAIL:label = 11;break;
+				case CLOSE_LOOP_EXECUTE_SUCCESS:label = 12;break;
+			}
+		}
+		else{
+			label = g_CoDB[pNo].value - 1;
+		}
+		
+		if(label > TelecontrolCfg[tAddr].dataType){
+			pSoe->pContent = "解析出错";
+		}
+		else{
+			pSoe->pContent = (uint8_t *)TelecontrolCfg[tAddr].pContentSoe[label];
+		}
+	}
+	else{
+		return 1;
+	}
+	return 0;
+}
+
+/**
   *@brief  获取SOE总数
   *@param  soeNo soe号
   *@retval soe数量
@@ -342,6 +439,40 @@ uint16_t GetSoeNum(void)
 	return soeInfo.num;
 }
 
+/**
+  *@brief  获取Co总数
+  *@param  None
+  *@retval 数量
+  */
+uint16_t GetCoNum(void)
+{
+	if(g_FlagDB.queue_co.full == FULL){
+		coInfo.num = CO_MAX_NUM;
+	}
+	else{
+		coInfo.num = g_FlagDB.queue_co.in;
+	}
+	return coInfo.num;
+}
+
+/**
+  *@brief  SOE/CO 信息初始化
+  *@param  None
+  *@retval None
+  */
+void SoeCoInfoInit(void)
+{
+	soeInfo.in = 0;
+	soeInfo.num = 0;
+	soeInfo.CheckUpdata = CheckSoeUpdata;
+	soeInfo.GetNoContent = GetSoeNoContent;
+	soeInfo.GetNum = GetSoeNum;
+	coInfo.in = 0;
+	coInfo.num = 0;
+	coInfo.CheckUpdata = CheckCoUpdata;
+	coInfo.GetNoContent = GetCoNoContent;
+	coInfo.GetNum = GetCoNum;
+}
 /**
   *@brief  检测故障事件更新
   *@param  None
@@ -451,7 +582,6 @@ static void HmiCmdSendFun(uint8_t cmdIs)
 		    break;
 		default:break;
 	}
-	
 }
 
 /**
@@ -504,4 +634,5 @@ void userVariableDisplayInit(void)
 	Dzhi0DisplayInit();
 	HmiCmdSendInit();
 	VersionInfoInit();
+	SoeCoInfoInit();
 }

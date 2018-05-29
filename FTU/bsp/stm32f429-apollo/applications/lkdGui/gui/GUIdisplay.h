@@ -106,6 +106,7 @@ static void MenuM0Fun(void);
 		static void YaoCe2Fun(void);	//二次
 		static void HarmonicFun(void);	//谐波
 	static void SOEFun(void);			//SOE
+	static void COFun(void);			//SOE
 	static void FaultEventFun(void);	//故障事件
 	static void MenuM0S4Fun(void);		//定值查询 
 		static void MenuM0S4S0Fun(void);
@@ -131,6 +132,8 @@ static void MenuM2Fun(void);
 	static void BasicSetFun(void);		//基本设置
 	static void ZeroDriftFun(void);		//零漂设置
 	static void DeadZoneFun(void);		//死区设置
+	static void SerialFun(void);			//串口设置
+	static void InternetFun(void);		//网口设置
 /* 命令下发  */
 static void CmdSendWinFun(void);
 /* 版本信息 */	

@@ -31,7 +31,7 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 1,  "重合压板/FA",         &g_TelesignalDB[ADDR_RECLOSE_FA_STRAP],             {"退出", "投入"},  {"投->退","退->投"}},
     { 1,  "保护压板",            &g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP],           {"退出", "投入"},  {"投->退","退->投"}},
     { 1,  "遥控保护压板",        &g_TelesignalDB[ADDR_TELECONTROL_PRO_OUT],          {"投入", "退出"},  {"退->投","投->退"}},
-    { 1,  "远方/就地",           &g_TelesignalDB[ADDR_REMOTE_EARTH],                 {"远方", "就地"},  {"远方->就地","就地->远方"}},
+    { 1,  "远方/就地",           &g_TelesignalDB[ADDR_REMOTE_EARTH],                 {"就地", "远方"},  {"就地->远方","远方->就地"}},
     { 1,  "短路故障",            &g_TelesignalDB[ADDR_SHORT_CIRCUIT_FAULT],          {"复位","保护"},   {"复位","保护"}},
     { 1,  "零序故障",            &g_TelesignalDB[ADDR_EARTHING_FAULT],               {"复位","保护"},   {"复位","保护"}},
     { 1,  "保护动作",            &g_TelesignalDB[ADDR_PROTECTION_ACT],               {"复位","动作"},   {"复位","动作"}},

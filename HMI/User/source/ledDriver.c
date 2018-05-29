@@ -63,7 +63,7 @@ void LedRun(void)
 	static uint16_t LedRunCount;
 	if(LedRunFlag == 1){
 		LedRunCount ++;
-		if(LedRunCount >= 1000){
+		if(LedRunCount >= 500){
 			if(LED_RUN_GETSTATUS() == 1){
 				LED_RUN_ON();
 			}
