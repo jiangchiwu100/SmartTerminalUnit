@@ -62,6 +62,7 @@ MENU MenuM1S8 = {
 	MenuM1S8Fun/* itemFunction */
 };
 
+WINDOW TimeModfiyWin  = {0,0,160,160,NULL,"时间修改窗口",TimeModfiyFun};
 WINDOW HomeWindow = {0,0,160,160,NULL,NULL,HomeWindowFun};
 WINDOW MenuWindow = {0,0,160,160,NULL,"菜单管理窗口",MenuWindowFun};
 WINDOW CmdSendWin = {0,0,160,160,NULL,"命令下发窗口",CmdSendWinFun};
@@ -95,7 +96,6 @@ WINDOW AutoResetWin    = {0,0,160,160,NULL,"自动复归窗口",AutoResetFun};
 WINDOW BasicSetWin   = {0,0,160,160,NULL,"基本设置窗口",BasicSetFun};
 WINDOW ZeroDriftWin  = {0,0,160,160,NULL,"零漂设置窗口",ZeroDriftFun};
 WINDOW DeadZoneWin 	 = {0,0,160,160,NULL,"死区设置窗口",DeadZoneFun};
-
 WINDOW SerialWin  = {0,0,160,160,NULL,"串口设置窗口",SerialFun};
 WINDOW InternetWin 	 = {0,0,160,160,NULL,"网口设置窗口",InternetFun};
 
