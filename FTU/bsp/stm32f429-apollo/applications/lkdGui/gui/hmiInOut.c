@@ -92,7 +92,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	if(keyNo == YK_OPENSWITCH){
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){//分闸
+			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){//分闸
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}
 		}
@@ -100,7 +100,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	else if(keyNo == YK_CLOSESWITCH){//合闸
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[ADDR_REMOTE_EARTH] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}
 		}
@@ -152,23 +152,23 @@ void SwitchResult(uint8_t switchNo, uint8_t state)
 	if(state == 1){//0为有效状态
 		switch(switchNo){
 			/* 他俩为一个点 统一放在有效状态处理 */
-//			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
-//			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
-			case SW_RECLOSE:DBWriteSOE(ADDR_RECLOSE_FA_STRAP, OFF);break;
-			case SW_PROTECT:DBWriteSOE(ADDR_FUNCTION_HARDSTRAP, OFF);break;
+//			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.remoteEarth, OFF);break;
+//			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remoteEarth, ON);break;
+			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, OFF);break;
+			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, OFF);break;
 			/* 他俩为一个点 统一放在有效状态处理 */
-//			case SW_CONTACT:DBWriteSOE(ADDR_BREAK_CONTACT, ON);break;
-//			case SW_SECTION:DBWriteSOE(ADDR_BREAK_CONTACT, OFF);break;
+//			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
+//			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
 		}
 	}
 	else{
 		switch(switchNo){
-			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
-			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
-			case SW_RECLOSE:DBWriteSOE(ADDR_RECLOSE_FA_STRAP, ON);break;
-			case SW_PROTECT:DBWriteSOE(ADDR_FUNCTION_HARDSTRAP, ON);break;
-			case SW_CONTACT:DBWriteSOE(ADDR_BREAK_CONTACT, ON);break;
-			case SW_SECTION:DBWriteSOE(ADDR_BREAK_CONTACT, OFF);break;
+			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.remoteEarth, OFF);break;
+			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remoteEarth, ON);break;
+			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, ON);break;
+			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, ON);break;
+			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
+			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
 		}
 	}
 }
@@ -283,18 +283,18 @@ void LedChangeCheck(void)
   */
 void YaoxinMapToLed(void)
 {
-	RealYxLed[ULED_COMMUN] = &g_TelesignalDB[ADDR_COMMUNICATION];
-	RealYxLed[ULED_NOENERGY] = &g_TelesignalDB[ADDR_OPERATING_MECHANISM];
-	RealYxLed[ULED_SWITCHOPEN] = &g_TelesignalDB[ADDR_OPEN];
-	RealYxLed[ULED_LowPa] = &g_TelesignalDB[ADDR_LOW_PRESSURE];
-	RealYxLed[ULED_SWITCHCLOSE] = &g_TelesignalDB[ADDR_CLOSE];
-	RealYxLed[ULED_CLOSELOCK] = &g_TelesignalDB[ADDR_CLOSING_LOCK];
-	RealYxLed[ULED_OVERALARM] = &g_TelesignalDB[ADDR_SHORT_CIRCUIT_FAULT];
-	RealYxLed[ULED_OPENLOCK] = &g_TelesignalDB[ADDR_OPENING_LOCK];
-	RealYxLed[ULED_ZEROALARM] = &g_TelesignalDB[ADDR_EARTHING_FAULT];
-	RealYxLed[ULED_DEVICEFAULT] = &g_TelesignalDB[ADDR_DEVICE_FAULT];
-	RealYxLed[ULED_SELFCHECK] = &g_TelesignalDB[ADDR_SELF_CHECK_ABNOMAL];
-	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[ADDR_RECLOSE_LOCK];
+	RealYxLed[ULED_COMMUN] = &g_TelesignalDB[g_TelesignalAddr.communication];
+	RealYxLed[ULED_NOENERGY] = &g_TelesignalDB[g_TelesignalAddr.operatingMechanism];
+	RealYxLed[ULED_SWITCHOPEN] = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
+	RealYxLed[ULED_LowPa] = &g_TelesignalDB[g_TelesignalAddr.lowPressure];
+	RealYxLed[ULED_SWITCHCLOSE] = &g_TelesignalDB[g_TelesignalAddr.switchClose];
+	RealYxLed[ULED_CLOSELOCK] = &g_TelesignalDB[g_TelesignalAddr.closingLocked];
+	RealYxLed[ULED_OVERALARM] = &g_TelesignalDB[g_TelesignalAddr.shortCircuitFault];
+	RealYxLed[ULED_OPENLOCK] = &g_TelesignalDB[g_TelesignalAddr.openingLocked];
+	RealYxLed[ULED_ZEROALARM] = &g_TelesignalDB[g_TelesignalAddr.earthingFault];
+	RealYxLed[ULED_DEVICEFAULT] = &g_TelesignalDB[g_TelesignalAddr.deviceFault];
+	RealYxLed[ULED_SELFCHECK] = &g_TelesignalDB[g_TelesignalAddr.selfCheckAbnomal];
+	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[g_TelesignalAddr.recloseLock];
 	
 	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
 		LastYxLed[i] = *(RealYxLed[i]);

@@ -65,7 +65,7 @@ static void rt_hw_double_point_check(float shaking_time)
             return;
         }
             
-        if (g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF && g_DiCollect.doubleState == 0x00)
+        if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF && g_DiCollect.doubleState == 0x00)
         {
             /* 进入装置故障判断 */
             g_DiCollect.deviceFalutCounter++;
@@ -73,12 +73,12 @@ static void rt_hw_double_point_check(float shaking_time)
             {
                 g_DiCollect.deviceFalutCounter = 0;
 
-                DBWriteSOE(ADDR_DEVICE_FAULT, ON);
+                DBWriteSOE(g_TelesignalAddr.deviceFault, ON);
                 g_DiCollect.doubleStateLast = g_DiCollect.doubleState;
             }
         }
 
-        if (g_DiCollect.doubleState == 0x03 && g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] == OFF)
+        if (g_DiCollect.doubleState == 0x03 && g_TelesignalDB[g_TelesignalAddr.controlLoopDisconnection] == OFF)
         {
             /* 控制回路断线 */
             g_DiCollect.disconnectCounter++;
@@ -87,19 +87,19 @@ static void rt_hw_double_point_check(float shaking_time)
             {
                 g_DiCollect.disconnectCounter = 0;
 
-                DBWriteSOE(ADDR_CONTROL_LOOP_DISCONNECTION, ON);
+                DBWriteSOE(g_TelesignalAddr.controlLoopDisconnection, ON);
                 g_DiCollect.doubleStateLast = g_DiCollect.doubleState;
             }
         }
     }
     else if (g_DiCollect.doubleState == 0x01 || g_DiCollect.doubleState == 0x02)
     {
-        if (g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] == ON)
+        if (g_TelesignalDB[g_TelesignalAddr.controlLoopDisconnection] == ON)
         {
-            DBWriteSOE(ADDR_CONTROL_LOOP_DISCONNECTION, OFF);
+            DBWriteSOE(g_TelesignalAddr.controlLoopDisconnection, OFF);
         }
 
-        g_TelesignalDB[ADDR_CONTROL_LOOP_DISCONNECTION] = OFF;
+        g_TelesignalDB[g_TelesignalAddr.controlLoopDisconnection] = OFF;
 
         if (g_DiCollect.doubleState != g_DiCollect.doubleStateLast)
         {
@@ -108,7 +108,7 @@ static void rt_hw_double_point_check(float shaking_time)
             {
                 g_DiCollect.doubleCounter = 0;
 
-                DBWriteSOE(ADDR_DOUBLE_SWITCH, ~g_DiCollect.doubleState & 0x03);
+                DBWriteSOE(g_TelesignalAddr.doubleSwitch, ~g_DiCollect.doubleState & 0x03);
                 g_DiCollect.doubleStateLast = g_DiCollect.doubleState;
             }
         }
@@ -164,7 +164,7 @@ void rt_hw_di_check_task(rt_uint8_t clock)
     rt_hw_double_point_check(s_shaking_time);
     
     rt_device_read(rt_di_dev, 0, &pin_status[INDEX_MCU_POWER_ALARM_DI], sizeof(struct rt_device_pin_status));
-    DBWriteSOE(ADDR_DEVICE_POWER_DOWN, (pin_status[INDEX_MCU_POWER_ALARM_DI].status) ? ON : OFF);
+    DBWriteSOE(g_TelesignalAddr.devicePowerDown, (pin_status[INDEX_MCU_POWER_ALARM_DI].status) ? ON : OFF);
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

@@ -1979,11 +1979,11 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 			if(soeStr->pSoe.highlight){//¸ßÁÁÏÔÊ¾
 				GuiFillRect(SOEWin.x+10+73,y+i*28+14,158,y+i*28+28, forecolor);
 				GuiExchangeColor();
-				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,72,FONT_RIGHT,soeStr->pSoe.pContent);
 				GuiExchangeColor();
 			}
 			else{
-				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,72,FONT_RIGHT,soeStr->pSoe.pContent);
 			}
 			soeStr->pRead ++;
 		}

@@ -57,7 +57,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     static uint32_t s_close_shake_timer = 0;
     static uint32_t s_reserve_time;
 
-    if (g_TelesignalDB[ADDR_REMOTE_EARTH] == OFF) // Local mode does not allow operation
+    if (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == OFF) // Local mode does not allow operation
     {
         return;
     }

@@ -72,7 +72,7 @@ void rt_hw_alarm_led_operate(rt_uint8_t act)
 
     if (act == ON)
     {
-        if (g_TelesignalDB[ADDR_SHORT_CIRCUIT_FAULT] == ON || g_TelesignalDB[ADDR_EARTHING_FAULT] == ON)
+        if (g_TelesignalDB[g_TelesignalAddr.shortCircuitFault] == ON || g_TelesignalDB[g_TelesignalAddr.earthingFault] == ON)
         {
             if(!s_alarm_led_flag)
             {
@@ -130,13 +130,13 @@ void rt_hw_led_task(void)
 
     s_run_counter++;
     
-    if (g_TelesignalDB[ADDR_BREAKINGCURRENT] == ON || g_TelesignalDB[ADDR_OVERLOAD_EVENT] == ON || g_TelesignalDB[ADDR_HAVEY_OVERLOAD_EVENT] == ON || 
-        g_TelesignalDB[ADDR_PROTECTION_ACT] == ON || g_TelesignalDB[ADDR_OVERLIMIT_I0_DOWN] == ON || g_TelesignalDB[ADDR_OVERLIMIT_I0_UP] == ON ||
-        g_TelesignalDB[ADDR_OVERLIMIT_IA_DOWN] == ON || g_TelesignalDB[ADDR_OVERLIMIT_IA_UP]== ON || g_TelesignalDB[ADDR_OVERLIMIT_IB_DOWN] == ON || 
-        g_TelesignalDB[ADDR_OVERLIMIT_IB_UP] == ON || g_TelesignalDB[ADDR_OVERLIMIT_IC_DOWN] == ON || g_TelesignalDB[ADDR_OVERLIMIT_IC_UP] == ON ||
-        g_TelesignalDB[ADDR_OVERLIMIT_Uab_DOWN] == ON || g_TelesignalDB[ADDR_OVERLIMIT_Uab_UP] == ON || g_TelesignalDB[ADDR_OVERLIMIT_UBC_UP] == ON ||
-        g_TelesignalDB[ADDR_OVERLIMIT_UBC_DOWN] == ON || g_TelesignalDB[ADDR_OVERLIMIT_Uca_UP] == ON || g_TelesignalDB[ADDR_OVERLIMIT_Uca_DOWN] == ON ||
-        g_TelesignalDB[ADDR_OVERLIMIT_U0_UP] == ON || g_TelesignalDB[ADDR_OVERLIMIT_U0_DOWN] == ON)
+    if (g_TelesignalDB[g_TelesignalAddr.breakingCurrent] == ON || g_TelesignalDB[g_TelesignalAddr.overloadEvent] == ON || g_TelesignalDB[g_TelesignalAddr.haveyOverload] == ON || 
+        g_TelesignalDB[g_TelesignalAddr.protectionAct] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Down] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Up] == ON ||
+        g_TelesignalDB[g_TelesignalAddr.overLimitIaDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIaUp]== ON || g_TelesignalDB[g_TelesignalAddr.overLimitIbDown] == ON || 
+        g_TelesignalDB[g_TelesignalAddr.overLimitIbUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIcDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIcUp] == ON ||
+        g_TelesignalDB[g_TelesignalAddr.overLimitUabDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUabUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUBCUp] == ON ||
+        g_TelesignalDB[g_TelesignalAddr.overLimitUBCDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUcaUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUcaDown] == ON ||
+        g_TelesignalDB[g_TelesignalAddr.overLimitU0Up] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitU0Down] == ON)
     {
         rt_hw_alarm_led_operate(ON);
     }

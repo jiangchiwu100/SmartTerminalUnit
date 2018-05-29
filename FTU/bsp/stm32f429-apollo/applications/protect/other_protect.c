@@ -88,11 +88,11 @@ static void SysMonitorTask(void)
 		
 	if (a_all_sta == 0)
 	{
-	    DBWriteSOE(ADDR_SELF_CHECK_ABNOMAL, OFF);
+	    DBWriteSOE(g_TelesignalAddr.selfCheckAbnomal, OFF);
 	}
 	else
 	{
-	    DBWriteSOE(ADDR_SELF_CHECK_ABNOMAL, ON);
+	    DBWriteSOE(g_TelesignalAddr.selfCheckAbnomal, ON);
 	}
 }
 
@@ -231,7 +231,7 @@ static void OverVoltageCheck(struct OverVoltage *over)
                 *over->counter = 0;
                 DBWriteSOE(over->soeAddr, ON);
 
-				if (*over->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
+				if (*over->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON)
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
 				}
@@ -287,7 +287,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
                 DBWriteSOE(down->soeAddr, ON);
                 down->flag &= ~OVERVOLTAGESTA1;
 				
-				if (*down->funSwitch == 1 && g_TelesignalDB[ADDR_FUNCTION_HARDSTRAP] == ON)
+				if (*down->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON)
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
 				}
@@ -403,15 +403,15 @@ static void TelemetryAbnormalCheck(void)
     /* 电池欠压 */
     if (g_pFixedValue[BATTERY_LOWVOLTAGE_ALARM_SWITCH])
     {
-        if (g_TelemetryDB[ADDR_DC1] < g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] && g_TelesignalDB[ADDR_BATTERY_UNDERVOLTAGE_ALARM] == OFF)
+        if (g_TelemetryDB[g_TelemetryAddr.DC1] < g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] && g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == OFF)
         {
-            DBWriteSOE(ADDR_BATTERY_UNDERVOLTAGE_ALARM, ON);
+            DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, ON);
         }
-        else if (g_TelemetryDB[ADDR_DC1] >= g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] * g_pFixedValue[BATTERY_LOWVOLTAGE_FACTOR])
+        else if (g_TelemetryDB[g_TelemetryAddr.DC1] >= g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] * g_pFixedValue[BATTERY_LOWVOLTAGE_FACTOR])
         {
-            if (g_TelesignalDB[ADDR_BATTERY_UNDERVOLTAGE_ALARM] == ON)
+            if (g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == ON)
             {
-                DBWriteSOE(ADDR_BATTERY_UNDERVOLTAGE_ALARM, OFF);
+                DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, OFF);
             }
         }
     }
@@ -419,23 +419,23 @@ static void TelemetryAbnormalCheck(void)
     if (g_Parameter[OPERATING_MECHANISM] == MAGNET) // 永磁机构电容欠压
     {
         /* 合闸状态 */
-        if (g_TelesignalDB[ADDR_CLOSE] == ON &&  g_TelesignalDB[ADDR_OPEN] == OFF && g_TelemetryDB[ADDR_DC2] < g_Parameter[CAP_UNDERVOLTAGE_CLOSING])
+        if (g_TelesignalDB[g_TelesignalAddr.switchClose] == ON &&  g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && g_TelemetryDB[g_TelemetryAddr.DC2] < g_Parameter[CAP_UNDERVOLTAGE_CLOSING])
         {
-            DBWriteSOE(ADDR_OPERATING_MECHANISM, OFF);
+            DBWriteSOE(g_TelesignalAddr.operatingMechanism, OFF);
         }
-        else if (g_TelemetryDB[ADDR_DC2] >= g_Parameter[CAP_UNDERVOLTAGE_CLOSING] * g_Parameter[CAP_UNDERVOLTAGE_FACTOR])
+        else if (g_TelemetryDB[g_TelemetryAddr.DC2] >= g_Parameter[CAP_UNDERVOLTAGE_CLOSING] * g_Parameter[CAP_UNDERVOLTAGE_FACTOR])
         {
-            DBWriteSOE(ADDR_OPERATING_MECHANISM, ON);
+            DBWriteSOE(g_TelesignalAddr.operatingMechanism, ON);
         }
 
         /* 分闸状态 */
-        if (g_TelesignalDB[ADDR_CLOSE] == OFF &&  g_TelesignalDB[ADDR_OPEN] == ON && g_TelemetryDB[ADDR_DC2] < g_Parameter[CAP_UNDERVOLTAGE_OPENING])
+        if (g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF &&  g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelemetryDB[g_TelemetryAddr.DC2] < g_Parameter[CAP_UNDERVOLTAGE_OPENING])
         {
-            DBWriteSOE(ADDR_OPERATING_MECHANISM, OFF);
+            DBWriteSOE(g_TelesignalAddr.operatingMechanism, OFF);
         }
-        else if (g_TelemetryDB[ADDR_DC2] >= g_Parameter[CAP_UNDERVOLTAGE_OPENING] * g_Parameter[CAP_UNDERVOLTAGE_FACTOR])
+        else if (g_TelemetryDB[g_TelemetryAddr.DC2] >= g_Parameter[CAP_UNDERVOLTAGE_OPENING] * g_Parameter[CAP_UNDERVOLTAGE_FACTOR])
         {
-            DBWriteSOE(ADDR_OPERATING_MECHANISM, ON);
+            DBWriteSOE(g_TelesignalAddr.operatingMechanism, ON);
         }
     }
 }
@@ -499,14 +499,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitUab.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitUab.counterDownReverse);	
     OverLimitUab.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitUab.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_Uab_UP];
-    OverLimitUab.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_Uab_DOWN];
-    OverLimitUab.soeAddrUp = ADDR_OVERLIMIT_Uab_UP;
-    OverLimitUab.soeAddrDown = ADDR_OVERLIMIT_Uab_DOWN;
+    OverLimitUab.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitUabUp];
+    OverLimitUab.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitUabDown];
+    OverLimitUab.soeAddrUp = g_TelesignalAddr.overLimitUabUp;
+    OverLimitUab.soeAddrDown = g_TelesignalAddr.overLimitUabDown;
     OverLimitUab.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUab.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUab.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Uab];
-    OverLimitUab.telemetry = &g_TelemetryDB[ADDR_Uab];
+    OverLimitUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];
     OverLimitUab.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUab.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -515,14 +515,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitUbc.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitUbc.counterDownReverse);	
     OverLimitUbc.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitUbc.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_Ubc_UP];
-    OverLimitUbc.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_Ubc_DOWN];
-    OverLimitUbc.soeAddrUp = ADDR_OVERLIMIT_Ubc_UP;
-    OverLimitUbc.soeAddrDown = ADDR_OVERLIMIT_Ubc_DOWN;
+    OverLimitUbc.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitUbcUp];
+    OverLimitUbc.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitUbcDown];
+    OverLimitUbc.soeAddrUp = g_TelesignalAddr.overLimitUbcUp;
+    OverLimitUbc.soeAddrDown = g_TelesignalAddr.overLimitUbcDown;
     OverLimitUbc.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUbc.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUbc.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Ubc];
-    OverLimitUbc.telemetry = &g_TelemetryDB[ADDR_Ucb];
+    OverLimitUbc.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];
     OverLimitUbc.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUbc.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -531,14 +531,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitUAB.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitUAB.counterDownReverse);	
     OverLimitUAB.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitUAB.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_UAB_UP];
-    OverLimitUAB.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_UAB_DOWN];
-    OverLimitUAB.soeAddrUp = ADDR_OVERLIMIT_UAB_UP;
-    OverLimitUAB.soeAddrDown = ADDR_OVERLIMIT_UAB_DOWN;
+    OverLimitUAB.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitUABUp];
+    OverLimitUAB.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitUABDown];
+    OverLimitUAB.soeAddrUp = g_TelesignalAddr.overLimitUABUp;
+    OverLimitUAB.soeAddrDown = g_TelesignalAddr.overLimitUABDown;
     OverLimitUAB.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUAB.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUAB.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_UAB];
-    OverLimitUAB.telemetry = &g_TelemetryDB[ADDR_UAB];
+    OverLimitUAB.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];
     OverLimitUAB.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUAB.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 	
@@ -547,14 +547,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitUBC.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitUBC.counterDownReverse);	
     OverLimitUBC.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitUBC.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_UBC_UP];
-    OverLimitUBC.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_UBC_DOWN];
-    OverLimitUBC.soeAddrUp = ADDR_OVERLIMIT_UBC_UP;
-    OverLimitUBC.soeAddrDown = ADDR_OVERLIMIT_UBC_DOWN;
+    OverLimitUBC.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitUBCUp];
+    OverLimitUBC.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitUBCDown];
+    OverLimitUBC.soeAddrUp = g_TelesignalAddr.overLimitUBCUp;
+    OverLimitUBC.soeAddrDown = g_TelesignalAddr.overLimitUBCDown;
     OverLimitUBC.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUBC.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUBC.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_UBC];
-    OverLimitUBC.telemetry = &g_TelemetryDB[ADDR_UCB];
+    OverLimitUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];
     OverLimitUBC.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUBC.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -563,14 +563,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitUac.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitUac.counterDownReverse);	
     OverLimitUac.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitUac.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_Uca_UP];
-    OverLimitUac.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_Uca_DOWN];
-    OverLimitUac.soeAddrUp = ADDR_OVERLIMIT_Uca_UP;
-    OverLimitUac.soeAddrDown = ADDR_OVERLIMIT_Uca_DOWN;
+    OverLimitUac.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitUcaUp];
+    OverLimitUac.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitUcaDown];
+    OverLimitUac.soeAddrUp = g_TelesignalAddr.overLimitUcaUp;
+    OverLimitUac.soeAddrDown = g_TelesignalAddr.overLimitUcaDown;
     OverLimitUac.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U];
     OverLimitUac.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U];
     OverLimitUac.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_Uca];
-    OverLimitUac.telemetry = &g_TelemetryDB[ADDR_Uac];
+    OverLimitUac.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uac];
     OverLimitUac.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitUac.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -579,14 +579,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitIa.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitIa.counterDownReverse);		
     OverLimitIa.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitIa.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_IA_UP];
-    OverLimitIa.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_IA_DOWN];
-    OverLimitIa.soeAddrUp = ADDR_OVERLIMIT_IA_UP;
-    OverLimitIa.soeAddrDown = ADDR_OVERLIMIT_IA_DOWN;
+    OverLimitIa.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitIaUp];
+    OverLimitIa.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitIaDown];
+    OverLimitIa.soeAddrUp = g_TelesignalAddr.overLimitIaUp;
+    OverLimitIa.soeAddrDown = g_TelesignalAddr.overLimitIaDown;
     OverLimitIa.uplimit = &g_pFixedValue[UPLIMIT_CURRENT_I];
     OverLimitIa.downlimit = &g_pFixedValue[DOWNLIMIT_CURRENT_I];
     OverLimitIa.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_IA];
-    OverLimitIa.telemetry = &g_TelemetryDB[ADDR_IA];
+    OverLimitIa.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ia];
     OverLimitIa.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitIa.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -595,14 +595,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitIb.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitIb.counterDownReverse);	
     OverLimitIb.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitIb.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_IB_UP];
-    OverLimitIb.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_IB_DOWN];
-    OverLimitIb.soeAddrUp = ADDR_OVERLIMIT_IB_UP;
-    OverLimitIb.soeAddrDown = ADDR_OVERLIMIT_IB_DOWN;
+    OverLimitIb.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitIbUp];
+    OverLimitIb.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitIbDown];
+    OverLimitIb.soeAddrUp = g_TelesignalAddr.overLimitIbUp;
+    OverLimitIb.soeAddrDown = g_TelesignalAddr.overLimitIbDown;
     OverLimitIb.uplimit = &g_pFixedValue[UPLIMIT_CURRENT_I];
     OverLimitIb.downlimit = &g_pFixedValue[DOWNLIMIT_CURRENT_I];
     OverLimitIb.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_IB];
-    OverLimitIb.telemetry = &g_TelemetryDB[ADDR_IB];
+    OverLimitIb.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ib];
     OverLimitIb.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitIb.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -611,14 +611,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitIc.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitIc.counterDownReverse);	
     OverLimitIc.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitIc.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_IC_UP];
-    OverLimitIc.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_IC_DOWN];
-    OverLimitIc.soeAddrUp = ADDR_OVERLIMIT_IC_UP;
-    OverLimitIc.soeAddrDown = ADDR_OVERLIMIT_IC_DOWN;
+    OverLimitIc.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitIcUp];
+    OverLimitIc.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitIcDown];
+    OverLimitIc.soeAddrUp = g_TelesignalAddr.overLimitIcUp;
+    OverLimitIc.soeAddrDown = g_TelesignalAddr.overLimitIcDown;
     OverLimitIc.uplimit = &g_pFixedValue[UPLIMIT_CURRENT_I];
     OverLimitIc.downlimit = &g_pFixedValue[DOWNLIMIT_CURRENT_I];
     OverLimitIc.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_IC];
-    OverLimitIc.telemetry = &g_TelemetryDB[ADDR_IC];
+    OverLimitIc.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ic];
     OverLimitIc.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitIc.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -627,14 +627,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitU0.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitU0.counterDownReverse);	
     OverLimitU0.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitU0.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_U0_UP];
-    OverLimitU0.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_U0_DOWN];
-    OverLimitU0.soeAddrUp = ADDR_OVERLIMIT_U0_UP;
-    OverLimitU0.soeAddrDown = ADDR_OVERLIMIT_U0_DOWN;
+    OverLimitU0.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitU0Up];
+    OverLimitU0.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitU0Down];
+    OverLimitU0.soeAddrUp = g_TelesignalAddr.overLimitU0Up;
+    OverLimitU0.soeAddrDown = g_TelesignalAddr.overLimitU0Down;
     OverLimitU0.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U0];
     OverLimitU0.downlimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U0];
     OverLimitU0.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_U0];
-    OverLimitU0.telemetry = &g_TelemetryDB[ADDR_U0];
+    OverLimitU0.telemetry = &g_TelemetryDB[g_TelemetryAddr.U0];
     OverLimitU0.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitU0.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -643,14 +643,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitI0.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitI0.counterDownReverse);		
     OverLimitI0.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitI0.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_I0_UP];
-    OverLimitI0.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_I0_DOWN];
-    OverLimitI0.soeAddrUp = ADDR_OVERLIMIT_I0_UP;
-    OverLimitI0.soeAddrDown = ADDR_OVERLIMIT_I0_DOWN;
+    OverLimitI0.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitI0Up];
+    OverLimitI0.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitI0Down];
+    OverLimitI0.soeAddrUp = g_TelesignalAddr.overLimitI0Up;
+    OverLimitI0.soeAddrDown = g_TelesignalAddr.overLimitI0Down;
     OverLimitI0.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_I0];
     OverLimitI0.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_I0];
     OverLimitI0.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_I0];
-    OverLimitI0.telemetry = &g_TelemetryDB[ADDR_I0];
+    OverLimitI0.telemetry = &g_TelemetryDB[g_TelemetryAddr.I0];
     OverLimitI0.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitI0.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -659,14 +659,14 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitDC_U.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitDC_U.counterDownReverse);			
     OverLimitDC_U.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitDC_U.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_DC_U_UP];
-    OverLimitDC_U.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_DC_U_DOWN];
-    OverLimitDC_U.soeAddrUp = ADDR_OVERLIMIT_DC_U_UP;
-    OverLimitDC_U.soeAddrDown = ADDR_OVERLIMIT_DC_U_DOWN;
+    OverLimitDC_U.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitDC_U_Up];
+    OverLimitDC_U.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitDC_U_Down];
+    OverLimitDC_U.soeAddrUp = g_TelesignalAddr.overLimitDC_U_Up;
+    OverLimitDC_U.soeAddrDown = g_TelesignalAddr.overLimitDC_U_Down;
     OverLimitDC_U.uplimit = &g_pFixedValue[UPLIMIT_DC_VOLTAGE_U];
     OverLimitDC_U.downlimit = &g_pFixedValue[DOWNLIMIT_DC_VOLTAGE_U];
     OverLimitDC_U.funSwitch = &g_pFixedValue[OVERLIMIT_ALARMSWITCH_DC_U];
-    OverLimitDC_U.telemetry = &g_TelemetryDB[ADDR_DC1];
+    OverLimitDC_U.telemetry = &g_TelemetryDB[g_TelemetryAddr.DC1];
     OverLimitDC_U.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitDC_U.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
@@ -675,102 +675,102 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &OverLimitDC_I.counterUpReverse);
     ApplyForCounter(pdrv, &OverLimitDC_I.counterDownReverse);	
     OverLimitDC_I.delay = &g_pFixedValue[OVERLIMIT_TIME];
-    OverLimitDC_I.stateUp = &g_TelesignalDB[ADDR_OVERLIMIT_DC_U_UP];
-    OverLimitDC_I.stateDown = &g_TelesignalDB[ADDR_OVERLIMIT_DC_U_DOWN];
-    OverLimitDC_I.soeAddrUp = ADDR_OVERLIMIT_DC_U_UP;
-    OverLimitDC_I.soeAddrDown = ADDR_OVERLIMIT_DC_U_DOWN;
+    OverLimitDC_I.stateUp = &g_TelesignalDB[g_TelesignalAddr.overLimitDC_U_Up];
+    OverLimitDC_I.stateDown = &g_TelesignalDB[g_TelesignalAddr.overLimitDC_U_Down];
+    OverLimitDC_I.soeAddrUp = g_TelesignalAddr.overLimitDC_U_Up;
+    OverLimitDC_I.soeAddrDown = g_TelesignalAddr.overLimitDC_U_Down;
     OverLimitDC_I.uplimit = &g_pFixedValue[UPLIMIT_DC_CURRENT_I];
     OverLimitDC_I.downlimit = &g_pFixedValue[DOWNLIMIT_DC_CURRENT_I];
     OverLimitDC_I.funSwitch = &g_pFixedValue[OVERLIMIT_ALARMSWITCH_DC_I];
-    OverLimitDC_I.telemetry = &g_TelemetryDB[ADDR_DC2];
+    OverLimitDC_I.telemetry = &g_TelemetryDB[g_TelemetryAddr.DC2];
     OverLimitDC_I.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];
     OverLimitDC_I.downlimitFactor = &g_pFixedValue[DOWNLIMIT_FACTOR];
 
     ApplyForCounter(pdrv, &HeavyOverLoad.counter);
     ApplyForCounter(pdrv, &HeavyOverLoad.counterReverse);	
     HeavyOverLoad.delay = &g_pFixedValue[HEAVY_OVERLOAD_TIME];
-    HeavyOverLoad.state = &g_TelesignalDB[ADDR_HAVEY_OVERLOAD_EVENT];
-    HeavyOverLoad.soeAddr = ADDR_HAVEY_OVERLOAD_EVENT;
+    HeavyOverLoad.state = &g_TelesignalDB[g_TelesignalAddr.haveyOverload];
+    HeavyOverLoad.soeAddr = g_TelesignalAddr.haveyOverload;
     HeavyOverLoad.value = &g_pFixedValue[HEAVY_OVERLOAD_VALUE];
     HeavyOverLoad.funSwitch = &g_pFixedValue[HEAVY_OVERLOAD_SWITCH];
-    HeavyOverLoad.Ia = &g_TelemetryDB[ADDR_IA];
-    HeavyOverLoad.Ib = &g_TelemetryDB[ADDR_IB];
-    HeavyOverLoad.Ic = &g_TelemetryDB[ADDR_IC];
+    HeavyOverLoad.Ia = &g_TelemetryDB[g_TelemetryAddr.Ia];
+    HeavyOverLoad.Ib = &g_TelemetryDB[g_TelemetryAddr.Ib];
+    HeavyOverLoad.Ic = &g_TelemetryDB[g_TelemetryAddr.Ic];
     HeavyOverLoad.factor = &g_pFixedValue[HEAVY_OVERLOAD_FACTOR];
 
     ApplyForCounter(pdrv, &OverLoad.counter);
     ApplyForCounter(pdrv, &OverLoad.counterReverse);	
     OverLoad.delay = &g_pFixedValue[OVERLOAD_TIME];
-    OverLoad.state = &g_TelesignalDB[ADDR_OVERLOAD_EVENT];
-    OverLoad.soeAddr = ADDR_OVERLOAD_EVENT;
+    OverLoad.state = &g_TelesignalDB[g_TelesignalAddr.overloadEvent];
+    OverLoad.soeAddr = g_TelesignalAddr.overloadEvent;
     OverLoad.value = &g_pFixedValue[OVERLOAD_VALUE];
     OverLoad.funSwitch = &g_pFixedValue[OVERLOAD_SWITCH];
-    OverLoad.Ia = &g_TelemetryDB[ADDR_IA];
-    OverLoad.Ib = &g_TelemetryDB[ADDR_IB];
-    OverLoad.Ic = &g_TelemetryDB[ADDR_IC];
+    OverLoad.Ia = &g_TelemetryDB[g_TelemetryAddr.Ia];
+    OverLoad.Ib = &g_TelemetryDB[g_TelemetryAddr.Ib];
+    OverLoad.Ic = &g_TelemetryDB[g_TelemetryAddr.Ic];
     OverLoad.factor = &g_pFixedValue[OVERLOAD_FACTOR];
 
     ApplyForCounter(pdrv, &OverVoltageUab.counter);
     ApplyForCounter(pdrv, &OverVoltageUab.counterReverse);	
     OverVoltageUab.delay = &g_pFixedValue[OVERVOLTAGE_TIME];
-    OverVoltageUab.state = &g_TelesignalDB[ADDR_OVER_VOLTAGE_PROTECTION];
-    OverVoltageUab.soeAddr = ADDR_OVER_VOLTAGE_PROTECTION;
+    OverVoltageUab.state = &g_TelesignalDB[g_TelesignalAddr.overVoltageProtection];
+    OverVoltageUab.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUab.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUab.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
     if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {OverVoltageUab.telemetry = &g_TelemetryDB[ADDR_Uab];}
+    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
     else
-    {OverVoltageUab.telemetry = &g_TelemetryDB[ADDR_Ucb];}
+    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
     OverVoltageUab.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUab.flag = 0;
 
     ApplyForCounter(pdrv, &DownVoltageUab.counter);
     ApplyForCounter(pdrv, &DownVoltageUab.counterReverse);	
     DownVoltageUab.delay = &g_pFixedValue[DOWNVOLTAGE_VALUE];
-    DownVoltageUab.state = &g_TelesignalDB[ADDR_DOWN_VOLTAGE_PROTECTION];
-    DownVoltageUab.soeAddr = ADDR_DOWN_VOLTAGE_PROTECTION;
+    DownVoltageUab.state = &g_TelesignalDB[g_TelesignalAddr.downVoltageProtection];
+    DownVoltageUab.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUab.value = &g_pFixedValue[DOWNVOLTAGE_VALUE];
     DownVoltageUab.funSwitch = &g_pFixedValue[DOWNVOLTAGE_SWITCH];
     if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {DownVoltageUab.telemetry = &g_TelemetryDB[ADDR_Uab];}
+    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
     else
-    {DownVoltageUab.telemetry = &g_TelemetryDB[ADDR_Ucb];}
+    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
     DownVoltageUab.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUab.flag = 0;
 	
     ApplyForCounter(pdrv, &OverVoltageUBC.counter);
     ApplyForCounter(pdrv, &OverVoltageUBC.counterReverse);
     OverVoltageUBC.delay = &g_pFixedValue[OVERVOLTAGE_TIME];
-    OverVoltageUBC.state = &g_TelesignalDB[ADDR_OVER_VOLTAGE_PROTECTION];
-    OverVoltageUBC.soeAddr = ADDR_OVER_VOLTAGE_PROTECTION;
+    OverVoltageUBC.state = &g_TelesignalDB[g_TelesignalAddr.overVoltageProtection];
+    OverVoltageUBC.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
     if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UAB];}
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
     else
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UCB];}
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     OverVoltageUBC.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUBC.flag = 0;
 
     ApplyForCounter(pdrv, &DownVoltageUBC.counter);
     ApplyForCounter(pdrv, &DownVoltageUBC.counterReverse);
     DownVoltageUBC.delay = &g_pFixedValue[OVERVOLTAGE_TIME];
-    DownVoltageUBC.state = &g_TelesignalDB[ADDR_DOWN_VOLTAGE_PROTECTION];
-    DownVoltageUBC.soeAddr = ADDR_DOWN_VOLTAGE_PROTECTION;
+    DownVoltageUBC.state = &g_TelesignalDB[g_TelesignalAddr.downVoltageProtection];
+    DownVoltageUBC.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     DownVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
     if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UAB];}
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
     else
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[ADDR_UCB];}
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     DownVoltageUBC.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUBC.flag = 0;
 
     ApplyForCounter(pdrv, &OverFrequency.counter);
     ApplyForCounter(pdrv, &OverFrequency.counterReverse);
     OverFrequency.delay = &g_pFixedValue[OVERFREQUENCY_VALUE];
-    OverFrequency.state = &g_TelesignalDB[ADDR_OVER_FREQUEBNCY_PROTECTION];
-    OverFrequency.soeAddr = ADDR_OVER_FREQUEBNCY_PROTECTION;
+    OverFrequency.state = &g_TelesignalDB[g_TelesignalAddr.overFrequencyProtection];
+    OverFrequency.soeAddr = g_TelesignalAddr.overFrequencyProtection;
     OverFrequency.value = &g_pFixedValue[OVERFREQUENCY_VALUE];
     OverFrequency.funSwitch = &g_pFixedValue[OVERFREQUENCY_SWITCH];
     OverFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
@@ -780,8 +780,8 @@ void other_protect_init(void)
     ApplyForCounter(pdrv, &DownFrequency.counter);
     ApplyForCounter(pdrv, &DownFrequency.counterReverse);
     DownFrequency.delay = &g_pFixedValue[DOWNFREQUENCY_TIME];
-    DownFrequency.state = &g_TelesignalDB[ADDR_DOWN_FREQUEBNCY_PROTECTION];
-    DownFrequency.soeAddr = ADDR_DOWN_FREQUEBNCY_PROTECTION;
+    DownFrequency.state = &g_TelesignalDB[g_TelesignalAddr.downFrequencyProtection];
+    DownFrequency.soeAddr = g_TelesignalAddr.downFrequencyProtection;
     DownFrequency.value = &g_pFixedValue[DOWNFREQUENCY_VALUE];
     DownFrequency.funSwitch = &g_pFixedValue[DOWNFREQUENCY_SWITCH];
     DownFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
@@ -819,7 +819,7 @@ static void RecoedMemory(void)
     static rt_uint8_t state=0;
     		
     /* 装置掉电 */
-    if (g_TelesignalDB[ADDR_DEVICE_FAULT] == ON)
+    if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == ON)
     {
         *MemoryCounter.counterCharge = DB_COUNTER_EN;
         if(state==1)

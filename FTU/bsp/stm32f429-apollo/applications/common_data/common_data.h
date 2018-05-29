@@ -173,7 +173,7 @@ __packed struct CP56Time2a_t
 #define CO_MAX_NUM                    64
 #define FEVENT_MAX_NUM                16
 #define NVA_MAX_NUM                   64
-#define ULOG_MAX_NUM                  32
+#define ULOG_MAX_NUM                  32  
 
 #define INHERENT_PARAMETER_NUM      (sizeof(InherentPara) / sizeof(char) / 24)          // 终端固有参数数量
 //#define RUN_PARAMETER_NUM     		(sizeof(RunParameter) / sizeof(float))         // 终端运行参数数量
@@ -360,271 +360,164 @@ struct RecordStateType
 
 /* DATABASE----------------------------------------------------------------------*/
 /* database数据操作类型 */
-enum TelesignalAddr
+typedef struct TagTelesignalAddr
 {
-	ADDR_OPEN,	
-	ADDR_CLOSE,
-    ADDR_OPERATING_MECHANISM,                             // 电容欠压(储能开入)
-    ADDR_LOW_PRESSURE,                                    // 低气压
-    ADDR_POWERFAULTALARM,                                 // 电源故障告警
-    ADDR_BATTERY_UNDERVOLTAGE_ALARM,                      // 电池欠压告警
-    ADDR_BATTERYACTIVATIONSTATUS,                         // 电池活化状态
-    ADDR_BATTERY_LOSS_ALARM,                              // 电池失电告警
-    ADDR_BREAK_CONTACT,                                   // 分断/联络
-    ADDR_RECLOSE_FA_STRAP,                                // 重合硬/FA压板
-    ADDR_FUNCTION_HARDSTRAP,                              // 功能投退硬压板
-    ADDR_REMOTE_EARTH,                                    // 远方/就地
-    ADDR_SHORT_CIRCUIT_FAULT,                             // 短路故障/过流保护
-    ADDR_EARTHING_FAULT,                                  // 接地故障/零序保护
-    ADDR_PROTECTION_ACT,                                  // 保护动作
-    ADDR_PROTECTION_LOCK,                                 // 保护闭锁
-    ADDR_CLOSING_LOCK,                                    // 合闸闭锁
-    ADDR_OPENING_LOCK,                                    // 分闸闭锁    
-    ADDR_RECLOSE_ACT,                                     // 重合动作
-    ADDR_RECLOSE_LOCK,                                    // 重合闸闭锁
-    ADDR_DEVICE_FAULT,                                    // 装置故障
-    ADDR_SELF_CHECK_ABNOMAL,                              // 自检异常
-    ADDR_COMMUNICATION,                                   // 通讯 
-    ADDR_SWTICHCLASS,                                     // 开关类型
-    ADDR_BATTERY_FAULT_ALARM,                             // 电池故障告警
-    ADDR_DOUBLE_SWITCH,                                   // 双点开关分合
-    ADDR_CONTROL_LOOP_DISCONNECTION,                      // 控制回路断线
-    ADDR_OVERCURRENT_IA_1,                                // A相过流一段保护
-    ADDR_OVERCURRENT_IB_1,                                // B相过流一段保护
-    ADDR_OVERCURRENT_IC_1,                                // C相过流一段保护
-    ADDR_OVERCURRENT_IA_2,                                // A相过流二段保护
-    ADDR_OVERCURRENT_IB_2,                                // A相过流二段保护
-    ADDR_OVERCURRENT_IC_2,	                              // A相过流二段保护
-    ADDR_OVERCURRENT_IA_3,                                // A相过流三段保护
-    ADDR_OVERCURRENT_IB_3,                                // A相过流三段保护
-    ADDR_OVERCURRENT_IC_3,	                              // A相过流三段保护
-    ADDR_OVERCURRENT_I0_1,                                // 零序过流一段保护
-    ADDR_OVERCURRENT_I0_2,	                              // 零序过流二段保护
-    ADDR_OVERCURRENT_ACC_IA,                              // A相后加速过流
-    ADDR_OVERCURRENT_ACC_IB,                              // B相后加速过流
-    ADDR_OVERCURRENT_ACC_IC,                              // C相后加速过流
-    ADDR_OVERCURRENT_INVERSE_IA,                          // A相反时限过流
-    ADDR_OVERCURRENT_INVERSE_IB,                          // B相反时限过流
-    ADDR_OVERCURRENT_INVERSE_IC,                          // C相反时限过流
-    ADDR_RECLOSE_PROTECTION_1,                            // 重合闸一次保护
-    ADDR_RECLOSE_PROTECTION_2,                            // 重合闸二次保护
-    ADDR_RECLOSE_PROTECTION_3,                            // 重合闸三次保护
-    ADDR_RECLOSE_PROTECTION_4,                            // 重合闸四次保护
-    ADDR_RECLOSE_CLOCK_PROTECTION,                        // 重合闸闭锁保护
-    ADDR_ZERO_RECLOSE_PROTECTION_1,                       // 零序重合闸一次保护
-    ADDR_ZERO_RECLOSE_PROTECTION_2,                       // 零序重合闸二次保护
-    ADDR_CLOCK_SECONDARY_CLOSE,                           // 闭锁二次重合闸
-    ADDR_LOSS_TRIP,                                       // 失电跳闸
-    ADDR_GET_CLOSSING_EVENT,                              // 得电合闸事件
-    ADDR_CLOSING_FAULT,                                   // 合闸于故障
-    ADDR_PROTECT_CLOCK,                                   // 保护闭锁
-    ADDR_DOUBLE_PROHIBIT_CLOSSING,                        // 双侧有压禁止合闸
-    ADDR_SINGLE_LOSS_CLOSING_EVENT,                       // 单侧失压延时合闸事件
-    ADDR_REMAIN_CLOCK_CLOSSING,                           // 残压闭锁合闸
-    ADDR_U0_EARTHING_FAULT_TRIP,                          // 零序电压接地故障跳闸
-    ADDR_SMALL_SIGNAL_GROUND_LINE_TRIP,                   // 小信号接地选线跳闸
-    ADDR_BREAKINGCURRENT,                                 // 遮断电流
-    ADDR_OVERLOAD_EVENT,                                  // 过负荷事件
-    ADDR_HAVEY_OVERLOAD_EVENT,                            // 重过载	
-    ADDR_OVER_VOLTAGE_PROTECTION,                         // 过压保护
-	ADDR_OVER_FREQUEBNCY_PROTECTION,                      // 过频
-    ADDR_DOWN_VOLTAGE_PROTECTION,                         // 低压保护
-	ADDR_DOWN_FREQUEBNCY_PROTECTION,                      // 低频		
-    ADDR_OVERLIMIT_Uab_UP,                                // Uab越限
-    ADDR_OVERLIMIT_Uab_DOWN,                              // Uab越限
-    ADDR_OVERLIMIT_Ubc_UP,                                // Ubc越限
-    ADDR_OVERLIMIT_Ubc_DOWN,                              // Ubc越限
-    ADDR_OVERLIMIT_Uca_UP,                                // Uca越限
-    ADDR_OVERLIMIT_Uca_DOWN,                              // Uca越限	
-    ADDR_OVERLIMIT_UAB_UP,                                // UAB越限
-    ADDR_OVERLIMIT_UAB_DOWN,                              // UAB越限	
-    ADDR_OVERLIMIT_UBC_UP,                                // UBC越限
-    ADDR_OVERLIMIT_UBC_DOWN,                              // UBC越限
-    ADDR_OVERLIMIT_U0_UP,                                 // 零序电压越限
-    ADDR_OVERLIMIT_U0_DOWN,                               // 零序电压越限
-    ADDR_OVERLIMIT_IA_UP,                                 // A相电流越限
-    ADDR_OVERLIMIT_IA_DOWN,                               // A相电流越限
-    ADDR_OVERLIMIT_IB_UP,                                 // B相电流越限
-    ADDR_OVERLIMIT_IB_DOWN,                               // B相电流越限
-    ADDR_OVERLIMIT_IC_UP,                                 // C相电流越限
-    ADDR_OVERLIMIT_IC_DOWN,                               // C相电流越限
-    ADDR_OVERLIMIT_I0_UP,                                 // 零序电流越限
-    ADDR_OVERLIMIT_I0_DOWN,                               // 零序电流越限
-    ADDR_OVERLIMIT_DC_U_UP,                               // 直流电压越限
-    ADDR_OVERLIMIT_DC_U_DOWN,                             // 直流电压越限
-    ADDR_OVERLIMIT_DC_I_UP,                               // 直流电流越限
-    ADDR_OVERLIMIT_DC_I_DOWN,                             // 直流电流越限
-    ADDR_DEVICE_POWER_DOWN,                               // 装置掉电
-    ADDR_TELECONTROL_PRO_OUT,                             // 遥控保护退出
-	
-	TELESIGNAL_TOTAL_NUM
-};
+    rt_uint16_t 
+	switchOpen,	
+	switchClose,
+    operatingMechanism,                             // 电容欠压(储能开入)
+    lowPressure,                                    // 低气压
+    powerFaultAlarm,                                // 电源故障告警
+    batteryUnderVoltageAlarm,                       // 电池欠压告警
+    batteryActivationStatus,                        // 电池活化状态
+    batteryLossAlarm,                               // 电池失电告警
+    breakContact,                                   // 分断/联络
+    recloseFAHardStrap,                             // 重合硬/FA压板
+    functionHardStrap,                              // 功能投退硬压板
+    remoteEarth,                                    // 远方/就地
+    shortCircuitFault,                              // 短路故障/过流保护
+    earthingFault,                                  // 接地故障/零序保护
+    protectionAct,                                  // 保护动作
+    protectionLock,                                 // 保护闭锁
+    closingLocked,                                  // 合闸闭锁
+    openingLocked,                                  // 分闸闭锁    
+    recloseAct,                                     // 重合动作
+    recloseLock,                                    // 重合闸闭锁
+    deviceFault,                                    // 装置故障
+    selfCheckAbnomal,                               // 自检异常
+    communication,                                  // 通讯 
+    swtichclass,                                    // 开关类型
+    batteryFaultAlarm,                              // 电池故障告警
+    doubleSwitch,                                   // 双点开关分合
+    controlLoopDisconnection,                       // 控制回路断线
+    overcurrentIa1,                                 // A相过流一段保护
+    overcurrentIb1,                                 // B相过流一段保护
+    overcurrentIc1,                                 // C相过流一段保护
+    overcurrentIa2,                                 // A相过流二段保护
+    overcurrentIb2,                                 // A相过流二段保护
+    overcurrentIc2,	                                // A相过流二段保护
+    overcurrentIa3,                                 // A相过流三段保护
+    overcurrentIb3,                                 // A相过流三段保护
+    overcurrentIc3,	                                // A相过流三段保护
+    overcurrentI01,                                 // 零序过流一段保护
+    overcurrentI02,	                                // 零序过流二段保护
+    overcurrentAccIa,                               // A相后加速过流
+    overcurrentAccIb,                               // B相后加速过流
+    overcurrentAccIc,                               // C相后加速过流
+    overcurrentInverseIa,                           // A相反时限过流
+    overcurrentInverseIb,                           // B相反时限过流
+    overcurrentInverseIc,                           // C相反时限过流
+    recloseProtection1,                             // 重合闸一次保护
+    recloseProtection2,                             // 重合闸二次保护
+    recloseProtection3,                             // 重合闸三次保护
+    recloseProtection4,                             // 重合闸四次保护
+    recloseClockProtection,                         // 重合闸闭锁保护
+    zeroRecloseProtection1,                         // 零序重合闸一次保护
+    zeroRecloseProtection2,                         // 零序重合闸二次保护
+    clockSecondaryClose,                            // 闭锁二次重合闸
+    lossTrip,                                       // 失电跳闸
+    getClossing,                                    // 得电合闸
+    closingFaultEvent,                              // 合闸于故障
+    protectionLocked,                               // 保护闭锁
+    doubleProhibitClossing,                         // 双侧有压禁止合闸
+    singleLossClosingEvent,                         // 单侧失压延时合闸
+    remainClockClossing,                            // 残压闭锁合闸
+    earthingFaultTripU0,                            // 零序电压接地故障跳闸
+    smallSignalEarthingTrip,                        // 小信号接地选线跳闸
+    breakingCurrent,                                // 遮断电流
+    overloadEvent,                                  // 过负荷事件
+    haveyOverload,                                  // 重过载	
+    overVoltageProtection,                          // 过压保护
+	overFrequencyProtection,                        // 过频
+    downVoltageProtection,                          // 低压保护
+	downFrequencyProtection,                        // 低频		
+    overLimitUabUp,                                 // Uab越限
+    overLimitUabDown,                               // Uab越限
+    overLimitUbcUp,                                 // Ubc越限
+    overLimitUbcDown,                               // Ubc越限
+    overLimitUcaUp,                                 // Uca越限
+    overLimitUcaDown,                               // Uca越限	
+    overLimitUABUp,                                 // UAB越限
+    overLimitUABDown,                               // UAB越限	
+    overLimitUBCUp,                                 // UBC越限
+    overLimitUBCDown,                               // UBC越限
+    overLimitU0Up,                                  // 零序电压越限
+    overLimitU0Down,                                // 零序电压越限
+    overLimitIaUp,                                  // A相电流越限
+    overLimitIaDown,                                // A相电流越限
+    overLimitIbUp,                                  // B相电流越限
+    overLimitIbDown,                                // B相电流越限
+    overLimitIcUp,                                  // C相电流越限
+    overLimitIcDown,                                // C相电流越限
+    overLimitI0Up,                                  // 零序电流越限
+    overLimitI0Down,                                // 零序电流越限
+    overLimitDC_U_Up,                               // 直流电压越限
+    overLimitDC_U_Down,                             // 直流电压越限
+    overLimitDC_I_Up,                               // 直流电流越限
+    overLimitDC_I_Down,                             // 直流电流越限
+    devicePowerDown,                                // 装置掉电
+    telecontrolProOut;                              // 遥控保护退出  
+}TelesignalAddr;
 
-///* 遥信数据 */
-//typedef union TagTelesignalDatabase
-//{
-//    struct Telesignal
-//    {
-//        rt_uint8_t switchOpen;               // 开关分位
-//        rt_uint8_t switchClose;              // 开关合位
-//        rt_uint8_t operatingMechanism;       // 弹簧储能/永磁电容欠压
-//        rt_uint8_t lowPressure;              // 低气压
-//        rt_uint8_t powerFaultAlarm;          // 电源故障告警
-//        rt_uint8_t batteryUnderVoltageAlarm; // 电池欠压告警
-//        rt_uint8_t batteryActivationStatus;  // 电池活化状态
-//        rt_uint8_t batteryLossAlarm;         // 电池失电告警
-//        rt_uint8_t breakContact;             // 分断/联络	(模式)
-//        union
-//        {
-//            rt_uint8_t recloseHardStrap;     // 重合闸硬压板
-//            rt_uint8_t faHardStrap;          // FA功能投退硬压板
-//        } FA;
-//        rt_uint8_t functionHardStrap;        // 功能投退硬压板
-//        rt_uint8_t remoteEarth;              // 远方/就地
-//        rt_uint8_t shortCircuitFault;        // 短路故障/过流保护
-//        rt_uint8_t earthingFault;            // 接地故障/零序保护
-//        rt_uint8_t protectionAct;            // 保护动作
-//        rt_uint8_t protectionLock;           // 保护闭锁
-//        rt_uint8_t closingLocked;            // 合闸闭锁
-//        rt_uint8_t openingLockedEvent;       // 分闸闭锁事件
-//        rt_uint8_t recloseAct;               // 重合动作
-//        rt_uint8_t recloseLock;  			  // 重合闭锁
-//        rt_uint8_t deviceFault;              // 装置故障
-//		rt_uint8_t selfCheckAbnomal;         // 自检异常
-//		rt_uint8_t communication;            // 通讯
-//        rt_uint8_t swtichclass;              // 开关类型		
-//        rt_uint8_t batteryLowVoltageAlarm;   // 蓄电池低压告警(直流量)
-//        rt_uint8_t doubleSwitch;             // 双点开关分合
-//        rt_uint8_t controlLoopDisconnection; // 控制回路断线
-//        rt_uint8_t overcurrentIa1;           // A相过流一段保护
-//        rt_uint8_t overcurrentIb1;           // B相过流一段保护
-//        rt_uint8_t overcurrentIc1;           // C相过流一段保护
-//        rt_uint8_t overcurrentIa2;           // A相过流二段保护
-//        rt_uint8_t overcurrentIb2;           // B相过流二段保护
-//        rt_uint8_t overcurrentIc2;           // C相过流二段保护
-//        rt_uint8_t overcurrentIa3;           // A相过流三段保护
-//        rt_uint8_t overcurrentIb3;           // B相过流三段保护
-//        rt_uint8_t overcurrentIc3;           // C相过流三段保护
-//        rt_uint8_t overcurrentI01;           // 零序过流一段保护
-//        rt_uint8_t overcurrentI02;           // 零序过流二段保护
-//        rt_uint8_t overcurrentAccIa;		  // A相后加速过流
-//        rt_uint8_t overcurrentAccIb;		  // B相后加速过流
-//        rt_uint8_t overcurrentAccIc;		  // C相后加速过流
-//        rt_uint8_t overcurrentInverseIa;	  // A相反时限过流
-//        rt_uint8_t overcurrentInverseIb;	  // B相反时限过流
-//        rt_uint8_t overcurrentInverseIc;	  // C相反时限过流
-//        rt_uint8_t recloseProtection1;		  // 重合闸一次保护
-//        rt_uint8_t recloseProtection2;		  // 重合闸二次保护
-//        rt_uint8_t recloseProtection3;		  // 重合闸三次保护
-//        rt_uint8_t recloseProtection4;		  // 重合闸四次保护
-//        rt_uint8_t recloseClockProtection;	  // 重合闸闭锁保护
-//        rt_uint8_t zeroRecloseProtection1;   // 零序重合闸一次保护
-//        rt_uint8_t zeroRecloseProtection2;   // 零序重合闸二次保护
-//        rt_uint8_t clockSecondaryClose;      // 闭锁二次重合闸
-//        rt_uint8_t lossTrip;                 // 失电跳闸
-//        rt_uint8_t getClossingEvent;		  // 得电合闸事件
-//        rt_uint8_t closingFaultEvent;        // 合闸于故障
-//        rt_uint8_t protectionLockedEvent;    // 保护闭锁事件
-//        rt_uint8_t doubleProhibitClossing;   // 双侧有压禁止合闸
-//        rt_uint8_t singleLossClosingEvent;   // 单侧失压延时合闸事件
-//        rt_uint8_t remainClockClossing;      // 残压闭锁合闸
-//        rt_uint8_t earthingFaultTripU0;      // 零序电压接地故障跳闸
-//        rt_uint8_t smallSignalEarthingTrip;  // 小信号接地选线跳闸
-//        rt_uint8_t breakingCurrent;          // 遮断电流
-//        rt_uint8_t overloadEvent;            // 过负荷事件		
-//        rt_uint8_t haveyOverload;            // 重过载
-//        rt_uint8_t overVoltageProtection;    // 过压保护
-//        rt_uint8_t overFrequencyProtection;  // 过频保护		
-//        rt_uint8_t downVoltageProtection;    // 低压保护	
-//        rt_uint8_t downFrequencyProtection;  // 低频保护
-//        rt_uint8_t overLimitUaUp;            // A相电压越上限
-//        rt_uint8_t overLimitUaDown;          // A相电压越下限
-//        rt_uint8_t overLimitUbUp;            // B相电压越上限
-//        rt_uint8_t overLimitUbDown;          // B相电压越下限
-//        rt_uint8_t overLimitUcUp;            // C相电压越上限
-//        rt_uint8_t overLimitUcDown;          // C相电压越下限
-//        rt_uint8_t overLimitU0Up;            // 零序电压越上限
-//        rt_uint8_t overLimitU0Down;          // 零序电压越下限
-//        rt_uint8_t overLimitIaUp;            // A相电压越上限
-//        rt_uint8_t overLimitIaDown;          // A相电压越下限
-//        rt_uint8_t overLimitIbUp;            // B相电压越上限
-//        rt_uint8_t overLimitIbDown;          // B相电压越下限
-//        rt_uint8_t overLimitIcUp;            // C相电压越上限
-//        rt_uint8_t overLimitIcDown;          // C相电压越下限
-//        rt_uint8_t overLimitI0Up;            // 零序电压越上限
-//        rt_uint8_t overLimitI0Down;          // 零序电压越下限
-//        rt_uint8_t overLimitDC_U_Up;         // 直流电压越上限
-//        rt_uint8_t overLimitDC_U_Down;       // 直流电压越下限
-//        rt_uint8_t overLimitDC_I_Up;         // 直流电流越限
-//        rt_uint8_t overLimitDC_I_Down;       // 直流电流越限
-//        rt_uint8_t devicePowerDown;          // 装置掉电
-//    }Str;
+#define TELESIGNAL_TOTAL_NUM (sizeof(TelesignalAddr)/sizeof(rt_uint16_t))
 
-//    rt_uint8_t buf[sizeof(struct Telesignal)];
-
-//}TelesignalDatabase;
-
-enum TelemetryAddr
+typedef struct TagTelemetryAddr
 {
-	ADDR_F,
-    ADDR_IA,
-    ADDR_IB,
-    ADDR_IC,
-    ADDR_I0,
-    ADDR_Uab,
-    ADDR_Ucb,
-    ADDR_Uac,
-    ADDR_U0,
-    ADDR_UAB,
-    ADDR_UCB,
-	ADDR_P,
-    ADDR_Q,
-    ADDR_S,
-    ADDR_PF,
-    ADDR_DC1,
-    ADDR_DC2,
-    ADDR_T,
-	ADDR_AIPHY_Uab_Ia,
-	ADDR_AIPHY_Ucb_Ic,
-    ADDR_AIPHY_U0_I0,
-    ADDR_ALPHY_Ux_Ux,		
-	ADDR_Ia_ONCE,
-	ADDR_Ib_ONCE,
-	ADDR_Ic_ONCE,
-	ADDR_I0_ONCE,	
-    ADDR_Uab_ONCE,
-    ADDR_Ubc_ONCE,
-    ADDR_Uca_ONCE,
-    ADDR_U0_ONCE,
-    ADDR_UAB_ONCE,
-    ADDR_UBC_ONCE,
-	ADDR_P_ONCE,
-    ADDR_Q_ONCE,
-    ADDR_S_ONCE,
-//    VOLTAGE_PASS_RATE,
-	THIRDHARMONIC_Uab,
-	THIRDHARMONIC_Ubc,
-	THIRDHARMONIC_Uca,
-	THIRDHARMONIC_U0,
-//	THIRDHARMONIC_UAB,
-//	THIRDHARMONIC_UBC,
-	THIRDHARMONIC_Ia,
-	THIRDHARMONIC_Ib,
-	THIRDHARMONIC_Ic,
-	THIRDHARMONIC_I0,
-	FIFTHHARMONIC_Uab,
-	FIFTHHARMONIC_Ubc,
-	FIFTHHARMONIC_Uca,
-	FIFTHHARMONIC_U0,
-//	FIFTHHARMONIC_UAB,
-//	FIFTHHARMONIC_UBC,
-	FIFTHHARMONIC_Ia,
-	FIFTHHARMONIC_Ib,
-	FIFTHHARMONIC_Ic,
-	FIFTHHARMONIC_I0,
+    rt_uint16_t 
+	F,
+    Ia,
+    Ib,
+    Ic,
+    I0,
+    Uab,
+    Ucb,
+    Uac,
+    U0,
+    UAB,
+    UCB,
+	P,
+    Q,
+    S,
+    PF,
+    DC1,
+    DC2,
+    T,
+	alphy_Uab_Ia,
+	alphy_Ucb_Ic,
+    alphy_U0_I0,
+    alphy_Ux_Ux,		
+	IaOnce,
+	IbOnce,
+	IcOnce,
+	I0Once,	
+    UabOnce,
+    UbcOnce,
+    UcaOnce,
+    U0Once,
+    UABOnce,
+    UBCOnce,
+	POnce,
+    QOnce,
+    SOnce,
+	thirdharmonicUab,
+	thirdharmonicUbc,
+	thirdharmonicUca,
+	thirdharmonicU0,
+	thirdharmonicIa,
+	thirdharmonicIb,
+	thirdharmonicIc,
+	thirdharmonicI0,
+	fifthharmonicUab,
+	fifthharmonicUbc,
+	fifthharmonicUca,
+	fifthharmonicU0,
+	fifthharmonicIa,
+	fifthharmonicIb,
+	fifthharmonicIc,
+	fifthharmonicI0;
+}TelemetryAddr;
 
-    TELEMETRY_TOTAL_NUM
-};
+#define TELEMETRY_TOTAL_NUM (sizeof(TelemetryAddr)/sizeof(rt_uint16_t))
  
 enum TelecontrlAddr
 {
@@ -636,9 +529,11 @@ enum TelecontrlAddr
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录
 	ADDR_HANDHELD_OPER,           // 手持操作
-    REMOTE_TOTAL_NUM,
 	ADDR_LOGIC_ACT,               // 逻辑动作	
+    
+    REMOTE_TOTAL_NUM,
 };
+
 /* PARA ----------------------------------------------------------------------*/
 #define RT_SYS_CONFIG_DEFAULT                           \
 {                                                       \
@@ -1175,6 +1070,7 @@ extern struct ConfigurationSetDatabase *g_ConfigurationSetDB;
 extern struct SD2405Time g_SystemTime;
 
 /* 遥信缓存 */
+extern TelesignalAddr       g_TelesignalAddr;
 extern uint8_t				g_TelesignalDB[TELESIGNAL_TOTAL_NUM];	
 /* 新遥信点表映射 */
 //extern List NewList_Telesignal[TELESIGNAL_TOTAL_NUM];
@@ -1182,6 +1078,7 @@ extern rt_uint16_t g_NewMaxNumTelesignal;
 extern rt_uint16_t g_NewToOldTelesignal[];//新点表映射
 
 /* 遥测缓存 */
+extern TelemetryAddr   g_TelemetryAddr;
 extern float g_TelemetryDB[TELEMETRY_TOTAL_NUM];
 extern float g_TelemetryLastDB[TELEMETRY_TOTAL_NUM];
 extern float g_secondHarmonicIa, g_secondHarmonicIb, g_secondHarmonicIc;
