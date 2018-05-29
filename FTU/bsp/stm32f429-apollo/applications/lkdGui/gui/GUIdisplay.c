@@ -558,18 +558,24 @@ void DZModfiyFun(void)
 	}
 	if(stepTab[STEP_DZHIMODFIY] == 2){//光标闪动处理
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType == 0){
-			if(GetIntervalTick(inputCursorTick) < 500){
+			if(GetIntervalTick(inputCursorTick) < 1000){
 				if(modfiyStr[modfiyStrP] != '|'){
 					modfiyStr[modfiyStrP] = '|';
 					modfiyStr[modfiyStrP + 1] = '\0';
-					stepTab[STEP_DZHIMODFIY] = 1;
+					GuiFillRect(DZModfiyWin.x + 50,DZModfiyWin.y + 77,\
+						DZModfiyWin.x + 128,DZModfiyWin.y + 89, backcolor);
+					GuiFont12Align(DZModfiyWin.x + 50,DZModfiyWin.y + 77,78,FONT_MID,modfiyStr);
+					GuiUpdateDisplayAll();
 				}
 			}
-			else if(GetIntervalTick(inputCursorTick) < 1000){
+			else if(GetIntervalTick(inputCursorTick) < 2000){
 				if(modfiyStr[modfiyStrP] != ' '){
 					modfiyStr[modfiyStrP] = ' ';
 					modfiyStr[modfiyStrP + 1] = '\0';
-					stepTab[STEP_DZHIMODFIY] = 1;
+					GuiFillRect(DZModfiyWin.x + 50,DZModfiyWin.y + 77,\
+						DZModfiyWin.x + 128,DZModfiyWin.y + 89, backcolor);
+					GuiFont12Align(DZModfiyWin.x + 50,DZModfiyWin.y + 77,78,FONT_MID,modfiyStr);
+					GuiUpdateDisplayAll();
 				}
 			}
 			else{
@@ -607,19 +613,19 @@ void DZModfiyFun(void)
 		}
 	}
 	if(stepTab[STEP_DZHIMODFIY] == 5){//发送完后等待回复
-		GuiFillRect(DZModfiyWin.x + 57,DZModfiyWin.y + DZModfiyWin.hight - 14,\
-			DZModfiyWin.x + DZModfiyWin.wide - 2,DZModfiyWin.y + DZModfiyWin.hight - 2, backcolor);
-		GuiFont12Align(DZModfiyWin.x + 57,\
-			DZModfiyWin.y + DZModfiyWin.hight - 14,70,FONT_RIGHT,"修改成功");
-		GuiUpdateDisplayAll();
+//		GuiFillRect(DZModfiyWin.x + 57,DZModfiyWin.y + DZModfiyWin.hight - 14,\
+//			DZModfiyWin.x + DZModfiyWin.wide - 2,DZModfiyWin.y + DZModfiyWin.hight - 2, backcolor);
+//		GuiFont12Align(DZModfiyWin.x + 57,\
+//			DZModfiyWin.y + DZModfiyWin.hight - 14,70,FONT_RIGHT,"修改成功");
+//		GuiUpdateDisplayAll();
 		stepTab[STEP_DZHIMODFIY] = 6;
-		inputCursorTick = getCurrentTick();
+		//inputCursorTick = getCurrentTick();
 	}
 	if(stepTab[STEP_DZHIMODFIY] == 6){
-		if(GetIntervalTick(inputCursorTick) > 500){//延时退出
-			stepTab[STEP_DZHIMODFIY] = 0;
-			userGUITopWindowHide();
-		}
+		stepTab[STEP_DZHIMODFIY] = 0;
+		userGUITopWindowHide();
+//		if(GetIntervalTick(inputCursorTick) > 100){//延时退出
+//		}
 	}
 	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] >= 4){
 		keyStatus = NoKey;
@@ -770,6 +776,7 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 				if((uint32_t)tempFloat >= info->pRoot[info->pBuff[i]].dataType){
 					tempFloat = 0;
 				}
+				col1Data[i*16] = tempFloat;
 				*(pText + i*DZDISPLAYCOL + 1) = (uint8_t *)info->pRoot[info->pBuff[i]].pContent[(uint8_t)tempFloat];
 			}
 			else{//float value
@@ -861,7 +868,6 @@ void HomeWindowFun(void)
 	uint8_t i,j;
 	uint16_t memMall;
 	if(stepTab[STEP_HOMEWIN] == 0){//绘制主页
-		rt_kprintf("\r\n主板flag0");
 		memMall = 0;
 		strTime = &userGUIBuff[memMall];
 		memMall += 32;
@@ -1642,7 +1648,7 @@ static void YaoxinFun(void)
 	static uint8_t **pText;//列表内容指针
 	static uint8_t *col1Data;//显示内容指针	
 	static uint32_t YaoXinTick;
-	
+	static int16_t currentNum;
 	uint16_t memMall;
 	uint8_t i;
 	uint8_t itemsNum;
@@ -1662,7 +1668,7 @@ static void YaoxinFun(void)
 		Scroll->x = 156;
 		Scroll->y = 18;
 		Scroll->hight = 141;
-		Scroll->max = itemsNum/DISPLAYLISTROW+(itemsNum%DISPLAYLISTROW >0 ?1:0);
+		Scroll->max = itemsNum / DISPLAYLISTROW + (itemsNum % DISPLAYLISTROW > 0 ? 1:0);
 		Scroll->lump = 1;
 		colset.colWide = (uint8_t *)listCol[0];
 		colset.colFlag = (uint8_t *)listCol[1];
@@ -1673,10 +1679,11 @@ static void YaoxinFun(void)
 		list->row = itemsNum;
 		list->col = 2;
 		list->drawRow = 0;
-		list->currentRow = 255;
+		list->currentRow = 0;
 		list->flag = LIST_USEBORDER_H;
 		list->content = (uint8_t **)pText;
-		list->colSet = &colset;	
+		list->colSet = &colset;
+		currentNum = 0;
 		stepTab[STEP_NORMAL] = 1;
 	}
 	if(stepTab[STEP_NORMAL] == 1){//获取相应数据
@@ -1694,12 +1701,19 @@ static void YaoxinFun(void)
 		stepTab[STEP_NORMAL] = 2;
 	}
 	if(stepTab[STEP_NORMAL] == 2){//显示
-		if(list->drawRow == list->row - DISPLAYLISTROW){
-			Scroll->lump = Scroll->max;
+		list->drawRow = currentNum * DISPLAYLISTROW;
+		list->currentRow = list->drawRow;
+		if(currentNum * DISPLAYLISTROW + DISPLAYLISTROW > list->row){
+			if(list->row - DISPLAYLISTROW > 0){
+				list->drawRow = list->row - DISPLAYLISTROW;
+				list->currentRow = list->drawRow + (currentNum + 1) * DISPLAYLISTROW - list->row;
+			}
+			else{
+				list->currentRow = 0;
+				list->drawRow = 0;
+			}
 		}
-		else{
-			Scroll->lump = list->drawRow/DISPLAYLISTROW + 1;
-		}
+		Scroll->lump = currentNum + 1;
 		DrawList(list);
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
@@ -1714,16 +1728,16 @@ static void YaoxinFun(void)
 
 	switch(keyStatus){
 	case UpKey:
-		if(list->drawRow > DISPLAYLISTROW)
-			list->drawRow -= DISPLAYLISTROW;
-		else
-			list->drawRow = 0;
+		currentNum --;
+		if(currentNum < 0){
+			currentNum = 0;
+		}
 		stepTab[STEP_NORMAL] = 2;
 		break;	
 	case DownKey:	
-		list->drawRow += DISPLAYLISTROW;
-		if(list->drawRow + DISPLAYLISTROW > list->row){
-			list->drawRow = list->row - DISPLAYLISTROW;
+		currentNum ++;
+		if(currentNum >= Scroll->max){
+			currentNum = Scroll->max - 1;
 		}
 		stepTab[STEP_NORMAL] = 2;
 		break;
@@ -1757,7 +1771,7 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 	static uint8_t **pText;//列表内容指针
 	static uint8_t *col1Data;//显示内容指针		
 	static uint32_t YaoCeTick;//循环计时
-	
+	static int16_t currentNum;
 	uint16_t memMall;
 	uint8_t i;
 	uint8_t itemsNum = info->num;/* 可显示条目 */
@@ -1790,7 +1804,7 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 		list->flag = LIST_USEBORDER_H;
 		list->content = (uint8_t **)pText;
 		list->colSet = &colset;
-		//获取数据中
+		currentNum = 0;
 		stepTab[STEP_NORMAL] = 1;
 	}
 	if(stepTab[STEP_NORMAL] == 1){
@@ -1809,14 +1823,20 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 		}
 		stepTab[STEP_NORMAL] = 2;
 	}
-	if(stepTab[STEP_NORMAL] == 2){//显示	
-		if(list->drawRow == list->row - DISPLAYLISTROW){
-			Scroll->lump = Scroll->max;
+	if(stepTab[STEP_NORMAL] == 2){//显示
+		list->drawRow = currentNum * DISPLAYLISTROW;
+		list->currentRow = list->drawRow;
+		if(currentNum * DISPLAYLISTROW + DISPLAYLISTROW > list->row){
+			if(list->row - DISPLAYLISTROW > 0){
+				list->drawRow = list->row - DISPLAYLISTROW;
+				list->currentRow = list->drawRow + (currentNum + 1) * DISPLAYLISTROW - list->row;
+			}
+			else{
+				list->currentRow = 0;
+				list->drawRow = 0;
+			}
 		}
-		else{
-			Scroll->lump = list->drawRow/DISPLAYLISTROW +\
-				1 + (list->drawRow % DISPLAYLISTROW > 0 ? 1 : 0);
-		}
+		Scroll->lump = currentNum + 1;
 		DrawList(list);
 		GuiVScroll(Scroll);
 		GuiUpdateDisplayAll();
@@ -1830,23 +1850,19 @@ void yaoCeDisplay(YaoceDisplayInfo *info)
 	}
 	switch(keyStatus){
 	case UpKey:
-		if(stepTab[STEP_NORMAL] > 1){
-			if(list->drawRow > DISPLAYLISTROW)
-				list->drawRow -= DISPLAYLISTROW;
-			else
-				list->drawRow = 0;
-			stepTab[STEP_NORMAL] = 2;
-			break;
-		}	
-	case DownKey:
-		if(stepTab[STEP_NORMAL] > 1){
-			list->drawRow += DISPLAYLISTROW;
-			if(list->drawRow + DISPLAYLISTROW > list->row){
-				list->drawRow = list->row - DISPLAYLISTROW;
-			}
-			stepTab[STEP_NORMAL] = 2;
-			break;
+		currentNum --;
+		if(currentNum < 0){
+			currentNum = 0;
 		}
+		stepTab[STEP_NORMAL] = 2;
+		break;
+	case DownKey:
+		currentNum ++;
+		if(currentNum >= Scroll->max){
+			currentNum = Scroll->max - 1;
+		}
+		stepTab[STEP_NORMAL] = 2;
+		break;
 	case LeftKey:break;
 	case RightKey:break;
 	case OkKey:break;
@@ -2023,125 +2039,6 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 static void SOEFun(void)
 {
 	SoeCoDisplay(&soeInfo);
-//	static struct SOEDisplay *soeStr;
-//	static SCROLL Scroll ={156,18,141,2,1};//进度条
-//	static uint8_t currentNum;
-//	SystemTimeDisplay *tTim;
-//	uint8_t tRes;
-//	uint8_t i;
-//	uint16_t y;
-//	
-//	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
-//		soeStr = (struct SOEDisplay *)&userGUIBuff[0];
-//		soeStr->pRead = 0;
-//		soeStr->allNum = GetSoeNum();
-//		currentNum = 1;
-//		stepTab[STEP_NORMAL] = 1;
-//	}
-//	if(stepTab[STEP_NORMAL] == 1){
-//		if(soeStr->allNum == 0){//没有SOE
-//			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
-//			GuiUpdateDisplayAll();
-//			stepTab[STEP_NORMAL] = 3;
-//		}
-//		else{
-//			if(soeStr->allNum % SOEDISPLAYROW){
-//				Scroll.max = soeStr->allNum / SOEDISPLAYROW + 1;
-//			}
-//			else{
-//				Scroll.max = soeStr->allNum / SOEDISPLAYROW;
-//			}
-//			stepTab[STEP_NORMAL] = 2;
-//		}
-//	}
-//	if(stepTab[STEP_NORMAL] == 2){
-//		soeStr->pRead = (currentNum - 1) * SOEDISPLAYROW;
-//		if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
-//			stepTab[STEP_NORMAL] = 3;
-//		}
-//		y = SOEWin.y + 18;
-//		GuiFillRect(SOEWin.x+1,y,155,158, backcolor);
-//		for(i = 0; i < SOEDISPLAYROW; i ++){
-//			if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
-//				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
-//				break;
-//			}
-//			tRes = GetSoeNoContent(soeStr->pRead,&soeStr->pSoe);
-//			if(tRes != 0){//获取SOE有错
-//				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
-//				break;
-//			}
-//			tTim = &soeStr->pSoe.time;
-//			sprintf((char *)soeStr->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
-//				tTim->year,tTim->month,tTim->day,tTim->hour,tTim->min,tTim->s,tTim->ms);
-//			soeStr->time[23] = '\0';
-//			sprintf((char *)soeStr->itemNum,"%d",soeStr->pRead + 1);
-//			soeStr->itemNum[3] = '\0';
-//			GuiHLine(SOEWin.x,y+i*28+0,155,forecolor);//水平线
-//			GuiFillRect(SOEWin.x+1,y+i*28,SOEWin.x+20,y+i*28+13, forecolor);
-//			GuiExchangeColor();
-//			GuiFont12Align(SOEWin.x+1,y + i*28+1,19,FONT_MID,soeStr->itemNum);//序号
-//			GuiExchangeColor();	
-//			GuiRPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
-//			GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,soeStr->time);
-//			GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
-//			GuiFont12Align(SOEWin.x+2,y + i*28+15,72,FONT_MID,soeStr->pSoe.pName);
-//			GuiRPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
-//			if(soeStr->pSoe.highlight){//高亮显示
-//				GuiFillRect(SOEWin.x+10+73,y+i*28+14,158,y+i*28+28, forecolor);
-//				GuiExchangeColor();
-//				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
-//				GuiExchangeColor();
-//			}
-//			else{
-//				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
-//			}
-//			soeStr->pRead ++;
-//		}
-//		Scroll.lump = currentNum;
-//		GuiVScroll(&Scroll);
-//		GuiUpdateDisplayAll();
-//		stepTab[STEP_NORMAL] = 3;
-//	}
-//	if(stepTab[STEP_NORMAL] == 3){
-//		if(CheckSoeUpdata()){//SOE有更新
-//			soeStr->allNum = GetSoeNum();
-//			soeStr->pRead = 0;
-//			currentNum = 1;
-//			stepTab[STEP_NORMAL] = 1;
-//		}
-//	}
-//	switch(keyStatus){
-//	case UpKey:
-//	case LeftKey:
-//		if(stepTab[STEP_NORMAL] > 1){
-//			currentNum --;
-//			if(currentNum < 1){
-//				currentNum = Scroll.max;
-//			}
-//		}
-//		stepTab[STEP_NORMAL] = 1;
-//		break;
-//	case DownKey:
-//	case RightKey:
-//		if(stepTab[STEP_NORMAL] > 1){
-//			currentNum ++;
-//			if(currentNum > Scroll.max){
-//				currentNum = 1;
-//			}
-//		}
-//		stepTab[STEP_NORMAL] = 1;
-//		break;
-//	case OkKey:break;
-//	case CancelKey:
-//		currentNum = 0;
-//		stepTab[STEP_NORMAL] = 0;
-//		userGUITopWindowHide();
-//		userGUITopWindowRedraw();
-//		userGUIMenuRedraw();
-//		break;
-//	default:break;
-//	}
 }
 /**
   *@brief CO处理函数
@@ -2344,6 +2241,72 @@ static void SerialFun(void)
 static void InternetFun(void)
 {
 	DZModfiyDisplay(&dzhi0Info[DZ0_INTERNET],&stepTab[STEP_NORMAL]);
+}
+/**
+  *@brief 时间修改处理函数
+  *@param  None
+  *@retval None
+  */
+void TimeModfiyFun(void)
+{
+	static uint8_t *pTimeStr;
+	static SystemTimeDisplay *pTime;
+	static uint8_t pMove,pModfiy,timeStrEnd,upDown;
+	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
+		pTimeStr = &userGUIBuff[0];
+		pTime = (SystemTimeDisplay *)&userGUIBuff[32];
+		GetDisplayTime(pTime);
+		sprintf((char *)pTimeStr,"20%02d-%02d-%02d  %02d:%02d:%02d",pTime->year,\
+			pTime->month,pTime->day,pTime->hour,pTime->min,pTime->s);
+		pMove = 2;/* 定位到年的第三位,前两位不可修改 */
+		pModfiy = pTimeStr[2];/* 到年的第三位赋值给修改指针 */
+		timeStrEnd = strlen((char *)pTimeStr) - 1;
+		upDown = 0; 
+		stepTab[STEP_NORMAL] = 1;
+	}
+	if(stepTab[STEP_NORMAL] == 1){//画图
+		while(1){//左右移动 屏蔽无效字符
+			if(pTimeStr[pMove] < '0' || pTimeStr[pMove] > '9'){
+				pMove ++;
+				if(pMove > timeStrEnd){
+					pMove = 2;pModfiy++;
+				}
+			}
+			else{
+				break;
+			}
+		}
+		stepTab[STEP_NORMAL] = 2;
+	}
+	if(stepTab[STEP_NORMAL] == 2 && upDown != 0){
+		if(upDown == 1){//上键
+			pTimeStr[pMove] = 1;
+		}
+		upDown = 0;
+	}
+	
+	switch(keyStatus){
+	case UpKey:upDown = 1;break;
+	case LeftKey:
+		pMove --;
+		if(pMove < 2){
+			pMove = timeStrEnd;
+		}break;
+	case DownKey:upDown = 2;break;
+	case RightKey:
+		pMove ++;
+		if(pMove >= timeStrEnd){
+			pMove = 2;
+		}break;
+	case OkKey:break;
+	case CancelKey:
+		stepTab[STEP_NORMAL] = 0;
+		userGUITopWindowHide();
+		userGUITopWindowRedraw();
+		userGUIMenuRedraw();
+		break;
+	default:break;
+	}
 }
 
 /* END */
