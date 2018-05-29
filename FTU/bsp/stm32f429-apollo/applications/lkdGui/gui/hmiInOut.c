@@ -163,8 +163,8 @@ void SwitchResult(uint8_t switchNo, uint8_t state)
 	}
 	else{
 		switch(switchNo){
-			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
-			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
+			case SW_LOCAL:DBWriteSOE(ADDR_REMOTE_EARTH, OFF);break;
+			case SW_REMORE:DBWriteSOE(ADDR_REMOTE_EARTH, ON);break;
 			case SW_RECLOSE:DBWriteSOE(ADDR_RECLOSE_FA_STRAP, ON);break;
 			case SW_PROTECT:DBWriteSOE(ADDR_FUNCTION_HARDSTRAP, ON);break;
 			case SW_CONTACT:DBWriteSOE(ADDR_BREAK_CONTACT, ON);break;
