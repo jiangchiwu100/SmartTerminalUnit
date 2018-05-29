@@ -928,6 +928,7 @@ enum AddrFixedValue
 	RE_CHARGE_TIME,						 // 重合闸充电时间
 	CURRENT_VALUE,                       // 电流定值
 	VOLTAGE_VALUE,                       // 电压定值
+    NONVOLTAGE_VALUE,                    // 无电压定值
 	FAULT_CHECK_Y_TIME,                  // 故障检测Y时间
 	SHORT_LOCKED_OPENING_TIME,           // 短时闭锁分闸时间
 	LOSS_ELECTRICITY_SWITCH,             // 失电分闸投退 “1投入”、“0退出”

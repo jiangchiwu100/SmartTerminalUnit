@@ -145,6 +145,7 @@ typedef struct
         float *pSwitchOvercurI0[2];            // 零序过流投退 “1投入”、“0退出”
         float *pValueOvercurI0[2];             // 零序过流 流定值，整定范围：00.00A~99.99A
         float *pTimeOvercurI0[2];              // 零序过流时间 时间定值，整定范围：00.00s~99.99s
+        float *pValuehavevol;             // 无压 流定值，整定范围：00.00A~99.99v
         float *pValueLossvol;             // 无压 流定值，整定范围：00.00A~99.99v
         float *pValueLosscur;             // 无流 流定值，整定范围：00.00A~99.99A
         float *pSwitchBreakcur;            // 非遮断投退 “1投入”、“0退出”

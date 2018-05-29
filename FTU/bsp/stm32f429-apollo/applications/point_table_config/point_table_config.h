@@ -117,6 +117,7 @@ struct tagValueParaCfg
     float valMin;          // 下限值
     float defaultVal;      // 缺省值	
 	unsigned char dataType;// 数据类型
+    unsigned char decimals;// 小数点位数
 	char *pContent[5];        // 数据显示内容
 	char *pNote;           // 备注
 };
@@ -139,7 +140,7 @@ extern struct tagTelecontrolCfg TelecontrolCfg[];
 extern struct tagInherentParaCfg InherentParaCfg[];
 extern ConfigurationSetDatabaseToJson SetDatabaseCfg[];
 
-extern unsigned int g_FixedValueCfg1_Len;	
+extern unsigned int g_FixedValueCfg1_Len;
 extern unsigned int g_FixedValueCfg2_Len;
 extern unsigned int g_ParameterCfg_Len;
 extern unsigned int g_CalibrateFactorCfg_Len;

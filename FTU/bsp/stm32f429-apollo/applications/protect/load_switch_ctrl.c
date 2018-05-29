@@ -383,8 +383,8 @@ static void state_judge(ComProSts *comProSts,StateJudgeSts *stateJudegeSts)
     }
     
     //无压
-    if((*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol)*factor)&&\
-            (*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)*factor))
+    if((*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol))&&\
+            (*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)))
     {
         stateJudegeSts->valstr.flag |= STATENOVOLTAGE;
         stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGEGET;
@@ -393,16 +393,16 @@ static void state_judge(ComProSts *comProSts,StateJudgeSts *stateJudegeSts)
     }
     else
     {
-        if((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValueLossvol))&&\
-                (*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValueLossvol)))//双侧有压
+        if((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValuehavevol))&&\
+                (*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValuehavevol)))//双侧有压
         {
             stateJudegeSts->valstr.flag |= STATEDOUBLEVOLTAGE;
             stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGEGET;
 			stateJudegeSts->valstr.flag &= ~STATESINGLEVOLTAGELOSS;
             stateJudegeSts->valstr.flag &= ~STATENOVOLTAGE;
         }
-        else if(((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValueLossvol))&&(*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)*factor))||\
-                ((*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValueLossvol))&&(*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol)*factor)))//单侧有压
+        else if(((*(comProSts->yc.Uab)>*(stateJudegeSts->parastr.pValuehavevol))&&(*(comProSts->yc.Ucb)<=*(stateJudegeSts->parastr.pValueLossvol)))||\
+                ((*(comProSts->yc.Ucb)>*(stateJudegeSts->parastr.pValuehavevol))&&(*(comProSts->yc.Uab)<=*(stateJudegeSts->parastr.pValueLossvol))))//单侧有压
         {
 			if(stateJudegeSts->valstr.flag & STATEDOUBLEVOLTAGE)
 			{
@@ -1392,7 +1392,8 @@ void LoadSwitchCtrlInit(void)
             s_stateJudge[pdrv].parastr.pValueOvercurI0[1] = &g_pFixedValue[OVER_CURRENTI0_VALUE2];
             s_stateJudge[pdrv].parastr.pTimeOvercurI0[0] = &g_pFixedValue[OVER_CURRENTI0_TIME1];
             s_stateJudge[pdrv].parastr.pTimeOvercurI0[1] = &g_pFixedValue[OVER_CURRENTI0_TIME2];
-            s_stateJudge[pdrv].parastr.pValueLossvol = &g_pFixedValue[VOLTAGE_VALUE];
+            s_stateJudge[pdrv].parastr.pValuehavevol = &g_pFixedValue[VOLTAGE_VALUE];
+            s_stateJudge[pdrv].parastr.pValueLossvol = &g_pFixedValue[NONVOLTAGE_VALUE];
             s_stateJudge[pdrv].parastr.pValueLosscur = &g_pFixedValue[CURRENT_VALUE];
             s_stateJudge[pdrv].parastr.pSwitchBreakcur = &g_pFixedValue[BREAKING_CURRENT_SWITCH];
             s_stateJudge[pdrv].parastr.pValueBreakcur = &g_pFixedValue[BREAKING_CURRENT_VALUE];

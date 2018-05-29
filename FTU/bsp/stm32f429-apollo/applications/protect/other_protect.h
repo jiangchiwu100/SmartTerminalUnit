@@ -55,7 +55,9 @@ struct OverLimit
     rt_uint32_t *counterDownReverse;    
 };
 
-/* 遥测超限 */
+#define OVERVOLTAGE 0x00000001
+#define OVERVOLTAGESTA1  0x00010000    //超过电压下限
+/* 过电压跳闸 */
 struct OverVoltage
 {
     float *funSwitch;
@@ -67,6 +69,7 @@ struct OverVoltage
     rt_uint8_t *state;
     rt_uint32_t *counter;
     rt_uint32_t *counterReverse;	
+    rt_uint32_t flag;
 };
 
 /* 过负荷/重过载 */

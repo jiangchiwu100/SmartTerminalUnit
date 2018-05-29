@@ -1359,6 +1359,8 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         rt_multi_common_data_configure_default();
     }
+    
+    
 		
     /* 读取定值区 */
     //FM25VxxReadData(ADDR_FRAM_CURRENT_SN, NULL, &sn, 1);
@@ -1369,6 +1371,13 @@ void rt_multi_common_data_read_config_from_fram(void)
         sn = 1; // 如果没有存储定值区  默认为1区
     }
     g_ValueParaOperateInfo.currentSN = sn;
+    
+    //初始化2区
+    for(i=0;i<g_FixedValueCfg2_Len;i++)
+    {
+        FixedValueCfg2[i] = FixedValueCfg1[i];
+        FixedValueCfg2[i].pVal = &g_FixedValue2[FixedValueCfg1[i].pVal - g_FixedValue1];
+    }
     
     /* 读取当前定值区号 */
     if (g_ValueParaOperateInfo.currentSN == 2)
@@ -1384,6 +1393,7 @@ void rt_multi_common_data_read_config_from_fram(void)
 		g_pFixedValue = g_FixedValue1;
 		g_pFixedValueCfg = FixedValueCfg1;
     } 
+    
     
     /* 读取定值 */
     for (i = 0; i < 4; i++)

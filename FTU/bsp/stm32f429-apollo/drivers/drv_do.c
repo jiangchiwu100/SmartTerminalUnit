@@ -52,11 +52,23 @@ INIT_DEVICE_EXPORT(rt_hw_do_init);
   */  
 static rt_uint8_t rt_hw_close_operate(void)
 {
+    float uab,uCB;
+    
+    if(g_Parameter[CFG_PRO_VOL_M] == 0)
+    {uab = g_TelemetryDB[ADDR_Uab];}
+    else
+    {uab = g_TelemetryDB[ADDR_Ucb];}
+    
+    if(g_Parameter[CFG_PRO_VOL_M] == 0)
+    {uCB = g_TelemetryDB[ADDR_UAB];}
+    else
+    {uCB = g_TelemetryDB[ADDR_UCB];}
+        
     if (g_TelesignalDB[ADDR_OPEN] == ON && g_TelesignalDB[ADDR_CLOSE] == OFF && !CLOSING && !OPENING && g_TelesignalDB[ADDR_DEVICE_FAULT] == OFF)
     {
-		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[ADDR_Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[ADDR_UCB] >= g_pFixedValue[VOLTAGE_VALUE])
+		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && uab >= g_pFixedValue[VOLTAGE_VALUE] && uCB >= g_pFixedValue[VOLTAGE_VALUE])
 		{
-	        if (fabs(g_TelemetryDB[ADDR_ALPHY_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE] || fabs(g_TelemetryDB[ADDR_Uab] - g_TelemetryDB[ADDR_UCB]) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
+	        if (fabs(g_TelemetryDB[ADDR_ALPHY_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE] || fabs(uab - uCB) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
 			{
 				switch (DoStr.actSource)
 				{
