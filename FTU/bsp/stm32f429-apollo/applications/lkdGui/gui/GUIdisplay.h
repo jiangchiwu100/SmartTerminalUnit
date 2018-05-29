@@ -106,6 +106,7 @@ static void MenuM0Fun(void);
 		static void YaoCe2Fun(void);	//二次
 		static void HarmonicFun(void);	//谐波
 	static void SOEFun(void);			//SOE
+	static void COFun(void);			//SOE
 	static void FaultEventFun(void);	//故障事件
 	static void MenuM0S4Fun(void);		//定值查询 
 		static void MenuM0S4S0Fun(void);

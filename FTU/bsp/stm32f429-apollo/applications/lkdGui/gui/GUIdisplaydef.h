@@ -12,7 +12,7 @@ MENU mianMenu = {
 };
 MENU MenuM0 = {
 	0,0,&mianMenu,0,6,{0,1,0,0,1,1},//x,y,fatherMenu,currentItem,mun
-	{"遥信查询","遥测查询"," SOE查询","故障事件","定值查询","配置查询",NULL,NULL,NULL,NULL},
+	{"遥信查询","遥测查询"," SOE查询","操作记录","故障事件","定值查询","配置查询",NULL,NULL,NULL},
 	MenuM0Fun/* itemFunction */	
 };
 MENU MenuM1 = {
@@ -73,6 +73,7 @@ WINDOW YaoxinWin     = {0,0,160,160,NULL,"遥信状态窗口",YaoxinFun};
 	WINDOW YaoCe2Win   = {0,0,160,160,NULL,"二次遥测窗口",YaoCe2Fun};
 	WINDOW HarmonicWin = {0,0,160,160,NULL,"谐波分量窗口",HarmonicFun};
 WINDOW SOEWin   	 = {0,0,160,160,NULL,"SOE记录窗口",SOEFun};
+WINDOW COWin   	 = {0,0,160,160,NULL,"操作记录窗口",COFun};
 WINDOW FaultEventWin = {0,0,160,160,NULL,"故障事件窗口",FaultEventFun};
 
 /* 信息查询->定值查询菜单子窗口 */

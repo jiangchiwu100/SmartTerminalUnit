@@ -1056,9 +1056,10 @@ static void MenuM0Fun(void)
 		case 0:userGUIWindowAdd(&YaoxinWin);break;//遥信查询
 		case 1:userGUIMenuAdd(&MenuM0S1);break;//遥测查询
 		case 2:userGUIWindowAdd(&SOEWin);break;//SOE查询
-		case 3:userGUIWindowAdd(&FaultEventWin);break;//故障事件
-		case 4:userGUIMenuAdd(&MenuM0S4);break;//定值查询
-		case 5:userGUIMenuAdd(&MenuM0S5);break;//配置查询
+		case 3:userGUIWindowAdd(&COWin);break;//操作记录
+		case 4:userGUIWindowAdd(&FaultEventWin);break;//故障事件
+		case 5:userGUIMenuAdd(&MenuM0S4);break;//定值查询
+		case 6:userGUIMenuAdd(&MenuM0S5);break;//配置查询
 		default:break;
 		}
 	}
@@ -1888,13 +1889,12 @@ static void HarmonicFun(void)
 	yaoCeDisplay(&yceInfo[2]);
 }
 
-
 /**
-  *@brief SOE处理函数
-  *@param  None
+  *@brief Coe/Co处理函数
+  *@param  pInfo Coe/Co信息结构体
   *@retval None
   */
-static void SOEFun(void)
+static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 {
 	static struct SOEDisplay *soeStr;
 	static SCROLL Scroll ={156,18,141,2,1};//进度条
@@ -1907,7 +1907,7 @@ static void SOEFun(void)
 	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		soeStr = (struct SOEDisplay *)&userGUIBuff[0];
 		soeStr->pRead = 0;
-		soeStr->allNum = GetSoeNum();
+		soeStr->allNum = pInfo->GetNum();
 		currentNum = 1;
 		stepTab[STEP_NORMAL] = 1;
 	}
@@ -1939,7 +1939,7 @@ static void SOEFun(void)
 				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
 				break;
 			}
-			tRes = GetSoeNoContent(soeStr->pRead,&soeStr->pSoe);
+			tRes = pInfo->GetNoContent(soeStr->pRead,&soeStr->pSoe);
 			if(tRes != 0){//获取SOE有错
 				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
 				break;
@@ -1977,8 +1977,8 @@ static void SOEFun(void)
 		stepTab[STEP_NORMAL] = 3;
 	}
 	if(stepTab[STEP_NORMAL] == 3){
-		if(CheckSoeUpdata()){//SOE有更新
-			soeStr->allNum = GetSoeNum();
+		if(pInfo->CheckUpdata()){//Co有更新
+			soeStr->allNum = pInfo->GetNum();
 			soeStr->pRead = 0;
 			currentNum = 1;
 			stepTab[STEP_NORMAL] = 1;
@@ -2007,7 +2007,6 @@ static void SOEFun(void)
 		break;
 	case OkKey:break;
 	case CancelKey:
-		currentNum = 0;
 		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
 		userGUITopWindowRedraw();
@@ -2015,6 +2014,143 @@ static void SOEFun(void)
 		break;
 	default:break;
 	}
+}
+/**
+  *@brief SOE处理函数
+  *@param  None
+  *@retval None
+  */
+static void SOEFun(void)
+{
+	SoeCoDisplay(&soeInfo);
+//	static struct SOEDisplay *soeStr;
+//	static SCROLL Scroll ={156,18,141,2,1};//进度条
+//	static uint8_t currentNum;
+//	SystemTimeDisplay *tTim;
+//	uint8_t tRes;
+//	uint8_t i;
+//	uint16_t y;
+//	
+//	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
+//		soeStr = (struct SOEDisplay *)&userGUIBuff[0];
+//		soeStr->pRead = 0;
+//		soeStr->allNum = GetSoeNum();
+//		currentNum = 1;
+//		stepTab[STEP_NORMAL] = 1;
+//	}
+//	if(stepTab[STEP_NORMAL] == 1){
+//		if(soeStr->allNum == 0){//没有SOE
+//			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
+//			GuiUpdateDisplayAll();
+//			stepTab[STEP_NORMAL] = 3;
+//		}
+//		else{
+//			if(soeStr->allNum % SOEDISPLAYROW){
+//				Scroll.max = soeStr->allNum / SOEDISPLAYROW + 1;
+//			}
+//			else{
+//				Scroll.max = soeStr->allNum / SOEDISPLAYROW;
+//			}
+//			stepTab[STEP_NORMAL] = 2;
+//		}
+//	}
+//	if(stepTab[STEP_NORMAL] == 2){
+//		soeStr->pRead = (currentNum - 1) * SOEDISPLAYROW;
+//		if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
+//			stepTab[STEP_NORMAL] = 3;
+//		}
+//		y = SOEWin.y + 18;
+//		GuiFillRect(SOEWin.x+1,y,155,158, backcolor);
+//		for(i = 0; i < SOEDISPLAYROW; i ++){
+//			if(soeStr->pRead >= soeStr->allNum){//SOE最后一条
+//				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
+//				break;
+//			}
+//			tRes = GetSoeNoContent(soeStr->pRead,&soeStr->pSoe);
+//			if(tRes != 0){//获取SOE有错
+//				GuiHLine(SOEWin.x,y+i*28,155,forecolor);
+//				break;
+//			}
+//			tTim = &soeStr->pSoe.time;
+//			sprintf((char *)soeStr->time,"%02d/%02d/%02d-%02d:%02d:%02d.%03d",\
+//				tTim->year,tTim->month,tTim->day,tTim->hour,tTim->min,tTim->s,tTim->ms);
+//			soeStr->time[23] = '\0';
+//			sprintf((char *)soeStr->itemNum,"%d",soeStr->pRead + 1);
+//			soeStr->itemNum[3] = '\0';
+//			GuiHLine(SOEWin.x,y+i*28+0,155,forecolor);//水平线
+//			GuiFillRect(SOEWin.x+1,y+i*28,SOEWin.x+20,y+i*28+13, forecolor);
+//			GuiExchangeColor();
+//			GuiFont12Align(SOEWin.x+1,y + i*28+1,19,FONT_MID,soeStr->itemNum);//序号
+//			GuiExchangeColor();	
+//			GuiRPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
+//			GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,soeStr->time);
+//			GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
+//			GuiFont12Align(SOEWin.x+2,y + i*28+15,72,FONT_MID,soeStr->pSoe.pName);
+//			GuiRPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
+//			if(soeStr->pSoe.highlight){//高亮显示
+//				GuiFillRect(SOEWin.x+10+73,y+i*28+14,158,y+i*28+28, forecolor);
+//				GuiExchangeColor();
+//				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+//				GuiExchangeColor();
+//			}
+//			else{
+//				GuiFont12Align(SOEWin.x+10+73,y+i*28+15,70,FONT_RIGHT,soeStr->pSoe.pContent);
+//			}
+//			soeStr->pRead ++;
+//		}
+//		Scroll.lump = currentNum;
+//		GuiVScroll(&Scroll);
+//		GuiUpdateDisplayAll();
+//		stepTab[STEP_NORMAL] = 3;
+//	}
+//	if(stepTab[STEP_NORMAL] == 3){
+//		if(CheckSoeUpdata()){//SOE有更新
+//			soeStr->allNum = GetSoeNum();
+//			soeStr->pRead = 0;
+//			currentNum = 1;
+//			stepTab[STEP_NORMAL] = 1;
+//		}
+//	}
+//	switch(keyStatus){
+//	case UpKey:
+//	case LeftKey:
+//		if(stepTab[STEP_NORMAL] > 1){
+//			currentNum --;
+//			if(currentNum < 1){
+//				currentNum = Scroll.max;
+//			}
+//		}
+//		stepTab[STEP_NORMAL] = 1;
+//		break;
+//	case DownKey:
+//	case RightKey:
+//		if(stepTab[STEP_NORMAL] > 1){
+//			currentNum ++;
+//			if(currentNum > Scroll.max){
+//				currentNum = 1;
+//			}
+//		}
+//		stepTab[STEP_NORMAL] = 1;
+//		break;
+//	case OkKey:break;
+//	case CancelKey:
+//		currentNum = 0;
+//		stepTab[STEP_NORMAL] = 0;
+//		userGUITopWindowHide();
+//		userGUITopWindowRedraw();
+//		userGUIMenuRedraw();
+//		break;
+//	default:break;
+//	}
+}
+/**
+  *@brief CO处理函数
+  *@param  None
+  *@retval None
+  */
+static void COFun(void)
+{
+	SoeCoDisplay(&coInfo);
 }
 
 /**
