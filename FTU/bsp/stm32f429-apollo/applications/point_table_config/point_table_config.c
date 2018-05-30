@@ -210,11 +210,11 @@ struct tagCalibrateFactor CalibrateFactorCfg[] =
 {
 //   使能          名称                  校准值	          点号                             系数值                            系数上限值       系数下限值      系数缺省值
     { 1,    "频率(f)校准系数",           50.00f,   &g_TelemetryAddr.F,                &g_CalibrateFactor[CALIFACTOR_F],          1.2f,            0.8f,           1.0f},
-    { 1,    "A相电流(Ia)校准系数",       5.00f,    &g_TelemetryAddr.Ia,               &g_CalibrateFactor[CALIFACTOR_Ia],         0.005f,         0.0035f,         0.0043f},
-    { 1,    "B相电流(Ib)校准系数",       5.00f,    &g_TelemetryAddr.Ib,               &g_CalibrateFactor[CALIFACTOR_Ib],         0.005f,         0.0035f,         0.0043f},
-    { 1,    "C相电流(Ic)校准系数",       5.00f,    &g_TelemetryAddr.Ic,               &g_CalibrateFactor[CALIFACTOR_Ic],         0.005f,         0.0035f,         0.0043f},
+    { 1,    "A相电流(Ia)校准系数",       5.00f,    &g_TelemetryAddr.Ia,               &g_CalibrateFactor[CALIFACTOR_Ia],         0.005f,         0.0035f,         0.00432f},
+    { 1,    "B相电流(Ib)校准系数",       5.00f,    &g_TelemetryAddr.Ib,               &g_CalibrateFactor[CALIFACTOR_Ib],         0.005f,         0.0035f,         0.00432},
+    { 1,    "C相电流(Ic)校准系数",       5.00f,    &g_TelemetryAddr.Ic,               &g_CalibrateFactor[CALIFACTOR_Ic],         0.005f,         0.0035f,         0.00432f},
   #ifdef SYNTHESIS_I0_ENABLE
-    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],         0.005f,         0.0035f,         0.0043f},
+    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],         0.005f,         0.0035f,         0.00432f},
   #else		
     { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],         0.001f,         0.0004f,         0.000866f}, 
   #endif		
@@ -244,15 +244,14 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,  ME_BASIC_SET,   "开关类型",        &g_Parameter[SWITCH_TYPE],                  "-",       1,           0,     0,         2,         0,         {"断路器", "负荷开关"},   " "   }, 
     { 1,  ME_BASIC_SET,   "断路器模式",      &g_Parameter[BREAK_WORK_MODE],              "-",       4,           0,     1,         5,         0,         {"无","常规保护","电压时间型","电压电流型","电流计数型"},   " "   },	
     { 1,  ME_BASIC_SET,   "负荷开关模式",    &g_Parameter[LOAD_WORK_MODE],               "-",       4,           0,     0,         5,         0,         {"无","常规保护","电压时间型","电压电流型","分界"},   " "   },
-    { 1,  ME_BASIC_SET,   "保护电压M侧",     &g_Parameter[CFG_PRO_VOL_M],                "-",       1,           0,     0,         2,         0,         {"Uab", "Ucb"},   " "   },
-    { 1,  ME_BASIC_SET,   "保护电压N侧",     &g_Parameter[CFG_PRO_VOL_N],                "-",       1,           0,     1,         2,         0,         {"UAB", "UCB"},   " "   },     
+    { 1,  ME_BASIC_SET,   "负荷保护电压",    &g_Parameter[CFG_PRO_VOL_N],                "-",       1,           0,     1,         2,         0,         {"UAB", "UCB"},   " "   },     
     { 1,  ME_BASIC_SET,   "联络开关识别",    &g_Parameter[CONNECT_SWITCH_RECOGNIZE],     "-",       1,           0,     0,         2,         0,         {"手动", "自动"    },   " "   },	
     { 1,  ME_BASIC_SET,   "永磁输出翻转",    &g_Parameter[OUTPUT_OVERTURN],              "-",       1,           0,     0,         2,         0,         {"不翻转", "翻转"  },   " "   }, 
     { 1,  ME_BASIC_SET,   "合闸欠压定值",    &g_Parameter[CAP_UNDERVOLTAGE_CLOSING],     "V",     250.00f,     0.00f,   176,       0,         3,         {"-",  "-"         },   " "   },	
     { 1,  ME_BASIC_SET,   "分闸欠压定值",    &g_Parameter[CAP_UNDERVOLTAGE_OPENING],     "V",     250.00f,     0.00f,   176,       0,         3,         {"-",  "-"         },   " "   }, 
     { 1,  ME_BASIC_SET,   "电容欠压系数",    &g_Parameter[CAP_UNDERVOLTAGE_FACTOR],      "-",      2.00f,      1.00f,   1.2f,      0,         3,         {"-",  "-"         },   " "   },	    
     { 1,  ME_BASIC_SET,   "功率电压ab",      &g_Parameter[CFG_POW_VOL_AB],                "-",       1,           0,     0,        2,         0,         {"Uab", "UAB"},   " "   },   
-    { 1,  ME_BASIC_SET,   "功率电压cb",      &g_Parameter[CFG_POW_VOL_CB],                "-",       1,           0,     0,        2,         0,         {"Ucb", "UCB"},   " "   }, 
+    { 1,  ME_BASIC_SET,   "功率电压cb",      &g_Parameter[CFG_POW_VOL_CB],                "-",       1,           0,     1,        2,         0,         {"Ucb", "UCB"},   " "   }, 
     { 1,  ME_BASIC_SET,   "一次变比_U",      &g_Parameter[RATIO_U_ONE_TURN],             "V",    100000.00f,   0.00f,   10000.00f, 0,         3,         {"-",  "-"         },   " "    }, 
     { 1,  ME_BASIC_SET,   "二次变比_U",      &g_Parameter[RATIO_U_SECONDARY],            "V",     1000.00f,   0.00f,    220.0f,    0,         3,         {"-",  "-"         },   " "    },	
     { 1,  ME_BASIC_SET,   "一次变比_U0",     &g_Parameter[RATIO_U0_ONE_TURN],            "V",     10000.00f,   0.00f,   1,         0,         3,         {"-",  "-"         },   " "    }, 
@@ -424,7 +423,8 @@ struct tagValueParaCfg FixedValueCfg1[] =
     { 1,  LIMIT_V_F,    "低频系数",        &g_FixedValue1[DOWNFREQUENCY_FACTOR],          "-",      2.00f,      1.00f,   1.2f,       0,         3,         {"-",  "-"         },   " "    },		
     { 1,  LOOP_CLOSE,   "合环投退",        &g_FixedValue1[CLOSING_LOOP_SWITCH],           "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },	
     { 1,  LOOP_CLOSE,   "两侧压差",        &g_FixedValue1[VOLTAGE_DIFFERENCE],            "V",      30.00f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },	
-    { 1,  LOOP_CLOSE,   "相角差",          &g_FixedValue1[PHASEANGLE_DIFFERENCE],         "°",      10.00f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },	
+    { 1,  LOOP_CLOSE,   "相角差",          &g_FixedValue1[PHASEANGLE_DIFFERENCE],         "°",      10.00f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },
+    { 1,  LOOP_CLOSE,   "频率差",          &g_FixedValue1[FREQUENCY_DIFFERENCE],          "Hz",     99.99f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },	
     { 1,  FAULT_SWITCH, "控制回路异常",    &g_FixedValue1[CONTROL_LOOP_ABNOMAL_ENABLE],   "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },		
     { 1,  OTHER_PROTEC, "反时限投退",      &g_FixedValue1[INVERSE_SWITCH],                "-",       1,           0,     0,          2,         0,         {"退", "投"        },   " "   },    
     { 1,  OTHER_PROTEC, "反时限定值",      &g_FixedValue1[INVERSE_CURRENT_VALUE],         "A",      99.99f,     0.00f,   10,         0,         3,         {"-",  "-"         },   " "   }, 

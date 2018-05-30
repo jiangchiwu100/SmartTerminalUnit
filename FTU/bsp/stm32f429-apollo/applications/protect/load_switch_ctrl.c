@@ -1325,29 +1325,14 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB[g_TelemetryAddr.Ib];
             s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB[g_TelemetryAddr.Ic];
             s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[g_TelemetryAddr.I0];
-            if(g_Parameter[CFG_PRO_VOL_M] == 0)
-            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-            else
-            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-            else
-            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
-            
+            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];            
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];
             
             s_ComProSts[pdrv].fevent_yc_addr[0] = g_TelemetryAddr.Ia;
             s_ComProSts[pdrv].fevent_yc_addr[1] = g_TelemetryAddr.Ib;
             s_ComProSts[pdrv].fevent_yc_addr[2] = g_TelemetryAddr.Ic;
             s_ComProSts[pdrv].fevent_yc_addr[3] = g_TelemetryAddr.I0;
-            if(g_Parameter[CFG_PRO_VOL_M] == 0)
-            {s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;}
-            else
-            {s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Ucb;}
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
-            else
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}            
+            s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;          
             s_ComProSts[pdrv].fevent_yc_addr[6] = g_TelemetryAddr.Uac;
             s_ComProSts[pdrv].fevent_yc_addr[7] = g_TelemetryAddr.U0;
 
@@ -1488,6 +1473,16 @@ void LoadSwitchCtrlClock(void)
         switch(pdrv)
         {
         case LOAD_DEV0:
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+            else
+            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+            
+            if(g_Parameter[CFG_PRO_VOL_N] == 0)
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
+            else
+            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}  
+            
 			if((!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_NONE))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_LOADSWTICH_NONE)))

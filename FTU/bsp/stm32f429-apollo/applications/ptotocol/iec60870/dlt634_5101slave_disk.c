@@ -1446,7 +1446,7 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101_SLAVE_AppInit(pdrv);
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID1;   
-                if((uint16_t)g_Parameter[UART_PORT])
+                if((uint16_t)g_Parameter[UART_PORT]==0)
                 {dev[pdrv] = rt_device_find(RT_USART3_NAME);}
                 else
                 {dev[pdrv] = rt_device_find(RT_USART1_NAME);}

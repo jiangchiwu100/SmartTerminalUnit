@@ -376,6 +376,16 @@ static void OverLoadCheck(struct OverLoad *over)
   */
 static void TelemetryAbnormalCheck(void)
 {
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+    else
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+    
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+    else
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+    
     /* 遥测越限 */
     TelemetryOverLimit(&OverLimitUab);
     TelemetryOverLimit(&OverLimitUbc);
@@ -721,10 +731,7 @@ void other_protect_init(void)
     OverVoltageUab.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUab.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUab.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-    else
-    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
+    OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];
     OverVoltageUab.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUab.flag = 0;
 
@@ -735,10 +742,7 @@ void other_protect_init(void)
     DownVoltageUab.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUab.value = &g_pFixedValue[DOWNVOLTAGE_VALUE];
     DownVoltageUab.funSwitch = &g_pFixedValue[DOWNVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-    else
-    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
+    DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];
     DownVoltageUab.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUab.flag = 0;
 	
@@ -749,10 +753,6 @@ void other_protect_init(void)
     OverVoltageUBC.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-    else
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     OverVoltageUBC.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUBC.flag = 0;
 
@@ -763,10 +763,6 @@ void other_protect_init(void)
     DownVoltageUBC.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     DownVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-    else
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     DownVoltageUBC.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUBC.flag = 0;
 

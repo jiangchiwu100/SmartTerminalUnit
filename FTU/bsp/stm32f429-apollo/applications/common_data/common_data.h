@@ -192,20 +192,20 @@ __packed struct CP56Time2a_t
 
 typedef struct
 {
-    rt_int16_t ua[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ub[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t uc[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t u0[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t ia[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ib[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ic[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t i0[ADC_WAVE_SEMP_NUM * 2][48];
+    rt_int16_t ua[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ub[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t uc[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t u0[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t ia[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ib[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ic[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t i0[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
 
-    rt_int16_t uA[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t uC[ADC_WAVE_SEMP_NUM * 2][48];	
+    rt_int16_t uA[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t uC[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];	
     
-    rt_int16_t udc1[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t udc2[ADC_WAVE_SEMP_NUM * 2][48];	
+    rt_int16_t udc1[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t udc2[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];	
 	//rt_int8_t digtal[25][48];
 }Queue;
 
@@ -595,7 +595,6 @@ enum AddrRunParameter
 {
     CFG_POW_VOL_AB,                       // 功率电压AB
     CFG_POW_VOL_CB,                       // 功率电压CB
-    CFG_PRO_VOL_M,                        // M侧保护电压
     CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
 	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
@@ -805,6 +804,7 @@ enum AddrFixedValue
     CLOSING_LOOP_SWITCH,                 // 合环功能投退
     VOLTAGE_DIFFERENCE,                  // 两侧压差	
 	PHASEANGLE_DIFFERENCE,				 // 相角差
+    FREQUENCY_DIFFERENCE,				 // 频率差
     CONTROL_LOOP_ABNOMAL_ENABLE,         // 控制回路异常使能	
 	INVERSE_SWITCH,                      // 反时限投退
 	INVERSE_CURRENT_VALUE,               // 反时限保护电流值

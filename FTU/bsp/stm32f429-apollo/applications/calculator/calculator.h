@@ -33,7 +33,7 @@ enum
     ALPHA_UabIa,
     ALPHA_UcbIc,
     ALPHA_U0I0,
-    ALPHA_UxIx,
+    ALPHA_UxUx,
     
     ALPHA_NUM,
 };

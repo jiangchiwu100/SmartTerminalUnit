@@ -428,57 +428,43 @@ static void CalculateData(void)
         
         g_Alpha[ALPHA_U0I0] = CalculateAngleU_I(FFT_InputBufU0[1][3], FFT_InputBufU0[1][2], FFT_InputBufI0[1][3], FFT_InputBufI0[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0];
         
-        if(g_Parameter[CFG_PRO_VOL_M] == 0)
+        if(g_Parameter[CFG_PRO_VOL_N] == 0)
         {
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {
-                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUA[1][3], FFT_InputBufUA[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
-            }
-            else
-            {
-                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
-            }        
+            g_Alpha[ALPHA_UxUx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUA[1][3], FFT_InputBufUA[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
         }
         else
         {
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {
-                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUc[1][3], FFT_InputBufUc[1][2], FFT_InputBufUA[1][3], FFT_InputBufUA[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
-            }
-            else
-            {
-                g_Alpha[ALPHA_UxIx] = CalculateAngleU_I(FFT_InputBufUc[1][3], FFT_InputBufUc[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
-            }        
-        }
+            g_Alpha[ALPHA_UxUx] = CalculateAngleU_I(FFT_InputBufUa[1][3], FFT_InputBufUa[1][2], FFT_InputBufUC[1][3], FFT_InputBufUC[1][2]) - g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx];
+        }        
     }
 
     if(g_Parameter[CFG_POW_VOL_AB] == 0)
-    {
-        Ua = CalcAverage(VUa, CALC_TIMES) * VOLTAGE_RADIO;
+    {        
         Ua3 = CalcAverage(VUa3, CALC_TIMES) * VOLTAGE_RADIO;
         Ua5 = CalcAverage(VUa5, CALC_TIMES) * VOLTAGE_RADIO;       
     }
     else
-    {
-        UA = CalcAverage(VUA, CALC_TIMES) * VOLTAGE_RADIO;
+    {        
         UA3 = CalcAverage(VUA3, CALC_TIMES) * VOLTAGE_RADIO;
         UA5 = CalcAverage(VUA5, CALC_TIMES) * VOLTAGE_RADIO; 
     }
 
     if(g_Parameter[CFG_POW_VOL_CB] == 0)
-    {
-        Uc = CalcAverage(VUc, CALC_TIMES) * VOLTAGE_RADIO;
+    {        
         Uc3 = CalcAverage(VUc3, CALC_TIMES) * VOLTAGE_RADIO;
         Uc5 = CalcAverage(VUc5, CALC_TIMES) * VOLTAGE_RADIO;
     } 
     else
-    {
-        UC = CalcAverage(VUC, CALC_TIMES) * VOLTAGE_RADIO;
+    {        
         UC3 = CalcAverage(VUC3, CALC_TIMES) * VOLTAGE_RADIO;
         UC5 = CalcAverage(VUC5, CALC_TIMES) * VOLTAGE_RADIO;    
     }
     
-    Ub = CalcAverage(VUb, CALC_TIMES) * VOLTAGE_RADIO;    
+    Ua = CalcAverage(VUa, CALC_TIMES) * VOLTAGE_RADIO;
+    UA = CalcAverage(VUA, CALC_TIMES) * VOLTAGE_RADIO;
+    Ub = CalcAverage(VUb, CALC_TIMES) * VOLTAGE_RADIO; 
+    Uc = CalcAverage(VUc, CALC_TIMES) * VOLTAGE_RADIO;  
+    UC = CalcAverage(VUC, CALC_TIMES) * VOLTAGE_RADIO;    
     U0 = CalcAverage(VU0, CALC_TIMES) * VOLTAGE_RADIO;
 
     
@@ -528,8 +514,8 @@ static void CalculateData(void)
     }
     else
     {
-        UA3 = UA3 * g_CalibrateFactor[CALIFACTOR_Uab];
-        UA5 = UA5 * g_CalibrateFactor[CALIFACTOR_Uab];   
+        UA3 = UA3 * g_CalibrateFactor[CALIFACTOR_UAB];
+        UA5 = UA5 * g_CalibrateFactor[CALIFACTOR_UAB];   
     }	
     if(g_Parameter[CFG_POW_VOL_CB] == 0)
     {
@@ -538,8 +524,8 @@ static void CalculateData(void)
     }
     else
     {
-        UC3 = UC3 * g_CalibrateFactor[CALIFACTOR_Ucb];
-        UC5 = UC5 * g_CalibrateFactor[CALIFACTOR_Ucb];    
+        UC3 = UC3 * g_CalibrateFactor[CALIFACTOR_UCB];
+        UC5 = UC5 * g_CalibrateFactor[CALIFACTOR_UCB];    
     }
         
     Ua = Ua * g_CalibrateFactor[CALIFACTOR_Uab];    
@@ -652,18 +638,17 @@ static void CalculateData(void)
         g_TelemetryDB[g_TelemetryAddr.alphy_U0_I0] = g_Alpha[ALPHA_U0I0];
     }
 
-    if((((g_Parameter[CFG_PRO_VOL_M] == 0)&&(g_TelemetryDB[g_TelemetryAddr.Uab] == 0))||\
-        ((g_Parameter[CFG_PRO_VOL_M] == 1)&&(g_TelemetryDB[g_TelemetryAddr.Ucb] == 0)))||\
+    if((g_TelemetryDB[g_TelemetryAddr.Uab] == 0)||\
         (((g_Parameter[CFG_PRO_VOL_N] == 0)&&(g_TelemetryDB[g_TelemetryAddr.UAB] == 0))||\
         ((g_Parameter[CFG_PRO_VOL_N] == 1)&&(g_TelemetryDB[g_TelemetryAddr.UCB] == 0))))
     {g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] = 0;}
     else       
     {
-        if(g_Alpha[ALPHA_UxIx]<-180)
-        {g_Alpha[ALPHA_UxIx] += 360;}
-        if(g_Alpha[ALPHA_UxIx]>180)
-        {g_Alpha[ALPHA_UxIx] -= 360;}
-        g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] = g_Alpha[ALPHA_UxIx];
+        if(g_Alpha[ALPHA_UxUx]<-180)
+        {g_Alpha[ALPHA_UxUx] += 360;}
+        if(g_Alpha[ALPHA_UxUx]>180)
+        {g_Alpha[ALPHA_UxUx] -= 360;}
+        g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] = g_Alpha[ALPHA_UxUx];
     }
 	
     g_TelemetryDB[g_TelemetryAddr.UabOnce] = Ua * (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) / 1000.0f;
@@ -731,22 +716,22 @@ static void CalculateData(void)
     if(g_Parameter[CFG_POW_VOL_AB] == 0)
     {
         g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = Ua3; 
-        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = Ua5;
+        g_TelemetryDB[g_TelemetryAddr.fifthharmonicUab] = Ua5;
     }
     else
     {
         g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = UA3; 
-        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUab] = UA5;    
+        g_TelemetryDB[g_TelemetryAddr.fifthharmonicUab] = UA5;    
     }
     if(g_Parameter[CFG_POW_VOL_CB] == 0)
     {
         g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = Uc3;
-        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = Uc5;
+        g_TelemetryDB[g_TelemetryAddr.fifthharmonicUbc] = Uc5;
     }
     else
     {
         g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = UC3;
-        g_TelemetryDB[g_TelemetryAddr.thirdharmonicUbc] = UC5;    
+        g_TelemetryDB[g_TelemetryAddr.fifthharmonicUbc] = UC5;    
     }
             
     g_TelemetryDB[g_TelemetryAddr.thirdharmonicUca] = Ub3;
@@ -756,12 +741,12 @@ static void CalculateData(void)
     g_TelemetryDB[g_TelemetryAddr.thirdharmonicIc] = Ic3;
     g_TelemetryDB[g_TelemetryAddr.thirdharmonicI0] = I03;
     
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicUca] = Ub5;
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicU0] = U05;
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIa] = Ia5;
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIb] = Ib5;
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicIc] = Ic5;
-    g_TelemetryDB[g_TelemetryAddr.thirdharmonicI0] = I05;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicUca] = Ub5;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicU0] = U05;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicIa] = Ia5;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicIb] = Ib5;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicIc] = Ic5;
+    g_TelemetryDB[g_TelemetryAddr.fifthharmonicI0] = I05;
     
 #if RT_USING_TELEMETRY_SET    
     for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)
