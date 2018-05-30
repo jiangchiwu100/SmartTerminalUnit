@@ -123,43 +123,43 @@ static void Struct_To_Json(int file)
         {
             case _CFG_PARAMTER:
             {
-                write(Json_MyFile, " \"ParameterList\":[  \n", sizeof(" \"ParameterList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"FixedValueAreaZero\":[  \n", sizeof(" \"FixedValueAreaZero\":[ \n") );  //依照标准格式进行写入
                 length = g_ParameterCfg_Len;
                 break;
             }
             case _CFG_FIXED_VALUE_1:
             {
-                write(Json_MyFile, " \"FixedValue1List\":[  \n", sizeof(" \"FixedValue1List\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"FixedValueAreaOne\":[  \n", sizeof(" \"FixedValueAreaOne\":[ \n") );  //依照标准格式进行写入
                 length = g_FixedValueCfg1_Len;
                 break;
             }
             case _CFG_CALIBRATE_FACTOR:
             {
-                write(Json_MyFile, " \"CalibrateFactorList\":[  \n", sizeof(" \"CalibrateFactorList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"CalibrateCoefficient\":[  \n", sizeof(" \"CalibrateCoefficient\":[ \n") );  //依照标准格式进行写入
                 length = g_CalibrateFactorCfg_Len;
                 break;
             }
             case _CFG_TELE_METRY:
             {
-                write(Json_MyFile, " \"TelemetryList\":[  \n", sizeof(" \"TelemetryList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"TelesignalForUpLoad\":[  \n", sizeof(" \"TelesignalForUpLoad\":[ \n") );  //依照标准格式进行写入
                 length = g_TelemetryCfg_Len;
                 break;
             }
             case _CFG_TELE_SIGNAL:
             {
-                write(Json_MyFile, " \"TelesignalList\":[  \n", sizeof(" \"TelesignalList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"TelemeteringForUpLoad\":[  \n", sizeof(" \"TelemeteringForUpLoad\":[ \n") );  //依照标准格式进行写入
                 length = g_TelesignalCfg_Len;
                 break;
             }
             case _CFG_TELE_CONTROL:
             {
-                write(Json_MyFile, " \"TelecontrolList\":[  \n", sizeof(" \"TelecontrolList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"TelecontrolForUpLoad\":[  \n", sizeof(" \"TelecontrolForUpLoad\":[ \n") );  //依照标准格式进行写入
                 length = g_TelecontrolCfg_Len;
                 break;
             }
             case _CFG_TELE_INHERENT:
             {
-                write(Json_MyFile, " \"InherentParaList\":[  \n", sizeof(" \"InherentParaList\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"InherentParameter\":[  \n", sizeof(" \"InherentParameter\":[ \n") );  //依照标准格式进行写入
                 length = g_InherentParaCfg_Len;
                 break;
             }
@@ -218,7 +218,7 @@ static void Struct_To_Json(int file)
 
             write(file, string, strlen(string));  //写入文件
             
-            if(i < (length - 1))
+            if(j < (length - 1))
             {
                 write(file, ",\n", 2);  //依照标准格式进行写入
             }
@@ -228,6 +228,10 @@ static void Struct_To_Json(int file)
             }
         }
         write(Json_MyFile, "]\n", 2);  //依照标准格式进行写入
+        if(i < (_CFG_ALL_NUM - 1))
+        {
+            write(file, ",\n", 2);  //依照标准格式进行写入
+        }
     }
 }
 //ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];

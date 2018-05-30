@@ -249,7 +249,6 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         // intrinisic  para block 固有参数
         array = (float *)g_InherentPara.terminalType;
         offset = (addr - INTRIPARAME_START_ADDR) * 24 / 4;
-
     }
     else if((RUNPARAMETER_START_ADDR <= addr) && (addr < (RUNPARAMETER_START_ADDR + RUN_PARAMETER_NUM)))
     {
@@ -307,7 +306,8 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
   */
 void ParameterCheck(void)
 {
-    uint32_t i;
+    uint32_t i,j;
+    uint8_t flag[FIXED_VALUE_NUM + RUN_PARAMETER_NUM];
 
 	for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
 	{
@@ -317,20 +317,62 @@ void ParameterCheck(void)
 		}
 	}
 	
-	for (i = 0; i < g_FixedValueCfg1_Len; i++)
+    memset(flag,0xff,sizeof(flag));
+	for (i = 0; i < FIXED_VALUE_NUM; i++)
 	{
-		if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
-		{
-		    *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal; 
-		}
+        if(i < g_FixedValueCfg1_Len)
+        {
+            if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
+            {
+                *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal;             
+            }
+            if(g_pFixedValueCfg == FixedValueCfg1)
+            {
+                flag[g_pFixedValueCfg[i].pVal - g_FixedValue1] = 0;
+            }
+            else if(g_pFixedValueCfg == FixedValueCfg2)
+            {
+                flag[g_pFixedValueCfg[i].pVal - g_FixedValue2] = 0;
+            }
+        }
+        else
+        {
+            for(j = 0; j < FIXED_VALUE_NUM; j++)
+            {
+                if(flag[j] == 0xff)
+                {
+                    g_FixedValue1[j] = 0;
+                    g_FixedValue2[j] = 0;
+                    flag[j] = 0;
+                    break;
+                }
+            }
+        }
 	}	
 
-	for (i = 0; i < g_ParameterCfg_Len; i++)
+    memset(flag,0xff,sizeof(flag));
+	for (i = 0; i < RUN_PARAMETER_NUM; i++)
 	{
-		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
-		{
-		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
-		}
+        if(i < g_ParameterCfg_Len)
+        {
+            if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+            {
+                *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+            }
+            flag[ParameterCfg[i].pVal - g_Parameter] = 0;
+        }
+        else
+        {
+            for(j = 0; j < RUN_PARAMETER_NUM; j++)
+            {
+                if(flag[j] == 0xff)
+                {
+                    g_Parameter[j] = 0;
+                    flag[j] = 0;
+                    break;
+                }
+            }        
+        }
 	}	
 }
 
@@ -977,7 +1019,13 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 		case ADDR_REMOTE_CLEAR:
 		case ADDR_LOCAL_CLEAR:
 			DBClear(addr);
-			break;	   		
+            break;
+        case ADDR_REMOTE_PRO_OUT:
+            if(operate_type == DO_OPEN)
+            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
+            else
+            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+            break;	   		
 	}
 }
 /* FRAM ------------------------------------------------------------------*/
@@ -1051,46 +1099,15 @@ void rt_multi_common_data_get_value_from_fram(uint8_t sn)
         addr = ADDR_FRAM_AREA2;
         pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
         break;
+    case DB_CALI:
+        len = sizeof(g_CalibrateFactor);
+        addr = ADDR_FRAM_CALI_FACTOR;
+        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        break;	    
     default:
         break;
     }
     rt_device_read(device_fram, addr, (uint8_t *)pInfo, len);
-}
-
-/**
-  * @brief:  第一次上电向Fram存储缺省定值
-  * @param:  [none]
-  * @return: [none]
-  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
-  */
-void rt_common_data_save_value_default_to_fram(void)
-{
-	uint32_t i;
-	
-    for (i = 0; i < g_ParameterCfg_Len; i++)
-	{
-	    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal;
-	}
-	
-    for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
-	{
-	    *CalibrateFactorCfg[i].factorVal = CalibrateFactorCfg[i].factorDefault;
-	}
-
-    for (i = 0; i < g_FixedValueCfg1_Len; i++)
-	{
-	    *FixedValueCfg1[i].pVal = g_pFixedValueCfg[i].defaultVal;
-	}	
-
-	for (i = 0; i < g_FixedValueCfg2_Len; i++)
-	{
-	    *FixedValueCfg2[i].pVal = g_pFixedValueCfg[i].defaultVal;
-	}
-	
-	for (i = 0; i < 4; i++)
-	{
-	    rt_multi_common_data_save_value_to_fram(i);
-	}   	
 }
 
 /**
@@ -1279,6 +1296,63 @@ void rt_multi_common_data_configure_default(void)
 }
 
 /**
+  * @brief:  第一次上电向Fram存储缺省定值
+  * @param:  [none]
+  * @return: [none]
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+static void rt_common_data_save_value_default_to_fram(void)
+{
+	uint32_t i;
+    uint8_t flag;
+    
+    if (flag != FRAM_HWFLAG1)
+    {
+		rt_device_read(device_fram, ADDR_FRAM_UPDATE, &flag, 1);
+		
+		if (flag != FRAM_HWFLAG1)
+		{
+			flag = 0;
+
+			for (i = 0; i < FM25V10_MAX_ADDR; i++)
+			{
+				rt_device_write(device_fram, 0x01 + i, &flag, 1); 
+			}          
+            
+			flag = FRAM_HWFLAG1;
+
+			rt_device_write(device_fram, ADDR_FRAM_UPDATE, &flag, 1); 
+
+            for (i = 0; i < g_ParameterCfg_Len; i++)
+            {
+                *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal;
+            }
+            
+            for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
+            {
+                *CalibrateFactorCfg[i].factorVal = CalibrateFactorCfg[i].factorDefault;
+            }
+
+            for (i = 0; i < g_FixedValueCfg1_Len; i++)
+            {
+                *FixedValueCfg1[i].pVal = FixedValueCfg1[i].defaultVal;
+            }	
+
+            memcpy(g_FixedValue2,g_FixedValue1,sizeof(g_FixedValue1));
+            
+            for (i = 0; i < 4; i++)
+            {
+                rt_multi_common_data_save_value_to_fram(i);
+            }
+
+            rt_multi_common_data_configure_default();            
+			
+			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
+		}
+    }  	
+}
+
+/**
   * @brief : common data read from fram.
   * @param : none
   * @return: none
@@ -1288,17 +1362,90 @@ void rt_multi_common_data_read_config_from_fram(void)
 {
     uint32_t i,j,temp1;
     uint8_t sn =0,configureFault=0;
+
+    /* FRAM上电判断 */
+    rt_common_data_save_value_default_to_fram();
     
-    for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)//初始化遥信
+    /* 读取定值区 */
+    //FM25VxxReadData(ADDR_FRAM_CURRENT_SN, NULL, &sn, 1);
+    rt_multi_common_data_fram_record_read(CURRENT_SN, (uint8_t *)&sn);
+		
+    if (sn != 1 || sn != 2)
     {
-        *TelesignalCfg[i].pAddr = i;
-        TelesignalCfg[i].pVal = &g_TelesignalDB[i];
+        sn = 1; // 如果没有存储定值区  默认为1区
+    }
+    g_ValueParaOperateInfo.currentSN = sn;
+    
+    //初始化2区
+    for(i=0;i<g_FixedValueCfg2_Len;i++)
+    {
+        FixedValueCfg2[i] = FixedValueCfg1[i];
+        FixedValueCfg2[i].pVal = &g_FixedValue2[FixedValueCfg1[i].pVal - g_FixedValue1];
     }
     
+    /* 读取当前定值区号 */
+    if (g_ValueParaOperateInfo.currentSN == 2)
+    {
+        //g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValue = g_FixedValue2; 
+		g_pFixedValueCfg = FixedValueCfg2;
+    }
+    else // 默认1区
+    {
+        g_ValueParaOperateInfo.currentSN = 1;
+        //g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValue = g_FixedValue1;
+		g_pFixedValueCfg = FixedValueCfg1;
+    } 
+    
+    /* 读取定值 */
+    for (i = 0; i < 4; i++)
+    {
+        rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
+    }
+	
+	ParameterCheck();
+    
+    memset(&g_TelesignalAddr,0xff,sizeof(g_TelesignalAddr));//写入0xff
+    for (i = 0; i < TELESIGNAL_TOTAL_NUM; i++)//初始化遥信
+    {
+        if(i < g_TelesignalCfg_Len)
+        {
+            *TelesignalCfg[i].pAddr = i;
+            TelesignalCfg[i].pVal = &g_TelesignalDB[i];
+        }
+        else
+        {
+            for(j=0;j<TELESIGNAL_TOTAL_NUM;j++)
+            {
+                if(*((uint16_t *)&g_TelesignalAddr + j) == 0xffff)
+                {
+                    *((uint16_t *)&g_TelesignalAddr + j) = i;
+                    break;
+                }
+            }
+        }
+    }
+    
+    memset(&g_TelemetryAddr,0xff,sizeof(g_TelemetryAddr));//写入0xff
     for (i = 0; i < TELEMETRY_TOTAL_NUM; i++)//初始化遥测
     {
-        *TelemetryCfg[i].pAddr = i;
-        TelemetryCfg[i].pVal = &g_TelemetryDB[i];
+        if(i < g_TelemetryCfg_Len)
+        {
+            *TelemetryCfg[i].pAddr = i;
+            TelemetryCfg[i].pVal = &g_TelemetryDB[i];
+        }
+        else
+        {
+            for(j=0;j<TELEMETRY_TOTAL_NUM;j++)
+            {
+                if(*((uint16_t *)&g_TelemetryAddr + j) == 0xffff)
+                {
+                    *((uint16_t *)&g_TelemetryAddr + j) = i;
+                    break;
+                }
+            }
+        }
     } 
     
     /* 读取遥信 */    
@@ -1379,49 +1526,6 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         rt_multi_common_data_configure_default();
     }
-    
-    
-		
-    /* 读取定值区 */
-    //FM25VxxReadData(ADDR_FRAM_CURRENT_SN, NULL, &sn, 1);
-    rt_multi_common_data_fram_record_read(CURRENT_SN, (uint8_t *)&sn);
-		
-    if (sn != 1 || sn != 2)
-    {
-        sn = 1; // 如果没有存储定值区  默认为1区
-    }
-    g_ValueParaOperateInfo.currentSN = sn;
-    
-    //初始化2区
-    for(i=0;i<g_FixedValueCfg2_Len;i++)
-    {
-        FixedValueCfg2[i] = FixedValueCfg1[i];
-        FixedValueCfg2[i].pVal = &g_FixedValue2[FixedValueCfg1[i].pVal - g_FixedValue1];
-    }
-    
-    /* 读取当前定值区号 */
-    if (g_ValueParaOperateInfo.currentSN == 2)
-    {
-        //g_pFixedValue = &g_FixedValueDB2;
-		g_pFixedValue = g_FixedValue2; 
-		g_pFixedValueCfg = FixedValueCfg2;
-    }
-    else // 默认1区
-    {
-        g_ValueParaOperateInfo.currentSN = 1;
-        //g_pFixedValue = &g_FixedValueDB1;
-		g_pFixedValue = g_FixedValue1;
-		g_pFixedValueCfg = FixedValueCfg1;
-    } 
-    
-    
-    /* 读取定值 */
-    for (i = 0; i < 4; i++)
-    {
-        rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
-    }
-	
-	ParameterCheck();
 }
 
 /**
@@ -1508,9 +1612,6 @@ void rt_multi_common_data_para_init(void)
 void rt_multi_common_data_read_config(void)
 {
     rt_multi_common_data_read_config_from_fram();
-    
-//    rt_multi_common_data_configure_default();//临时
-//    #warning "please cancle after test!" 
           
     rt_multi_common_data_para_init();
 }

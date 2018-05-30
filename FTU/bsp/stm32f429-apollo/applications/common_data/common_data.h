@@ -318,7 +318,7 @@ enum Frequency
 #define ADDR_FRAM_MEMORY                0x05300  // 状态标志地址 0x100
 #define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x100
 
-#define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x400
+#define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x1000
 
 
 /* flag */                                        
@@ -525,10 +525,13 @@ enum TelecontrlAddr
 	ADDR_REMOTE_ACTIVE,           // 电池活化
 	ADDR_REMOTE_RESET,            // 远方复位
 	ADDR_REMOTE_CLEAR,            // 远方清除记录
+    ADDR_REMOTE_PRO_OUT,          // 保护退出
     ADDR_LOCAL_OPERATE,           // 本地操作
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录
 	ADDR_HANDHELD_OPER,           // 手持操作
+    
+    
 	ADDR_LOGIC_ACT,               // 逻辑动作	
     
     REMOTE_TOTAL_NUM,
