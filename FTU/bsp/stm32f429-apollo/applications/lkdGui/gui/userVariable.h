@@ -140,6 +140,8 @@ extern const struct PassWordMessage PassWordItems[PassWord_NUM];
 
 /* 获取显示时间 */
 void GetDisplayTime(SystemTimeDisplay *tim);
+/* 修改显示时间 */
+void SetDisplayTime(SystemTimeDisplay *tim);
 /* 显示信息映射初始化 */
 void userVariableDisplayInit(void);
 /* 获取SOE内容 */

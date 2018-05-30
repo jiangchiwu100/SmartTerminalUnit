@@ -986,12 +986,13 @@ static void mianMenuFun(void)
 	if(stepTab[STEP_MAINMENU] == 1){
 		switch(mianMenu.currentItem){
 		case 0://信息查询
-		case 4://版本信息
+		case 5://版本信息
 			stepTab[STEP_MAINMENU] = 3;
 			break;
 		case 1://定值设置
 		case 2://配置设置
-		case 3://命令下发
+		case 3://时间修改
+		case 4://命令下发
 			SetPassWordWin(0,&passWordState);
 			userGUIWindowAdd(&PassWordWin);
 			stepTab[STEP_MAINMENU] = 2;
@@ -1012,9 +1013,9 @@ static void mianMenuFun(void)
 		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
 		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
 		case 2:userGUIMenuAdd(&MenuM2);break;//配置设置
-		case 3:userGUIWindowAdd(&CmdSendWin);break;//命令下发
-		//case 4:userGUIWindowAdd(&VersionWin);break;//版本信息
-		case 4:userGUIWindowAdd(&TimeModfiyWin);break;//版本信息
+		case 3:userGUIWindowAdd(&TimeModfiyWin);break;//时间修改
+		case 4:userGUIWindowAdd(&CmdSendWin);break;//命令下发
+		case 5:userGUIWindowAdd(&VersionWin);break;//版本信息
 		default:break;
 		}
 	}
@@ -1932,7 +1933,7 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 	}
 	if(stepTab[STEP_NORMAL] == 1){
 		if(soeStr->allNum == 0){//没有SOE
-			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
+			GuiFont12Align(SOEWin.x+2,SOEWin.y + 40,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有信息记录");
 			GuiUpdateDisplayAll();
 			stepTab[STEP_NORMAL] = 3;
 		}
@@ -2246,7 +2247,11 @@ static void InternetFun(void)
 	DZModfiyDisplay(&dzhi0Info[DZ0_INTERNET],&stepTab[STEP_NORMAL]);
 }
 
-
+/**
+  *@brief 时间移动修改
+  *@param  None
+  *@retval None
+  */
 static void TimeMoveModfiy(uint8_t updown, uint8_t pmove,SystemTimeDisplay *pTime)
 {
 	//2018-12-23  12:23
@@ -2432,21 +2437,27 @@ static void TimeModfiyFun(void)
 		stepTab[STEP_NORMAL] = 1;
 	}
 	if(stepTab[STEP_NORMAL] == 1){//画图
+		WINDOW *pWin = &TimeModfiyWin;
+		GuiHPointLine(pWin->x,pWin->y + pWin->hight - 18,pWin->x + pWin->wide - 1,2,forecolor);
+		GuiRPointLine(pWin->x + 40,pWin->y + pWin->hight - 18,pWin->y + pWin->hight - 1,2,forecolor);
+		GuiFont12Align(pWin->x + 2,pWin->y + pWin->hight - 15,37,FONT_LEFT,"状态:");
+		stepTab[STEP_NORMAL] = 2;
+	}
+	if(stepTab[STEP_NORMAL] == 2){
+		WINDOW *pWin = &TimeModfiyWin;
 		sprintf((char *)pTimeStr,"20%02d-%02d-%02d  %02d:%02d:%02d",pTime->year,\
 			pTime->month,pTime->day,pTime->hour,pTime->min,pTime->s);
-		uint16_t x,y;
-		x = TimeModfiyWin.x; y = TimeModfiyWin.y;
-		GuiFillRect(x + 1,y + 20,x + TimeModfiyWin.wide - 2,y + 35,backcolor);
-		GuiFont12Align(x + 2,y + 22,TimeModfiyWin.wide - 4,FONT_LEFT,pTimeStr);
+		GuiFont12Align(pWin->x + 8,pWin->y + 24,126,FONT_LEFT,pTimeStr);
 		GuiExchangeColor();
 		uint8_t pStr1[2] = {'\0','\0'};
 		pStr1[0] = pTimeStr[pMove];
-		GuiFont12Align(x + 2 + pMove*6,y+22,6,FONT_LEFT,pStr1);
+		GuiFont12Align(TimeModfiyWin.x + 8 + pMove*6,TimeModfiyWin.y + 24,6,FONT_LEFT,pStr1);
 		GuiExchangeColor();
+		GuiFont12Align(pWin->x + 42,pWin->y + pWin->hight - 15,pWin->wide - 44,FONT_RIGHT,"修改中...");
 		GuiUpdateDisplayAll();
-		stepTab[STEP_NORMAL] = 2;
+		stepTab[STEP_NORMAL] = 3;
 	}
-	if(stepTab[STEP_NORMAL] == 2 && (upDown != 0 ||  pMove != tpMove)){
+	if(stepTab[STEP_NORMAL] == 3 && (upDown != 0 ||  pMove != tpMove)){
 		uint8_t tflag;
 		if(tpMove < pMove){
 			 tflag = 1;
@@ -2476,6 +2487,16 @@ static void TimeModfiyFun(void)
 		stepTab[STEP_NORMAL] = 1;
 		upDown = 0;
 	}
+	if(stepTab[STEP_NORMAL] == 4){
+		SetDisplayTime(pTime);
+		WINDOW *pWin = &TimeModfiyWin;
+		GuiFillRect(pWin->x + 42,pWin->y + pWin->hight - 15,\
+			pWin->x + pWin->wide - 2,pWin->y + pWin->hight - 2,backcolor);
+		GuiFont12Align(pWin->x + 42,pWin->y + pWin->hight - 15,\
+		pWin->wide - 44,FONT_RIGHT,"修改成功");
+		GuiUpdateDisplayAll();
+		stepTab[STEP_NORMAL] = 3;
+	}
 	
 	switch(keyStatus){
 	case UpKey:upDown = 2;break;
@@ -2490,7 +2511,8 @@ static void TimeModfiyFun(void)
 		if(pMove > timeStrEnd){
 			pMove = 2;
 		}break;
-	case OkKey:break;
+	case OkKey:
+		stepTab[STEP_NORMAL] = 4;break;
 	case CancelKey:
 		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();
