@@ -93,7 +93,6 @@ void SystemconfigInit(void)
 void SysTick_Handler(void)
 {
 	timeCount ++;
-	LedRun();
 }
 
 /**

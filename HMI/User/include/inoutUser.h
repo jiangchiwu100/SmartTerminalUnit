@@ -17,6 +17,8 @@
 
 /* -- LED映射定义 -- */
 #define USERLED_NUMALL 16	/* 用户使用LED总数 */
+#define USERLED_RUN 1
+#define USERLED_COMMUN 12
 
 /* 用户按键状态 */
 enum UserLedStatus{
@@ -53,6 +55,10 @@ void UserSwitchChangeDeal(uint8_t switchNum, uint8_t state);
 uint8_t SwitchAllStateFill(void);
 void SwitchQueueInit(void);
 void KeyQueueInit(void);
+void InOutUserMain(void);
+/* 由外部调用 */
+extern uint32_t GetTimer1Tick(void);
+extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);
 
 #endif /* END _INOUTUSER_H_ */
 
