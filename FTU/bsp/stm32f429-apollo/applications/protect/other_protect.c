@@ -819,7 +819,7 @@ static void RecoedMemory(void)
     static rt_uint8_t state=0;
     		
     /* 装置掉电 */
-    if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == ON)
+    if (g_TelesignalDB[g_TelesignalAddr.devicePowerDown] == ON)
     {
         *MemoryCounter.counterCharge = DB_COUNTER_EN;
         if(state==1)
@@ -831,25 +831,28 @@ static void RecoedMemory(void)
     else
     {
         state = 1;
-        if ((memcmp(&s_Flag_DB2, &g_FlagDB, sizeof(g_FlagDB))))
+        if(!((*CommunicatLock.flag[COM_FILE])&COMMUNICATLOCKRECORD))
         {
-            *MemoryCounter.counterSave = DB_COUNTER_EN;
-        }
-        if ((memcmp(&g_FlagDB, &s_Flag_DB1, sizeof(g_FlagDB))))
-        {
-            s_Flag_DB2 = g_FlagDB;
-            if(!(*MemoryCounter.counterSave&DB_COUNTER_EN))
+            if ((memcmp(&s_Flag_DB2, &g_FlagDB, sizeof(g_FlagDB))))
             {
                 *MemoryCounter.counterSave = DB_COUNTER_EN;
             }
-            if (((*MemoryCounter.counterSave) & DB_COUNTER) >= MEMORY_TIME)
+            if ((memcmp(&g_FlagDB, &s_Flag_DB1, sizeof(g_FlagDB))))
             {
-                *MemoryCounter.counterSave = 0;
-                s_Flag_DB1 = g_FlagDB;
-                rt_multi_common_data_powerdown_storage();
-                (*CommunicatLock.flag[COM_FILE]) |= COMMUNICATLOCKRECORD;                    
-            }
-        } 
+                s_Flag_DB2 = g_FlagDB;
+                if(!(*MemoryCounter.counterSave&DB_COUNTER_EN))
+                {
+                    *MemoryCounter.counterSave = DB_COUNTER_EN;
+                }
+                if (((*MemoryCounter.counterSave) & DB_COUNTER) >= MEMORY_TIME)
+                {
+                    *MemoryCounter.counterSave = 0;
+                    s_Flag_DB1 = g_FlagDB;
+                    rt_multi_common_data_powerdown_storage();
+                    (*CommunicatLock.flag[COM_FILE]) |= COMMUNICATLOCKRECORD;                    
+                }
+            } 
+        }
         
         if (((*MemoryCounter.counterCharge) & DB_COUNTER) >= CHARGE_TIME)
         {

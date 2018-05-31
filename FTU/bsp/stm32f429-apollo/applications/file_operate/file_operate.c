@@ -1098,40 +1098,58 @@ uint8_t AddDoc_CO(void)
         
         while(g_FlagDB.queue_co.in != g_FlagDB.queue_co.out[FLASH_ID])
         {
-                tabs = 2;
-                lseek(MyFile, 0x85+0x49*(g_FlagDB.fatfs_co.currentnum), SEEK_SET);
-                strcpy(content,"DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"0\"");
-                sprintf(tempstr,"%05d",g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].addr);
-                memcpy((content+strlen("DI ioa=\"")),tempstr,5);
-                if((g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value)>=0x20)
+            tabs = 2;
+            lseek(MyFile, 0x85+0x49*(g_FlagDB.fatfs_co.currentnum), SEEK_SET);
+            strcpy(content,"DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"0\"");
+            sprintf(tempstr,"%05d",g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].addr);
+            memcpy((content+strlen("DI ioa=\"")),tempstr,5);
+            if((g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].value)>=0x20)
+            {
+                if(g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x10)
                 {
-                    if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x10)
-                    {
-                        strcpy(tempstr,"cancle        ");
-                    }
-                    else
-                    {
-                        if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x08)
-                        {strcpy(tempstr,"oper   ");}
-                        else
-                        {strcpy(tempstr,"select ");}
-                        if(g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x04)
-                        {strcat(tempstr,"success");}
-                        else
-                        {strcat(tempstr,"fail   ");}            
-                    }
+                    strcpy(tempstr,"cancle        ");
                 }
                 else
                 {
-                    {strcpy(tempstr,"oper   success");} 
+                    if(g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x08)
+                    {strcpy(tempstr,"oper   ");}
+                    else
+                    {strcpy(tempstr,"select ");}
+                    if(g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].value&0x04)
+                    {strcat(tempstr,"success");}
+                    else
+                    {strcat(tempstr,"fail   ");}            
                 }
-                memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"")),tempstr,14);
-                sprintf(tempstr,"%01d",((g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].value >> 1)&0x01));
-                memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"")),tempstr,1);
-                TIME_TO_STR(tempstr,g_SOEDB[g_FlagDB.queue_co.out[FLASH_ID]].time);
-                memcpy((content+strlen("DI ioa=\"00001\" tm=\"")),tempstr,17);
-                tag_value(content,&tabs);
-                write(MyFile,content, strlen(content));        
+            }
+            else
+            {
+                {strcpy(tempstr,"oper   success");} 
+            }
+            memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"")),tempstr,14);
+            sprintf(tempstr,"%01d",((g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].value >> 1)&0x01));
+            memcpy((content+strlen("DI ioa=\"00001\" tm=\"160813_180000_011\" cmd=\"select success\" val=\"")),tempstr,1);
+            TIME_TO_STR(tempstr,g_CoDB[g_FlagDB.queue_co.out[FLASH_ID]].time);
+            memcpy((content+strlen("DI ioa=\"00001\" tm=\"")),tempstr,17);
+            tag_value(content,&tabs);
+            write(MyFile,content, strlen(content));        
+            if(MyFile == -1)
+            {
+                failnum++;
+                FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
+                return(1);
+            }
+            
+            if(++g_FlagDB.fatfs_co.fullnum >= CO_FILE_MAXNUM)
+            {
+                g_FlagDB.fatfs_co.fullnum = CO_FILE_MAXNUM;
+            }
+            
+            if(++g_FlagDB.fatfs_co.currentnum >= CO_FILE_MAXNUM)
+            {
+                g_FlagDB.fatfs_co.currentnum = 0;
+                strcpy(content,"DataRec");
+                tag_end(content,&tabs);
+                write(MyFile,content, strlen(content)); 
                 if(MyFile == -1)
                 {
                     failnum++;
@@ -1139,34 +1157,20 @@ uint8_t AddDoc_CO(void)
                     return(1);
                 }
                 
-                if(++g_FlagDB.fatfs_co.fullnum >= CO_FILE_MAXNUM)
+                strcpy(content,"DataFile");
+                tag_end(content,&tabs);
+                write(MyFile,content, strlen(content));
+                if(MyFile == -1)
                 {
-                    g_FlagDB.fatfs_co.fullnum = CO_FILE_MAXNUM;
+                    failnum++;
+                    FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
+                    return(1);
                 }
-                
-                if(++g_FlagDB.fatfs_co.currentnum >= CO_FILE_MAXNUM)
-                {
-                    g_FlagDB.fatfs_co.currentnum = 0;
-                    strcpy(content,"DataRec");
-                    tag_end(content,&tabs);
-                    write(MyFile,content, strlen(content)); 
-                    if(MyFile == -1)
-                    {
-                        failnum++;
-                        FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
-                        return(1);
-                    }
-                    
-                    strcpy(content,"DataFile");
-                    tag_end(content,&tabs);
-                    write(MyFile,content, strlen(content));
-                    if(MyFile == -1)
-                    {
-                        failnum++;
-                        FILE_PRINTF("/sojo/HISTORY/CO/co.xml write failed!\n");
-                        return(1);
-                    }
-                }               
+            }
+            if (++(g_FlagDB.queue_co.out[FLASH_ID]) >= SOE_MAX_NUM)
+            {
+                g_FlagDB.queue_co.out[FLASH_ID] = 0;
+            }                 
         }
       
         if(g_FlagDB.fatfs_co.fullnum < CO_FILE_MAXNUM)
