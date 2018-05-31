@@ -773,7 +773,7 @@ void other_protect_init(void)
     OverFrequency.soeAddr = g_TelesignalAddr.overFrequencyProtection;
     OverFrequency.value = &g_pFixedValue[OVERFREQUENCY_VALUE];
     OverFrequency.funSwitch = &g_pFixedValue[OVERFREQUENCY_SWITCH];
-    OverFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
+    OverFrequency.telemetry = &g_FreGatherUab.freValueProtect;
     OverFrequency.factor = &g_pFixedValue[OVERFREQUENCY_FACTOR];
     OverFrequency.flag = 0;
 
@@ -784,7 +784,7 @@ void other_protect_init(void)
     DownFrequency.soeAddr = g_TelesignalAddr.downFrequencyProtection;
     DownFrequency.value = &g_pFixedValue[DOWNFREQUENCY_VALUE];
     DownFrequency.funSwitch = &g_pFixedValue[DOWNFREQUENCY_SWITCH];
-    DownFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
+    DownFrequency.telemetry = &g_FreGatherUab.freValueProtect;
     DownFrequency.factor = &g_pFixedValue[DOWNFREQUENCY_FACTOR];
     DownFrequency.flag = 0;
 
