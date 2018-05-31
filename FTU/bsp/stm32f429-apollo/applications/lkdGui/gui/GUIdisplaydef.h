@@ -6,12 +6,12 @@
 #include "lkdGuiWindow.h"
 
 MENU mianMenu = {
-	0,0,NULL,0,5,{1,1,1,0,0},//x,y,fatherMenu,currentItem,mun,ItemFlag
-	{"信息查询","定值设置","配置设置","命令下发","版本信息",NULL,NULL,NULL,NULL,NULL},
+	0,0,NULL,0,6,{1,1,1,0,0},//x,y,fatherMenu,currentItem,mun,ItemFlag
+	{"信息查询","定值设置","配置设置","时间修改","命令下发","版本信息",NULL,NULL,NULL,NULL},
 	mianMenuFun/* MenuFunction */
 };
 MENU MenuM0 = {
-	0,0,&mianMenu,0,6,{0,1,0,0,1,1},//x,y,fatherMenu,currentItem,mun
+	0,0,&mianMenu,0,7,{0,1,0,0,1,1},//x,y,fatherMenu,currentItem,mun
 	{"遥信查询","遥测查询"," SOE查询","操作记录","故障事件","定值查询","配置查询",NULL,NULL,NULL},
 	MenuM0Fun/* itemFunction */	
 };
@@ -62,6 +62,7 @@ MENU MenuM1S8 = {
 	MenuM1S8Fun/* itemFunction */
 };
 
+WINDOW TimeModfiyWin  = {12,44,136,66,NULL,"时间修改窗口",TimeModfiyFun};
 WINDOW HomeWindow = {0,0,160,160,NULL,NULL,HomeWindowFun};
 WINDOW MenuWindow = {0,0,160,160,NULL,"菜单管理窗口",MenuWindowFun};
 WINDOW CmdSendWin = {0,0,160,160,NULL,"命令下发窗口",CmdSendWinFun};
@@ -95,7 +96,6 @@ WINDOW AutoResetWin    = {0,0,160,160,NULL,"自动复归窗口",AutoResetFun};
 WINDOW BasicSetWin   = {0,0,160,160,NULL,"基本设置窗口",BasicSetFun};
 WINDOW ZeroDriftWin  = {0,0,160,160,NULL,"零漂设置窗口",ZeroDriftFun};
 WINDOW DeadZoneWin 	 = {0,0,160,160,NULL,"死区设置窗口",DeadZoneFun};
-
 WINDOW SerialWin  = {0,0,160,160,NULL,"串口设置窗口",SerialFun};
 WINDOW InternetWin 	 = {0,0,160,160,NULL,"网口设置窗口",InternetFun};
 

@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F429xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\OBJ;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\HARDWARE\LED;..\HARDWARE\KEY;..\HARDWARE\LCD;..\HARDWARE\SDRAM;..\HARDWARE\KEY;..\HARDWARE\SDIO;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\HARDWARE\NAND;..\MALLOC;..\USMART;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\IAP;..\HARDWARE\FM25Vxx;..\HARDWARE\uart;..\HARDWARE\SDRAM;..\HARDWARE\SDRAM;..\HARDWARE\IWDG</IncludePath>
+              <IncludePath>..\CORE;..\OBJ;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\HARDWARE\LED;..\HARDWARE\KEY;..\HARDWARE\LCD;..\HARDWARE\SDRAM;..\HARDWARE\KEY;..\HARDWARE\SDIO;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\HARDWARE\NAND;..\MALLOC;..\USMART;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\IAP;..\HARDWARE\FM25Vxx;..\HARDWARE\uart;..\HARDWARE\SDRAM;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

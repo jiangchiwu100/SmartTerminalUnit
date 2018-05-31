@@ -10,11 +10,13 @@
 #include "ledDriver.h"
 #include "switchDriver.h"
 #include "hmi101.h"
+#include <stdlib.h>
 
 /* led映射表 */
 const uint8_t userLedNoTab[USERLED_NUMALL] = {
 	0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 };
+uint8_t userLedNoStatus[USERLED_NUMALL] = {0};
 /* 开关映射表 */
 const uint8_t userSwitchNoTab[USERSWITCH_NUMALL] = {
 	0,1,2,3,4,5
@@ -29,6 +31,59 @@ struct SwitchQueue switchQueue;
 struct KeyQueue keyQueue;
 
 /**
+  *@brief 运行信号灯控制
+  *@param  None
+  *@retval None
+  */
+static void UserRunLed(void)
+{
+	static uint32_t LedRunCount;
+	if(GetTimer1IntervalTick(LedRunCount) >= 500){
+		LedRunCount = GetTimer1Tick();
+		if(GetLedStatus(userLedNoTab[USERLED_RUN]) == LEDOFF){
+			SetLedState(userLedNoTab[USERLED_RUN], LEDON);;
+		}
+		else{
+			SetLedState(userLedNoTab[USERLED_RUN], LEDOFF);
+		}
+	}
+}
+/**
+  *@brief 通讯信号灯信号灯控制
+  *@param  None
+  *@retval None
+  */
+static void UserCommunLed(void)
+{
+	static uint32_t communLedCount=0;
+	static uint16_t communLedCount2=500;
+	static uint8_t ledCountStep = 0;
+	if(userLedNoStatus[USERLED_COMMUN] == 0 && ledCountStep != 0){
+		ledCountStep = 0;
+	}
+	else if(userLedNoStatus[USERLED_COMMUN] == 1 && ledCountStep == 0){
+		ledCountStep = 1;
+		communLedCount = GetTimer1Tick();
+	}
+	if(ledCountStep == 1){
+		if(GetTimer1IntervalTick(communLedCount) >= 100){
+			SetLedState(userLedNoTab[USERLED_COMMUN], LEDOFF);
+			communLedCount2 = (rand()%1000);
+			if(communLedCount2 <= 110){
+				communLedCount2 = 110;//变量初始值要大于此值
+			}
+			ledCountStep = 2;
+		}	
+	}
+	else if(ledCountStep == 2){
+		if(GetTimer1IntervalTick(communLedCount) >= communLedCount2){
+			SetLedState(userLedNoTab[USERLED_COMMUN], LEDON);
+			communLedCount = GetTimer1Tick();
+			ledCountStep = 1; 
+		}
+	}
+}
+/**
   *@brief 设置userled的状态
   *@param  ledNo 灯号
   *@param  state led状态
@@ -40,10 +95,12 @@ void SetUserLedStatus(uint8_t ledNo, uint8_t state)
 		switch(state){
 			case USERLED_OFF:
 				if(GetLedStatus(userLedNoTab[ledNo]) == LEDON){
+					userLedNoStatus[ledNo] = 1;
 					SetLedState(userLedNoTab[ledNo], LEDOFF);
 				}break;
 			case USERLED_ON:
 				if(GetLedStatus(userLedNoTab[ledNo]) == LEDOFF){
+					userLedNoStatus[ledNo] = 0;
 					SetLedState(userLedNoTab[ledNo], LEDON);
 				}break;
 			default:break;
@@ -174,5 +231,16 @@ void KeyQueueInit(void)
 	keyQueue.isfull = 0;
 	keyQueue.pIn = 0;
 	keyQueue.pOut = 0;
+}
+
+/**
+  *@brief inoutMain
+  *@param  None
+  *@retval None
+  */
+void InOutUserMain(void)
+{
+	UserRunLed();
+	UserCommunLed();
 }
 /* END */

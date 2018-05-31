@@ -17,5 +17,4 @@ uint32_t GetTimer1IntervalTick(uint32_t beginTick);
 void Delay_us(uint32_t nus);
 void Delay_ms(uint16_t nms);
 
-extern void LedRun(void);
 #endif /* __GW_KEY_H */
