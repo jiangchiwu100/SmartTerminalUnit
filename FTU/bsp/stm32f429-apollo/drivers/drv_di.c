@@ -132,10 +132,19 @@ void rt_hw_di_check_task(rt_uint8_t clock)
     {
         rt_device_read(rt_di_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DI + i], sizeof(struct rt_device_pin_status));	
     }
-	
-    g_DiCollect.state = pin_status[INDEX_SWITCH_CLOSE_DI].status | pin_status[INDEX_SWITCH_OPEN_DI].status << 1 | (!pin_status[INDEX_ENERGY_STORAGE_DI].status) << 2 | \
-                        pin_status[INDEX_LOW_PRESSURE_DI].status << 3 | pin_status[INDEX_POWER_FAILURE_ALARM_DI].status << 4 | pin_status[INDEX_BETTERY_UNDERVOLTAGE_DI].status << 5 | \
-                        pin_status[INDEX_BATTERYA_CTIVATE_DI].status << 6 | (!pin_status[INDEX_BATTERY_LOSS_ALARM_DI].status) << 7;
+
+    if(g_Parameter[POWERLOSS_NEGATE] == 0)
+    {
+        g_DiCollect.state = pin_status[INDEX_SWITCH_CLOSE_DI].status | pin_status[INDEX_SWITCH_OPEN_DI].status << 1 | (!pin_status[INDEX_ENERGY_STORAGE_DI].status) << 2 | \
+                            pin_status[INDEX_LOW_PRESSURE_DI].status << 3 | pin_status[INDEX_POWER_FAILURE_ALARM_DI].status << 4 | pin_status[INDEX_BETTERY_UNDERVOLTAGE_DI].status << 5 | \
+                            pin_status[INDEX_BATTERYA_CTIVATE_DI].status << 6 | (!pin_status[INDEX_BATTERY_LOSS_ALARM_DI].status) << 7;
+    }
+    else
+    {
+        g_DiCollect.state = pin_status[INDEX_SWITCH_CLOSE_DI].status | pin_status[INDEX_SWITCH_OPEN_DI].status << 1 | (!pin_status[INDEX_ENERGY_STORAGE_DI].status) << 2 | \
+                            pin_status[INDEX_LOW_PRESSURE_DI].status << 3 | pin_status[INDEX_POWER_FAILURE_ALARM_DI].status << 4 | pin_status[INDEX_BETTERY_UNDERVOLTAGE_DI].status << 5 | \
+                            pin_status[INDEX_BATTERYA_CTIVATE_DI].status << 6 | (pin_status[INDEX_BATTERY_LOSS_ALARM_DI].status) << 7;    
+    }
 	
     s_shaking_time = (uint32_t)g_Parameter[DI_SHAKING_TIME] / clock;
 

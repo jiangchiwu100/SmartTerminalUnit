@@ -617,6 +617,7 @@ enum AddrRunParameter
     CLOSING_PULSE_TIME,                   // 合闸脉宽时间
     OPENING_PULSE_TIME,			          // 分闸脉宽时间
     REVERSE_TIME,                         // 反校时间
+    POWERLOSS_NEGATE,                     // 电源告警取反
     ZERODRIFT_F,                          // 频率零漂
     ZERODRIFT_Ia,                         // A相电流零漂 
     ZERODRIFT_Ib,                         // B相电流零漂
