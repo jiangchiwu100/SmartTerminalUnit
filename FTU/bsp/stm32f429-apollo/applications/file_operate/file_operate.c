@@ -766,7 +766,7 @@ uint8_t CreatDoc_Record(void)
         return 1;
     }
 	
-    write(MyFile,&g_ConfigurationSetDB, sizeof(g_ConfigurationSetDB));
+    write(MyFile,(uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
    
     FILE_PRINTF("f_write ConfigurationSet.cfg\n", MyFile );
     
