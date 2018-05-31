@@ -984,7 +984,7 @@ uint16_t DLT634_5101_SLAVE_R_YXDATA(uint8_t pdrv,uint16_t addr,uint16_t num, uin
         
         for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
         {
-            valuetemp = g_TelesignalDB[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5101Slave_Pad[pdrv].YX_FirstAddr] - 1;
+            valuetemp = *(TelesignalCfg[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5101Slave_Pad[pdrv].YX_FirstAddr].pVal) - 1;
             if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
             {
                 valuetemp = (~valuetemp)&0x01;                
