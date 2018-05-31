@@ -8,78 +8,6 @@
 
 #include "ledDriver.h"
 
-static uint8_t LedRunFlag;
-/**
-  *@brief 信号灯硬件初始化
-  *@param  None
-  *@retval None
-  */
-void GPIOInit(void)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	
-	/* 电源 */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	/* 运行 */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-}
-
-/**
-  *@brief 全局变量初始化
-  *@param  None
-  *@retval None
-  */
-static void variableInit(void)
-{
-	LED_POWER_ON();
-	LedRunFlag = 1;
-}
-
-/**
-  *@brief 总初始化，用于外部文件调用
-  *@param  None
-  *@retval None
-  */
-void LedInit(void)
-{
-	GPIOInit();
-	variableInit();
-}
-
-/**
-  *@brief 运行信号灯控制
-  *@param  None
-  *@retval None
-  */
-void LedRun(void)
-{
-	static uint16_t LedRunCount;
-	if(LedRunFlag == 1){
-		LedRunCount ++;
-		if(LedRunCount >= 500){
-			if(LED_RUN_GETSTATUS() == 1){
-				LED_RUN_ON();
-			}
-			else{
-				LED_RUN_OFF();
-			}
-			LedRunCount = 0;
-		}
-	}
-}
-
-void BootPinCheck(void)
-{
-	
-}
-
 /**
   *@brief ledGpio初始化
   *@param  None
@@ -249,5 +177,7 @@ LedStatus GetLedStatus(uint8_t ledNum)
 void LedDriverInit(void)
 {
 	LedGpioInit();
+	SetLedState(0, LEDON);
 }
+
 /* END */

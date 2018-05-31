@@ -78,8 +78,6 @@ LedStatus GetLedStatus(uint8_t ledNum);
 void LedGpioInit(void);
 
 /* ×Ü³õÊ¼»¯ */
-void LedInit(void);
-void LedRun(void);
 void LedDriverInit(void);
 
 #endif /* END _LED_H_ */

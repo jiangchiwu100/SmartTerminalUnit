@@ -9,13 +9,13 @@
 #include "switchDriver.h"
 #include "keyDriver.h"
 #include "GuiDisplay.h"
+#include "inoutUser.h"
 
 int main(void)
 {
 	CLOSE_ALL_INT();
 	SystemconfigInit();
 	LedDriverInit();
-	LedInit();
 	KeyDriverInit();
 	SwitchDriverInit();
 	uartInit();
@@ -23,14 +23,13 @@ int main(void)
 	ZiKuInit();
 	OPEN_ALL_INT();
 	GUIStartInterface();
-//	GuiUpdateDisplayAll();
 	DLT634_HMI_MASTER_INIT(0);
-	
 	while(1)                            
 	{
 		ScanSwitchStatus();
 		ScanKeyStatus();
 		Hmi101Main();
+		InOutUserMain();
 	}
 }
 

@@ -52,7 +52,26 @@ void GetDisplayTime(SystemTimeDisplay *tim)
 	tim->s = tms / 1000;
 	tim->ms = tms % 1000;
 }
-
+/**
+  *@brief  修改系统时间
+  *@param  None
+  *@retval None
+  */
+void SetDisplayTime(SystemTimeDisplay *tim)
+{
+	uint16_t tms;
+	struct CP56Time2a_t cpTime;
+	DBReadSystemTime(&cpTime);
+	cpTime.year = tim->year;
+	cpTime.month = tim->month;
+	cpTime.dayofWeek = ((tim->day & 0x1F) | (cpTime.dayofWeek &0xE0));
+	cpTime.hour = tim->hour;
+	cpTime.minute = tim->min;
+	tms = tim->s * 1000 + tim->ms; 
+	cpTime.msecondH = (uint8_t)(tms >> 8);
+	cpTime.msecondL = (uint8_t)tms;
+	DBWriteSystemTime(&cpTime);
+}
 /**
   *@brief  遥信显示初始化
   *@param  None

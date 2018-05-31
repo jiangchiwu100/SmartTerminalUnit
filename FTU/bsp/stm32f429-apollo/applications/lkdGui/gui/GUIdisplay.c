@@ -781,7 +781,9 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 			}
 			else{//float value
 				tempFloat = *(info->pRoot[info->pBuff[i]].pVal);
-				sprintf((char *)&col1Data[i*16],"%.3f",tempFloat);
+				char tspStr[8];
+				sprintf(tspStr,"%%.%df",info->pRoot[info->pBuff[i]].decimals);
+				sprintf((char *)&col1Data[i*16],tspStr,tempFloat);
 				col1Data[i*16 + 15] = '\0';
 				*(pText + i*DZDISPLAYCOL + 1) = &col1Data[i*16];
 			}
@@ -984,12 +986,13 @@ static void mianMenuFun(void)
 	if(stepTab[STEP_MAINMENU] == 1){
 		switch(mianMenu.currentItem){
 		case 0://信息查询
-		case 4://版本信息
+		case 5://版本信息
 			stepTab[STEP_MAINMENU] = 3;
 			break;
 		case 1://定值设置
 		case 2://配置设置
-		case 3://命令下发
+		case 3://时间修改
+		case 4://命令下发
 			SetPassWordWin(0,&passWordState);
 			userGUIWindowAdd(&PassWordWin);
 			stepTab[STEP_MAINMENU] = 2;
@@ -1010,8 +1013,9 @@ static void mianMenuFun(void)
 		case 0:userGUIMenuAdd(&MenuM0);break;//信息查询
 		case 1:userGUIMenuAdd(&MenuM1);break;//定值设置
 		case 2:userGUIMenuAdd(&MenuM2);break;//配置设置
-		case 3:userGUIWindowAdd(&CmdSendWin);break;//命令下发
-		case 4:userGUIWindowAdd(&VersionWin);break;//版本信息
+		case 3:userGUIWindowAdd(&TimeModfiyWin);break;//时间修改
+		case 4:userGUIWindowAdd(&CmdSendWin);break;//命令下发
+		case 5:userGUIWindowAdd(&VersionWin);break;//版本信息
 		default:break;
 		}
 	}
@@ -1929,7 +1933,7 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 	}
 	if(stepTab[STEP_NORMAL] == 1){
 		if(soeStr->allNum == 0){//没有SOE
-			GuiFont12Align(SOEWin.x+2,SOEWin.y + 30,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有SOE");
+			GuiFont12Align(SOEWin.x+2,SOEWin.y + 40,SOEWin.x+SOEWin.wide-4,FONT_MID,"当前没有信息记录");
 			GuiUpdateDisplayAll();
 			stepTab[STEP_NORMAL] = 3;
 		}
@@ -2242,16 +2246,184 @@ static void InternetFun(void)
 {
 	DZModfiyDisplay(&dzhi0Info[DZ0_INTERNET],&stepTab[STEP_NORMAL]);
 }
+
+/**
+  *@brief 时间移动修改
+  *@param  None
+  *@retval None
+  */
+static void TimeMoveModfiy(uint8_t updown, uint8_t pmove,SystemTimeDisplay *pTime)
+{
+	//2018-12-23  12:23
+	const uint8_t pMoveMap[] = {0,0,1,2,0,3,4,0,5,6,0,0,7,8,0,9,10,0,11,12};
+	if(pmove >= sizeof(pMoveMap)){
+		return;
+	}
+	if(updown == 1){//减
+		switch(pMoveMap[pmove])
+		{
+			case 1://年高
+				pTime->year = pTime->year - 10;
+				if(pTime->year > 99){
+					pTime->year = 99;
+				}break;
+			case 2://年低
+				if(pTime->year - 1 < 0){
+					pTime->year = 99;
+				}
+				else{
+					pTime->year = pTime->year - 1;
+				}break;
+			case 3://月高
+				pTime->month = pTime->month - 10;
+				if(pTime->month > 12){
+					pTime->month = 12;
+				}break;
+			case 4://月低
+				if(pTime->month - 1 < 0){
+					pTime->month = 12;
+				}
+				else{
+					pTime->month = pTime->month - 1;
+				}break;
+			case 5://日高
+				pTime->day = pTime->day - 10;
+				if(pTime->day > 31){
+					pTime->day = 31;
+				}break;
+			case 6://日低
+				if(pTime->day - 1 < 0){
+					pTime->day = 31;
+				}
+				else{
+					pTime->day = pTime->day - 1;
+				}break;
+			case 7://时高
+				pTime->hour = pTime->hour - 10;
+				if(pTime->hour > 23){
+					pTime->hour = 23;
+				}break;
+			case 8://时低
+				if(pTime->hour - 1 < 0){
+					pTime->hour = 23;
+				}
+				else{
+					pTime->hour = pTime->hour - 1;
+				}break;
+			case 9://分高
+				pTime->min = pTime->min - 10;
+				if(pTime->min > 59){
+					pTime->min = 59;
+				}break;
+			case 10://分低
+				if(pTime->min - 1 < 0){
+					pTime->min = 59;
+				}
+				else{
+					pTime->min = pTime->min - 1;
+				}break;
+			case 11://秒高
+				pTime->s = pTime->s - 10;
+				if(pTime->s > 59){
+					pTime->s = 59;
+				}break;
+			case 12://秒低
+				if(pTime->s - 1 < 0){
+					pTime->s = 59;
+				}
+				else{
+					pTime->s = pTime->s - 1;
+				}break;
+		}
+	}
+	else if(updown == 2){//加
+		switch(pMoveMap[pmove])
+		{
+			case 1://年高
+				pTime->year = pTime->year + 10;
+				if(pTime->year > 99){
+					pTime->year = 0;
+				}break;
+			case 2://年低
+				if(pTime->year + 1 > 99){
+					pTime->year = 0;
+				}
+				else{
+					pTime->year = pTime->year + 1;
+				}break;
+			case 3://月高
+				pTime->month = pTime->month + 10;
+				if(pTime->month > 12){
+					pTime->month = 0;
+				}break;
+			case 4://月低
+				if(pTime->month + 1 > 12){
+					pTime->month = 0;
+				}
+				else{
+					pTime->month = pTime->month + 1;
+				}break;
+			case 5://日高
+				pTime->day = pTime->day + 10;
+				if(pTime->day > 31){
+					pTime->day = 0;
+				}break;
+			case 6://日低
+				if(pTime->day + 1 > 31){
+					pTime->day = 0;
+				}
+				else{
+					pTime->day = pTime->day + 1;
+				}break;
+			case 7://时高
+				pTime->hour = pTime->hour + 10;
+				if(pTime->hour > 23){
+					pTime->hour = 0;
+				}break;
+			case 8://时低
+				if(pTime->hour + 1 > 23){
+					pTime->hour = 0;
+				}
+				else{
+					pTime->hour = pTime->hour + 1;
+				}break;
+			case 9://分高
+				pTime->min = pTime->min + 10;
+				if(pTime->min > 59){
+					pTime->min = 0;
+				}break;
+			case 10://分低
+				if(pTime->min + 1 > 59){
+					pTime->min = 0;
+				}
+				else{
+					pTime->min = pTime->min + 1;
+				}break;
+			case 11://秒高
+				pTime->s = pTime->s + 10;
+				if(pTime->s > 59){
+					pTime->s = 0;
+				}break;
+			case 12://秒低
+				if(pTime->s + 1 > 59){
+					pTime->s = 0;
+				}
+				else{
+					pTime->s = pTime->s + 1;
+				}break;
+		}
+	}
+}
 /**
   *@brief 时间修改处理函数
   *@param  None
   *@retval None
   */
-void TimeModfiyFun(void)
+static void TimeModfiyFun(void)
 {
 	static uint8_t *pTimeStr;
 	static SystemTimeDisplay *pTime;
-	static uint8_t pMove,pModfiy,timeStrEnd,upDown;
+	static uint8_t pMove,tpMove,timeStrEnd,upDown;
 	if(stepTab[STEP_NORMAL] == 0){//初始化，分配内存
 		pTimeStr = &userGUIBuff[0];
 		pTime = (SystemTimeDisplay *)&userGUIBuff[32];
@@ -2259,46 +2431,88 @@ void TimeModfiyFun(void)
 		sprintf((char *)pTimeStr,"20%02d-%02d-%02d  %02d:%02d:%02d",pTime->year,\
 			pTime->month,pTime->day,pTime->hour,pTime->min,pTime->s);
 		pMove = 2;/* 定位到年的第三位,前两位不可修改 */
-		pModfiy = pTimeStr[2];/* 到年的第三位赋值给修改指针 */
+		tpMove = 2;
 		timeStrEnd = strlen((char *)pTimeStr) - 1;
 		upDown = 0; 
 		stepTab[STEP_NORMAL] = 1;
 	}
 	if(stepTab[STEP_NORMAL] == 1){//画图
+		WINDOW *pWin = &TimeModfiyWin;
+		GuiHPointLine(pWin->x,pWin->y + pWin->hight - 18,pWin->x + pWin->wide - 1,2,forecolor);
+		GuiRPointLine(pWin->x + 40,pWin->y + pWin->hight - 18,pWin->y + pWin->hight - 1,2,forecolor);
+		GuiFont12Align(pWin->x + 2,pWin->y + pWin->hight - 15,37,FONT_LEFT,"状态:");
+		stepTab[STEP_NORMAL] = 2;
+	}
+	if(stepTab[STEP_NORMAL] == 2){
+		WINDOW *pWin = &TimeModfiyWin;
+		sprintf((char *)pTimeStr,"20%02d-%02d-%02d  %02d:%02d:%02d",pTime->year,\
+			pTime->month,pTime->day,pTime->hour,pTime->min,pTime->s);
+		GuiFont12Align(pWin->x + 8,pWin->y + 24,126,FONT_LEFT,pTimeStr);
+		GuiExchangeColor();
+		uint8_t pStr1[2] = {'\0','\0'};
+		pStr1[0] = pTimeStr[pMove];
+		GuiFont12Align(TimeModfiyWin.x + 8 + pMove*6,TimeModfiyWin.y + 24,6,FONT_LEFT,pStr1);
+		GuiExchangeColor();
+		GuiFont12Align(pWin->x + 42,pWin->y + pWin->hight - 15,pWin->wide - 44,FONT_RIGHT,"修改中...");
+		GuiUpdateDisplayAll();
+		stepTab[STEP_NORMAL] = 3;
+	}
+	if(stepTab[STEP_NORMAL] == 3 && (upDown != 0 ||  pMove != tpMove)){
+		uint8_t tflag;
+		if(tpMove < pMove){
+			 tflag = 1;
+		}
+		else{
+			tflag = 2;
+		}
 		while(1){//左右移动 屏蔽无效字符
 			if(pTimeStr[pMove] < '0' || pTimeStr[pMove] > '9'){
-				pMove ++;
-				if(pMove > timeStrEnd){
-					pMove = 2;pModfiy++;
+				if(tflag == 1){//右移
+					if(++pMove > timeStrEnd){
+						pMove = 2;
+					}
+				}
+				else{
+					if(--pMove < 2){//左移
+						pMove = timeStrEnd;
+					}
 				}
 			}
 			else{
 				break;
 			}
 		}
-		stepTab[STEP_NORMAL] = 2;
-	}
-	if(stepTab[STEP_NORMAL] == 2 && upDown != 0){
-		if(upDown == 1){//上键
-			pTimeStr[pMove] = 1;
-		}
+		tpMove = pMove;
+		TimeMoveModfiy(upDown, pMove,pTime);
+		stepTab[STEP_NORMAL] = 1;
 		upDown = 0;
+	}
+	if(stepTab[STEP_NORMAL] == 4){
+		SetDisplayTime(pTime);
+		WINDOW *pWin = &TimeModfiyWin;
+		GuiFillRect(pWin->x + 42,pWin->y + pWin->hight - 15,\
+			pWin->x + pWin->wide - 2,pWin->y + pWin->hight - 2,backcolor);
+		GuiFont12Align(pWin->x + 42,pWin->y + pWin->hight - 15,\
+		pWin->wide - 44,FONT_RIGHT,"修改成功");
+		GuiUpdateDisplayAll();
+		stepTab[STEP_NORMAL] = 3;
 	}
 	
 	switch(keyStatus){
-	case UpKey:upDown = 1;break;
+	case UpKey:upDown = 2;break;
 	case LeftKey:
 		pMove --;
 		if(pMove < 2){
 			pMove = timeStrEnd;
 		}break;
-	case DownKey:upDown = 2;break;
+	case DownKey:upDown = 1;break;
 	case RightKey:
 		pMove ++;
-		if(pMove >= timeStrEnd){
+		if(pMove > timeStrEnd){
 			pMove = 2;
 		}break;
-	case OkKey:break;
+	case OkKey:
+		stepTab[STEP_NORMAL] = 4;break;
 	case CancelKey:
 		stepTab[STEP_NORMAL] = 0;
 		userGUITopWindowHide();

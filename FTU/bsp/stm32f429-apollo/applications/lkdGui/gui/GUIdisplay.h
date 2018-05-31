@@ -138,6 +138,8 @@ static void MenuM2Fun(void);
 static void CmdSendWinFun(void);
 /* 版本信息 */	
 static void VersionWinFun(void);
+/* 密码修改 */
+static void TimeModfiyFun(void);
 /* 定值修改窗口函数 */
 void DZModfiyFun(void);
 /* 消息窗口 */

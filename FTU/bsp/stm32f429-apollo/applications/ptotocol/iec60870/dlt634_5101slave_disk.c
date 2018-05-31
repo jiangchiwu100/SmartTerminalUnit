@@ -1420,6 +1420,7 @@ int DLT634_5101_SLAVE_INIT(void)
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID0;            
                 dev[pdrv] = rt_device_find(RT_UART5_NAME);
                 serial = (struct rt_serial_device *)(dev[pdrv]);
+								serial->config.baud_rate = BAUD_RATE_115200;
                 rt_device_open(dev[pdrv], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);            
                 DLT634_5101Slave_Pad[pdrv].BalanMode = 1;
                 DLT634_5101Slave_Pad[pdrv].Encrypt = 0;
