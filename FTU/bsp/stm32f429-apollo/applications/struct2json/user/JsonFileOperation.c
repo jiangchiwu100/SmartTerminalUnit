@@ -25,7 +25,7 @@ static char Json_FileName[255]; /* File Name */
 static void Struct_To_Json(int file);
 static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json);
 static void Get_JSON(cJSON * root, uint8_t name);
-static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName);
+static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName);
 
 /**
  * @fn rt_s2j_malloc_fn
@@ -73,12 +73,12 @@ uint8_t Create_JsonFile(void)
 
     unlink(Json_FileName);  //删除文件
 
-    if(Get_ID_For_Json(Json_FileName, "/AllJsonCfg.json") == 0)   //ID号能对应上则退出
+    if(Get_MD5ID_For_Json(Json_FileName, "AllJsonCfg.json") == 0)   //ID号能对应上则退出
     {
         return 0;
     }
      
-    g_ProductID.pointTableType = "/AllJsonCfg.json";    //json内同时写入文件名称以作区分
+    g_ProductID.pointTableType = "AllJsonCfg.json";    //json内同时写入文件名称以作区分
 
     cJSON *struct_json = ProductID_StructToJson();
     
@@ -344,39 +344,37 @@ uint8_t GetJsonForFile(char* fileName, uint8_t name)
 }
 
 /**
- * @fn Get_ID_For_Json
- * @brief 从json文件中获取ID号
+ * @fn Get_MD5ID_For_Json
+ * @brief 从json文件中获取MD5校验码
  * @param fileName 指向要读取的文件
- * @return ID正确   0
- *         不正确   1
- *         没有“productSerialNumber”字段    2
- *         文件名称不正确    3
- *         文件打开不正确    4
- *         字符串位置不正确    5
+ * @return 0    md5校验正确
+ *         1    md5校验不正确
+ *         2    不存在MD5校验码
+ *         3    字符串位置不正确
+ *         4    获取文件MD5校验码失败
  * 
  */
-static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
+static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName)
 {
     char* string;       //需要申请动态内存
-    static char data;
+    static char data = 0;
     string = rt_malloc(512);     //分配512字节的内存
-    int myFile_;    //文件名称
-    uint8_t count = 0;  //计数，计读到的“，”标号的数量
     uint8_t res = 1;    //要返回的结果
     char* _string;
+    char md5_buffer[32];    //保存md5校验码的数组
     
-    myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
+    int myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
     if(myFile_ < 0)
     {
         return 4;
     }
 
-    for (uint32_t i = 0; (read(myFile_, &data, 1)); i++)
+    for (uint32_t i = 0, uint8_t count = 0; (read(myFile_, &data, 1)); i++)
 	{
         if(data == ',')    //查找逗号，只判断前两个逗号内的数据
         {
             count++;
-            if(count >= 2)
+            if(count >= 3)  //此处采用硬编码
             {
                 string[i] = '}';
                 break;  //跳出循环
@@ -389,31 +387,32 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
     _string = strstr(string, "pointTableType");
     if(string - _string > 4)  //此处硬编码
     {
-        res = 5;    //偏移量不正确，该数据可能损坏或者写错
+        res = 3;    //偏移量不正确，该数据可能损坏或者写错
     }
-    if (strstr(string, jsonFileName))   //string字符串中是否包含有该json文件名称
+    //此处直接判断MD5
+    if(strstr(string, "md5"))   //获取MD5
     {
-        if (strstr(string, "productSerialNumber"))   //判断字符串ProductSerialNumber在字符串1中首次出现的位置
+        if(getFileMD5(fileName, md5_buffer) == 0)
         {
-            if(strstr(string, TERMINAL_PRODUCT_SERIAL_NUMBER))    //判断读取出的ID与软件中是否一致
+            if(strstr(string, md5_buffer))    //比较MD5校验码是否一致
             {
-                res = 0;    //软件ID号正确
+                res = 0;    //md5校验码正确
             }
             else
             {
-                res = 1;    //软件ID号不正确
+                res = 1;    //md5校验码不正确
             }
         }
         else
         {
-            res = 2;    //文件中不存在“productSerialNumber”字段
+            res = 4;    //获取文件MD5校验码失败
         }
     }
     else
     {
-        res = 3;    //该文件不是要打开的json文件
+        res = 2；   //不存在MD5校验码
     }
-    
+
     rt_free(string);    //释放动态内存
     
     return res;

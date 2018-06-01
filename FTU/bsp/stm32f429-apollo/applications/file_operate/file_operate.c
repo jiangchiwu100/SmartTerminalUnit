@@ -16,12 +16,7 @@
 #include "wave_recording.h"
 #include <dfs_posix.h>
 
-<<<<<<< HEAD
-#include "point_table_config.h"
-#include "drv_wdg.h"
-=======
 #include "JsonFileOperation.h"
->>>>>>> master
 	
 	
 #include "JsonFileOperation.h"

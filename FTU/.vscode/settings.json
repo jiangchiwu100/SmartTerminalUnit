@@ -26,7 +26,8 @@
         "config.h": "c",
         "memory": "c",
         "type_traits": "c",
-        "vector": "c"
+        "vector": "c",
+        "xutility": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Anaconda3_64\\python.exe",
