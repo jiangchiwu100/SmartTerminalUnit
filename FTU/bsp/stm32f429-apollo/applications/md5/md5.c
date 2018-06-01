@@ -12,7 +12,9 @@
 #include <string.h>		/* for memcpy() */
 #include <stdio.h>
 #include "md5.h"
-  
+
+#include <dfs_posix.h>
+
 #define MD5_FILE_BUFFER_LEN 1024  
 
 struct MD5Context {  
@@ -34,7 +36,6 @@ static void MD5Transform(uint32_t buf[4], uint32_t const in[16]);
 static int getBytesMD5(const uint8_t* src, unsigned int length, char* md5);  
 static void byteReverse(uint8_t *buf, unsigned longs);
 
-#ifndef ASM_MD5
 /*
  * Note: this code is harmless on little-endian machines.
  */
@@ -49,7 +50,6 @@ void byteReverse(uint8_t *buf, unsigned longs)
 	}while (--longs);
 }
 
-#endif
 
 static void putu32(uint32_t data, uint8_t *addr) 
 {
@@ -176,18 +176,16 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
 	memset(ctx, 0, sizeof(*ctx)); /* In case it's sensitive */
 }
 
-#ifndef ASM_MD5
-
 /* The four core functions - F1 is optimized somewhat */
 
 /* #define F1(x, y, z) (x & y | ~x & z) */
-#define F1(x, y, z)    {(z ^ (x & (y ^ z)));}
-#define F2(x, y, z)    {F1(z, x, y);}
-#define F3(x, y, z)    {(x ^ y ^ z);}
-#define F4(x, y, z)    {(y ^ (x | ~z));}
+#define F1(x, y, z)    (z ^ (x & (y ^ z)))
+#define F2(x, y, z)    F1(z, x, y)
+#define F3(x, y, z)    (x ^ y ^ z)
+#define F4(x, y, z)    (y ^ (x | ~z))
 
 /* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s)    {( w += f(x, y, z) + data,  w = (w << s) | (w >> (32-s)),  w += x );}
+#define MD5STEP(f, w, x, y, z, data, s)    ( w += f(x, y, z) + data,  w = (w << s) | (w >> (32-s)),  w += x )
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
@@ -321,9 +319,9 @@ int getFileMD5(const char* fileName, char* md5)
 	uint8_t buffer[MD5_FILE_BUFFER_LEN] = { 0 };
 	int count = 0;
 	MD5_CTX context;
-	uint8_t md5Bytes[16] = { 0 };
+	uint8_t md5Bytes[16];
 	int i;
-	if (path == NULL || md5 == NULL)
+	if (fileName == NULL || md5 == NULL)
     {
 		return -1;
 	}
@@ -334,7 +332,7 @@ int getFileMD5(const char* fileName, char* md5)
 		return -1;
 	}
 	MD5Init(&context);
-	while ((count = (read(myFile_, &buffer, 1)) > 0) 
+	while ((count = (read(myFile_, &buffer, 1))) > 0) 
     {
 		MD5Update(&context, buffer, count);
 	}
@@ -348,7 +346,4 @@ int getFileMD5(const char* fileName, char* md5)
 	*md5 = '\0';
 	return 0;
 }
-
-#endif
-
 

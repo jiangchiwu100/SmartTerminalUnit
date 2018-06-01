@@ -20,7 +20,7 @@ typedef struct tagProductID
 {
     char* pointTableType;       //标注该文件时遥信还是遥测(点表类型)
     char* productSerialNumber;  //产品ID号
-    char  md5[32];
+    char  md5[20];
 
 }ProductID;
 

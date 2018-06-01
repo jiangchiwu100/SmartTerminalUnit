@@ -17,6 +17,7 @@
 #include "Interface_S2J.h"
 #include "common_config.h"
 #include "JsonFileOperation.h"
+#include "md5.h"
 	
 	
 static int Json_MyFile; /* File object */
@@ -71,7 +72,7 @@ uint8_t Create_JsonFile(void)
     strcpy(Json_FileName,"/sojo");
 	strcat(Json_FileName,"/AllJsonCfg.json");
 
-    unlink(Json_FileName);  //删除文件
+    //unlink(Json_FileName);  //删除文件
 
     if(Get_MD5ID_For_Json(Json_FileName, "AllJsonCfg.json") == 0)   //ID号能对应上则退出
     {
@@ -360,6 +361,7 @@ static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName)
     static char data = 0;
     string = rt_malloc(512);     //分配512字节的内存
     uint8_t res = 1;    //要返回的结果
+    uint8_t count = 0;
     char* _string;
     char md5_buffer[32];    //保存md5校验码的数组
     
@@ -369,7 +371,7 @@ static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName)
         return 4;
     }
 
-    for (uint32_t i = 0, uint8_t count = 0; (read(myFile_, &data, 1)); i++)
+    for (uint32_t i = 0; (read(myFile_, &data, 1)); i++)
 	{
         if(data == ',')    //查找逗号，只判断前两个逗号内的数据
         {
@@ -410,7 +412,7 @@ static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName)
     }
     else
     {
-        res = 2；   //不存在MD5校验码
+        res = 2;   //不存在MD5校验码
     }
 
     rt_free(string);    //释放动态内存

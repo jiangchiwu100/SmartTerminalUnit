@@ -50,7 +50,7 @@ char *ProductID_JsonToStruct(cJSON* json_obj)
 	s2j_struct_get_basic_element(struct_obj, json_obj, string, md5);    //MD5校验码
 	
 	/* 返回指向MD5校验码的数组的头指针 */
-	return struct_obj->md5_buffer;
+	return struct_obj->md5;
 }
 
 /**
