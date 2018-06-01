@@ -209,7 +209,10 @@ void rt_hw_hard_fault_exception(struct exception_stack_frame *exception_stack)
     list_thread();
 #endif
 
-    while (1);
+    while (1)
+    {
+        return;
+    }
 }
 
 /**

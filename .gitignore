@@ -1,6 +1,15 @@
 /FTU/bsp/stm32f429-apollo/Objects
+<<<<<<< HEAD
+/FTU/bsp/stm32f429-apollo/project.uvguix.zhangxiaomou
+=======
 /FTU/bsp/stm32f429-apollo/*.TMP
 /FTU/bsp/stm32f429-apollo/applications/common_data/common_data.h~RF24d4bc68.TMP
+<<<<<<< HEAD
+>>>>>>> master
+/FTU/bsp/stm32f429-apollo/project.uvguix.91984
+/FTU/bsp/stm32f429-apollo/project.uvgui.zhangxiaomou
+=======
 /HMI/Output
 /IAP/OBJ
 /IAP/FATFS/doc
+>>>>>>> master

@@ -1018,6 +1018,7 @@ struct ConfigurationSetDatabase
     uint16_t ID_Value[12];//值
 };
 
+
 /* 属性值 */
 #define NEWJUDG_AND 0x2
 

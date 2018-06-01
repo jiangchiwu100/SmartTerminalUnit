@@ -469,14 +469,64 @@ struct tagValueParaCfg FixedValueCfg1[] =
 /* 定值二区 */
 struct tagValueParaCfg FixedValueCfg2[sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0])];
 
+<<<<<<< HEAD
+//配置信息
+ConfigurationSetDatabaseToJson SetDatabaseCfg[] = {
+//    名称                    数据长度            数据
+//串口配置
+    {.name = "串口配置",          .dataLen = 1,       .value = {1.00f}   },
+    {.name = "波特率",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "数据位",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "停止位",            .dataLen = 1,       .value = {0.0f}   },
+    {.name = "校验",              .dataLen = 1,       .value = {0.0f}   },
+//串口设置
+    {.name = "通讯模式",          .dataLen = 1,       .value = {0.0f}   },
+    {.name = "从站地址",          .dataLen = 1,       .value = {0.0f}   },
+    {.name = "从站地址长度",      .dataLen = 1,       .value = {0.0f}   },
+    {.name = "传送原因字节数",    .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址",         .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址长度",     .dataLen = 1,       .value = {0.0f}   },
+//网口配置
+    {.name = "上行IP",           .dataLen = 4,       .value = {0.0f}   },
+    {.name = "下行IP",           .dataLen = 4,       .value = {0.0f}   },
+    {.name = "子网掩码",         .dataLen = 4,       .value = {0.0f}   },
+    {.name = "网关",             .dataLen = 4,       .value = {0.0f}   },
+    {.name = "DNS",             .dataLen = 4,       .value = {0.0f}   },
+//网口设置
+    {.name = "从站地址",         .dataLen = 1,       .value = {0.0f}   },
+    {.name = "ASDU地址",         .dataLen = 1,       .value = {0.0f}   },
+//YX设置
+    {.name = "YX设置总数",       .dataLen = 1,       .value = {0.0f}   },
+    {.name = "YX设置",           .dataLen = 200,     .value = {0.0f}   },
+//YC设置
+    {.name = "YC值",            .dataLen = 100,      .value = {0.0f}   },
+    {.name = "属性",            .dataLen = 100,      .value = {0.0f}   },
+    {.name = "倍率",            .dataLen = 100,      .value = {0.0f}   },
+//YK设置
+    {.name = "YK值",           .dataLen = 1,         .value = {0.0f}   },
+    {.name = "属性",           .dataLen = 1,         .value = {0.0f}   },
+    //ID设置 
+    {.name = "ID",             .dataLen = 12,       .value = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f}   },
+
+};
+
+
+
+=======
+>>>>>>> master
 unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0]);
 unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
 unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0]);
 unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
 unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
 unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
+<<<<<<< HEAD
+unsigned int g_SetDatabaseCfg_Len = sizeof(SetDatabaseCfg) / sizeof(SetDatabaseCfg[0]);
+
+=======
 unsigned int g_TelecontrolCfg_Len = sizeof(TelecontrolCfg) / sizeof(TelecontrolCfg[0]);
 unsigned int g_InherentParaCfg_Len = sizeof(InherentParaCfg) / sizeof(InherentParaCfg[0]);
+>>>>>>> master
 /* END OF FILE ---------------------------------------------------------------*/
 
 
