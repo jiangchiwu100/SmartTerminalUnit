@@ -320,6 +320,7 @@ void ParameterCheck(void)
     memset(flag,0xff,sizeof(flag));
 	for (i = 0; i < FIXED_VALUE_NUM; i++)
 	{
+<<<<<<< HEAD
         if(i < g_FixedValueCfg1_Len)
         {
             if (*g_pFixedValueCfg[i].pVal > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
@@ -374,6 +375,22 @@ void ParameterCheck(void)
             }        
         }
 	}	
+=======
+        float  a = *g_pFixedValueCfg[i].pVal;
+		if (a > g_pFixedValueCfg[i].valMax || *g_pFixedValueCfg[i].pVal < g_pFixedValueCfg[i].valMin)
+		{
+		    *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal; 
+		}
+	}	
+
+//	for (i = 0; i < RUN_PARAMETER_NUM; i++)
+//	{
+//		if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
+//		{
+//		    *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+//		}
+//	}	
+>>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 }
 
 /**
@@ -1526,6 +1543,45 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         rt_multi_common_data_configure_default();
     }
+<<<<<<< HEAD
+=======
+		
+    /* 读取定值区 */
+    //FM25VxxReadData(ADDR_FRAM_CURRENT_SN, NULL, &sn, 1);
+    rt_multi_common_data_fram_record_read(CURRENT_SN, (uint8_t *)&sn);
+		
+    if (sn != 1 || sn != 2)
+    {
+        sn = 1; // 如果没有存储定值区  默认为1区
+    }
+    g_ValueParaOperateInfo.currentSN = sn;
+    
+    /* 读取定值 */
+    for (i = 0; i < 3; i++)
+    {
+        rt_multi_common_data_get_value_from_fram(i); // 读取定值参数
+    }
+    
+    
+    /* 读取当前定值区号 */
+    if (g_ValueParaOperateInfo.currentSN == 2)
+    {
+        //g_pFixedValue = &g_FixedValueDB2;
+		g_pFixedValue = g_FixedValue2; 
+		g_pFixedValueCfg = FixedValueCfg2;
+    }
+    else // 默认1区
+    {
+        g_ValueParaOperateInfo.currentSN = 1;
+        //g_pFixedValue = &g_FixedValueDB1;
+		g_pFixedValue = g_FixedValue1;
+		g_pFixedValueCfg = FixedValueCfg1;
+    } 
+    
+    ParameterCheck(ZERODRIFT);    
+    ParameterCheck(DEADZONE); 
+    ParameterCheck(CALIBRATE_FACTOR); 
+>>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 }
 
 /**
