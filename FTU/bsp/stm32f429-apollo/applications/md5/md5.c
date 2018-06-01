@@ -12,13 +12,9 @@
 #include <string.h>		/* for memcpy() */
 #include <stdio.h>
 #include "md5.h"
-<<<<<<< HEAD
 
 #include <dfs_posix.h>
 
-=======
-  
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 #define MD5_FILE_BUFFER_LEN 1024  
 
 struct MD5Context {  
@@ -40,10 +36,6 @@ static void MD5Transform(uint32_t buf[4], uint32_t const in[16]);
 static int getBytesMD5(const uint8_t* src, unsigned int length, char* md5);  
 static void byteReverse(uint8_t *buf, unsigned longs);
 
-<<<<<<< HEAD
-=======
-#ifndef ASM_MD5
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 /*
  * Note: this code is harmless on little-endian machines.
  */
@@ -58,10 +50,6 @@ void byteReverse(uint8_t *buf, unsigned longs)
 	}while (--longs);
 }
 
-<<<<<<< HEAD
-=======
-#endif
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 
 static void putu32(uint32_t data, uint8_t *addr) 
 {
@@ -188,7 +176,6 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
 	memset(ctx, 0, sizeof(*ctx)); /* In case it's sensitive */
 }
 
-<<<<<<< HEAD
 /* The four core functions - F1 is optimized somewhat */
 
 /* #define F1(x, y, z) (x & y | ~x & z) */
@@ -199,20 +186,6 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
 
 /* This is the central step in the MD5 algorithm. */
 #define MD5STEP(f, w, x, y, z, data, s)    ( w += f(x, y, z) + data,  w = (w << s) | (w >> (32-s)),  w += x )
-=======
-#ifndef ASM_MD5
-
-/* The four core functions - F1 is optimized somewhat */
-
-/* #define F1(x, y, z) (x & y | ~x & z) */
-#define F1(x, y, z)    {(z ^ (x & (y ^ z)));}
-#define F2(x, y, z)    {F1(z, x, y);}
-#define F3(x, y, z)    {(x ^ y ^ z);}
-#define F4(x, y, z)    {(y ^ (x | ~z));}
-
-/* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s)    {( w += f(x, y, z) + data,  w = (w << s) | (w >> (32-s)),  w += x );}
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
@@ -340,7 +313,6 @@ int getStringMD5(const char* src, char* md5)
 /**
  * get MD5 of a file
  */
-<<<<<<< HEAD
 int getFileMD5(const char* fileName, char* md5) 
 {
     int myFile_;    //文件名称
@@ -356,38 +328,15 @@ int getFileMD5(const char* fileName, char* md5)
 
     myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
 	if (myFile_ < 0)
-=======
-int getFileMD5(const char* path, char* md5) 
-{
-	FILE* fp = NULL;
-	uint8_t buffer[MD5_FILE_BUFFER_LEN] = { 0 };
-	int count = 0;
-	MD5_CTX context;
-	uint8_t md5Bytes[16] = { 0 };
-	int i;
-	if (path == NULL || md5 == NULL)
-    {
-		return -1;
-	}
-	fp = fopen(path, "rb");
-	if (fp == NULL) 
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
     {
 		return -1;
 	}
 	MD5Init(&context);
-<<<<<<< HEAD
 	while ((count = (read(myFile_, &buffer, 1))) > 0) 
     {
 		MD5Update(&context, buffer, count);
 	}
     close(myFile_);			//关闭文件
-=======
-	while ((count = fread(buffer, 1, MD5_FILE_BUFFER_LEN, fp)) > 0) 
-    {
-		MD5Update(&context, buffer, count);
-	}
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 	MD5Final(md5Bytes, &context);
 	for (i = 0; i < 16; i++) 
     {
@@ -398,9 +347,3 @@ int getFileMD5(const char* path, char* md5)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
-#endif
-
-
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290

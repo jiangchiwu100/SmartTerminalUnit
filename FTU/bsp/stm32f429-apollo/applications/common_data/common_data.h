@@ -1008,15 +1008,9 @@ struct ConfigurationSetDatabase
     uint16_t YXSetNum;//YX设置总数
     uint16_t YXSet[299];//YX设置
 //YC设置
-<<<<<<< HEAD
     uint16_t YCAddr[80];//值
     uint16_t YCProperty[80];//属性
     float YCMultipleRate[80];//倍率
-=======
-    uint16_t YCAddr[50];//值
-    uint16_t YCProperty[50];//属性
-    //beilv  float[50]   //100
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 //YK设置
     uint16_t YKAddr[10];//值
     uint16_t YKProperty[10];//属性

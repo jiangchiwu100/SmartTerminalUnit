@@ -16,12 +16,8 @@
 #include "wave_recording.h"
 #include <dfs_posix.h>
 
-<<<<<<< HEAD
-#include "JsonFileOperation.h"
-=======
 #include "point_table_config.h"
 #include "drv_wdg.h"
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 	
 	
 #include "JsonFileOperation.h"
@@ -1402,20 +1398,9 @@ void file_operate_Init(void)
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
     
-<<<<<<< HEAD
     rt_s2j_init();	//struct2json动态内存申请初始化 
     
     g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKJSON;
-=======
-	    
-	rt_s2j_init();
-    
-    Create_JsonFile("FixedValueCfg2", g_FixedValueCfg2_Len, _CFG_FIXED_VALUE_2);
-    
-    Create_JsonFile("SetDatabaseCfg", g_SetDatabaseCfg_Len, _CFG_SET_DATA_BASE);
-
-    GetJsonForFile("SetDatabaseCfg", _CFG_SET_DATA_BASE);
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

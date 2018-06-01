@@ -17,15 +17,11 @@
 #include "Interface_S2J.h"
 #include "common_config.h"
 #include "JsonFileOperation.h"
-<<<<<<< HEAD
 #include "md5.h"
-=======
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 	
 	
 static int Json_MyFile; /* File object */
 static char Json_FileName[255]; /* File Name */
-<<<<<<< HEAD
 
 static void Struct_To_Json(int file);
 static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json);
@@ -41,14 +37,6 @@ void *rt_s2j_malloc_fn(size_t sz)
 {
     return(rt_malloc(sz));
 }
-=======
-static char Json_DirName[255]; /* Dir Name */
-
-static void Struct_To_Json(uint16_t length, uint8_t name, int file);
-static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json);
-static void Get_JSON(cJSON * root, uint8_t name);
-static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName);
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 
 /**
  * @fn rt_s2j_init
@@ -60,11 +48,7 @@ rt_err_t rt_s2j_init(void)
 {
 	g_ProductID.productSerialNumber = TERMINAL_PRODUCT_SERIAL_NUMBER;
 
-<<<<<<< HEAD
     s2jHook.malloc_fn = rt_s2j_malloc_fn;  //初始化内存申请函数
-=======
-    s2jHook.malloc_fn = rt_malloc;  //初始化内存申请函数
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
     s2jHook.free_fn = rt_free;
 
     s2j_init(&s2jHook);   //初始化struct2json的内存申请
@@ -80,7 +64,6 @@ rt_err_t rt_s2j_init(void)
  * @param name    需要转换的结构体
  * 
  */
-<<<<<<< HEAD
 uint8_t Create_JsonFile(void)
 {
     //TERMINAL_PRODUCT_SERIAL_NUMBER
@@ -97,31 +80,6 @@ uint8_t Create_JsonFile(void)
     }
      
     g_ProductID.pointTableType = "AllJsonCfg.json";    //json内同时写入文件名称以作区分
-=======
-void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
-{
-    //TERMINAL_PRODUCT_SERIAL_NUMBER
-    char* string;
-    
-	memset(Json_DirName,0,sizeof(Json_DirName));
-	strcpy(Json_DirName,"/sojo");
-	strcat(Json_DirName,"/HISTORY/Config");//建立JSON文件目录
-	mkdir(Json_DirName,0);//建立目录
-	
-    strcpy(Json_FileName,"/sojo");
-    strcat(Json_FileName,"/HISTORY/Config/");
-    strcat(Json_FileName, fileName);	
-    strcat(Json_FileName, ".json");	
-
-    unlink(Json_FileName);  //删除文件
-
-    if(Get_ID_For_Json(Json_FileName, fileName) == 0)   //ID号能对应上则退出
-    {
-        return;
-    }
-     
-    g_ProductID.pointTableType = fileName;    //json内同时写入文件名称以作区分
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 
     cJSON *struct_json = ProductID_StructToJson();
     
@@ -129,7 +87,6 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
     
     Json_MyFile = open(Json_FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
     
-<<<<<<< HEAD
     if (Json_MyFile == -1)
     {
         return 1;
@@ -145,20 +102,6 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
 	close(Json_MyFile);
     
     return 0;
-=======
-    write(Json_MyFile, string, (strlen(string) - 2));  //将硬件版本号写入到config文件中
-    write(Json_MyFile, ",\n", 2);  //写入文件
-    
-    write(Json_MyFile, " \"PointList\":[  \n", sizeof(" \"PointList\":[ \n") );  //依照标准格式进行写入
-
-    Struct_To_Json(length, name, Json_MyFile);   //结构体转换并写入
-    
-    write(Json_MyFile, "]\n", 2);  //依照标准格式进行写入
-
-    write(Json_MyFile, "}\n", 2);  //依照标准格式进行写入
-    
-	close(Json_MyFile);
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 }
 
 /**
@@ -169,7 +112,6 @@ void Create_JsonFile(char* fileName, uint16_t length, uint8_t name)
  * @param name    需要转换的结构体
  * 
  */
-<<<<<<< HEAD
 static void Struct_To_Json(int file)
 {
     char* string;
@@ -220,50 +162,6 @@ static void Struct_To_Json(int file)
             {
                 write(Json_MyFile, " \"InherentParameter\":[  \n", sizeof(" \"InherentParameter\":[ \n") );  //依照标准格式进行写入
                 length = g_InherentParaCfg_Len;
-=======
-static void Struct_To_Json(uint16_t length, uint8_t name, int file)
-{
-    char* string;
-    cJSON *struct_json;
-
-    for(uint16_t i = 0; i < length; i++)
-    {
-        switch(name)
-        {
-            case _CFG_SET_DATA_BASE:
-            {
-                struct_json = SetDatabaseCfg_StructToJson(&SetDatabaseCfg[i]);
-                break;
-            }
-            case _CFG_PARAMTER:
-            {
-                struct_json = ParameterCfg_StructToJson(&ParameterCfg[i]);
-                break;
-            }
-            case _CFG_FIXED_VALUE_1:
-            {
-                struct_json = FixedValueCfg1_StructToJson(&FixedValueCfg1[i]);
-                break;
-            }
-            case _CFG_FIXED_VALUE_2:
-            {
-                struct_json = FixedValueCfg2_StructToJson(&FixedValueCfg2[i]);
-                break;
-            }
-            case _CFG_CALIBRATE_FACTOR:
-            {
-                struct_json = CalibrateFactorCfg_StructToJson(&CalibrateFactorCfg[i]);
-                break;
-            }
-            case _CFG_TELE_METRY:
-            {
-                struct_json = TelemetryCfg_StructToJson(&TelemetryCfg[i]);
-                break;
-            }
-            case _CFG_TELE_SIGNAL:
-            {
-                struct_json = TelesignalCfg_StructToJson(&TelesignalCfg[i]);
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
                 break;
             }
             default :
@@ -272,7 +170,6 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
             }
         }
         
-<<<<<<< HEAD
         for(uint16_t j = 0; j < length; j++)
         {
             switch(i)
@@ -339,24 +236,6 @@ static void Struct_To_Json(uint16_t length, uint8_t name, int file)
     }
 }
 //ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];
-=======
-        string = rt_Print_cJSON(struct_json);
-
-        write(file, string, strlen(string));  //写入文件
-        
-        if(i < (length - 1))
-        {
-            write(file, ",\n", 2);  //依照标准格式进行写入
-        }
-        else
-        {
-            write(file, "\n", 1);  //依照标准格式进行写入
-        }
-    }
-
-}
-ConfigurationSetDatabaseToJson SetDatabaseCfg_1[30];
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 /**
  * @fn Struct_To_Json
  * @brief 将获取到的字符串转换为相应的结构体
@@ -369,19 +248,8 @@ static void Json_To_Struct(int index, uint8_t name, cJSON *struct_json)
 {
     switch(name)
     {
-<<<<<<< HEAD
         case _CFG_PARAMTER:
         case _CFG_FIXED_VALUE_1:
-=======
-        case _CFG_SET_DATA_BASE:
-        {
-            SetDatabaseCfg[index] = *SetDatabaseCfg_JsonToStruct(struct_json);
-            break;
-        }
-        case _CFG_PARAMTER:
-        case _CFG_FIXED_VALUE_1:
-        case _CFG_FIXED_VALUE_2:
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
         case _CFG_CALIBRATE_FACTOR:
         case _CFG_TELE_METRY:
         case _CFG_TELE_SIGNAL:
@@ -443,19 +311,8 @@ uint8_t GetJsonForFile(char* fileName, uint8_t name)
     static cJSON *readJson;
 
     _string = rt_malloc(1024*1024);     //分配1M的内存
-<<<<<<< HEAD
 	
     strcpy(Json_FileName,"/sojo");
-=======
-    
-	memset(Json_DirName,0,sizeof(Json_DirName));
-	strcpy(Json_DirName,"/sojo");
-	strcat(Json_DirName,"/HISTORY/Config");//建立JSON文件目录
-	mkdir(Json_DirName,0);//建立目录
-	
-    strcpy(Json_FileName,"/sojo");
-    strcat(Json_FileName,"/HISTORY/Config/");
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
     strcat(Json_FileName, fileName);	
     strcat(Json_FileName, ".json");	
 
@@ -488,7 +345,6 @@ uint8_t GetJsonForFile(char* fileName, uint8_t name)
 }
 
 /**
-<<<<<<< HEAD
  * @fn Get_MD5ID_For_Json
  * @brief 从json文件中获取MD5校验码
  * @param fileName 指向要读取的文件
@@ -510,30 +366,6 @@ static uint8_t Get_MD5ID_For_Json(char* fileName, char *jsonFileName)
     char md5_buffer[32];    //保存md5校验码的数组
     
     int myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
-=======
- * @fn Get_ID_For_Json
- * @brief 从json文件中获取ID号
- * @param fileName 指向要读取的文件
- * @return ID正确   0
- *         不正确   1
- *         没有“productSerialNumber”字段    2
- *         文件名称不正确    3
- *         文件打开不正确    4
- *         字符串位置不正确    5
- * 
- */
-static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
-{
-    char* string;       //需要申请动态内存
-    static char data;
-    string = rt_malloc(512);     //分配512字节的内存
-    int myFile_;    //文件名称
-    uint8_t count = 0;  //计数，计读到的“，”标号的数量
-    uint8_t res = 1;    //要返回的结果
-    char* _string;
-    
-    myFile_ = open(fileName,  O_RDONLY, 0);  //打开文件
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
     if(myFile_ < 0)
     {
         return 4;
@@ -544,11 +376,7 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
         if(data == ',')    //查找逗号，只判断前两个逗号内的数据
         {
             count++;
-<<<<<<< HEAD
             if(count >= 3)  //此处采用硬编码
-=======
-            if(count >= 2)
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
             {
                 string[i] = '}';
                 break;  //跳出循环
@@ -561,7 +389,6 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
     _string = strstr(string, "pointTableType");
     if(string - _string > 4)  //此处硬编码
     {
-<<<<<<< HEAD
         res = 3;    //偏移量不正确，该数据可能损坏或者写错
     }
     //此处直接判断MD5
@@ -576,43 +403,18 @@ static uint8_t Get_ID_For_Json(char* fileName, char *jsonFileName)
             else
             {
                 res = 1;    //md5校验码不正确
-=======
-        res = 5;    //偏移量不正确，该数据可能损坏或者写错
-    }
-    if (strstr(string, jsonFileName))   //string字符串中是否包含有该json文件名称
-    {
-        if (strstr(string, "productSerialNumber"))   //判断字符串ProductSerialNumber在字符串1中首次出现的位置
-        {
-            if(strstr(string, TERMINAL_PRODUCT_SERIAL_NUMBER))    //判断读取出的ID与软件中是否一致
-            {
-                res = 0;    //软件ID号正确
-            }
-            else
-            {
-                res = 1;    //软件ID号不正确
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
             }
         }
         else
         {
-<<<<<<< HEAD
             res = 4;    //获取文件MD5校验码失败
-=======
-            res = 2;    //文件中不存在“productSerialNumber”字段
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
         }
     }
     else
     {
-<<<<<<< HEAD
         res = 2;   //不存在MD5校验码
     }
 
-=======
-        res = 3;    //该文件不是要打开的json文件
-    }
-    
->>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
     rt_free(string);    //释放动态内存
     
     return res;
