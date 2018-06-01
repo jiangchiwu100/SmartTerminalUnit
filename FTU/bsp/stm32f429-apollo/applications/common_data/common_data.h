@@ -687,6 +687,7 @@ enum AddrRunParameter
     NET_DNS_3,                            // DNS    
     NET_SOURCEADDR,                       // 从站地址
     NET_ASDUADDR,                         // ASDU地址  
+    REMOTE_PRO_SWITCH,                    // 遥控保护压板投退
 	
     RUN_PARAMETER_NUM,	                  // 运行参数数量
 };

@@ -420,6 +420,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
           #endif /* RT_USING_W5500 */            
         }
         
+//        if(cnt%10000 == 0)
+//        {
+//            rt_multi_telecontrl_operate(ADDR_LOCAL_RESET, 0);
+//            DBWriteSOE(g_TelesignalAddr.breakContact, ON);
+//            DBWriteSOE(g_TelesignalAddr.breakContact, OFF);
+//        }
+        
         ++cnt;
     }
 }

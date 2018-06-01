@@ -1043,10 +1043,13 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 			DBClear(addr);
             break;
         case ADDR_REMOTE_PRO_OUT:
-            if(operate_type == DO_OPEN)
-            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
-            else
-            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+            if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+            {
+                if(operate_type == DO_OPEN)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
+                else
+                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+            }
             break;	   		
 	}
 }
@@ -1765,6 +1768,11 @@ void rt_multi_common_data_config(void)
 		
     memset(&g_TelemetryDB, 0, sizeof(g_TelemetryDB));
     memset(&g_TelemetryLastDB, 0, sizeof(g_TelemetryLastDB));
+    
+    if(g_Parameter[REMOTE_PRO_SWITCH] == 0)
+    {
+        {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}
+    }
 }
 
 /**
