@@ -122,7 +122,6 @@ void MD5Update(struct MD5Context *ctx, uint8_t const *buf, unsigned int len)
 	}
 
 	/* Handle any remaining bytes of data. */
-
 	memcpy(ctx->in, buf, len);
 }
 
@@ -161,7 +160,8 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
     {
 		/* Pad block to 56 bytes */
 		memset(p, 0, count - 8);
-	} byteReverse(ctx->in, 14);
+	} 
+    byteReverse(ctx->in, 14);
 
 	/* Append length in bits and transform */
 	//((uint32_t *) ctx->in)[14] = ctx->bits[0];
@@ -171,6 +171,7 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
 
 	MD5Transform(ctx->buf, (uint32_t *) ctx->in);
 	byteReverse((uint8_t *) ctx->buf, 4);
+
 	memcpy(digest, ctx->buf, 16);
 	memset(ctx, 0, sizeof(*ctx)); /* In case it's sensitive */
 }
@@ -186,7 +187,7 @@ void MD5Final(uint8_t digest[16], struct MD5Context *ctx)
 #define F4(x, y, z)    {(y ^ (x | ~z));}
 
 /* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s) {( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x );}
+#define MD5STEP(f, w, x, y, z, data, s)    {( w += f(x, y, z) + data,  w = (w << s) | (w >> (32-s)),  w += x );}
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
@@ -294,7 +295,8 @@ int getBytesMD5(const uint8_t* src, uint32_t length, char* md5)
 	MD5Init(&context);
 	MD5Update(&context, src, length);
 	MD5Final(md5Bytes, &context);
-	for (i = 0; i < 16; i++) {
+	for (i = 0; i < 16; i++) 
+    {
 		sprintf(md5, "%02X", md5Bytes[i]);
 		md5 += 2;
 	}
