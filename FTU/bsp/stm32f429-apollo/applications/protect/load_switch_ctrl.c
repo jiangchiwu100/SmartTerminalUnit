@@ -671,7 +671,7 @@ static void getVolClose_ctrl(ComProSts *comProSts,GetVolCloseSts *getVolCloseSts
             }
             if((*(getVolCloseSts->valstr.gTime)&LOAD_TITIMERS)>=(uint32_t)(*(getVolCloseSts->parastr.pXTime))*1000)
             {
-                comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                 getVolCloseSts->valstr.flag |= GETVOLCLOSE|GETVOLCLOSESTA1|RESETFLAG;
                 addSOE(comProSts,&comProSts->yx.getClossing,ON);
             } 
@@ -1194,7 +1194,7 @@ static void SingleLossClose_ctrl(ComProSts *comProSts,SingleLossCloseSts *single
                     singleLossCloseSts->valstr.flag |= SINGELELOSSCLOSE|SINGELELOSSCLOSESTA3|RESETFLAG;
                     if(*(singleLossCloseSts->parastr.pSwitch) == SWITCH_ON)
                     {
-                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                        comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                     }
                     addSOE(comProSts,&comProSts->yx.singleLossClosing,ON);
                 }

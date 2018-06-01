@@ -65,9 +65,10 @@ static rt_uint8_t rt_hw_close_operate(void)
     {
 		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && uab >= g_pFixedValue[VOLTAGE_VALUE] && uCB >= g_pFixedValue[VOLTAGE_VALUE])
 		{
+            // 合环条件不满足
 	        if (((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE])&& (g_Parameter[CFG_PRO_VOL_N] == 0))||\
                 ((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] - 60) > g_pFixedValue[PHASEANGLE_DIFFERENCE])&& (g_Parameter[CFG_PRO_VOL_N] == 1))||\
-                fabs(uab - uCB) > g_pFixedValue[VOLTAGE_DIFFERENCE]) 
+                (fabs(uab - uCB) > g_pFixedValue[VOLTAGE_DIFFERENCE]) || (fabs(g_TelemetryDB[g_TelemetryAddr.F] - g_TelemetryDB[g_TelemetryAddr.F]) > g_pFixedValue[FREQUENCY_DIFFERENCE])) 
 			{
 				switch (DoStr.actSource)
 				{

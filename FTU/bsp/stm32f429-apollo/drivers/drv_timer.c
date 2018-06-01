@@ -557,9 +557,18 @@ void GetFrequency(void)
     }
     else
     {
-        g_TelemetryDB[g_TelemetryAddr.F] += 0.001f;
+        g_TelemetryDB[g_TelemetryAddr.F2] += 0.001f;
     }
 
+        if (g_CalibrateFactor[CALIFACTOR_F2] != 0)
+    {
+        g_TelemetryDB[g_TelemetryAddr.F2] *= g_CalibrateFactor[CALIFACTOR_F2];
+    }
+    else
+    {
+        g_TelemetryDB[g_TelemetryAddr.F2] += 0.001f;
+    }
+    
     if (g_TelemetryDB[g_TelemetryAddr.F] < g_Parameter[ZERODRIFT_F])
     {
         g_TelemetryDB[g_TelemetryAddr.F] = 0;

@@ -715,6 +715,7 @@ enum AddrCalibrateFactor
 	CALIFACTOR_ALPHA_UcbIc,	             // 角UcIc校准系数
 	CALIFACTOR_ALPHA_U0I0,	             // 角U0I0校准系数
 	CALIFACTOR_ALPHA_UxUx,	             // 角UxUx校准系数		
+    CALIFACTOR_F2,                       // 频率校准系数
 	
 	CALIFACTOR_NUM
 };

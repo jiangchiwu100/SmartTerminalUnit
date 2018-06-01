@@ -209,11 +209,11 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
-                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != ADDR_REMOTE_OPERATE))    				
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
+                           && g_TelesignalDB[ADDR_OPENING_CLOCK] == OFF && g_TelesignalDB.Str.deviceFault == OFF))||(addr != ADDR_REMOTE_OPERATE)) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))  				
 		      #else
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
-                           && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))    
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF\
+                           && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE)) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))    
 		      #endif                              
                 {
                     valuesuc = OFF;
@@ -232,13 +232,13 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
                      && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON 
-                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))     				
+                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE)) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))     				
 		      #else
-                if(((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
+                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON 
                      && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON 
-                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE))           
+                     && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||(addr != ADDR_REMOTE_OPERATE)) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))             
 		      #endif 				    
                 {
                     valuesuc = ON;
@@ -272,15 +272,15 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             if((value&0x7f) == OFF)
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
+                if(((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
                      && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && g_TelesignalDB.Str.openingLockedEvent == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
-                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))    				
+                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))   				
 		      #else
-                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
+                if(((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON 
                      && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==OFF)&&(addrsuc==addr)&&\
-                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
+                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))             
 		      #endif   				     
                 {
 					rt_multi_telecontrl_operate(addr, DO_OPEN);
@@ -301,15 +301,15 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
             else
             {
 		      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-                if((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.remoteEarth == ON && g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF\
+                if(((((addr == DISTANT_REMOTE_ADDR)&&(g_TelesignalDB.Str.switchOpen == ON && g_TelesignalDB.Str.switchClose == OFF\
                           && g_TelesignalDB.Str.closingLocked == OFF && g_TelesignalDB.Str.operatingMechanism == ON && g_TelesignalDB.Str.deviceFault == OFF))||\
                     (addr != DISTANT_REMOTE_ADDR))&&(valuesuc==ON)&&(addrsuc==addr)&&\
-                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))  				
+                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))  				
 		      #else
-                if((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF\
+                if(((((addr == ADDR_REMOTE_OPERATE)&&(g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF\
                           && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))||\
                     (addr != ADDR_REMOTE_OPERATE))&&(valuesuc==ON)&&(addrsuc==addr)&&\
-                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))             
+                    (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))) && (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == ON))                
 		      #endif 				  
                 {
 					rt_multi_telecontrl_operate(addr, DO_CLOSE);
@@ -1083,19 +1083,19 @@ uint16_t DLT634_5101_SLAVE_R_YCDATA(uint8_t pdrv,uint16_t addr,uint16_t num, uin
         switch(Property)
         {
             case _DLT634_5101SLAVE_M_ME_NA_1:
-                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr]/\
+                tempu = (int16_t)(*TelemetryCfg[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr].pVal/\
                         (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr])*32768);
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 10] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 10],&tempu,sizeof(uint16_t)); 
                 break;
             case _DLT634_5101SLAVE_M_ME_NB_1:
-                tempu = (int16_t)(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr]*\
+                tempu = (int16_t)(*TelemetryCfg[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr].pVal*\
                         (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + sizeof(uint16_t) + 10] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint16_t)) + 10],&tempu,sizeof(uint16_t)); 
                 break;
             case _DLT634_5101SLAVE_M_ME_NC_1:
-                tempf = FloatToBin(g_TelemetryDB[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr]*\
+                tempf = FloatToBin(*TelemetryCfg[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr].pVal*\
                         (g_NewMultipleRateTelemetry[g_NewToOldTelemetry[addr - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5101Slave_Pad[pdrv].YC_FirstAddr]));
                 temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + sizeof(uint32_t) + 10] = 0x00;//QDS
                 memcpy(&temp_array[pdrv][sendnum*(1+sizeof(uint32_t)) + 10],&tempf,sizeof(uint32_t));   

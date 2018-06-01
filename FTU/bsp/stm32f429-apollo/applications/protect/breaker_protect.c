@@ -746,7 +746,7 @@ static void reclose_ctrl(ComProSts *comProSts,RecloseSts *recloseSts)
                     }
                     if(((*(recloseSts->valstr.gTime[0])&BRE_TITIMERS))>=(uint32_t)((*(recloseSts->parastr.pTime[recloseSts->valstr.time]) + *(recloseSts->parastr.pRechargeTime))*1000))
                     {
-                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                        comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                         recloseSts->valstr.flag = (1<<recloseSts->valstr.time)|RECLOSESTA1;
                         recloseSts->valstr.flag |= RESETFLAG;
                         *(recloseSts->valstr.gTime[0]) = 0;
@@ -866,7 +866,7 @@ static void recloseI0_ctrl(ComProSts *comProSts,RecloseI0Sts *recloseI0Sts)
                     }
                     if(((*(recloseI0Sts->valstr.gTime[0])&BRE_TITIMERS))>=((uint32_t)((*(recloseI0Sts->parastr.pTime[recloseI0Sts->valstr.time]) + *(recloseI0Sts->parastr.pRechargeTime))*1000)))
                     {
-                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                        comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                         recloseI0Sts->valstr.flag = (1<<recloseI0Sts->valstr.time)|RECLOSEI0STA1;
                         recloseI0Sts->valstr.flag |= RESETFLAG;
                         *(recloseI0Sts->valstr.gTime[0]) = 0;
