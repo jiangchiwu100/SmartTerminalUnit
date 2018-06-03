@@ -4,3 +4,6 @@
 /HMI/Output
 /IAP/OBJ
 /IAP/FATFS/doc
+/FTUboot/FATFS/doc
+/FTUboot/OBJ
+/FTUboot/keilkilll.bat
