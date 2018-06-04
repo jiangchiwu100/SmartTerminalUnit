@@ -10,7 +10,7 @@
       <TargetName>FTU_V03.020</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F429IGTx</Device>
@@ -208,7 +208,7 @@
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
             <Im1Chk>1</Im1Chk>
-            <Im2Chk>1</Im2Chk>
+            <Im2Chk>0</Im2Chk>
             <OnChipMemories>
               <Ocm1>
                 <Type>0</Type>
@@ -928,6 +928,31 @@
               <FileName>startup_stm32f429xx.s</FileName>
               <FileType>2</FileType>
               <FilePath>Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f429xx.s</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_spi.c</FilePath>
             </File>
           </Files>
         </Group>
