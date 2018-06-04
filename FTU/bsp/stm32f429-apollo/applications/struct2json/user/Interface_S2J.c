@@ -30,27 +30,9 @@ cJSON *ProductID_StructToJson(void)
 	/* serialize data to Student JSON object. */
 	s2j_json_set_basic_element(json_obj, &g_ProductID, string, pointTableType);				//标注该文件时遥信还是遥测
 	s2j_json_set_basic_element(json_obj, &g_ProductID, string, productSerialNumber);		//名称
-	s2j_json_set_basic_element(json_obj, &g_ProductID, string, md5);		//MD5校验码
 
 	/* return Student JSON object pointer */
 	return json_obj;
-}
-
-/**
- * @fn ProductID_StructToJson
- * @brief 实现文件内产品ID的json转结构体
- * @return 返回指向转换后的json指针
- *
- */
-char *ProductID_JsonToStruct(cJSON* json_obj)
-{
-	/* create Student JSON object */
-    s2j_create_struct_obj(struct_obj, ProductID);
-
-	s2j_struct_get_basic_element(struct_obj, json_obj, string, md5);    //MD5校验码
-	
-	/* 返回指向MD5校验码的数组的头指针 */
-	return struct_obj->md5;
 }
 
 /**

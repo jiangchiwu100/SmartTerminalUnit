@@ -20,7 +20,6 @@ typedef struct tagProductID
 {
     char* pointTableType;       //标注该文件时遥信还是遥测(点表类型)
     char* productSerialNumber;  //产品ID号
-    char  md5[20];
 
 }ProductID;
 
@@ -33,7 +32,6 @@ extern cJSON *ParameterCfg_StructToJson(void* struct_obj);          //实现定�
 extern cJSON *FixedValueCfg1_StructToJson(void* struct_obj);        //实现定值1区结构体的struct转json
 
 extern cJSON *ProductID_StructToJson(void);     //实现产品ID号的转换
-extern char *ProductID_JsonToStruct(cJSON* json_obj);   //获取MD5校验码
 
 extern cJSON* rt_Get_cJSON(const char *value);  //从字符串中获得json
 extern char* rt_Print_cJSON(cJSON *item);       //将json打印到字符串中

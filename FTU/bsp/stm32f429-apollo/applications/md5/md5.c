@@ -313,15 +313,14 @@ int getStringMD5(const char* src, char* md5)
 /**
  * get MD5 of a file
  */
-int getFileMD5(const char* fileName, char* md5) 
+int getFileMD5(const char* fileName, uint8_t* md5Bytes) 
 {
     int myFile_;    //文件名称
-	uint8_t buffer[MD5_FILE_BUFFER_LEN] = { 0 };
+	uint8_t buffer[1];
 	int count = 0;
 	MD5_CTX context;
-	uint8_t md5Bytes[16];
 	int i;
-	if (fileName == NULL || md5 == NULL)
+	if (fileName == NULL || md5Bytes == NULL)
     {
 		return -1;
 	}
@@ -332,18 +331,12 @@ int getFileMD5(const char* fileName, char* md5)
 		return -1;
 	}
 	MD5Init(&context);
-	while ((count = (read(myFile_, &buffer, 1))) > 0) 
+	while ((count = (read(myFile_, buffer, 1))) > 0) 
     {
 		MD5Update(&context, buffer, count);
 	}
     close(myFile_);			//关闭文件
 	MD5Final(md5Bytes, &context);
-	for (i = 0; i < 16; i++) 
-    {
-		sprintf(md5, "%02X", md5Bytes[i]);
-		md5 += 2;
-	}
-	*md5 = '\0';
 	return 0;
 }
 

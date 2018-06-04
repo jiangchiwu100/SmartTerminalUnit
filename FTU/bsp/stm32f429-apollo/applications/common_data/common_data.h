@@ -317,6 +317,8 @@ enum Frequency
 #define ADDR_FRAM_LOG                   0x04300  // 日志起始地址 0x1000
 #define ADDR_FRAM_MEMORY                0x05300  // 状态标志地址 0x100
 #define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x100
+#define ADDR_FRAM_JSON_MD5              0x05500  // 配置起始地址   0x20
+
 
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x1000
 
@@ -340,6 +342,7 @@ enum FramArea
     CFG_RECODE,                        // 配置    
     TELESIGNAL,                        // 遥信数据
     CURRENT_SN,                        // 当前定值区号
+    JSON_MD5,                          // JSON校验码
     FRAM_AREA_NUM                      // 分区数量
 };
 

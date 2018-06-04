@@ -21,3 +21,5 @@
 >>>>>>> a1f225a8622d705e09cc0146f1e90b4c456e6290
 /FTU/.vscode
 /FTU/bsp/stm32f429-apollo/.vscode
+/FTU/bsp/stm32f429-apollo/project.uvoptx
+/FTU/bsp/stm32f429-apollo/project.uvprojx

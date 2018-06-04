@@ -16,7 +16,8 @@
   
   
 int getStringMD5(const char* src, char* md5);  //获取字符串的MD5校验码
-int getFileMD5(const char* fileName, char* md5);   //获取文件的MD5校验码
+int getFileMD5(const char* fileName, uint8_t* md5Bytes);
+//int getFileMD5(const char* fileName, char* md5);   //获取文件的MD5校验码
 
 #endif
 

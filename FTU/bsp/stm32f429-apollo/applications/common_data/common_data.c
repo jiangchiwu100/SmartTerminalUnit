@@ -1155,6 +1155,9 @@ rt_uint16_t rt_multi_common_data_fram_record_write(uint8_t type, uint8_t *pBuf, 
         case CURRENT_SN: // 当前定值区号	
             rt_device_write(device_fram, ADDR_FRAM_CURRENT_SN, pBuf, len);            						
             break;		
+        case JSON_MD5: // JSON_MD5
+            rt_device_write(device_fram, ADDR_FRAM_JSON_MD5, pBuf, len);            						
+            break;			
         default:
             break;
     }
@@ -1235,6 +1238,9 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
             rt_device_read(device_fram, ADDR_FRAM_CONFIG, pBuf, sizeof(struct ConfigurationSetDatabase));									
             break;
        
+        case JSON_MD5: // JSON_MD5
+            rt_device_read(device_fram, ADDR_FRAM_JSON_MD5, pBuf, 16);					
+            break;		
         default:
             break;
     }
