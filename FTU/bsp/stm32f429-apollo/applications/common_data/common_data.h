@@ -192,20 +192,20 @@ __packed struct CP56Time2a_t
 
 typedef struct
 {
-    rt_int16_t ua[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ub[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t uc[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t u0[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t ia[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ib[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t ic[ADC_WAVE_SEMP_NUM * 2][48];
-	rt_int16_t i0[ADC_WAVE_SEMP_NUM * 2][48];
+    rt_int16_t ua[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ub[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t uc[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t u0[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t ia[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ib[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t ic[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+	rt_int16_t i0[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
 
-    rt_int16_t uA[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t uC[ADC_WAVE_SEMP_NUM * 2][48];	
+    rt_int16_t uA[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t uC[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];	
     
-    rt_int16_t udc1[ADC_WAVE_SEMP_NUM * 2][48];
-    rt_int16_t udc2[ADC_WAVE_SEMP_NUM * 2][48];	
+    rt_int16_t udc1[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];
+    rt_int16_t udc2[ADC_WAVE_SEMP_NUM * 2][ADC_SAMPLE_NUM];	
 	//rt_int8_t digtal[25][48];
 }Queue;
 
@@ -485,7 +485,8 @@ typedef struct TagTelemetryAddr
 	alphy_Uab_Ia,
 	alphy_Ucb_Ic,
     alphy_U0_I0,
-    alphy_Ux_Ux,		
+    alphy_Ux_Ux,	
+    F2,	
 	IaOnce,
 	IbOnce,
 	IcOnce,
@@ -530,11 +531,10 @@ enum TelecontrlAddr
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录
 	ADDR_HANDHELD_OPER,           // 手持操作
-    
+ 
+    REMOTE_TOTAL_NUM,    
     
 	ADDR_LOGIC_ACT,               // 逻辑动作	
-    
-    REMOTE_TOTAL_NUM,
 };
 
 /* PARA ----------------------------------------------------------------------*/
@@ -595,7 +595,6 @@ enum AddrRunParameter
 {
     CFG_POW_VOL_AB,                       // 功率电压AB
     CFG_POW_VOL_CB,                       // 功率电压CB
-    CFG_PRO_VOL_M,                        // M侧保护电压
     CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
 	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
@@ -618,6 +617,7 @@ enum AddrRunParameter
     CLOSING_PULSE_TIME,                   // 合闸脉宽时间
     OPENING_PULSE_TIME,			          // 分闸脉宽时间
     REVERSE_TIME,                         // 反校时间
+    POWERLOSS_NEGATE,                     // 电源告警取反
     ZERODRIFT_F,                          // 频率零漂
     ZERODRIFT_Ia,                         // A相电流零漂 
     ZERODRIFT_Ib,                         // B相电流零漂
@@ -687,6 +687,7 @@ enum AddrRunParameter
     NET_DNS_3,                            // DNS    
     NET_SOURCEADDR,                       // 从站地址
     NET_ASDUADDR,                         // ASDU地址  
+    REMOTE_PRO_SWITCH,                    // 遥控保护压板投退
 	
     RUN_PARAMETER_NUM,	                  // 运行参数数量
 };
@@ -715,6 +716,7 @@ enum AddrCalibrateFactor
 	CALIFACTOR_ALPHA_UcbIc,	             // 角UcIc校准系数
 	CALIFACTOR_ALPHA_U0I0,	             // 角U0I0校准系数
 	CALIFACTOR_ALPHA_UxUx,	             // 角UxUx校准系数		
+    CALIFACTOR_F2,                       // 频率校准系数
 	
 	CALIFACTOR_NUM
 };
@@ -805,6 +807,7 @@ enum AddrFixedValue
     CLOSING_LOOP_SWITCH,                 // 合环功能投退
     VOLTAGE_DIFFERENCE,                  // 两侧压差	
 	PHASEANGLE_DIFFERENCE,				 // 相角差
+    FREQUENCY_DIFFERENCE,				 // 频率差
     CONTROL_LOOP_ABNOMAL_ENABLE,         // 控制回路异常使能	
 	INVERSE_SWITCH,                      // 反时限投退
 	INVERSE_CURRENT_VALUE,               // 反时限保护电流值

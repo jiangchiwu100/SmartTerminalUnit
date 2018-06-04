@@ -376,6 +376,16 @@ static void OverLoadCheck(struct OverLoad *over)
   */
 static void TelemetryAbnormalCheck(void)
 {
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+    else
+    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+    
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+    else
+    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+    
     /* 遥测越限 */
     TelemetryOverLimit(&OverLimitUab);
     TelemetryOverLimit(&OverLimitUbc);
@@ -721,10 +731,7 @@ void other_protect_init(void)
     OverVoltageUab.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUab.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUab.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-    else
-    {OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
+    OverVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];
     OverVoltageUab.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUab.flag = 0;
 
@@ -735,10 +742,7 @@ void other_protect_init(void)
     DownVoltageUab.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUab.value = &g_pFixedValue[DOWNVOLTAGE_VALUE];
     DownVoltageUab.funSwitch = &g_pFixedValue[DOWNVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_M] == 0)
-    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-    else
-    {DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
+    DownVoltageUab.telemetry = &g_TelemetryDB[g_TelemetryAddr.Uab];
     DownVoltageUab.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUab.flag = 0;
 	
@@ -749,10 +753,6 @@ void other_protect_init(void)
     OverVoltageUBC.soeAddr = g_TelesignalAddr.overVoltageProtection;
     OverVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     OverVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-    else
-    {OverVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     OverVoltageUBC.factor = &g_pFixedValue[OVERVOLTAGE_FACTOR];
     OverVoltageUBC.flag = 0;
 
@@ -763,10 +763,6 @@ void other_protect_init(void)
     DownVoltageUBC.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
     DownVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-    else
-    {DownVoltageUBC.telemetry = &g_TelemetryDB[g_TelemetryAddr.UCB];}
     DownVoltageUBC.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUBC.flag = 0;
 
@@ -777,7 +773,7 @@ void other_protect_init(void)
     OverFrequency.soeAddr = g_TelesignalAddr.overFrequencyProtection;
     OverFrequency.value = &g_pFixedValue[OVERFREQUENCY_VALUE];
     OverFrequency.funSwitch = &g_pFixedValue[OVERFREQUENCY_SWITCH];
-    OverFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
+    OverFrequency.telemetry = &g_FreGatherUab.freValueProtect;
     OverFrequency.factor = &g_pFixedValue[OVERFREQUENCY_FACTOR];
     OverFrequency.flag = 0;
 
@@ -788,7 +784,7 @@ void other_protect_init(void)
     DownFrequency.soeAddr = g_TelesignalAddr.downFrequencyProtection;
     DownFrequency.value = &g_pFixedValue[DOWNFREQUENCY_VALUE];
     DownFrequency.funSwitch = &g_pFixedValue[DOWNFREQUENCY_SWITCH];
-    DownFrequency.telemetry = &g_FreGather[FRE_Uab].freValueProtect;
+    DownFrequency.telemetry = &g_FreGatherUab.freValueProtect;
     DownFrequency.factor = &g_pFixedValue[DOWNFREQUENCY_FACTOR];
     DownFrequency.flag = 0;
 
@@ -823,7 +819,7 @@ static void RecoedMemory(void)
     static rt_uint8_t state=0;
     		
     /* 装置掉电 */
-    if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == ON)
+    if (g_TelesignalDB[g_TelesignalAddr.devicePowerDown] == ON)
     {
         *MemoryCounter.counterCharge = DB_COUNTER_EN;
         if(state==1)
@@ -835,25 +831,28 @@ static void RecoedMemory(void)
     else
     {
         state = 1;
-        if ((memcmp(&s_Flag_DB2, &g_FlagDB, sizeof(g_FlagDB))))
+        if(!((*CommunicatLock.flag[COM_FILE])&COMMUNICATLOCKRECORD))
         {
-            *MemoryCounter.counterSave = DB_COUNTER_EN;
-        }
-        if ((memcmp(&g_FlagDB, &s_Flag_DB1, sizeof(g_FlagDB))))
-        {
-            s_Flag_DB2 = g_FlagDB;
-            if(!(*MemoryCounter.counterSave&DB_COUNTER_EN))
+            if ((memcmp(&s_Flag_DB2, &g_FlagDB, sizeof(g_FlagDB))))
             {
                 *MemoryCounter.counterSave = DB_COUNTER_EN;
             }
-            if (((*MemoryCounter.counterSave) & DB_COUNTER) >= MEMORY_TIME)
+            if ((memcmp(&g_FlagDB, &s_Flag_DB1, sizeof(g_FlagDB))))
             {
-                *MemoryCounter.counterSave = 0;
-                s_Flag_DB1 = g_FlagDB;
-                rt_multi_common_data_powerdown_storage();
-                (*CommunicatLock.flag[COM_FILE]) |= COMMUNICATLOCKRECORD;                    
-            }
-        } 
+                s_Flag_DB2 = g_FlagDB;
+                if(!(*MemoryCounter.counterSave&DB_COUNTER_EN))
+                {
+                    *MemoryCounter.counterSave = DB_COUNTER_EN;
+                }
+                if (((*MemoryCounter.counterSave) & DB_COUNTER) >= MEMORY_TIME)
+                {
+                    *MemoryCounter.counterSave = 0;
+                    s_Flag_DB1 = g_FlagDB;
+                    rt_multi_common_data_powerdown_storage();
+                    (*CommunicatLock.flag[COM_FILE]) |= COMMUNICATLOCKRECORD;                    
+                }
+            } 
+        }
         
         if (((*MemoryCounter.counterCharge) & DB_COUNTER) >= CHARGE_TIME)
         {

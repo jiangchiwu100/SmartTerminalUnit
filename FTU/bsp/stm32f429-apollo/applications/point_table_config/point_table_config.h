@@ -80,7 +80,7 @@ struct tagTelemetryCfg
     unsigned short *pAddr;  // 点号
     float *pVal;           // 值	
     char *pUnit;           // 单位
-    float *pCalifactor;    // 校准系数		
+    float RatedValue;    // 额定值		
 	float *pZerodrift;     // 零漂    
 	float *pDeadzone;      // 死区	
 };

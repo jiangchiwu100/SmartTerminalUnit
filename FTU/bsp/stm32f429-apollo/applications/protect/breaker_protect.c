@@ -746,7 +746,7 @@ static void reclose_ctrl(ComProSts *comProSts,RecloseSts *recloseSts)
                     }
                     if(((*(recloseSts->valstr.gTime[0])&BRE_TITIMERS))>=(uint32_t)((*(recloseSts->parastr.pTime[recloseSts->valstr.time]) + *(recloseSts->parastr.pRechargeTime))*1000))
                     {
-                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                        comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                         recloseSts->valstr.flag = (1<<recloseSts->valstr.time)|RECLOSESTA1;
                         recloseSts->valstr.flag |= RESETFLAG;
                         *(recloseSts->valstr.gTime[0]) = 0;
@@ -866,7 +866,7 @@ static void recloseI0_ctrl(ComProSts *comProSts,RecloseI0Sts *recloseI0Sts)
                     }
                     if(((*(recloseI0Sts->valstr.gTime[0])&BRE_TITIMERS))>=((uint32_t)((*(recloseI0Sts->parastr.pTime[recloseI0Sts->valstr.time]) + *(recloseI0Sts->parastr.pRechargeTime))*1000)))
                     {
-                        comProSts->closing(DO_CLOSE,LOGIC_ACT);
+                        comProSts->closing(ADDR_LOGIC_ACT,DO_CLOSE);
                         recloseI0Sts->valstr.flag = (1<<recloseI0Sts->valstr.time)|RECLOSEI0STA1;
                         recloseI0Sts->valstr.flag |= RESETFLAG;
                         *(recloseI0Sts->valstr.gTime[0]) = 0;
@@ -1059,14 +1059,7 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yc.Ib2 = &g_secondHarmonicIb;
             s_ComProSts[pdrv].yc.Ic2 = &g_secondHarmonicIc;
             s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[g_TelemetryAddr.I0];
-            if(g_Parameter[CFG_PRO_VOL_M] == 0)
-            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];}
-            else
-            {s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Ucb];}
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
-            else
-            {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+            s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];
             s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[g_TelemetryAddr.Uac];
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];
             
@@ -1074,14 +1067,7 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].fevent_yc_addr[1] = g_TelemetryAddr.Ib;
             s_ComProSts[pdrv].fevent_yc_addr[2] = g_TelemetryAddr.Ic;
             s_ComProSts[pdrv].fevent_yc_addr[3] = g_TelemetryAddr.I0;
-            if(g_Parameter[CFG_PRO_VOL_M] == 0)
-            {s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;}
-            else
-            {s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Ucb;}
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
-            else
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}           
+            s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;         
             s_ComProSts[pdrv].fevent_yc_addr[6] = g_TelemetryAddr.Uac;
             s_ComProSts[pdrv].fevent_yc_addr[7] = g_TelemetryAddr.U0;
 
@@ -1265,10 +1251,20 @@ void BreakerCtrlClock(void)
 		{
 			s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
 		}
-
+        
         switch(pdrv)
         {
 			case BRE_DEV0:
+                if(g_Parameter[CFG_PRO_VOL_N] == 0)
+                {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+                else
+                {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+                
+                if(g_Parameter[CFG_PRO_VOL_N] == 0)
+                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
+                else
+                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}  
+            
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{
 					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板

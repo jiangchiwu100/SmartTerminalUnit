@@ -121,7 +121,10 @@ static void read_ad7616_data(void)
 //    AD7616_delay_ns(1);
 
 //2
-    g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
+    else
+    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
     temp = (*((volatile  short *)AD7616_DATA_ADDR));
 //    AD7616_delay_ns(1);
  
@@ -135,7 +138,10 @@ static void read_ad7616_data(void)
     g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
 
 //5
-    g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
+    else
+    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
     g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
 
 //6
@@ -151,7 +157,10 @@ static void read_ad7616_data(void)
     g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
 
 //5
-    g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
+    else
+    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
     g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2; 
 
 //4
@@ -164,7 +173,10 @@ static void read_ad7616_data(void)
 //    AD7616_delay_ns(1);
     
 //2
-    g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
+    if(g_Parameter[CFG_PRO_VOL_N] == 0)
+    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
+    else
+    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
     temp = (*((volatile  short *)AD7616_DATA_ADDR));
 //    AD7616_delay_ns(1);
  

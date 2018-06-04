@@ -141,13 +141,13 @@ static void Struct_To_Json(int file)
             }
             case _CFG_TELE_METRY:
             {
-                write(Json_MyFile, " \"TelesignalForUpLoad\":[  \n", sizeof(" \"TelesignalForUpLoad\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"TelemeteringForUpLoad\":[  \n", sizeof(" \"TelemeteringForUpLoad\":[ \n") );  //依照标准格式进行写入
                 length = g_TelemetryCfg_Len;
                 break;
             }
             case _CFG_TELE_SIGNAL:
             {
-                write(Json_MyFile, " \"TelemeteringForUpLoad\":[  \n", sizeof(" \"TelemeteringForUpLoad\":[ \n") );  //依照标准格式进行写入
+                write(Json_MyFile, " \"TelesignalForUpLoad\":[  \n", sizeof(" \"TelesignalForUpLoad\":[ \n") );  //依照标准格式进行写入
                 length = g_TelesignalCfg_Len;
                 break;
             }

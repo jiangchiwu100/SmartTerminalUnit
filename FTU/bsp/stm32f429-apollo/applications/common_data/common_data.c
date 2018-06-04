@@ -142,10 +142,6 @@ double                              g_Udc2SampleBuf[ADC_SAMPLE_NUM * 2] = { 0 };
 
 
 /* PRIVATE VARIABLES --------------------------------------------------------*/
-static float RatedValue[] = {0, RATED_VALUE_I, RATED_VALUE_I, RATED_VALUE_I, RATED_VALUE_I0,
-                                RATED_VALUE_U, RATED_VALUE_U, RATED_VALUE_U, RATED_VALUE_U0,
-                                RATED_VALUE_U, RATED_VALUE_U,
-                                RATED_VALUE_P, RATED_VALUE_Q, RATED_VALUE_S, RATED_VALUE_PF};
 
 static rt_device_t device_fram = RT_NULL;                             
 static rt_device_t device_sd2405 = RT_NULL;   
@@ -254,13 +250,13 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
     {
         // running para block 运行参数
         array = g_Parameter;
-        offset = addr - RUNPARAMETER_START_ADDR;
+        offset = ParameterCfg[addr - RUNPARAMETER_START_ADDR].pVal - g_Parameter;
     }
     else if((CALIBRATE_FACTOR_START_ADDR <= addr) && ( addr < (CALIBRATE_FACTOR_START_ADDR + g_CalibrateFactorCfg_Len)))
     {
         // calibration para block 校准系数
         array = g_CalibrateFactor;
-        offset = addr - CALIBRATE_FACTOR_START_ADDR;
+        offset = CalibrateFactorCfg[addr - CALIBRATE_FACTOR_START_ADDR].factorVal - g_CalibrateFactor;
     }
     else if (addr >= CALIBRATE_VALUE_START_ADDR && (addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
     {
@@ -272,20 +268,20 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
     {
         // public para block 定值公共信息
         array = pFixedValue;
-        offset = addr - FIXED_VALUE_START_ADDR;
+        offset = g_pFixedValueCfg[addr - FIXED_VALUE_START_ADDR].pVal - pFixedValue;
     }
     #if RT_USING_TELEMETRY_SET
     else if((TELEMETRY_SETENABLE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETENABLE_START_ADDR + TELEMETRY_TOTAL_NUM)))
     {
         // 强制遥测地址
         array = g_TelemetrySetEnable;
-        offset = addr - TELEMETRY_SETENABLE_START_ADDR;
+        offset = TelemetryCfg[addr - TELEMETRY_SETENABLE_START_ADDR].pAddr - (uint16_t *)&g_TelemetryAddr;
     }
     else if((TELEMETRY_SETVALUE_START_ADDR <= addr) && ( addr < (TELEMETRY_SETVALUE_START_ADDR + TELEMETRY_TOTAL_NUM)))
     {
         // 强制遥测值
         array = g_TelemetrySetValue;
-        offset = addr - TELEMETRY_SETVALUE_START_ADDR;
+        offset = TelemetryCfg[addr - TELEMETRY_SETENABLE_START_ADDR].pAddr - (uint16_t *)&g_TelemetryAddr;
     }
     #endif
     else
@@ -373,7 +369,40 @@ void ParameterCheck(void)
                 }
             }        
         }
-	}	
+	}
+
+    for(i=0;i<g_TelemetryCfg_Len;i++)
+    {
+        if(TelemetryCfg[i].menuNum == ONCE)
+        {
+            if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.IaOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.IbOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.IcOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.I0Once)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I0;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UabOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UbcOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UcaOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.U0Once)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U0_ONE_TURN] / g_Parameter[RATIO_U0_SECONDARY]) * RATED_VALUE_U0 / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UBCOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UABOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.POnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_P;}
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.QOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_Q;}            
+            else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.SOnce)
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_S;}         
+        }
+    }
 }
 
 /**
@@ -419,7 +448,7 @@ uint8_t DBWriteValue(uint8_t *pData, struct CommonInfo *pInfo)
         break;
     case DB_VALUE_SOLID:
         for (i = 0; i < g_ValueParaOperateInfo.num; i++)
-        {
+        { 
             /* 获取定值 */
             pValueTemp = GetValueArray(g_ValueParaPresetDB.property[i].addr, sn);
 
@@ -659,7 +688,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
             {
                 for(value=0,i=0;i<((((rt_uint16_t*)(element->data))[1])>>NEWONEYX_NUM);i++)
                 {
-                    valuetemp = g_TelesignalDB[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR)] - 1;//单点
+                    valuetemp = *(TelesignalCfg[(((((rt_uint16_t*)(element->data))[2+i])>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR].pVal) - 1;//单点
                     if((((rt_uint16_t*)(element->data))[2+i]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
                     {
                         valuetemp = (~valuetemp)&0x01;                
@@ -867,9 +896,9 @@ void DBClearNVA(void)
 {
     uint8_t i;
     
-    for (i = 1; i <= ((float *)&(g_Parameter[DEADZONE_DC1])) - ((float *)&(g_Parameter[DEADZONE_F])); i++)
+    for(i = 0;i < g_TelemetryCfg_Len; i++)
     {
-        g_TelemetryLastDB[i] = g_TelemetryDB[i];  
+        g_TelemetryLastDB[i] = *(TelemetryCfg[i].pVal);   
     }
 }
 
@@ -881,38 +910,31 @@ void DBClearNVA(void)
   */
 uint8_t DB_NVA_Check(void)
 {
-    uint8_t i;
+    uint16_t i;
     uint8_t rlt = FALSE;
-    static uint8_t s_Counter;
+    static uint16_t s_Counter;
 
     s_Counter++;
-    if (s_Counter > 200)
+    if (s_Counter > 1000)
     {
         s_Counter = 0;
-//        ParameterCheck(DEADZONE);
-
-        for (i = 1; i <= ((float *)&(g_Parameter[DEADZONE_DC1])) - ((float *)&(g_Parameter[DEADZONE_F])); i++)
+        
+        for(i = 0;i < g_TelemetryCfg_Len; i++)
         {
-            if (fabsf((float)g_TelemetryDB[i] - (float)g_TelemetryLastDB[i]) > 
-                *((float *)&(g_Parameter[DEADZONE_F]) + i) / 100.0f * RatedValue[i])
-//                g_ParameterDB.Data.runPara.buf[DEAD_ZONE_INDEX + i] / 100.0f * RatedValue[i])
+            if(((TelemetryCfg[i].menuNum == SECONDRY)||(TelemetryCfg[i].menuNum == ONCE))&&(TelemetryCfg[i].pDeadzone != NULL))
             {
-                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i;
-                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i];
-
-                if (++g_NVADBIn >= NVA_MAX_NUM)
+                if (fabsf(*(TelemetryCfg[i].pVal) - g_TelemetryLastDB[i]) > *(TelemetryCfg[i].pDeadzone)*TelemetryCfg[i].RatedValue)
                 {
-                    g_NVADBIn = 0;
-                }
-                g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i + (&g_TelemetryDB[g_TelemetryAddr.IaOnce] - &g_TelemetryDB[g_TelemetryAddr.Ia]);
-                g_NVADB[g_NVADBIn].value = g_TelemetryDB[i + (&g_TelemetryDB[g_TelemetryAddr.IaOnce] - &g_TelemetryDB[g_TelemetryAddr.Ia])];
+                    g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i;
+                    g_NVADB[g_NVADBIn].value = g_TelemetryDB[i];
 
-                if (++g_NVADBIn >= NVA_MAX_NUM)
-                {
-                    g_NVADBIn = 0;
-                }
-                
-                g_TelemetryLastDB[i] = g_TelemetryDB[i];                
+                    if (++g_NVADBIn >= NVA_MAX_NUM)
+                    {
+                        g_NVADBIn = 0;
+                    }
+                    
+                    g_TelemetryLastDB[i] = *(TelemetryCfg[i].pVal);                 
+                }            
             }
         }
     }
@@ -1021,10 +1043,13 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 			DBClear(addr);
             break;
         case ADDR_REMOTE_PRO_OUT:
-            if(operate_type == DO_OPEN)
-            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
-            else
-            {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+            if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+            {
+                if(operate_type == DO_OPEN)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
+                else
+                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+            }
             break;	   		
 	}
 }
@@ -1284,7 +1309,7 @@ void rt_multi_common_data_configure_default(void)
         g_ConfigurationSetDB->YCMultipleRate[i] = 1;
     }
     
-    for(i=0;i<sizeof(g_ConfigurationSetDB->YKAddr)/sizeof(uint16_t);i++)
+    for(i=0;i<REMOTE_TOTAL_NUM;i++)
     {
         g_ConfigurationSetDB->YKAddr[i] = REMOTE_START_ADDR + i;
         g_ConfigurationSetDB->YKProperty[i] = 0;
@@ -1485,7 +1510,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         for(j=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            if(!((((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=0)&&(((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELEMETRY_TOTAL_NUM)))
+            if(!((((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)>=0)&&(((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) < TELESIGNAL_START_ADDR + TELESIGNAL_TOTAL_NUM)))
             {
                 configureFault = 1;
                 break;
@@ -1500,7 +1525,7 @@ void rt_multi_common_data_read_config_from_fram(void)
     
     for(i=0;((i<sizeof(g_ConfigurationSetDB->YCAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥测
     {
-        if(!((g_ConfigurationSetDB->YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB->YCAddr[i]<TELEMETRY_START_ADDR+TELEMETRY_TOTAL_NUM)))
+        if(!((g_ConfigurationSetDB->YCAddr[i]>=TELEMETRY_START_ADDR)&&(g_ConfigurationSetDB->YCAddr[i] < TELEMETRY_START_ADDR + TELEMETRY_TOTAL_NUM)))
         {
             if(g_ConfigurationSetDB->YCAddr[i] != 0)
             {
@@ -1512,7 +1537,7 @@ void rt_multi_common_data_read_config_from_fram(void)
  
     for(i=0;((i<sizeof(g_ConfigurationSetDB->YKAddr)/sizeof(uint16_t))&&(configureFault == 0));i++)//检查遥控
     {
-        if(!((g_ConfigurationSetDB->YKAddr[i]>=REMOTE_START_ADDR)&&(g_ConfigurationSetDB->YKAddr[i]<REMOTE_START_ADDR+REMOTE_TOTAL_NUM)))
+        if(!((g_ConfigurationSetDB->YKAddr[i]>=REMOTE_START_ADDR)&&(g_ConfigurationSetDB->YKAddr[i] < REMOTE_START_ADDR + REMOTE_TOTAL_NUM)))
         {
             if(g_ConfigurationSetDB->YKAddr[i] != 0)
             {
@@ -1672,7 +1697,7 @@ void rt_multi_common_data_config(void)
     {
         for(j=0,value=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)
         {
-            value |= (g_TelesignalDB[((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)]-1);//单点
+            value |= (*(TelesignalCfg[((g_ConfigurationSetDB->YXSet[temp1+1+j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR].pVal)-1);//单点
         }
         value = value + 1;//双点
         g_NewToOldTelesignal[temp2] = (value<<NEWONEYX_VAULE)|((i+TELESIGNAL_START_ADDR)<<NEWONEYX_ADDR);
@@ -1692,7 +1717,7 @@ void rt_multi_common_data_config(void)
         {
             for(j=0;j<(g_NewToOldTelesignal[temp1+1]>>NEWONEYX_NUM);j++)
             {
-                addr = (g_NewToOldTelesignal[temp1+1+j+1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR;
+                addr = *TelesignalCfg[((g_NewToOldTelesignal[temp1+1+j+1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR)-TELESIGNAL_START_ADDR].pAddr;
                 list_ins_next(&g_NewListTelesignal[addr],NULL,&g_NewToOldTelesignal[temp1]);
                 THREAD_PRINTF("%d -> %d\n",addr,(g_NewToOldTelesignal[temp1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR);
             }            
@@ -1743,6 +1768,11 @@ void rt_multi_common_data_config(void)
 		
     memset(&g_TelemetryDB, 0, sizeof(g_TelemetryDB));
     memset(&g_TelemetryLastDB, 0, sizeof(g_TelemetryLastDB));
+    
+    if(g_Parameter[REMOTE_PRO_SWITCH] == 0)
+    {
+        {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}
+    }
 }
 
 /**
