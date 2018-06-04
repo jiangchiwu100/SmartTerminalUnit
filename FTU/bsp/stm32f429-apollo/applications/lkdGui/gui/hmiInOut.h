@@ -87,6 +87,8 @@ enum UserLedDefine{
 	ULED_SELFCHECK,		/* 自检异常 */
 	ULED_COMMUN,			/* 通信 */
 	ULED_RECLOSELOCK,	/* 重合闭锁 */
+	ULED_LS,					/* 负荷开关 */
+	ULED_CB,					/* 断路器 */
 	ULED_ALLNUM
 };
 enum UserLedState{

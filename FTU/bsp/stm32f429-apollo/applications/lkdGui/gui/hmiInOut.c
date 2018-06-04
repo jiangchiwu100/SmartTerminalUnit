@@ -247,7 +247,7 @@ void LedChangeCheck(void)
 		if(LastYxLed[i] != *(RealYxLed[i])){
 			LastYxLed[i] = *RealYxLed[i];
 			if(LastYxLed[i] == OFF){
-				if(i == ULED_NOENERGY){
+				if(i == ULED_NOENERGY || i == ULED_CB){
 					ULedStateSet(i,ULED_ON);
 				}
 				else{
@@ -255,7 +255,7 @@ void LedChangeCheck(void)
 				}
 			}
 			else{
-				if(i == ULED_NOENERGY){
+				if(i == ULED_NOENERGY || i == ULED_CB){
 					ULedStateSet(i,ULED_OFF);
 				}
 				else{
@@ -266,12 +266,6 @@ void LedChangeCheck(void)
 		}
 	}
 	if(sendFlag == 1){
-		if(LastYxLed[ULED_NOENERGY] == OFF){
-			ULedStateSet(ULED_NOENERGY,ULED_ON);
-		}
-		else{
-			ULedStateSet(ULED_NOENERGY,ULED_OFF);
-		}
 		ULedStateSend();
 	}
 }
@@ -295,11 +289,13 @@ void YaoxinMapToLed(void)
 	RealYxLed[ULED_DEVICEFAULT] = &g_TelesignalDB[g_TelesignalAddr.deviceFault];
 	RealYxLed[ULED_SELFCHECK] = &g_TelesignalDB[g_TelesignalAddr.selfCheckAbnomal];
 	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[g_TelesignalAddr.recloseLock];
+	RealYxLed[ULED_LS] = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
+	RealYxLed[ULED_CB] = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
 	
 	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
 		LastYxLed[i] = *(RealYxLed[i]);
 		if(LastYxLed[i] == OFF){
-			if(i == ULED_NOENERGY){//取反
+			if(i == ULED_NOENERGY || i == ULED_CB){//取反
 				ULedStateSet(i,ULED_ON);
 			}
 			else{
@@ -307,7 +303,7 @@ void YaoxinMapToLed(void)
 			}
 		}
 		else{
-			if(i == ULED_NOENERGY){//取反
+			if(i == ULED_NOENERGY || i == ULED_CB){//取反
 				ULedStateSet(i,ULED_OFF);
 			}
 			else{
