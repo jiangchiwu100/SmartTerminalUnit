@@ -32,8 +32,8 @@ struct rt_device_pin_mode pin_mode[] =
 {
     /* LED */
     {BOARD_RUN_LED, PIN_MODE_OUTPUT},
-    {BOTTOM_RUN_LED, PIN_MODE_OUTPUT},
-    {BOTTOM_POWER_LED, PIN_MODE_OUTPUT},
+    {BOTTOM_OPEN_LED, PIN_MODE_OUTPUT},
+    {BOTTOM_CLOSE_LED, PIN_MODE_OUTPUT},
     /* DO */
     {SWITCH_OPEN_DO, PIN_MODE_OUTPUT},
     {SWITCH_CLOSE_DO, PIN_MODE_OUTPUT},
@@ -70,8 +70,8 @@ struct rt_device_pin_status pin_status[] =
 {
     /* LED */
     {BOARD_RUN_LED, GPIO_PIN_SET},
-    {BOTTOM_RUN_LED, GPIO_PIN_SET},
-    {BOTTOM_POWER_LED, GPIO_PIN_SET},
+    {BOTTOM_OPEN_LED, GPIO_PIN_RESET},
+    {BOTTOM_CLOSE_LED, GPIO_PIN_RESET},
     /* DO */
     {SWITCH_OPEN_DO, GPIO_PIN_SET},
     {SWITCH_CLOSE_DO, GPIO_PIN_SET},

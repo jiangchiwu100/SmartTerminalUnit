@@ -27,8 +27,8 @@
 
 /* LED */
 #define BOARD_RUN_LED              56
-#define BOTTOM_RUN_LED             85
-#define BOTTOM_POWER_LED           84
+#define BOTTOM_OPEN_LED            85
+#define BOTTOM_CLOSE_LED           84
 /* DO */
 #define SWITCH_OPEN_DO             151
 #define SWITCH_CLOSE_DO            150
@@ -66,8 +66,8 @@
 enum PIN_INDEX
 {
     INDEX_BOARD_RUN_LED = 0,
-    INDEX_BOTTOM_RUN_LED,
-    INDEX_BOTTOM_POWER_LED,
+    INDEX_BOTTOM_OPEN_LED,
+    INDEX_BOTTOM_CLOSE_LED,
 	
     INDEX_SWITCH_OPEN_DO,
     INDEX_SWITCH_CLOSE_DO,

@@ -28,6 +28,7 @@
 #define SOE_FILE_MAXNUM             512
 #define CO_FILE_MAXNUM              64
 #define FEVENT_FILE_MAXNUM          64
+#define ULOG_FILE_MAXNUM            64
 #define COMTRADE_FILE_MAXNUM        64
 //#define EXV_FILE_MAXNUM        31
 //#define EXV_START_ADDR         4001

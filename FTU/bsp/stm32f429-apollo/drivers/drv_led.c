@@ -115,20 +115,42 @@ void rt_hw_led_task(void)
     if (s_run_counter == 500)
     {
         pin_status[INDEX_BOARD_RUN_LED].status = !pin_status[INDEX_BOARD_RUN_LED].status;
-        pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
+        //pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
         rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOARD_RUN_LED], sizeof(struct rt_device_pin_status));
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
+        //rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
     }
     else if (s_run_counter == 1000)
     {
         s_run_counter = 0;
         pin_status[INDEX_BOARD_RUN_LED].status = !pin_status[INDEX_BOARD_RUN_LED].status;
-        pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
+        //pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
         rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOARD_RUN_LED], sizeof(struct rt_device_pin_status));
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
+        //rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
     }    
 
     s_run_counter++;
+    
+    if(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON)
+    {
+        pin_status[INDEX_BOTTOM_CLOSE_LED].status = GPIO_PIN_SET;
+        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_CLOSE_LED], sizeof(struct rt_device_pin_status));
+    }
+    else
+    {
+        pin_status[INDEX_BOTTOM_CLOSE_LED].status = GPIO_PIN_RESET;
+        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_CLOSE_LED], sizeof(struct rt_device_pin_status));
+    }
+    
+    if(g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON)
+    {
+        pin_status[INDEX_BOTTOM_OPEN_LED].status = GPIO_PIN_SET;
+        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_OPEN_LED], sizeof(struct rt_device_pin_status));
+    }
+    else
+    {
+        pin_status[INDEX_BOTTOM_OPEN_LED].status = GPIO_PIN_RESET;
+        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_OPEN_LED], sizeof(struct rt_device_pin_status));
+    }
     
     if (g_TelesignalDB[g_TelesignalAddr.breakingCurrent] == ON || g_TelesignalDB[g_TelesignalAddr.overloadEvent] == ON || g_TelesignalDB[g_TelesignalAddr.haveyOverload] == ON || 
         g_TelesignalDB[g_TelesignalAddr.protectionAct] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Down] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Up] == ON ||
@@ -136,7 +158,8 @@ void rt_hw_led_task(void)
         g_TelesignalDB[g_TelesignalAddr.overLimitIbUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIcDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIcUp] == ON ||
         g_TelesignalDB[g_TelesignalAddr.overLimitUabDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUabUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUBCUp] == ON ||
         g_TelesignalDB[g_TelesignalAddr.overLimitUBCDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUcaUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUcaDown] == ON ||
-        g_TelesignalDB[g_TelesignalAddr.overLimitU0Up] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitU0Down] == ON)
+        g_TelesignalDB[g_TelesignalAddr.overLimitUbcDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUbcUp] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitUABDown] == ON ||
+        g_TelesignalDB[g_TelesignalAddr.overLimitUABUp] == ON ||g_TelesignalDB[g_TelesignalAddr.overLimitU0Up] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitU0Down] == ON)
     {
         rt_hw_alarm_led_operate(ON);
     }
