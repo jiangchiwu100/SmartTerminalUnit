@@ -55,6 +55,15 @@ static void KeyGpioInit(void)
 	/* key9 */
 	GPIO_InitStructure.GPIO_Pin = PIN_KEY9;
 	GPIO_Init(PORT_KEY9, &GPIO_InitStructure);
+	/* key10 */
+	GPIO_InitStructure.GPIO_Pin = PIN_KEY10;
+	GPIO_Init(PORT_KEY10, &GPIO_InitStructure);
+	/* key11 */
+	GPIO_InitStructure.GPIO_Pin = PIN_KEY11;
+	GPIO_Init(PORT_KEY11, &GPIO_InitStructure);
+	/* key12 */
+	GPIO_InitStructure.GPIO_Pin = PIN_KEY12;
+	GPIO_Init(PORT_KEY12, &GPIO_InitStructure);
 }
 
 /**
@@ -76,6 +85,9 @@ static KeyStatus GetKeyStatus(uint8_t keyNum)
 		case 7:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY7,PIN_KEY7);break;
 		case 8:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY8,PIN_KEY8);break;
 		case 9:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY9,PIN_KEY9);break;
+		case 10:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY10,PIN_KEY10);break;
+		case 11:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY11,PIN_KEY11);break;
+		case 12:tKeyStatus = GPIO_ReadInputDataBit(PORT_KEY12,PIN_KEY12);break;
 		default:break;
 	}
 	if(tKeyStatus == LED_HARDWARE_DOWN){

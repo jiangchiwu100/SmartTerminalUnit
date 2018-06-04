@@ -16,7 +16,7 @@
 /* -- 开关映射定义 -- */
 
 /* -- LED映射定义 -- */
-#define USERLED_NUMALL 16	/* 用户使用LED总数 */
+#define USERLED_NUMALL 20	/* 用户使用LED总数 */
 #define USERLED_RUN 1
 #define USERLED_COMMUN 12
 
@@ -26,7 +26,7 @@ enum UserLedStatus{
 	USERLED_ON
 };
 
-#define USERSWITCH_NUMALL 6	/* 用户使用开关总数 */
+#define USERSWITCH_NUMALL 8	/* 用户使用开关总数 */
 struct SwitchQueue{
 	#define SWITCHQUEUE_MAX 64
 	uint8_t pIn;
@@ -36,7 +36,7 @@ struct SwitchQueue{
 	uint8_t state[SWITCHQUEUE_MAX];
 };
 
-#define USERKEY_NUMALL 10	/* 用户使用按键总数 */
+#define USERKEY_NUMALL 13	/* 用户使用按键总数 */
 struct KeyQueue{
 	#define KEYQUEUE_MAX 64
 	uint8_t pIn;

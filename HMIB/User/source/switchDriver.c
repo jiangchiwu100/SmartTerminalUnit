@@ -43,6 +43,12 @@ static void SwitchGpioInit(void)
 	/* switch5 */
 	GPIO_InitStructure.GPIO_Pin = PIN_SWITCH5;
 	GPIO_Init(PORT_SWITCH5, &GPIO_InitStructure);
+	/* switch6 */
+	GPIO_InitStructure.GPIO_Pin = PIN_SWITCH6;
+	GPIO_Init(PORT_SWITCH6, &GPIO_InitStructure);
+	/* switch7 */
+	GPIO_InitStructure.GPIO_Pin = PIN_SWITCH7;
+	GPIO_Init(PORT_SWITCH7, &GPIO_InitStructure);
 }
 
 /**
@@ -60,6 +66,8 @@ static uint8_t GetSwitchStatus(uint8_t switchNum)
 		case 3:tSwitchStatus = GPIO_ReadInputDataBit(PORT_SWITCH3,PIN_SWITCH3);break;
 		case 4:tSwitchStatus = GPIO_ReadInputDataBit(PORT_SWITCH4,PIN_SWITCH4);break;
 		case 5:tSwitchStatus = GPIO_ReadInputDataBit(PORT_SWITCH5,PIN_SWITCH5);break;
+		case 6:tSwitchStatus = GPIO_ReadInputDataBit(PORT_SWITCH6,PIN_SWITCH6);break;
+		case 7:tSwitchStatus = GPIO_ReadInputDataBit(PORT_SWITCH7,PIN_SWITCH7);break;
 		default:break;
 	}
 	return tSwitchStatus;

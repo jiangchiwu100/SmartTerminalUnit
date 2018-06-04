@@ -11,9 +11,9 @@
 
 #include "stm32f10x.h"
 
-#define KEY_NUM_ALL 10
+#define KEY_NUM_ALL 13
 
-#define RCC_APB2Periph_KEY (RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOE)
+#define RCC_APB2Periph_KEY (RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOE | RCC_APB2Periph_GPIOC)
 
 #define PORT_KEY0		GPIOB
 #define PIN_KEY0		GPIO_Pin_12
@@ -36,6 +36,13 @@
 #define PIN_KEY8		GPIO_Pin_6
 #define PORT_KEY9		GPIOB
 #define PIN_KEY9		GPIO_Pin_5
+
+#define PORT_KEY10	GPIOC
+#define PIN_KEY10		GPIO_Pin_0
+#define PORT_KEY11	GPIOC
+#define PIN_KEY11		GPIO_Pin_1
+#define PORT_KEY12	GPIOC
+#define PIN_KEY12		GPIO_Pin_2
 
 /* 和硬件相关 */
 #define KEY_HARDWARE_UP			1	

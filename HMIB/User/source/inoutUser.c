@@ -14,16 +14,16 @@
 
 /* led映射表 */
 const uint8_t userLedNoTab[USERLED_NUMALL] = {
-	0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+	0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
 };
 uint8_t userLedNoStatus[USERLED_NUMALL] = {0};
 /* 开关映射表 */
 const uint8_t userSwitchNoTab[USERSWITCH_NUMALL] = {
-	0,1,2,3,4,5
+	0,1,2,3,4,5,6,7
 };
 /* 按键映射表 */
 const uint8_t userKeyNoTab[USERKEY_NUMALL] = {
-	0,1,2,3,4,5,6,7,8,9
+	0,1,2,3,4,5,6,7,8,9,10,11,12
 };
 /* 突变开关队列 */
 struct SwitchQueue switchQueue;

@@ -12,10 +12,10 @@
 #include "stm32f10x.h"
 
 /* 开关总数 */
-#define SWITCH_NUM_ALL		6
+#define SWITCH_NUM_ALL		8
 
 #define RCC_APB2Periph_SWITCH (RCC_APB2Periph_GPIOE |\
-	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOD)
+	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOC)
 
 #define PORT_SWITCH0		GPIOE
 #define PIN_SWITCH0			GPIO_Pin_0
@@ -29,6 +29,11 @@
 #define PIN_SWITCH4			GPIO_Pin_3
 #define PORT_SWITCH5		GPIOD
 #define PIN_SWITCH5			GPIO_Pin_2
+
+#define PORT_SWITCH6		GPIOC
+#define PIN_SWITCH6			GPIO_Pin_13
+#define PORT_SWITCH7		GPIOC
+#define PIN_SWITCH7			GPIO_Pin_14
 
 /* 开关处理 */
 struct SwitchInfo{

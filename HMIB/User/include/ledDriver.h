@@ -24,7 +24,7 @@
 #define RCC_APB2Periph_LED (RCC_APB2Periph_GPIOD |\
 	RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOE)
 
-#define LED_ALLNUM		16
+#define LED_ALLNUM		20
 
 #define PORT_LED0		GPIOC
 #define PIN_LED0		GPIO_Pin_9
@@ -58,6 +58,15 @@
 #define PIN_LED14			GPIO_Pin_10
 #define PORT_LED15		GPIOE
 #define PIN_LED15			GPIO_Pin_9
+
+#define PORT_LED16		GPIOC
+#define PIN_LED16			GPIO_Pin_3
+#define PORT_LED17		GPIOC
+#define PIN_LED17			GPIO_Pin_10
+#define PORT_LED18		GPIOC
+#define PIN_LED18			GPIO_Pin_11
+#define PORT_LED19		GPIOC
+#define PIN_LED19			GPIO_Pin_12
 
 /* 和硬件相关 */
 #define LED_HARDWARE_OFF		1

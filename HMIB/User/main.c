@@ -60,7 +60,7 @@ static void IwdgInit(void)
 	IWDG_SetPrescaler(IWDG_Prescaler_32);
 	IWDG_SetReload(reload);
 	IWDG_ReloadCounter();
-	IWDG_Enable();
+	//IWDG_Enable();
 }
 
 /**
