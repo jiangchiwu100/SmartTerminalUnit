@@ -82,7 +82,7 @@ extern unsigned char file_operate_DirCall(unsigned char dev,unsigned char *pbuf)
 extern unsigned char file_operate_ReadFileAct(unsigned char dev,unsigned char *pbuf);
 extern unsigned char file_operate_ReadFile(unsigned char dev,unsigned char *pbuf);
 extern void file_operate_WriteFileAct(unsigned char dev,unsigned char *pbuf);
-
+extern void CreateJsonFile(void);
 
 #endif /* __FILE_OPERATE_H__ */
 

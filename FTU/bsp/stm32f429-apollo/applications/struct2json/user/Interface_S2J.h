@@ -20,7 +20,7 @@ typedef struct tagProductID
 {
     char* pointTableType;       //标注该文件时遥信还是遥测(点表类型)
     char* productSerialNumber;  //产品ID号
-    
+
 }ProductID;
 
 extern cJSON *InherentParaCfg_StructToJson(void* struct_obj);         //实现固有参数结构体的struct转json
