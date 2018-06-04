@@ -66,20 +66,15 @@ uint8_t Create_JsonFile(void)
 {
     //TERMINAL_PRODUCT_SERIAL_NUMBER
     char* string;
-    char md5_buffer[16];
+    uint8_t md5Buffer[16];
 
     strcpy(Json_FileName,"/sojo");
 	strcat(Json_FileName,"/AllJsonCfg.json");
 
 //unlink(Json_FileName);  //删除文件
-//Test
-    Json_MyFile = open(Json_FileName,  O_RDWR | O_CREAT, 0);  //创建一个可读写文件
-    write(Json_MyFile, string, (strlen(string) - 2));  //将硬件版本号写入到config文件中
-    write(Json_MyFile, ",\n", 2);  //写入文件
-	close(Json_MyFile);
 
     uint8_t res = Get_MD5ID_For_Json(Json_FileName);
-//	uint8_t res = 1;
+
     if(res == 0)   //ID号能对应上则退出
     {
         return 0;
@@ -107,8 +102,8 @@ uint8_t Create_JsonFile(void)
     
 	close(Json_MyFile);
 
-    getFileMD5(Json_FileName, md5_buffer);
-    rt_multi_common_data_fram_record_write(JSON_MD5, (uint8_t *)md5_buffer, sizeof(md5_buffer));   //将MD5校验码写入到FRAM中
+    getFileMD5(Json_FileName, md5Buffer);
+    rt_multi_common_data_fram_record_write(JSON_MD5, (uint8_t *)md5Buffer, sizeof(md5Buffer));   //将MD5校验码写入到FRAM中
     //TODO:应该在读取一遍，校验一次
     return res;
 }
@@ -259,21 +254,25 @@ static void Struct_To_Json(int file)
 static uint8_t Get_MD5ID_For_Json(const char* fileName)
 {
     uint8_t res = 1;    //要返回的结果
-    char md5_buffer[16];    //保存md5校验码的数组
-    char md5Fram[16];   //保存在FRAM中的MD5校验码
+    uint8_t md5Buffer[16];    //保存md5校验码的数组
+    uint8_t md5Fram[16];   //保存在FRAM中的MD5校验码
 
-    rt_multi_common_data_fram_record_read(JSON_MD5, (uint8_t *)md5Fram);   //读取
+    rt_multi_common_data_fram_record_read(JSON_MD5, md5Fram);   //读取
 
     //此处直接判断MD5
-    if(getFileMD5(fileName, md5_buffer) == 0)
+    if(getFileMD5(fileName, md5Buffer) == 0)
     {
-        if(strstr(md5Fram, md5_buffer))    //比较MD5校验码是否一致
+        for(uint8_t i = 0; i < sizeof(md5Buffer); i++)
         {
-            return 0;    //md5校验码正确
-        }
-        else
-        {
-            res = 1;    //md5校验码不正确
+            if(md5Buffer[i] != md5Fram[i])
+            {
+                res = 1;    //md5校验码不正确
+                break;
+            }
+            else
+            {
+                res = 0;    //md5校验码正确
+            }
         }
     }
     else

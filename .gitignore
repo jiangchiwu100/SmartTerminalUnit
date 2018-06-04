@@ -23,3 +23,5 @@
 /FTU/bsp/stm32f429-apollo/.vscode
 /FTU/bsp/stm32f429-apollo/project.uvoptx
 /FTU/bsp/stm32f429-apollo/project.uvprojx
+/FTU/bsp/stm32f429-apollo/*.bak
+/FTU/bsp/stm32f429-apollo/*.A

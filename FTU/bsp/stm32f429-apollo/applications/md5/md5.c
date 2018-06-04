@@ -319,7 +319,6 @@ int getFileMD5(const char* fileName, uint8_t* md5Bytes)
 	uint8_t buffer[1];
 	int count = 0;
 	MD5_CTX context;
-	int i;
 	if (fileName == NULL || md5Bytes == NULL)
     {
 		return -1;
@@ -337,6 +336,7 @@ int getFileMD5(const char* fileName, uint8_t* md5Bytes)
 	}
     close(myFile_);			//关闭文件
 	MD5Final(md5Bytes, &context);
+	
 	return 0;
 }
 
