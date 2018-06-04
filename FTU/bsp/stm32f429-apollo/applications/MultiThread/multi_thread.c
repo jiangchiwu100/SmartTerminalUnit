@@ -222,14 +222,6 @@ static void rt_protect_thread_entry(void *param)
         {
 			g_ThreadRunSta |= THREAD_RUN_PROTECT;
 			
-            if (g_Parameter[SWITCH_TYPE] == SWITCH_OFF)
-            {
-                DBWriteSOE(g_TelesignalAddr.swtichclass, TYPE_BREAKER);
-            }
-            else
-            {
-                DBWriteSOE(g_TelesignalAddr.swtichclass, TYPE_LOADSWTICH);
-            }
             //if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
             {
                 /* 断路器主保护逻辑 */ 					

@@ -1257,7 +1257,6 @@ void LoadSwitchCtrlInit(void)
         case LOAD_DEV0:
             list_init(&s_ListTimers[pdrv]);
             //通用
-			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
 			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
 			s_ComProSts[pdrv].pLoadWorkMode = &g_Parameter[LOAD_WORK_MODE];
             s_ComProSts[pdrv].pConnectSwitchRecognize = &g_Parameter[CONNECT_SWITCH_RECOGNIZE];
@@ -1265,6 +1264,7 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
             s_ComProSts[pdrv].yx.FA_HardStrap.value = &g_TelesignalDB[g_TelesignalAddr.recloseFAHardStrap];
+            s_ComProSts[pdrv].yx.swtichclass.value = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
             s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[g_TelesignalAddr.telecontrolProOut];
 
             s_ComProSts[pdrv].yx.breakContact.addr =  g_TelesignalAddr.breakContact;
@@ -1460,19 +1460,18 @@ void LoadSwitchCtrlClock(void)
     for(pdrv=0; pdrv<LOAD_DEVMAXNUM; pdrv++)
     {
         add_timers(pdrv);//定时增加
-
-		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
-		{
-			s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
-		}
-		else
-		{
-			s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
-		}
-		
+        		
         switch(pdrv)
         {
         case LOAD_DEV0:
+            if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+            {
+                s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+            }
+            else
+            {
+                s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+            }
             if(g_Parameter[CFG_PRO_VOL_N] == 0)
             {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
             else

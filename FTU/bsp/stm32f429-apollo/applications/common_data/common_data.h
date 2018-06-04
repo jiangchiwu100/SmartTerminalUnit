@@ -374,7 +374,8 @@ typedef struct TagTelesignalAddr
     breakContact,                                   // 分断/联络
     recloseFAHardStrap,                             // 重合硬/FA压板
     functionHardStrap,                              // 功能投退硬压板
-    remoteEarth,                                    // 远方/就地
+    remote,                                         // 远方
+    earth,                                          // 就地
     shortCircuitFault,                              // 短路故障/过流保护
     earthingFault,                                  // 接地故障/零序保护
     protectionAct,                                  // 保护动作
@@ -597,7 +598,6 @@ enum AddrRunParameter
     CFG_POW_VOL_CB,                       // 功率电压CB
     CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
-	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
 	BREAK_WORK_MODE,                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	LOAD_WORK_MODE,                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
 	CONNECT_SWITCH_RECOGNIZE,             // 联络开关识别

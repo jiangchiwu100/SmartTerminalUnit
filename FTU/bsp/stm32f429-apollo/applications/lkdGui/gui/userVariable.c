@@ -589,11 +589,11 @@ static void HmiCmdSendFun(uint8_t cmdIs)
             rt_multi_telecontrl_operate(ADDR_LOCAL_CLEAR, 0);		
 			break;
 		case 1:/* ∑÷’¢ */
-			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){
 				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}break;
 		case 2:/* ∫œ’¢ */
-			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){
 				rt_multi_telecontrl_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}break;
 		case 3:/* ∏¥πÈ */

@@ -31,7 +31,8 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 1,  "重合压板/FA",  &g_TelesignalAddr.recloseFAHardStrap,          NULL,          {"退出", "投入"},  {"投->退","退->投"}},
     { 1,  "保护压板",     &g_TelesignalAddr.functionHardStrap,           NULL,          {"退出", "投入"},  {"投->退","退->投"}},
     { 1,  "遥控保护压板", &g_TelesignalAddr.telecontrolProOut,           NULL,          {"投入", "退出"},  {"退->投","投->退"}},
-    { 1,  "远方/就地",    &g_TelesignalAddr.remoteEarth,                 NULL,          {"就地", "远方"},  {"远方->就地","就地->远方"}},
+    { 1,  "远方",         &g_TelesignalAddr.remote,                      NULL,          {"无", "远方"},  {"远方->无","无->远方"}},
+    { 1,  "就地",         &g_TelesignalAddr.earth,                       NULL,          {"无", "就地"},  {"就地->无","无->就地"}},
     { 0,  "短路故障",     &g_TelesignalAddr.shortCircuitFault,           NULL,          {"复位","保护"},   {"复位","保护"}},
     { 0,  "零序故障",     &g_TelesignalAddr.earthingFault,               NULL,          {"复位","保护"},   {"复位","保护"}},
     { 0,  "保护动作",     &g_TelesignalAddr.protectionAct,               NULL,          {"复位","动作"},   {"复位","动作"}},
@@ -243,7 +244,6 @@ struct tagValueParaCfg ParameterCfg[] =
 {
 //   使能  菜单编号          名称                             值                         单位      上限        下限   缺省值    数据类型  小数点位数       显示内容           备注  
     { 1,  ME_BASIC_SET,   "操作机构",        &g_Parameter[OPERATING_MECHANISM],          "-",       1,           0,     0,         2,         0,         {"弹簧", "永磁"    },   " "   },    
-    { 1,  ME_BASIC_SET,   "开关类型",        &g_Parameter[SWITCH_TYPE],                  "-",       1,           0,     0,         2,         0,         {"断路器", "负荷开关"},   " "   }, 
     { 1,  ME_BASIC_SET,   "断路器模式",      &g_Parameter[BREAK_WORK_MODE],              "-",       4,           0,     1,         5,         0,         {"无","常规保护","电压时间型","电压电流型","电流计数型"},   " "   },	
     { 1,  ME_BASIC_SET,   "负荷开关模式",    &g_Parameter[LOAD_WORK_MODE],               "-",       4,           0,     0,         5,         0,         {"无","常规保护","电压时间型","电压电流型","分界"},   " "   },
     { 1,  ME_BASIC_SET,   "负荷侧线电压",    &g_Parameter[CFG_PRO_VOL_N],                "-",       1,           0,     1,         2,         0,         {"UAB", "UCB"},   " "   },     
