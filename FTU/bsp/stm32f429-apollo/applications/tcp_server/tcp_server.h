@@ -21,6 +21,9 @@
 
 #define  TCP_SERVER_PORT_2404                       2404 // 定义DL/T634.5104规约任务tcp server的端口
 
+#define  UDP_8080_RX_BUFSIZE                        (256*14) // 定义tcp server最大接收数据长度
+#define  UDP_8080_TX_BUFSIZE                        (512) // 定义tcp server最大接收数据长度
+
 #define  TCP_SERVER_2404_RX_BUFSIZE                 (256*14) // 定义tcp server最大接收数据长度
 #define  TCP_SERVER_2404_TX_BUFSIZE                 512 // 定义tcp server最大发送数据长度
 
@@ -30,6 +33,7 @@
 
 
 /* PUBLIC FUNCTION -----------------------------------------------------------*/
+extern void rt_w5500_udp_thread_entry(void *param); // UDP任务线程 
 extern void rt_w5500_tcpserver_thread_entry(void *param); // TCP服务器任务线程 
 extern uint8_t w5500_tcpserver_linkstate(void); // 判断链路状态
 extern void w5500_tcpserver_disconnect(void); // 主动断开链路

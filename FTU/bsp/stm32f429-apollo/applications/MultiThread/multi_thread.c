@@ -80,7 +80,7 @@ static rt_uint8_t rt_thread_dp83848_stack[DP83848_2404_THREAD_STACK_SIZE];
 
 #if RT_USING_W5500 
 static struct rt_thread rt_thread_w5500;
-static rt_uint8_t rt_thread_w5500_stack[W5500_2404_THREAD_STACK_SIZE];
+static rt_uint8_t rt_thread_w5500_stack[W5500_8080_THREAD_STACK_SIZE];
 struct rt_semaphore w5500_sem; // w5500 semaphore
 struct rt_event w5500_event; // w5500
 //static struct rt_thread *rt_thread_w5500;
@@ -585,20 +585,20 @@ static void dp83848_2404_thread_start(void *param)
   * @updata: [2017-12-07][Lexun][make the code cleanup]
   */
 #if RT_USING_W5500 
-static void w5500_2404_thread_start(void *param)
+static void w5500_8080_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
 	
     /* initialize thread */
     result = rt_thread_init(&rt_thread_w5500,
-                            W5500_2404_THREAD_NAME, 
-                            rt_w5500_tcpserver_thread_entry,
+                            W5500_8080_THREAD_NAME, 
+                            rt_w5500_udp_thread_entry,
                             RT_NULL,
                             &rt_thread_w5500_stack[0],
                             sizeof(rt_thread_w5500_stack),
-                            W5500_2404_THREAD_PRIORITY,
-                            W5500_2404_THREAD_TIMESLICE);
+                            W5500_8080_THREAD_PRIORITY,
+                            W5500_8080_THREAD_TIMESLICE);
 
     /* startup */
     RT_ASSERT(result == RT_EOK);
@@ -611,12 +611,12 @@ static void w5500_2404_thread_start(void *param)
 #else
     rt_thread_t tid; 
 
-    tid = rt_thread_create(W5500_2404_THREAD_NAME, 
+    tid = rt_thread_create(W5500_8080_THREAD_NAME, 
                            rt_w5500_tcpserver_thread_entry, 
                            param, 
-                           W5500_2404_THREAD_STACK_SIZE,
-                           W5500_2404_THREAD_PRIORITY, 
-                           W5500_2404_THREAD_TIMESLICE);
+                           W5500_8080_THREAD_STACK_SIZE,
+                           W5500_8080_THREAD_PRIORITY, 
+                           W5500_8080_THREAD_TIMESLICE);
 
     if (tid != RT_NULL)
     {
@@ -1022,7 +1022,7 @@ int rt_multi_thread_start(void)
 //	{
 //	    THREAD_PRINTF("rt_thread_w5500_stack malloc failed");
 //	}	
-    w5500_2404_thread_start(RT_NULL); 
+    w5500_8080_thread_start(RT_NULL); 
   #endif /* RT_USING_W5500 */
   
   #if RT_USING_SLAVE101 

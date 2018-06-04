@@ -37,11 +37,12 @@ static unsigned short DP83848TcpServerTxLen; // TCP服务器发送数据长度
 #endif /* END RT_USING_DP83848 */
 
 #if RT_USING_W5500 
-static unsigned char *W5500TcpServerRxBuf; // [TCP_SERVER_2404_RX_BUFSIZE] __attribute__((at(0x00001000 + SDRAM_ADDR_104))); // TCP服务端数据接收缓冲区
-static unsigned char *W5500TcpServerTxBuf; // [TCP_SERVER_2404_TX_BUFSIZE]; // TCP服务端数据发送缓冲区
+static unsigned char *W5500_UDP_RxBuf; // [TCP_SERVER_2404_RX_BUFSIZE] __attribute__((at(0x00001000 + SDRAM_ADDR_104))); // TCP服务端数据接收缓冲区
+static unsigned char *W5500_UDP_TxBuf; // [TCP_SERVER_2404_TX_BUFSIZE]; // TCP服务端数据发送缓冲区
 static DataQueue W5500TcpServerRxCB; // TCP SERVER接收缓冲队列控制块
 static unsigned char W5500TcpServerFlag; // TCP服务器数据发送标志位
 static unsigned short W5500TcpServerTxLen; // TCP服务器发送数据长度
+static unsigned short W5500_UDP_TxLen; // TCP服务器发送数据长度
 #endif /* END RT_USING_W5500 */
 
 
@@ -54,19 +55,17 @@ static unsigned short W5500TcpServerTxLen; // TCP服务器发送数据长度
   * @return: none
   * @updata: [2017-12-07][Lexun][make the code cleanup]
   */  
-static inline void w5500_tcpserver_init(void)
-{
-    W5500TcpServerFlag = 0; // TCP SERVER对应端口2404标志位
-    
-    W5500TcpServerRxBuf = (unsigned char *)rt_malloc(TCP_SERVER_2404_RX_BUFSIZE);
-    W5500TcpServerTxBuf = (unsigned char *)rt_malloc(TCP_SERVER_2404_TX_BUFSIZE);
+static inline void w5500_udp_init(void)
+{    
+    W5500_UDP_RxBuf = (unsigned char *)rt_malloc(UDP_8080_RX_BUFSIZE);
+    W5500_UDP_TxBuf = (unsigned char *)rt_malloc(UDP_8080_TX_BUFSIZE);
 	
-    if (QueueCreate(&W5500TcpServerRxCB, W5500TcpServerRxBuf, TCP_SERVER_2404_RX_BUFSIZE, NULL, NULL) == QUEUE_ERR) 
-    {
-        return; // 消息队列创建错误 
-    }
-    memset(W5500TcpServerRxBuf, 0, TCP_SERVER_2404_RX_BUFSIZE); // 数据接收缓冲区清零
-    memset(W5500TcpServerTxBuf, 0, TCP_SERVER_2404_TX_BUFSIZE); // 数据发送缓冲区清零
+//    if (QueueCreate(&W5500TcpServerRxCB, W5500_UDP_RxBuf, UDP_8080_RX_BUFSIZE, NULL, NULL) == QUEUE_ERR) 
+//    {
+//        return; // 消息队列创建错误 
+//    }
+    memset(W5500_UDP_RxBuf, 0, UDP_8080_RX_BUFSIZE); // 数据接收缓冲区清零
+    memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE); // 数据发送缓冲区清零
 }
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
@@ -76,7 +75,7 @@ static inline void w5500_tcpserver_init(void)
   * @return: none
   * @updata: [2017-12-07][Lexun][make the code cleanup]
   */  
-void rt_w5500_tcpserver_thread_entry(void *param)
+void rt_w5500_udp_thread_entry(void *param)
 {
     rt_err_t result;
     int32_t ret;
@@ -87,7 +86,7 @@ void rt_w5500_tcpserver_thread_entry(void *param)
     uint8_t srcip[4];
 	uint8_t defautip[4] = {192,168,60,255};	
     uint16_t destport;	
-    w5500_tcpserver_init();
+    w5500_udp_init();
 	
     setSIMR(0x01);//使能S0
     setSn_IMR(socketNO, Sn_IR_RECV); //使能接收中断
@@ -112,18 +111,18 @@ void rt_w5500_tcpserver_thread_entry(void *param)
 					    w5500_event.set &= ~EVENT_RUN;
 					}					
 					
-					W5500TcpServerTxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500TcpServerTxBuf, goose_have_change);
+					W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
 					
 					if (goose_have_change)
 					{
 						goose_have_change = 0;
 					}
 					
-					if (W5500TcpServerTxBuf[0])
+					if (W5500_UDP_TxBuf[0])
 					{
 						TIM7->CNT = 0;
-						w5500_sendto(socketNO, W5500TcpServerTxBuf, W5500TcpServerTxLen, defautip, 8080);		
-						memset(W5500TcpServerTxBuf, 0, TCP_SERVER_2404_TX_BUFSIZE);
+						w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
+						memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
 					}					
 				}	
 				
@@ -138,9 +137,9 @@ void rt_w5500_tcpserver_thread_entry(void *param)
 					
 					while ((length = getSn_RX_RSR(socketNO)) > 0)
 					{				
-                        length = length > TCP_SERVER_2404_RX_BUFSIZE ? TCP_SERVER_2404_RX_BUFSIZE : length;
+                        length = length > UDP_8080_RX_BUFSIZE ? UDP_8080_RX_BUFSIZE : length;
 					
-						ret = w5500_recvfrom(socketNO, W5500TcpServerRxBuf, length, srcip, &destport);					
+						ret = w5500_recvfrom(socketNO, W5500_UDP_RxBuf, length, srcip, &destport);					
 						
 						if (ret <= 0)
 						{
@@ -148,7 +147,7 @@ void rt_w5500_tcpserver_thread_entry(void *param)
 						}
 						else
 						{
-							goose_receiver_processe(W5500TcpServerRxBuf, srcip);						
+							goose_receiver_processe(W5500_UDP_RxBuf, srcip);						
 						}						
 					}										
 				}				
@@ -239,7 +238,7 @@ uint16_t w5500_tcpserver_putc(uint8_t *str, uint16_t length)
 		
     if (length < TCP_SERVER_2404_TX_BUFSIZE)
     {
-        memcpy(W5500TcpServerTxBuf, str, length);
+        //memcpy(W5500TcpServerTxBuf, str, length);
         W5500TcpServerTxLen = length;
         W5500TcpServerFlag |= LWIP_SEND_DATA;
 			
