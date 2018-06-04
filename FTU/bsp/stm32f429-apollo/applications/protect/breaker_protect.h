@@ -50,6 +50,7 @@ typedef struct
     STelesignalStr switchClose;            // 开关合位
     STelesignalStr recloseHardStrap;       // 重合闸硬压板
     STelesignalStr functionHardStrap;      // 功能投退硬压板  
+    STelesignalStr swtichclass;            // 开关类型
     STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	    
     
     STelesignalStr shortCircuitFault;        // 短路故障   
@@ -326,7 +327,6 @@ typedef struct
     TelemetryStr yc;
     uint16_t fevent_yc_addr[10];
 	int WorkMode;                          // 工作模式
-	float *pSwitchType;						  // 开关类型(0-断路器/1-负荷开关)
 	float *pBreakWorkMode;                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	float *pLoadWorkMode;                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
     uint8_t (*opening)(uint16_t addr, uint8_t operateType);

@@ -16,9 +16,12 @@
 #include "wave_recording.h"
 #include <dfs_posix.h>
 
+#include "point_table_config.h"
+#include "drv_wdg.h"
+	
+	
 #include "JsonFileOperation.h"
-	
-	
+
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
 
 
@@ -36,7 +39,6 @@ static struct DIR_ARRAY *Dir_ArrayClear;// __attribute__((at(0x00050000 + SDRAM_
 static struct READ_DIR Read_Dir[DEV_MAX_NUM];
 static struct READ_FILE Read_File[DEV_MAX_NUM];
 static struct WRITE_FILE Write_File[DEV_MAX_NUM];
-	
 	
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
@@ -1392,7 +1394,7 @@ void file_operate_Init(void)
         FILE_PRINTF("spi flash mount to /spi failed!\n");  
         file_operate_Format();        
     }
-	
+    
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
     
@@ -1402,6 +1404,4 @@ void file_operate_Init(void)
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
-
-
 

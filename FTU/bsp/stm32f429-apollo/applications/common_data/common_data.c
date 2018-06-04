@@ -322,6 +322,10 @@ void ParameterCheck(void)
             {
                 *g_pFixedValueCfg[i].pVal = g_pFixedValueCfg[i].defaultVal;             
             }
+            if(g_pFixedValueCfg[i].dataType != 0)//非浮点数
+            {
+                *g_pFixedValueCfg[i].pVal = (float)(uint16_t)(*g_pFixedValueCfg[i].pVal);
+            }
             if(g_pFixedValueCfg == FixedValueCfg1)
             {
                 flag[g_pFixedValueCfg[i].pVal - g_FixedValue1] = 0;
@@ -354,6 +358,10 @@ void ParameterCheck(void)
             if (*ParameterCfg[i].pVal > ParameterCfg[i].valMax || *ParameterCfg[i].pVal < ParameterCfg[i].valMin)
             {
                 *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal; 
+            }
+            if(ParameterCfg[i].dataType != 0)//非浮点数
+            {
+                *ParameterCfg[i].pVal = (float)(uint16_t)(*ParameterCfg[i].pVal);
             }
             flag[ParameterCfg[i].pVal - g_Parameter] = 0;
         }
@@ -1180,6 +1188,9 @@ rt_uint16_t rt_multi_common_data_fram_record_write(uint8_t type, uint8_t *pBuf, 
         case CURRENT_SN: // 当前定值区号	
             rt_device_write(device_fram, ADDR_FRAM_CURRENT_SN, pBuf, len);            						
             break;		
+        case JSON_MD5: // JSON_MD5
+            rt_device_write(device_fram, ADDR_FRAM_JSON_MD5, pBuf, len);            						
+            break;			
         default:
             break;
     }
@@ -1260,6 +1271,9 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
             rt_device_read(device_fram, ADDR_FRAM_CONFIG, pBuf, sizeof(struct ConfigurationSetDatabase));									
             break;
        
+        case JSON_MD5: // JSON_MD5
+            rt_device_read(device_fram, ADDR_FRAM_JSON_MD5, pBuf, 16);					
+            break;		
         default:
             break;
     }
@@ -1331,46 +1345,76 @@ static void rt_common_data_save_value_default_to_fram(void)
 	uint32_t i;
     uint8_t flag;
     
+    rt_device_read(device_fram, ADDR_FRAM_UPDATE, &flag, 1);
+    
     if (flag != FRAM_HWFLAG1)
     {
 		rt_device_read(device_fram, ADDR_FRAM_UPDATE, &flag, 1);
 		
 		if (flag != FRAM_HWFLAG1)
 		{
-			flag = 0;
+			flag = 0x55;
+            
+            rt_device_write(device_fram, ADDR_FRAM_MONITOR, &flag, 1); 
+            
+            flag = 0;
+            
+            rt_device_read(device_fram, ADDR_FRAM_MONITOR, &flag, 1);
+            
+            if(flag != 0x55)//如果读取数据不对，说明FRAM未正常工作，重启
+            {
+                FRAM_PRINTF("fram is fault! \r\n"); 
+                NVIC_SystemReset(); //软复位
+            }
+            
+            flag = 0xAA;
+            
+            rt_device_write(device_fram, ADDR_FRAM_MONITOR, &flag, 1);
 
-			for (i = 0; i < FM25V10_MAX_ADDR; i++)
+            flag = 0;            
+            
+            rt_device_read(device_fram, ADDR_FRAM_MONITOR, &flag, 1);
+            
+            if(flag != 0xAA)//如果读取数据不对，说明FRAM未正常工作，重启
+            {
+                FRAM_PRINTF("fram is fault! \r\n"); 
+                NVIC_SystemReset(); //软复位
+            }
+            
+            flag = 0;
+
+			for (i = 0; i < FM25V10_MAX_ADDR; i++)//清除FRAM
 			{
 				rt_device_write(device_fram, 0x01 + i, &flag, 1); 
 			}          
             
 			flag = FRAM_HWFLAG1;
 
-			rt_device_write(device_fram, ADDR_FRAM_UPDATE, &flag, 1); 
+			rt_device_write(device_fram, ADDR_FRAM_UPDATE, &flag, 1); //写标志
 
-            for (i = 0; i < g_ParameterCfg_Len; i++)
+            for (i = 0; i < g_ParameterCfg_Len; i++)//初始化配置字
             {
                 *ParameterCfg[i].pVal = ParameterCfg[i].defaultVal;
             }
             
-            for (i = 0; i < g_CalibrateFactorCfg_Len; i++)
+            for (i = 0; i < g_CalibrateFactorCfg_Len; i++)//初始化校准系数
             {
                 *CalibrateFactorCfg[i].factorVal = CalibrateFactorCfg[i].factorDefault;
             }
 
-            for (i = 0; i < g_FixedValueCfg1_Len; i++)
+            for (i = 0; i < g_FixedValueCfg1_Len; i++)//初始化控制字1区
             {
                 *FixedValueCfg1[i].pVal = FixedValueCfg1[i].defaultVal;
             }	
 
-            memcpy(g_FixedValue2,g_FixedValue1,sizeof(g_FixedValue1));
+            memcpy(g_FixedValue2,g_FixedValue1,sizeof(g_FixedValue1));//初始化控制字2区
             
-            for (i = 0; i < 4; i++)
+            for (i = 0; i < 4; i++)//写入FRAM
             {
                 rt_multi_common_data_save_value_to_fram(i);
             }
 
-            rt_multi_common_data_configure_default();            
+            rt_multi_common_data_configure_default(); //配置参数写入默认值     
 			
 			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
 		}

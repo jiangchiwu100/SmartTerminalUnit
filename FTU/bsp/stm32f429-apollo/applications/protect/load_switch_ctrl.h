@@ -49,6 +49,7 @@ typedef struct
     STelesignalStr breakContact;           //类型
     STelesignalStr functionHardStrap;      // 功能投退硬压板 
 	STelesignalStr FA_HardStrap;           // FA功能投退硬压板 
+    STelesignalStr swtichclass;            // 开关类型
     STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	
 
     STelesignalStr closingLocked;
@@ -323,7 +324,6 @@ typedef struct
     TelemetryStr yc;
     uint16_t fevent_yc_addr[10];
 	int WorkMode;                          // 工作模式
-	float *pSwitchType;						  // 开关类型(0-断路器/1-负荷开关)
 	float *pBreakWorkMode;                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	float *pLoadWorkMode;                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
     float *pConnectSwitchRecognize; //联络开关自动识别（0-手动，1-自动）
