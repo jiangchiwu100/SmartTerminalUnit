@@ -333,6 +333,8 @@
 /* APP CONFIGURATION ---------------------------------------------------------*/
 /* Using event*/
 #define EVENT_RUN                                                      0x00000001
+#define EVENT_REC_IRQ_W5500                                            0x00000002
+#define EVENT_GOOSE_HAVE_CHANGE                                        0x00000004
 #define EVENT_INIT_PROTECT                                             0x00000010
 #define EVENT_INIT_WATCH                                               0x00000020
 #define EVENT_INIT_CAL                                                 0x00000040
@@ -377,13 +379,18 @@
 #define INIT_THREAD_PRIORITY                                           (RT_THREAD_PRIORITY_MAX / 2)
 #define INIT_THREAD_TIMESLICE                                          (20)
 
+#define W5500_2404_THREAD_NAME                                         "w5500"
+#define W5500_2404_THREAD_PRIORITY                                     (5)
+#define W5500_2404_THREAD_STACK_SIZE                                   (4096)
+#define W5500_2404_THREAD_TIMESLICE                                    (20)
+
 #define CAL_THREAD_NAME                                                "cal"
-#define CAL_THREAD_PRIORITY                                            (5)
+#define CAL_THREAD_PRIORITY                                            (7)
 #define CAL_THREAD_STACK_SIZE                                          (4096)
 #define CAL_THREAD_TIMESLICE                                           (20)
 
 #define PROTECT_THREAD_NAME                                            "protect"
-#define PROTECT_THREAD_PRIORITY                                        (7)
+#define PROTECT_THREAD_PRIORITY                                        (9)
 #define PROTECT_THREAD_STACK_SIZE                                      (4096)
 #define PROTECT_THREAD_TIMESLICE                                       (20)
 
@@ -401,11 +408,6 @@
 #define DP83848_2404_THREAD_PRIORITY                                   (21)
 #define DP83848_2404_THREAD_STACK_SIZE                                 (4096)
 #define DP83848_2404_THREAD_TIMESLICE                                  (20)
-
-#define W5500_2404_THREAD_NAME                                         "w5500"
-#define W5500_2404_THREAD_PRIORITY                                     (22)
-#define W5500_2404_THREAD_STACK_SIZE                                   (4096)
-#define W5500_2404_THREAD_TIMESLICE                                    (20)
 
 #define SLAVE104_THREAD_NAME                                           "iec104"
 #define SLAVE104_THREAD_PRIORITY                                       (23)
@@ -432,8 +434,9 @@
 /* !!![INT_SYSTICK_PRIO] systick priority cannot be modified!!! */ 
 #define INT_SYSTICK_PRIO                                               ((0x00 << 4) | 0x00) 
 #define INT_EXTI15_10_PRIO                                             ((0x00 << 4) | 0x01) // AD7616BUSY
-#define INT_ETH_PRIO                                                   ((0x00 << 4) | 0x02) // Ethernet
-#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x03) // sd2405
+#define INT_EXTI3_PRIO                                                 ((0x00 << 4) | 0x02) // w5500 
+#define INT_ETH_PRIO                                                   ((0x00 << 4) | 0x03) // Ethernet
+#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x04) // sd2405
 #define INT_TIM3_PRIO                                                  ((0x01 << 4) | 0x01) // frequency measurement
 #define INT_TIM6_PRIO                                                  ((0x01 << 4) | 0x00) // 1ms timer
 #define INT_TIM2_PRIO                                                  ((0x01 << 4) | 0x02) // none

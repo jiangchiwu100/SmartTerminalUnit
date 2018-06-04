@@ -16,6 +16,7 @@
 #include "lwip/opt.h"
 #include "lwip/api.h"
 #include "queue.h"
+#include "goose.h"
 #include "drv_w5500.h"
 #include "common_data.h"
 #include "lwip/sockets.h"
@@ -79,87 +80,90 @@ void rt_w5500_tcpserver_thread_entry(void *param)
 {
     rt_err_t result;
     int32_t ret;
-    uint8_t socketNO = TCPSERVER2404_SOCKET0;
-    uint8_t socketStatus;
+    uint8_t socketNO = UDPSERVER2404_SOCKET1;
     uint16_t length = 0;
-    uint8_t buf[TCP_SERVER_2404_RX_BUFSIZE];
-	
+	uint8_t goose_have_change = 0;
+    uint8_t buf[256];
+    uint8_t srcip[4];
+	uint8_t defautip[4] = {192,168,60,255};	
+    uint16_t destport;	
     w5500_tcpserver_init();
-    rt_sem_control(&w5500_sem, RT_IPC_CMD_RESET, 0);
+	
+    setSIMR(0x01);//使能S0
+    setSn_IMR(socketNO, Sn_IR_RECV); //使能接收中断
 	
     for (;;)
-    {
-        result = rt_sem_take(&w5500_sem, RT_WAITING_FOREVER); 
-        if (result == RT_EOK) 
-        {					
-            socketStatus = getSn_SR(socketNO);
-                        
-            switch (socketStatus)
-            {
-                case SOCK_INIT:
-                    if ((ret = w5500_listen(socketNO)) != W5500_SOCK_OK)
-                    {
-                    }
-                    break;
-                                                        
-                case SOCK_ESTABLISHED:
-                    W5500TcpServerFlag |= LWIP_TCP_SERVER_LINKUP; // TCP SERVER连接到2404客户端
-                    if (getSn_IR(socketNO) & Sn_IR_CON)
-                    {
-                            setSn_IR(socketNO, Sn_IR_CON);
-                    }
+    {   		
+        result = rt_event_recv(&w5500_event, EVENT_REC_IRQ_W5500 | EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL); 
+		
+		switch (getSn_SR(socketNO))
+		{
+			case SOCK_UDP:
+				if ((w5500_event.set & EVENT_RUN) || (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE))
+				{
+					if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
+					{
+						goose_have_change = 1;
+					    w5500_event.set &= ~EVENT_GOOSE_HAVE_CHANGE;
+					}
+					
+					if (w5500_event.set & EVENT_RUN)
+					{
+					    w5500_event.set &= ~EVENT_RUN;
+					}					
+					
+					W5500TcpServerTxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500TcpServerTxBuf, goose_have_change);
+					
+					if (goose_have_change)
+					{
+						goose_have_change = 0;
+					}
+					
+					if (W5500TcpServerTxBuf[0])
+					{
+						TIM7->CNT = 0;
+						w5500_sendto(socketNO, W5500TcpServerTxBuf, W5500TcpServerTxLen, defautip, 8080);		
+						memset(W5500TcpServerTxBuf, 0, TCP_SERVER_2404_TX_BUFSIZE);
+					}					
+				}	
+				
+				if (w5500_event.set & EVENT_REC_IRQ_W5500)						
+				{
+					w5500_event.set &= ~EVENT_REC_IRQ_W5500;	
+					
+					if (getSn_IR(socketNO) & Sn_IR_RECV)
+					{
+					    setSn_IR(socketNO, Sn_IR_RECV);
+					}					
+					
+					while ((length = getSn_RX_RSR(socketNO)) > 0)
+					{				
+                        length = length > TCP_SERVER_2404_RX_BUFSIZE ? TCP_SERVER_2404_RX_BUFSIZE : length;
+					
+						ret = w5500_recvfrom(socketNO, W5500TcpServerRxBuf, length, srcip, &destport);					
+						
+						if (ret <= 0)
+						{
+							break;
+						}
+						else
+						{
+							goose_receiver_processe(W5500TcpServerRxBuf, srcip);						
+						}						
+					}										
+				}				
 
-                    if ((length = getSn_RX_RSR(socketNO)) > 0)
-                    {
-                        if (length > TCP_SERVER_2404_RX_BUFSIZE)
-                        {
-                            length = TCP_SERVER_2404_RX_BUFSIZE;
-                        }
+			case SOCK_CLOSED:				
+				if ((ret = w5500_socket(socketNO, Sn_MR_UDP, 8080, 0)) != socketNO)
+				{
+					
+				} 
+				//rt_thread_delay(1);
+				break;
 
-                        ret = w5500_recv(socketNO, buf, length);
-
-                        if (ret <= 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            QueueWriteBlock(&W5500TcpServerRxCB, buf, length);
-                        }
-                    }
-                        
-                    if ((W5500TcpServerFlag & LWIP_SEND_DATA) == LWIP_SEND_DATA)
-                    {
-                        W5500TcpServerFlag &= ~LWIP_SEND_DATA;
-                        ret = w5500_send(socketNO, W5500TcpServerTxBuf, W5500TcpServerTxLen);
-                                                        
-                        if (ret == 0)
-                        {
-                            w5500_close(socketNO);
-                        }
-                        W5500TcpServerTxLen = 0;
-                    }
-                    break;
-                                                        
-                case SOCK_CLOSE_WAIT:
-                    W5500TcpServerFlag &= ~LWIP_TCP_SERVER_LINKUP; // TCP server 断开，等待client连接
-                    if ((ret = w5500_disconnect(socketNO)) != W5500_SOCK_OK)
-                    {
-                    }
-                    break;
-
-
-                case SOCK_CLOSED:
-                    W5500TcpServerFlag &= ~LWIP_TCP_SERVER_LINKUP; // TCP server 断开，等待client连接
-                    if ((ret = w5500_socket(socketNO, Sn_MR_TCP, TCP_SERVER_PORT_2404, 0x00)) != socketNO)
-                    {
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
+			default:
+				break;
+		}
     }
 }
 

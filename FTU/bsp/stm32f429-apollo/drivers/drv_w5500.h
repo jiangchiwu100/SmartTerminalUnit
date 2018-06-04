@@ -15,6 +15,9 @@
 #include <stdint.h>
 #include <rtthread.h>
 
+#ifndef SPI_DMA
+#define SPI_DMA
+#endif
 
 /* STRUCT --------------------------------------------------------------------*/	
 struct spi_w5500_device
@@ -59,6 +62,8 @@ typedef struct spi_w5500_device *rt_spi_w5500_device_t;
 
 #define ETH_TIMEOUT_LINKED_STATE           ((uint32_t)5)  
 
+#define Sn_RX_RD0(ch)                   (0x002808 + (ch<<5))
+#define Sn_RX_RD1(ch)                   (0x002908 + (ch<<5))
 
 //----------------------------- W5500 Common Registers IOMAP -----------------------------
 /**
@@ -709,7 +714,7 @@ typedef struct spi_w5500_device *rt_spi_w5500_device_t;
  */
 #define Sn_MR_MACRAW                 0x04
 
-//#define Sn_MR_IPRAW                  0x03     /**< IP LAYER RAW SOCK */
+#define Sn_MR_IPRAW                  0x03     /**< IP LAYER RAW SOCK */
 
 /**
  * @brief UDP

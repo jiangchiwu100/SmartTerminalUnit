@@ -17,6 +17,8 @@
 
 /* DEFINE --------------------------------------------------------------------*/
 #define  TCPSERVER2404_SOCKET0                      0 // 定义SOCKET0用于建立TCP服务端，端口号为2404
+#define  UDPSERVER2404_SOCKET1                      0 // 定义SOCKET0用于建立UDP服务端，端口号为2404
+
 #define  TCP_SERVER_PORT_2404                       2404 // 定义DL/T634.5104规约任务tcp server的端口
 
 #define  TCP_SERVER_2404_RX_BUFSIZE                 (256*14) // 定义tcp server最大接收数据长度

@@ -19,6 +19,7 @@
 #include "calculator.h"
 #include "breaker_interface.h"
 #include "load_switch_interface.h"
+#include "distributed_interface.h"
 #include "other_protect.h"
 #include "common_data.h"
 #include "drv_w5500.h"
@@ -34,6 +35,7 @@
 #include "gui_101_cmd.h"
 #include "hmi_101_disk.h"
 #include "GUIdisplay.h"
+
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
 //static rt_uint8_t rt_thread_system_stack[INIT_THREAD_STACK_SIZE]; 
@@ -80,6 +82,7 @@ static rt_uint8_t rt_thread_dp83848_stack[DP83848_2404_THREAD_STACK_SIZE];
 static struct rt_thread rt_thread_w5500;
 static rt_uint8_t rt_thread_w5500_stack[W5500_2404_THREAD_STACK_SIZE];
 struct rt_semaphore w5500_sem; // w5500 semaphore
+struct rt_event w5500_event; // w5500
 //static struct rt_thread *rt_thread_w5500;
 //static rt_uint8_t *rt_thread_w5500_stack;
 #endif /* END RT_USING_W5500 */
@@ -209,6 +212,8 @@ static void rt_protect_thread_entry(void *param)
 {
     rt_err_t result;
     
+	distributInit();
+	
     BreakerCtrlInit();
 	
     LoadSwitchCtrlInit(); 
@@ -239,7 +244,9 @@ static void rt_protect_thread_entry(void *param)
             {
                 /* 负荷开关主保护逻辑 */ 
                 LoadSwitchCtrlClock();  
-            }	
+            }
+
+            distributClock();			
         }
     }  
 }
@@ -1145,6 +1152,17 @@ int rt_multi_event_init(void)
     } 
   #endif /* RT_USING_WATCH */ 
 
+  #if RT_USING_W5500 	
+    result = rt_event_init(&w5500_event, "w5500", RT_IPC_FLAG_PRIO);
+    
+    if (result != RT_EOK)
+    {
+      #if APP_DEBUG   
+        THREAD_PRINTF("w5500_event rt_event failed.\n");
+      #endif /* APP_DEBUG */  
+    } 		
+  #endif /* RT_USING_W5500 */ 
+	
     return(RT_EOK);    
 }
 INIT_BOARD_EXPORT(rt_multi_event_init);

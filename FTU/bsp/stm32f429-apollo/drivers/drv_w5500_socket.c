@@ -380,243 +380,370 @@ int32_t w5500_recv(uint8_t sn, uint8_t * buf, uint16_t len)
 
 int32_t w5500_sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t port)
 {
-    uint8_t tmp = 0;
-    uint16_t freesize = 0;
-    W5500_CHECK_SOCKNUM();
-    switch (getSn_MR(sn) & 0x0F)
-    {
-        case Sn_MR_UDP:
-        case Sn_MR_MACRAW:
-             break;
-        default:
-             return W5500_SOCKERR_SOCKMODE;
-    }
-    W5500_CHECK_SOCKDATA();
-    //M20140501 : For avoiding fatal error on memory align mismatched
-    //if (*((uint32_t*)addr) == 0) return SOCKERR_IPINVALID;
-    {
-        uint32_t taddr;
-        taddr = ((uint32_t)addr[0]) & 0x000000FF;
-        taddr = (taddr << 8) + ((uint32_t)addr[1] & 0x000000FF);
-        taddr = (taddr << 8) + ((uint32_t)addr[2] & 0x000000FF);
-        taddr = (taddr << 8) + ((uint32_t)addr[3] & 0x000000FF);
-    }
+   uint16_t ret=0;
 
-   if (*((uint32_t*)addr) == 0) 
-	 {
-	     return W5500_SOCKERR_IPINVALID;
-	 }
-   if (port == 0)        
-	 {
-	     return W5500_SOCKERR_PORTZERO;
-	 } 
-   tmp = getSn_SR(sn);
-	 
-   if (tmp != SOCK_MACRAW && tmp != SOCK_UDP)
-	 {
-	     return W5500_SOCKERR_SOCKSTATUS;
-	 }		
-      
-   setSn_DIPR(sn,addr);
-   setSn_DPORT(sn,port);      
-   freesize = getSn_TxMAX(sn);
-   if (len > freesize)
-	 {
-	     len = freesize; // check size not to exceed MAX size.
-	 }		 
-   while(1)
+   if (len > getSn_TxMAX(sn)) 
+   ret = getSn_TxMAX(sn); // check size not to exceed MAX size.
+   else ret = len;
+
+   if( ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) && (addr[3] == 0x00)) || ((port == 0x00)) )//||(ret == 0) )
    {
-       freesize = getSn_TX_FSR(sn);
-       if (getSn_SR(sn) == SOCK_CLOSED)
-			 {
-			     return W5500_SOCKERR_SOCKCLOSED;
-			 }				 
-       if ((sock_io_mode & (1<<sn)) && (len > freesize) )
-			 {
-			     return W5500_SOCK_BUSY;
-			 }				 
-       if (len <= freesize) 
-			 {
-			     break;
-			 }
-   };
-	 wiz_send_data(sn, buf, len);
-
-   #if _WIZCHIP_ == 5200   // for W5200 ARP errata 
-     setSUBR(0);
-   #endif
-
-	 setSn_CR(sn,Sn_CR_SEND);
-	 /* wait to process the command... */
-	 while(getSn_CR(sn));
-   #if _WIZCHIP_ == 5200   // for W5200 ARP errata 
-     setSUBR((uint8_t*)"\x00\x00\x00\x00");
-   #endif
-   while(1)
+      /* added return value */
+      ret = 0;
+   }
+   else
    {
-       tmp = getSn_IR(sn);
-       if (tmp & Sn_IR_SENDOK)
-       {
-           setSn_IR(sn, Sn_IR_SENDOK);
-           break;
-       }
-      //M:20131104
-      //else if(tmp & Sn_IR_TIMEOUT) return SOCKERR_TIMEOUT;
-       else if (tmp & Sn_IR_TIMEOUT)
-       {
-           setSn_IR(sn, Sn_IR_TIMEOUT);
-           return W5500_SOCKERR_TIMEOUT;
-       }
-      ////////////
-    }
-	  return len;
+	   setSn_DIPR(sn,addr);
+	   setSn_DPORT(sn,port); 	   
+      // copy data
+      //send_data_processing(sn, (uint8_t *)buf, ret);
+	  wiz_send_data(sn, buf, len);
+      IINCHIP_WRITE( Sn_CR(sn) ,Sn_CR_SEND);
+      /* wait to process the command... */
+      while( IINCHIP_READ( Sn_CR(sn) ) )
+         ;
+      /* ------- */
+     while( (IINCHIP_READ( Sn_IR(sn) ) & Sn_IR_SENDOK) != Sn_IR_SENDOK )
+     {
+      if (IINCHIP_READ( Sn_IR(sn) ) & Sn_IR_TIMEOUT)
+      {
+            /* clear interrupt */
+      IINCHIP_WRITE( Sn_IR(sn) , (Sn_IR_SENDOK | Sn_IR_TIMEOUT)); /* clear SEND_OK & TIMEOUT */
+      return 0;
+      }
+     }
+      IINCHIP_WRITE( Sn_IR(sn) , Sn_IR_SENDOK);
+   }
+   return ret;	
 }
 
+//int32_t w5500_sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t port)
+//{
+//    uint8_t tmp = 0;
+//    uint16_t freesize = 0;
+//    W5500_CHECK_SOCKNUM();
+//    switch (getSn_MR(sn) & 0x0F)
+//    {
+//        case Sn_MR_UDP:
+//        case Sn_MR_MACRAW:
+//             break;
+//        default:
+//             return W5500_SOCKERR_SOCKMODE;
+//    }
+//    W5500_CHECK_SOCKDATA();
+//    //M20140501 : For avoiding fatal error on memory align mismatched
+//    //if (*((uint32_t*)addr) == 0) return SOCKERR_IPINVALID;
+//    {
+//        uint32_t taddr;
+//        taddr = ((uint32_t)addr[0]) & 0x000000FF;
+//        taddr = (taddr << 8) + ((uint32_t)addr[1] & 0x000000FF);
+//        taddr = (taddr << 8) + ((uint32_t)addr[2] & 0x000000FF);
+//        taddr = (taddr << 8) + ((uint32_t)addr[3] & 0x000000FF);
+//    }
 
+//   if (*((uint32_t*)addr) == 0) 
+//	 {
+//	     return W5500_SOCKERR_IPINVALID;
+//	 }
+//   if (port == 0)        
+//	 {
+//	     return W5500_SOCKERR_PORTZERO;
+//	 } 
+//   tmp = getSn_SR(sn);
+//	 
+//   if (tmp != SOCK_MACRAW && tmp != SOCK_UDP)
+//	 {
+//	     return W5500_SOCKERR_SOCKSTATUS;
+//	 }		
+//      
+//   setSn_DIPR(sn,addr);
+//   setSn_DPORT(sn,port);      
+//   freesize = getSn_TxMAX(sn);
+//   if (len > freesize)
+//	 {
+//	     len = freesize; // check size not to exceed MAX size.
+//	 }		 
+//   while(1)
+//   {
+//       freesize = getSn_TX_FSR(sn);
+//       if (getSn_SR(sn) == SOCK_CLOSED)
+//			 {
+//			     return W5500_SOCKERR_SOCKCLOSED;
+//			 }				 
+//       if ((sock_io_mode & (1<<sn)) && (len > freesize) )
+//			 {
+//			     return W5500_SOCK_BUSY;
+//			 }				 
+//       if (len <= freesize) 
+//			 {
+//			     break;
+//			 }
+//   };
+//	 wiz_send_data(sn, buf, len);
 
+//   #if _WIZCHIP_ == 5200   // for W5200 ARP errata 
+//     setSUBR(0);
+//   #endif
+
+//	 setSn_CR(sn,Sn_CR_SEND);
+//	 /* wait to process the command... */
+//	 while(getSn_CR(sn));
+//   #if _WIZCHIP_ == 5200   // for W5200 ARP errata 
+//     setSUBR((uint8_t*)"\x00\x00\x00\x00");
+//   #endif
+//   while(1)
+//   {
+//       tmp = getSn_IR(sn);
+//       if (tmp & Sn_IR_SENDOK)
+//       {
+//           setSn_IR(sn, Sn_IR_SENDOK);
+//           break;
+//       }
+//      //M:20131104
+//      //else if(tmp & Sn_IR_TIMEOUT) return SOCKERR_TIMEOUT;
+//       else if (tmp & Sn_IR_TIMEOUT)
+//       {
+//           setSn_IR(sn, Sn_IR_TIMEOUT);
+//           return W5500_SOCKERR_TIMEOUT;
+//       }
+//      ////////////
+//    }
+//	  return len;
+//}
+
+/**
+@brief   This function is an application I/F function which is used to receive the data in other then
+   TCP mode. This function is used to receive UDP, IP_RAW and MAC_RAW mode, and handle the header as well.
+
+@return  This function return received data size for success else -1.
+*/
 int32_t w5500_recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t *port)
 {
-    uint8_t  mr;
-    uint8_t  head[8];
-	  uint16_t pack_len=0;
+   uint8_t head[8];
+   uint16_t data_len=0;
+   uint16_t ptr=0;
+   uint32_t addrbsb =0;
+   if ( len > 0 )
+   {
+      ptr     = IINCHIP_READ(Sn_RX_RD0(sn) );
+      ptr     = ((ptr & 0x00ff) << 8) + IINCHIP_READ(Sn_RX_RD1(sn));
+      addrbsb = (uint32_t)(ptr<<8) +  (sn<<5) + 0x18;
+      
+      switch (IINCHIP_READ(Sn_MR(sn) ) & 0x07)
+      {
+      case Sn_MR_UDP :
+        WIZCHIP_READ_BUF(addrbsb, head, 0x08);        
+        ptr += 8;
+        // read peer's IP address, port number.
+        addr[0]  = head[0];
+        addr[1]  = head[1];
+        addr[2]  = head[2];
+        addr[3]  = head[3];
+        *port    = head[4];
+        *port    = (*port << 8) + head[5];
+        data_len = head[6];
+        data_len = (data_len << 8) + head[7];
 
-    W5500_CHECK_SOCKNUM();
-    //CHECK_SOCKMODE(Sn_MR_UDP);
-    switch ((mr=getSn_MR(sn)) & 0x0F)
-    {
-        case Sn_MR_UDP:
-        case Sn_MR_MACRAW:
-             break;
-      #if ( _WIZCHIP_ < 5200 )         
-        case Sn_MR_IPRAW:
-        case Sn_MR_PPPoE:
-             break;
-      #endif
-        default:
-             return W5500_SOCKERR_SOCKMODE;
-    }
-    W5500_CHECK_SOCKDATA();
-    if (sock_remained_size[sn] == 0)
-    {
-        while(1)
+        addrbsb = (uint32_t)(ptr<<8) +  (sn<<5) + 0x18;
+        WIZCHIP_READ_BUF(addrbsb, buf, data_len);                
+        ptr += data_len;
+
+        IINCHIP_WRITE( Sn_RX_RD0(sn), (uint8_t)((ptr & 0xff00) >> 8));
+        IINCHIP_WRITE( Sn_RX_RD1(sn), (uint8_t)(ptr & 0x00ff));
+        break;
+
+      case Sn_MR_IPRAW :
+        WIZCHIP_READ_BUF(addrbsb, head, 0x06);        
+        ptr += 6;
+        addr[0]  = head[0];
+        addr[1]  = head[1];
+        addr[2]  = head[2];
+        addr[3]  = head[3];
+        data_len = head[4];
+        data_len = (data_len << 8) + head[5];
+
+        addrbsb  = (uint32_t)(ptr<<8) +  (sn<<5) + 0x18;
+        WIZCHIP_READ_BUF(addrbsb, buf, data_len);        
+        ptr += data_len;
+
+        IINCHIP_WRITE( Sn_RX_RD0(sn), (uint8_t)((ptr & 0xff00) >> 8));
+        IINCHIP_WRITE( Sn_RX_RD1(sn), (uint8_t)(ptr & 0x00ff));
+        break;
+
+      case Sn_MR_MACRAW :
+        WIZCHIP_READ_BUF(addrbsb, head, 0x02);
+        ptr+=2;
+        data_len = head[0];
+        data_len = (data_len<<8) + head[1] - 2;
+        if(data_len > 1514)
         {
-            pack_len = getSn_RX_RSR(sn);
-            if (getSn_SR(sn) == SOCK_CLOSED)
-						{
-						    return W5500_SOCKERR_SOCKCLOSED;
-						}							
-            if ((sock_io_mode & (1<<sn)) && (pack_len == 0))
-						{
-						    return W5500_SOCK_BUSY;
-						}							
-            if (pack_len != 0) 
-						{
-						    break;
-						}
-        };
-    }
-    sock_pack_info[sn] = W5500_PACK_COMPLETED;
-	  switch (mr & 0x07)
-	  {
-	      case Sn_MR_UDP :
-	          if (sock_remained_size[sn] == 0)
-	          {
-   			        wiz_recv_data(sn, head, 8);
-   			        setSn_CR(sn,Sn_CR_RECV);
-   			        while (getSn_CR(sn));
-   			        // read peer's IP address, port number & packet length
-    			      addr[0] = head[0];
-   			        addr[1] = head[1];
-   			        addr[2] = head[2];
-   			        addr[3] = head[3];
-   			        *port = head[4];
-   			        *port = (*port << 8) + head[5];
-   			        sock_remained_size[sn] = head[6];
-   			        sock_remained_size[sn] = (sock_remained_size[sn] << 8) + head[7];
-   			        sock_pack_info[sn] = W5500_PACK_FIRST;
-   	        }
-			      if (len < sock_remained_size[sn])
-				    {
-				        pack_len = len;
-				    }					
-			      else 
-				    {
-				        pack_len = sock_remained_size[sn];
-				    }
-			      // Need to packet length check (default 1472)
-   		      wiz_recv_data(sn, buf, pack_len); // data copy.
-			      break;
-	      case Sn_MR_MACRAW :
-	          if (sock_remained_size[sn] == 0)
-	          {
-   			        wiz_recv_data(sn, head, 2);
-   			        setSn_CR(sn,Sn_CR_RECV);
-   			        while (getSn_CR(sn));
-   			        // read peer's IP address, port number & packet length
-    			      sock_remained_size[sn] = head[0];
-   			        sock_remained_size[sn] = (sock_remained_size[sn] <<8) + head[1];
-   			        if (sock_remained_size[sn] > 1514) 
-   			        {
-   			            w5500_close(sn);
-   			            return W5500_SOCKFATAL_PACKLEN;
-   			        }
-   			        sock_pack_info[sn] = W5500_PACK_FIRST;
-   	        }
-			      if (len < sock_remained_size[sn])
-						{
-							  pack_len = len;
-						}						
-			      else 
-						{
-						    pack_len = sock_remained_size[sn];
-						}
-			      wiz_recv_data(sn,buf,pack_len);
-		        break;
-      #if ( _WIZCHIP_ < 5200 )
-		    case Sn_MR_IPRAW:
-		        if (sock_remained_size[sn] == 0)
-		        {
-		            wiz_recv_data(sn, head, 6);
-   			        setSn_CR(sn,Sn_CR_RECV);
-   			        while(getSn_CR(sn));
-   			        addr[0] = head[0];
-   			        addr[1] = head[1];
-   			        addr[2] = head[2];
-   			        addr[3] = head[3];
-   			        sock_remained_size[sn] = head[4];
-   			        sock_remaiend_size[sn] = (sock_remained_size[sn] << 8) + head[5];
-   			        sock_pack_info[sn] = PACK_FIRST;
-            }
-			      // Need to packet length check
-			      if (len < sock_remained_size[sn])
-						{
-								pack_len = len;
-						}									
-			      else 
-						{
-								pack_len = sock_remained_size[sn];
-						}
-   		      wiz_recv_data(sn, buf, pack_len); // data copy.
-			      break;
-      #endif
-        default:
-            wiz_recv_ignore(sn, pack_len); // data copy.
-            sock_remained_size[sn] = pack_len;
-            break;
-    }
-	  setSn_CR(sn,Sn_CR_RECV);
-	  /* wait to process the command... */
-	  while (getSn_CR(sn)) ;
-	  sock_remained_size[sn] -= pack_len;
-	  //M20140501 : replace 0x01 with PACK_REMAINED
-	  //if (sock_remained_size[sn] != 0) sock_pack_info[sn] |= 0x01;
-	  if (sock_remained_size[sn] != 0) 
-		{
-		    sock_pack_info[sn] |= W5500_PACK_REMAINED;
-		}
+           //PRINTF("data_len over 1514\r\n");
+           while(1);
+        }
 
-   	return pack_len;
+        addrbsb  = (uint32_t)(ptr<<8) +  (sn<<5) + 0x18;
+        WIZCHIP_READ_BUF(addrbsb, buf, data_len);
+        ptr += data_len;
+
+        IINCHIP_WRITE( Sn_RX_RD0(sn), (uint8_t)((ptr & 0xff00) >> 8));
+        IINCHIP_WRITE( Sn_RX_RD1(sn), (uint8_t)(ptr & 0x00ff));
+        break;
+
+      default :
+            break;
+      }
+      IINCHIP_WRITE( Sn_CR(sn) ,Sn_CR_RECV);
+
+      /* wait to process the command... */
+      while( IINCHIP_READ( Sn_CR(sn)) ) ;
+      /* ------- */
+   }
+   return data_len;
 }
+
+//int32_t w5500_recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t *port)
+//{
+//    uint8_t  mr;
+//    uint8_t  head[8];
+//	  uint16_t pack_len=0;
+
+//    W5500_CHECK_SOCKNUM();
+//    //CHECK_SOCKMODE(Sn_MR_UDP);
+//    switch ((mr=getSn_MR(sn)) & 0x0F)
+//    {
+//        case Sn_MR_UDP:
+//        case Sn_MR_MACRAW:
+//             break;
+//      #if ( _WIZCHIP_ < 5200 )         
+//        case Sn_MR_IPRAW:
+//        case Sn_MR_PPPoE:
+//             break;
+//      #endif
+//        default:
+//             return W5500_SOCKERR_SOCKMODE;
+//    }
+//    W5500_CHECK_SOCKDATA();
+//    if (sock_remained_size[sn] == 0)
+//    {
+//        while(1)
+//        {
+//            pack_len = getSn_RX_RSR(sn);
+//            if (getSn_SR(sn) == SOCK_CLOSED)
+//						{
+//						    return W5500_SOCKERR_SOCKCLOSED;
+//						}							
+//            if ((sock_io_mode & (1<<sn)) && (pack_len == 0))
+//						{
+//						    return W5500_SOCK_BUSY;
+//						}							
+//            if (pack_len != 0) 
+//						{
+//						    break;
+//						}
+//        };
+//    }
+//    sock_pack_info[sn] = W5500_PACK_COMPLETED;
+//	  switch (mr & 0x07)
+//	  {
+//	      case Sn_MR_UDP :
+//	          if (sock_remained_size[sn] == 0)
+//	          {
+//   			        wiz_recv_data(sn, head, 8);
+//   			        setSn_CR(sn,Sn_CR_RECV);
+//   			        while (getSn_CR(sn));
+//   			        // read peer's IP address, port number & packet length
+//    			      addr[0] = head[0];
+//   			        addr[1] = head[1];
+//   			        addr[2] = head[2];
+//   			        addr[3] = head[3];
+//   			        *port = head[4];
+//   			        *port = (*port << 8) + head[5];
+//   			        sock_remained_size[sn] = head[6];
+//   			        sock_remained_size[sn] = (sock_remained_size[sn] << 8) + head[7];
+//   			        sock_pack_info[sn] = W5500_PACK_FIRST;
+//   	        }
+//			      if (len < sock_remained_size[sn])
+//				    {
+//				        pack_len = len;
+//				    }					
+//			      else 
+//				    {
+//				        pack_len = sock_remained_size[sn];
+//				    }
+//			      // Need to packet length check (default 1472)
+//   		      wiz_recv_data(sn, buf, pack_len); // data copy.
+//			      break;
+//	      case Sn_MR_MACRAW :
+//	          if (sock_remained_size[sn] == 0)
+//	          {
+//   			        wiz_recv_data(sn, head, 2);
+//   			        setSn_CR(sn,Sn_CR_RECV);
+//   			        while (getSn_CR(sn));
+//   			        // read peer's IP address, port number & packet length
+//    			      sock_remained_size[sn] = head[0];
+//   			        sock_remained_size[sn] = (sock_remained_size[sn] <<8) + head[1];
+//   			        if (sock_remained_size[sn] > 1514) 
+//   			        {
+//   			            w5500_close(sn);
+//   			            return W5500_SOCKFATAL_PACKLEN;
+//   			        }
+//   			        sock_pack_info[sn] = W5500_PACK_FIRST;
+//   	        }
+//			      if (len < sock_remained_size[sn])
+//						{
+//							  pack_len = len;
+//						}						
+//			      else 
+//						{
+//						    pack_len = sock_remained_size[sn];
+//						}
+//			      wiz_recv_data(sn,buf,pack_len);
+//		        break;
+//      #if ( _WIZCHIP_ < 5200 )
+//		    case Sn_MR_IPRAW:
+//		        if (sock_remained_size[sn] == 0)
+//		        {
+//		            wiz_recv_data(sn, head, 6);
+//   			        setSn_CR(sn,Sn_CR_RECV);
+//   			        while(getSn_CR(sn));
+//   			        addr[0] = head[0];
+//   			        addr[1] = head[1];
+//   			        addr[2] = head[2];
+//   			        addr[3] = head[3];
+//   			        sock_remained_size[sn] = head[4];
+//   			        sock_remaiend_size[sn] = (sock_remained_size[sn] << 8) + head[5];
+//   			        sock_pack_info[sn] = PACK_FIRST;
+//            }
+//			      // Need to packet length check
+//			      if (len < sock_remained_size[sn])
+//						{
+//								pack_len = len;
+//						}									
+//			      else 
+//						{
+//								pack_len = sock_remained_size[sn];
+//						}
+//   		      wiz_recv_data(sn, buf, pack_len); // data copy.
+//			      break;
+//      #endif
+//        default:
+//            wiz_recv_ignore(sn, pack_len); // data copy.
+//            sock_remained_size[sn] = pack_len;
+//            break;
+//    }
+//	  setSn_CR(sn,Sn_CR_RECV);
+//	  /* wait to process the command... */
+//	  while (getSn_CR(sn)) ;
+//	  sock_remained_size[sn] -= pack_len;
+//	  //M20140501 : replace 0x01 with PACK_REMAINED
+//	  //if (sock_remained_size[sn] != 0) sock_pack_info[sn] |= 0x01;
+//	  if (sock_remained_size[sn] != 0) 
+//		{
+//		    sock_pack_info[sn] |= W5500_PACK_REMAINED;
+//		}
+
+//   	return pack_len;
+//}
 
 
 int8_t  w5500_ctlsocket(uint8_t sn, ctlsock_type cstype, void* arg)
