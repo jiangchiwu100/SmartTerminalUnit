@@ -1085,7 +1085,7 @@ int rt_multi_thread_start(void)
 	}	
     ftuidle_thread_start(RT_NULL);     
   #endif /* RT_USING_FTUIDLE */
-    
+  HmiStaticMemoryApply();  
     return(RT_EOK);    
 }
 INIT_APP_EXPORT(rt_multi_thread_start);

@@ -17,10 +17,10 @@
 #include "gui_101_cmd.h"
 #include "hmiInOut.h"
 
+uint8_t *userGUIBuff; /* 用于内存分配 */
 const static uint8_t *modfiyKey[14] = {/* 软按键 */
 	"0","1","2","3","4",".","esc","5","6","7","8","9","<-","ok"};
 static enum KeyStatus keyStatus;	/* 按键值 */
-static uint8_t userGUIBuff[1024*3]; /* 用于内存分配 */
 static struct DZModfiy dZModfiy;	/* 定值修改 */
 static struct Message MessageIs;	/* 消息管理 */
 static struct PassWordPipe passWordPipe;		/* 密码管理 */

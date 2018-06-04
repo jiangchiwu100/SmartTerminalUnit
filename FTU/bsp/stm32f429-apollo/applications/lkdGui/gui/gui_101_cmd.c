@@ -21,8 +21,8 @@
 /* hmi101线程使用 */
 #define HMI101_STACKSIZE 2048
 #define HMI101_THREADPRIORITY 24
-static struct rt_thread Hmi101Thread;
-static rt_uint8_t Hmi101Threadstack[HMI101_STACKSIZE];
+static rt_thread_t Hmi101Thread;
+static rt_uint8_t *Hmi101Threadstack;
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
@@ -655,7 +655,7 @@ void HmiThreadDelete(void)
 	time_static_detach();
 	if (result != RT_EOK){  
 	}
-	result = rt_thread_detach(&Hmi101Thread);
+	result = rt_thread_detach(Hmi101Thread);
 	if (result != RT_EOK){  
 	}
 }
@@ -675,13 +675,25 @@ void Hmi101Init(void)
 	}
 	if(flag == 0){
 		rt_kprintf("\r\n面板线程");
-		result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
+		result = rt_thread_init(Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
 			RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
 		if(result == RT_EOK){
-			rt_thread_startup(&Hmi101Thread);
+			rt_thread_startup(Hmi101Thread);
 			flag = 1;
 		}
 	}
 }
 
+/**
+  *@brief Hmi线程等全局buff申请
+  *@param  None
+  *@retval None
+  */
+void HmiStaticMemoryApply(void)
+{
+	Hmi101Thread = (rt_thread_t)rt_malloc(sizeof(struct rt_thread));
+	Hmi101Threadstack = (rt_uint8_t *)rt_malloc(HMI101_STACKSIZE);
+	userGUIBuff = (uint8_t *)rt_malloc(1024*4);
+	cmd101.packBuff = (uint8_t *)rt_malloc(PACKBUFFMAX);
+}
 /* END */

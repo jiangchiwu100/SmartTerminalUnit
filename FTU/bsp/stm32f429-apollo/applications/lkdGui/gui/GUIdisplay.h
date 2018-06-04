@@ -92,6 +92,9 @@ enum RunStepType{
 	STEP_MAINMENU,
 	STEP_ALLNUM,
 };
+
+extern uint8_t *userGUIBuff;
+
 /* 首页界面窗口 */
 static void HomeWindowFun(void);
 /* 菜单窗口 */
