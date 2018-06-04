@@ -37,6 +37,8 @@ enum UserKeyNomberMap{
 	SW_PROTECT = 53,
 	SW_CONTACT = 54,
 	SW_SECTION = 55,
+	SW_FA = 56,
+	SW_LSCB = 57,
 };
 /* °´¼üÃ¶¾Ù */
 enum KeyStatus{

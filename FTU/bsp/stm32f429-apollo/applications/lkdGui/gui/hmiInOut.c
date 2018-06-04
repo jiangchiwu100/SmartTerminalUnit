@@ -153,22 +153,24 @@ void SwitchResult(uint8_t switchNo, uint8_t state)
 		switch(switchNo){
 			/* 他俩为一个点 统一放在有效状态处理 */
 			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.earth, OFF);break;
-			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.earth, OFF);break;
+			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remote, OFF);break;
 			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, OFF);break;
 			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, OFF);break;
 			/* 他俩为一个点 统一放在有效状态处理 */
 //			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
 //			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
+			case SW_LSCB:DBWriteSOE(g_TelesignalAddr.swtichclass, OFF);break;
 		}
 	}
 	else{
 		switch(switchNo){
-			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.remote, ON);break;
-			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.earth, ON);break;
+			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.earth, ON);break;
+			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remote, ON);break;
 			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, ON);break;
 			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, ON);break;
 			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
 			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
+			case SW_LSCB:DBWriteSOE(g_TelesignalAddr.swtichclass, ON);break;
 		}
 	}
 }
@@ -195,7 +197,8 @@ void KeyCmdResult(uint8_t keyNo, uint8_t state)
 		case SW_RECLOSE:
 		case SW_PROTECT:
 		case SW_CONTACT:
-		case SW_SECTION:SwitchResult(keyNo,state);break;
+		case SW_SECTION:
+		case SW_LSCB:SwitchResult(keyNo,state);break;
 	}
 }
 

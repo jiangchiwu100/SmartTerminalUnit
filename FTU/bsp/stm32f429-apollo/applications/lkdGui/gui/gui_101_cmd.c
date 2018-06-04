@@ -696,4 +696,5 @@ void HmiStaticMemoryApply(void)
 	userGUIBuff = (uint8_t *)rt_malloc(1024*4);
 	cmd101.packBuff = (uint8_t *)rt_malloc(PACKBUFFMAX);
 }
+
 /* END */
