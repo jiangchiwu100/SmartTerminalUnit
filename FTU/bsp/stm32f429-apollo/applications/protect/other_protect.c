@@ -414,21 +414,21 @@ static void TelemetryAbnormalCheck(void)
     DownVoltageCheck(&DownVoltageUBC);	
     DownVoltageCheck(&DownFrequency);
     	
-    /* 电池欠压 */
-    if (g_pFixedValue[BATTERY_LOWVOLTAGE_ALARM_SWITCH])
-    {
-        if (g_TelemetryDB[g_TelemetryAddr.DC1] < g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] && g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == OFF)
-        {
-            DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, ON);
-        }
-        else if (g_TelemetryDB[g_TelemetryAddr.DC1] >= g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] * g_pFixedValue[BATTERY_LOWVOLTAGE_FACTOR])
-        {
-            if (g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == ON)
-            {
-                DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, OFF);
-            }
-        }
-    }
+//    /* 电池欠压 */
+//    if (g_pFixedValue[BATTERY_LOWVOLTAGE_ALARM_SWITCH])
+//    {
+//        if (g_TelemetryDB[g_TelemetryAddr.DC1] < g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] && g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == OFF)
+//        {
+//            DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, ON);
+//        }
+//        else if (g_TelemetryDB[g_TelemetryAddr.DC1] >= g_pFixedValue[BATTERY_LOWVOLTAGE_VALUE] * g_pFixedValue[BATTERY_LOWVOLTAGE_FACTOR])
+//        {
+//            if (g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm] == ON)
+//            {
+//                DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm, OFF);
+//            }
+//        }
+//    }
     /* 永磁机构电容欠压 */
     if (g_Parameter[OPERATING_MECHANISM] == MAGNET) // 永磁机构电容欠压
     {

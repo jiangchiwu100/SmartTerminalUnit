@@ -781,9 +781,9 @@ enum AddrFixedValue
 	OVERLOAD_FACTOR,                     // 过负荷返回系数		
 	OVERLOAD_TIME,	                     // 过负荷延时
     BATTERY_LOWVOLTAGE_ALARM_SWITCH,     // 蓄电池低压报警投退	
-	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
-	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
-	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
+//	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
+//	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
+//	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
     BATTERY_ACTIVE_SWITCH,               // 电池活化投退
     BATTERY_ACTIVE_CYCLE,                // 电池活化周期(天)
     BATTERY_ACTIVE_TIME,                 // 电池活化时间(h)

@@ -162,8 +162,34 @@ void rt_hw_di_check_task(rt_uint8_t clock)
             if (g_DiCollect.counter[i] >= s_shaking_time)
             {
                 g_DiCollect.counter[i] = 0;
-
-                DBWriteSOE(i, ((g_DiCollect.state >> i) & 0x01) ? OFF : ON);				
+                
+                switch(i)
+                {
+                    case 0:
+                        DBWriteSOE(g_TelesignalAddr.switchOpen,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;
+                    case 1:
+                        DBWriteSOE(g_TelesignalAddr.switchClose,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;   
+                    case 2:
+                        DBWriteSOE(g_TelesignalAddr.operatingMechanism,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;         
+                    case 3:
+                        DBWriteSOE(g_TelesignalAddr.lowPressure,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;  
+                    case 4:
+                        DBWriteSOE(g_TelesignalAddr.powerFaultAlarm,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;      
+                    case 5:
+                        DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;      
+                    case 6:
+                        DBWriteSOE(g_TelesignalAddr.batteryActivationStatus,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;  
+                    case 7:
+                        DBWriteSOE(g_TelesignalAddr.batteryLossAlarm,((g_DiCollect.state >> i) & 0x01) ? OFF : ON);
+                        break;                     
+                }			
 				
                 g_DiCollect.stateLast ^= (0x01 << i);
             }
