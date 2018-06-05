@@ -923,7 +923,7 @@ uint8_t DB_NVA_Check(void)
     static uint16_t s_Counter;
 
     s_Counter++;
-    if (s_Counter > 1000)
+    if (s_Counter > 100)
     {
         s_Counter = 0;
         
@@ -931,7 +931,7 @@ uint8_t DB_NVA_Check(void)
         {
             if(((TelemetryCfg[i].menuNum == SECONDRY)||(TelemetryCfg[i].menuNum == ONCE))&&(TelemetryCfg[i].pDeadzone != NULL))
             {
-                if (fabsf(*(TelemetryCfg[i].pVal) - g_TelemetryLastDB[i]) > *(TelemetryCfg[i].pDeadzone)*TelemetryCfg[i].RatedValue)
+                if (fabsf(*(TelemetryCfg[i].pVal) - g_TelemetryLastDB[i]) > *(TelemetryCfg[i].pDeadzone)*TelemetryCfg[i].RatedValue/100)
                 {
                     g_NVADB[g_NVADBIn].addr = TELEMETRY_START_ADDR + i;
                     g_NVADB[g_NVADBIn].value = g_TelemetryDB[i];
@@ -1545,6 +1545,24 @@ void rt_multi_common_data_read_config_from_fram(void)
     /* 读取记忆数据 */
     //FM25VxxReadData(ADDR_FRAM_MEMORY, NULL, (uint8_t *)&g_FlagDB, sizeof(g_FlagDB));	
     rt_multi_common_data_fram_record_read(MEMORY_FLAG, (uint8_t *)&g_FlagDB);
+
+    for(i=0;i<DEV_MAX_NUM;i++)
+    {
+        if(((g_FlagDB.queue_co.out[i] >= COS_MAX_NUM)||(g_FlagDB.queue_co.in >= COS_MAX_NUM))||\
+           ((g_FlagDB.queue_soe.out[i] >= SOE_MAX_NUM)||(g_FlagDB.queue_soe.in >= SOE_MAX_NUM))||\
+            ((g_FlagDB.queue_soe_new.out[i] >= SOE_NEW_MAX_NUM)||(g_FlagDB.queue_soe_new.in >= SOE_NEW_MAX_NUM))||\
+        ((g_FlagDB.queue_co.out[i] >= CO_MAX_NUM)||(g_FlagDB.queue_co.in >= CO_MAX_NUM))||\
+        ((g_FlagDB.queue_fevent.out[i] >= FEVENT_MAX_NUM)||(g_FlagDB.queue_fevent.in >= FEVENT_MAX_NUM))||\
+        ((g_FlagDB.queue_ulog.out[i] >= FEVENT_MAX_NUM)||(g_FlagDB.queue_ulog.in >= FEVENT_MAX_NUM)))
+        {
+            memset(&g_FlagDB.queue_co,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.queue_soe,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.queue_soe_new,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.queue_co,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.queue_fevent,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.queue_ulog,0,sizeof(g_FlagDB.fatfs_co));
+        }
+    }
 		
     /* 读取配置文件 */
     //FM25VxxReadData(ADDR_FRAM_CONFIG, NULL, (uint8_t *)&, sizeof(struct ConfigurationSetDatabase));

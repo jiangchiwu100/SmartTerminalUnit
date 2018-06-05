@@ -1387,7 +1387,20 @@ void file_operate_Init(void)
 //    if (dfs_mount("W25Q256FV", "/sojo", "elm", 0, 0) == 0)
     if (dfs_mount(RT_SPI_FLASH_NAME, "/sojo", "elm", 0, 0) == 0)
     {  
-        FILE_PRINTF("spi flash mount to /spi !\n");        
+        FILE_PRINTF("spi flash mount to /spi !\n");
+        
+        if(((g_FlagDB.fatfs_soe.currentnum >= SOE_FILE_MAXNUM)||(g_FlagDB.fatfs_soe.fullnum >= SOE_FILE_MAXNUM))||\
+           ((g_FlagDB.fatfs_co.currentnum >= CO_FILE_MAXNUM)||(g_FlagDB.fatfs_co.fullnum >= CO_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_fevent.currentnum >= FEVENT_FILE_MAXNUM)||(g_FlagDB.fatfs_fevent.fullnum >= FEVENT_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_ulog.currentnum >= ULOG_FILE_MAXNUM)||(g_FlagDB.fatfs_ulog.fullnum >= ULOG_FILE_MAXNUM)))
+        {
+            memset(&g_FlagDB.fatfs_soe,0,sizeof(g_FlagDB.fatfs_soe));
+            memset(&g_FlagDB.fatfs_co,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.fatfs_fevent,0,sizeof(g_FlagDB.fatfs_fevent));
+            memset(&g_FlagDB.fatfs_ulog,0,sizeof(g_FlagDB.fatfs_ulog));
+            file_operate_Format(); 
+            FILE_PRINTF("spi flash mount to /spi restart!\n");  
+        }
     }
     else
     {

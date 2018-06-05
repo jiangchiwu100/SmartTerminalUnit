@@ -92,7 +92,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	if(keyNo == YK_OPENSWITCH){
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[g_TelesignalAddr.remote] != ON){//∑÷’¢
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){//∑÷’¢
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}
 		}
@@ -100,7 +100,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	else if(keyNo == YK_CLOSESWITCH){//∫œ’¢
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[g_TelesignalAddr.remote] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}
 		}
