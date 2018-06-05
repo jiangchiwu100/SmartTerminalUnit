@@ -851,7 +851,7 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     for (i = 0; i < yc_num; i++)
     {
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i] - TELEMETRY_START_ADDR];         
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i]];         
     }
 
     if (++g_FlagDB.queue_fevent.in >= FEVENT_MAX_NUM)
@@ -1754,7 +1754,15 @@ void rt_multi_common_data_config(void)
     }	
     
     //遥信配置  
-    g_NewMaxNumTelesignal = g_ConfigurationSetDB->YXSetNum;//新点表总数
+    for(i=0,temp1=0,g_NewMaxNumTelesignal=0;i<g_ConfigurationSetDB->YXSetNum;i++)//取消最后一行空行//新点表总数
+    {
+        if(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM)
+        {
+            g_NewMaxNumTelesignal = i+1;
+        }
+        temp1 += (g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM) + 1;
+    }
+
     for(i=0,temp1=0,temp2=0,value=0;i<g_NewMaxNumTelesignal;i++)//原点表内添加地址和初始遥信
     {
         for(j=0,value=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)

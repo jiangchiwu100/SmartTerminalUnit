@@ -1263,6 +1263,30 @@ static void MenuM0S4S0Fun(void)
 		}
 	}
 }
+
+/**
+  *@brief MenuM0S4S8 其他查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S4S8Fun(void)
+{
+    switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM0S4S8.currentItem){
+		case 0:userGUIWindowAdd(&RingUniteWin);break;//合环
+		case 1:userGUIWindowAdd(&BreakDownWin);break;//故障投退
+		default:break;
+		}
+	}
+}
+    
 /**
   *@brief MenuM1S0 deal with function 保护功能
   *@param  None

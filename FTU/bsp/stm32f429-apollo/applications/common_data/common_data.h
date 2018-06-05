@@ -283,15 +283,6 @@ enum DoOperateType
     DO_COIL_ENERGY_STORAGE,            // 线圈储能
     DO_ALARM_LED,                      // 告警灯
 };
-/* 遥控操作动作类型 */
-enum ActReasion
-{
-    HANDHELD = 1,              // 手持遥控
-    LOCAL,                     // 本地操作
-    DISTANCE,                  // 远方
-    LOGIC_ACT,                 // 逻辑动作
-    OTHER                      // 其他
-};
 
 enum Frequency
 {

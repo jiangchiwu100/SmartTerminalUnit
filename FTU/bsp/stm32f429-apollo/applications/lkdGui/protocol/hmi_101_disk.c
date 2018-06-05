@@ -33,14 +33,14 @@ static rt_device_t dev[_DLT634_HMISLAVE_VOLUMES];
 uint16_t DLT634_HMI_SLAVE_ReadData(uint8_t pdrv, uint8_t *pbuf, uint16_t count)
 { 
     uint16_t len = 0;
-	  uint16_t i = 0;  
+//	  uint16_t i = 0;  
     
     len = rt_device_read(dev[pdrv],0,pbuf,count);
-	if(len){
-		rt_kprintf("\r\n--KMI  ");
-	}
-		for(i=0;i<len;i++)
-			rt_kprintf("%02X ",pbuf[i]);
+//	if(len){
+//		rt_kprintf("\r\n--KMI  ");
+//	}
+//		for(i=0;i<len;i++)
+//			rt_kprintf("%02X ",pbuf[i]);
     
 	return(len);
 }
