@@ -598,7 +598,7 @@ void CalibrationFactorCal(uint8_t num)
         {
             if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
             {
-                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;                
+                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;   
                 telemetry[offset] += g_TelemetryDB[*CalibrateFactorCfg[offset].pAddr];
                 counter[offset]++;
 
@@ -606,14 +606,14 @@ void CalibrationFactorCal(uint8_t num)
                 {
                     counter[offset] = 0;
                     telemetry[offset] /= (float)AVERAGE_TIMER;
-
-                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - sizeof(g_Alpha)/sizeof(float))
+                    
+                    if(CalibrateFactorCfg[offset].dataType == 0)
                     {
-						*CalibrateFactorCfg[offset].factorVal -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - g_ValueParaPresetDB.property[i].addr)]);
+                        *CalibrateFactorCfg[offset].factorVal *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);
                     }
                     else
                     {
-                        *CalibrateFactorCfg[offset].factorVal *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
+                        *CalibrateFactorCfg[offset].factorVal -= g_ValueParaPresetDB.value[i] - telemetry[offset];
                     }
 					
                     g_ValueParaOperateInfo.num = 0;
@@ -1079,22 +1079,22 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
     case DB_SN0:
         len = sizeof(g_Parameter);
         addr = ADDR_FRAM_AREA0;
-        pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
+        pInfo = g_Parameter;
         break;
     case DB_SN1:
         len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue1;
         break;
     case DB_SN2:
         len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue2;
         break;
     case DB_CALI:
         len = sizeof(g_CalibrateFactor);
         addr = ADDR_FRAM_CALI_FACTOR;
-        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        pInfo = g_CalibrateFactor;
         break;	
     default:
         break;
@@ -1120,22 +1120,22 @@ void rt_multi_common_data_get_value_from_fram(uint8_t sn)
     case DB_SN0:
         len = sizeof(g_Parameter);
         addr = ADDR_FRAM_AREA0;
-        pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
+        pInfo = g_Parameter;
         break;
     case DB_SN1: 
         len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue1;
         break;
     case DB_SN2:
         len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue2;
         break;
     case DB_CALI:
         len = sizeof(g_CalibrateFactor);
         addr = ADDR_FRAM_CALI_FACTOR;
-        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        pInfo = g_CalibrateFactor;
         break;	    
     default:
         break;
