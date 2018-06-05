@@ -210,32 +210,32 @@ struct tagInherentParaCfg InherentParaCfg[] =
 /* 校准系数 */
 struct tagCalibrateFactor CalibrateFactorCfg[] = 
 {
-//   使能          名称                  校准值	          点号                             系数值                            系数上限值       系数下限值      系数缺省值
-    { 1,    "频率(f)校准系数",           50.00f,   &g_TelemetryAddr.F,                &g_CalibrateFactor[CALIFACTOR_F],          1.2f,            0.8f,           1.0f},
-    { 1,    "A相电流(Ia)校准系数",       5.00f,    &g_TelemetryAddr.Ia,               &g_CalibrateFactor[CALIFACTOR_Ia],         0.005f,         0.0035f,         0.00432f},
-    { 1,    "B相电流(Ib)校准系数",       5.00f,    &g_TelemetryAddr.Ib,               &g_CalibrateFactor[CALIFACTOR_Ib],         0.005f,         0.0035f,         0.00432},
-    { 1,    "C相电流(Ic)校准系数",       5.00f,    &g_TelemetryAddr.Ic,               &g_CalibrateFactor[CALIFACTOR_Ic],         0.005f,         0.0035f,         0.00432f},
+//   使能          名称                  校准值	          点号                             系数值                         数据类型   系数上限值       系数下限值      系数缺省值
+    { 1,    "频率(f)校准系数",           50.00f,   &g_TelemetryAddr.F,                &g_CalibrateFactor[CALIFACTOR_F],      0,    1.2f,            0.8f,           1.0f},
+    { 1,    "A相电流(Ia)校准系数",       5.00f,    &g_TelemetryAddr.Ia,               &g_CalibrateFactor[CALIFACTOR_Ia],     0,    0.005f,         0.0035f,         0.00432f},
+    { 1,    "B相电流(Ib)校准系数",       5.00f,    &g_TelemetryAddr.Ib,               &g_CalibrateFactor[CALIFACTOR_Ib],     0,    0.005f,         0.0035f,         0.00432},
+    { 1,    "C相电流(Ic)校准系数",       5.00f,    &g_TelemetryAddr.Ic,               &g_CalibrateFactor[CALIFACTOR_Ic],     0,    0.005f,         0.0035f,         0.00432f},
   #ifdef SYNTHESIS_I0_ENABLE
-    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],         0.005f,         0.0035f,         0.00432f},
+    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],     0,    0.005f,         0.0035f,         0.00432f},
   #else		
-    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],         0.001f,         0.0004f,         0.000866f}, 
+    { 1,    "零序电流(I0)校准系数",      1.00f,    &g_TelemetryAddr.I0,               &g_CalibrateFactor[CALIFACTOR_I0],     0,    0.001f,         0.0004f,         0.000866f}, 
   #endif		
-    { 1,    "线电压(Uab)校准系数",       100.00f,  &g_TelemetryAddr.Uab,              &g_CalibrateFactor[CALIFACTOR_Uab],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(Ucb)校准系数",       100.00f,  &g_TelemetryAddr.Ucb,              &g_CalibrateFactor[CALIFACTOR_Ucb],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(Uac)校准系数",       100.00f,  &g_TelemetryAddr.Uac,              &g_CalibrateFactor[CALIFACTOR_Uac],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(U0)校准系数",        50.00f,   &g_TelemetryAddr.U0,               &g_CalibrateFactor[CALIFACTOR_U0],         0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(UAB)校准系数",       100.00f,  &g_TelemetryAddr.UAB,              &g_CalibrateFactor[CALIFACTOR_UAB],        0.02f,          0.0065f,         0.0095f},
-    { 1,    "线电压(UCB)校准系数",       100.00f,  &g_TelemetryAddr.UCB,              &g_CalibrateFactor[CALIFACTOR_UCB],        0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(Uab)校准系数",       100.00f,  &g_TelemetryAddr.Uab,              &g_CalibrateFactor[CALIFACTOR_Uab],    0,    0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(Ucb)校准系数",       100.00f,  &g_TelemetryAddr.Ucb,              &g_CalibrateFactor[CALIFACTOR_Ucb],    0,    0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(Uac)校准系数",       100.00f,  &g_TelemetryAddr.Uac,              &g_CalibrateFactor[CALIFACTOR_Uac],    0,    0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(U0)校准系数",        50.00f,   &g_TelemetryAddr.U0,               &g_CalibrateFactor[CALIFACTOR_U0],     0,    0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(UAB)校准系数",       100.00f,  &g_TelemetryAddr.UAB,              &g_CalibrateFactor[CALIFACTOR_UAB],    0,    0.02f,          0.0065f,         0.0095f},
+    { 1,    "线电压(UCB)校准系数",       100.00f,  &g_TelemetryAddr.UCB,              &g_CalibrateFactor[CALIFACTOR_UCB],    0,    0.02f,          0.0065f,         0.0095f},
 
-    { 1,    "直流电压1校准系数",         24,       &g_TelemetryAddr.DC1,              &g_CalibrateFactor[CALIFACTOR_DC1],        0.05f,          0.0001f,         0.0013745f},
-    { 1,    "直流电压2校准系数",         24,       &g_TelemetryAddr.DC2,              &g_CalibrateFactor[CALIFACTOR_DC2],        0.05f,          0.0001f,         0.0013745f},
-    { 1,    "温度校准系数",              0,        &g_TelemetryAddr.T,                &g_CalibrateFactor[CALIFACTOR_T],          2.0f,           0.0001f,         1.0f},
+    { 1,    "直流电压1校准系数",         24,       &g_TelemetryAddr.DC1,              &g_CalibrateFactor[CALIFACTOR_DC1],    0,    0.05f,          0.0001f,         0.0013745f},
+    { 1,    "直流电压2校准系数",         24,       &g_TelemetryAddr.DC2,              &g_CalibrateFactor[CALIFACTOR_DC2],    0,    0.05f,          0.0001f,         0.0013745f},
+    { 1,    "温度校准系数",              0,        &g_TelemetryAddr.T,                &g_CalibrateFactor[CALIFACTOR_T],      0,    2.0f,           0.0001f,         1.0f},
 	
-    { 1,    "Uab_Ia夹角校准系数",        0,        &g_TelemetryAddr.alphy_Uab_Ia,     &g_CalibrateFactor[CALIFACTOR_ALPHA_UabIa], 0.5f,           0.29f,           0.01f},
-    { 1,    "Ucb_Ic夹角校准系数",        0,        &g_TelemetryAddr.alphy_Ucb_Ic,     &g_CalibrateFactor[CALIFACTOR_ALPHA_UcbIc], 0.5f,           0.29f,           0.01f},
-    { 1,    "U0_I0夹角校准系数",         0,        &g_TelemetryAddr.alphy_U0_I0,      &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0],  0.5f,           0.29f,           0.01f},
-    { 1,    "Ux_Ux夹角校准系数",         0,        &g_TelemetryAddr.alphy_Ux_Ux,      &g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx],  0.5f,           0.29f,           0.01f},	
-    { 1,    "频率(f2)校准系数",          50.00f,   &g_TelemetryAddr.F2,               &g_CalibrateFactor[CALIFACTOR_F2],          1.2f,            0.8f,           1.0f},	
+    { 1,    "Uab_Ia夹角校准系数",        0,        &g_TelemetryAddr.alphy_Uab_Ia,     &g_CalibrateFactor[CALIFACTOR_ALPHA_UabIa],     1,    0.6f,           0.2f,           0.359226197f},
+    { 1,    "Ucb_Ic夹角校准系数",        0,        &g_TelemetryAddr.alphy_Ucb_Ic,     &g_CalibrateFactor[CALIFACTOR_ALPHA_UcbIc],     1,    0.6f,           0.2f,           0.416621923f},
+    { 1,    "U0_I0夹角校准系数",         0,        &g_TelemetryAddr.alphy_U0_I0,      &g_CalibrateFactor[CALIFACTOR_ALPHA_U0I0],      1,    0.6f,           0.2f,           0.32171011f},
+    { 1,    "Ux_Ux夹角校准系数",         0,        &g_TelemetryAddr.alphy_Ux_Ux,      &g_CalibrateFactor[CALIFACTOR_ALPHA_UxUx],      1,    0.2f,           -0.2f,          0.0502243042f},	
+    { 1,    "频率(f2)校准系数",          50.00f,   &g_TelemetryAddr.F2,               &g_CalibrateFactor[CALIFACTOR_F2],      0,    1.2f,            0.8f,           1.0f},	
 };
 
 

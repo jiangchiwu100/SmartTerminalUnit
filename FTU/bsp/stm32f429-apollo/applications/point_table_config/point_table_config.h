@@ -101,7 +101,8 @@ struct tagCalibrateFactor
     char *pName;           // 名称
     float calibrateVal;    // 校准值
     unsigned short *pAddr;  // 点号
-    float *factorVal;      // 系数值	
+    float *factorVal;      // 系数值
+    unsigned char dataType; // 数据类型
     float factorMax;	   // 系数上限值	
     float factorMin;       // 系数下限值
     float factorDefault;   // 系数缺省值	
