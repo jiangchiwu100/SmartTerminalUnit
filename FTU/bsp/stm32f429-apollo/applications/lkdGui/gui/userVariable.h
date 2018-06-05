@@ -86,7 +86,6 @@ enum Dzhi1OffsetNumber{
 	DZ1_HEAVY_LOAD,		/* 重过载 */
 	DZ1_OVERLOAD,			/* 过负荷 */
 	DZ1_IBATTERY_SET,	/* 电池设置 */
-	DZ1_AUTO_RESET,		/* 自动复归 */
 	DZ1_LIMIT_V_F,		/* 越压越频 */
 	DZ1_LOOP_CLOSE,		/* 合环 */
 	DZ1_FAULT_SWITCH,	/* 故障投退 */

@@ -633,7 +633,6 @@ static void Hmi101ThreadEntity(void *param)
 	userVariableDisplayInit();
 	GUIDisplayInit();
 	HmiInOutInit();
-	rt_kprintf("\r\n面板初始化完成");
 	for (;;){ 				
 		GUIDisplayMian();
 		LedChangeCheck();
@@ -653,8 +652,6 @@ void HmiThreadDelete(void)
 	if (result != RT_EOK){  
 	}
 	time_static_detach();
-	if (result != RT_EOK){  
-	}
 	result = rt_thread_detach(Hmi101Thread);
 	if (result != RT_EOK){  
 	}
@@ -668,13 +665,19 @@ void HmiThreadDelete(void)
 void Hmi101Init(void)
 {
 	rt_err_t result;
-	static uint8_t flag;
+	static uint8_t flag,mallocFlag;
 	if(flag == 1){
 		HmiThreadDelete();
 		flag = 0;
 	}
 	if(flag == 0){
-		rt_kprintf("\r\n面板线程");
+		if(mallocFlag == 0){//只在上电时分配一次
+			Hmi101Thread = (rt_thread_t)rt_malloc(sizeof(struct rt_thread));
+			Hmi101Threadstack = (rt_uint8_t *)rt_malloc(HMI101_STACKSIZE);
+			userGUIBuff = (uint8_t *)rt_malloc(1024*4);
+			cmd101.packBuff = (uint8_t *)rt_malloc(PACKBUFFMAX);
+			mallocFlag = 1;
+		}
 		result = rt_thread_init(Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
 			RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
 		if(result == RT_EOK){
@@ -691,10 +694,7 @@ void Hmi101Init(void)
   */
 void HmiStaticMemoryApply(void)
 {
-	Hmi101Thread = (rt_thread_t)rt_malloc(sizeof(struct rt_thread));
-	Hmi101Threadstack = (rt_uint8_t *)rt_malloc(HMI101_STACKSIZE);
-	userGUIBuff = (uint8_t *)rt_malloc(1024*4);
-	cmd101.packBuff = (uint8_t *)rt_malloc(PACKBUFFMAX);
+	
 }
 
 /* END */

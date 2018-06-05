@@ -126,7 +126,6 @@ static void MenuM1Fun(void);
 	static void OverLoadFun(void);		//过负荷
 	static void OverVoltageFun(void);	//过电压
 	static void BatterySetFun(void);	//电池设置
-	static void AutoResetFun(void);		//自动复归
 	static void MenuM1S8Fun(void);		//其他
 		static void RingUniteFun(void); //合环
 		static void BreakDownFun(void); //故障投退

@@ -58,10 +58,10 @@ static void UserCommunLed(void)
 	static uint32_t communLedCount=0;
 	static uint16_t communLedCount2=500;
 	static uint8_t ledCountStep = 0;
-	if(userLedNoStatus[USERLED_COMMUN] == 0 && ledCountStep != 0){
+	if(userLedNoStatus[USERLED_COMMUN] == USERLED_OFF && ledCountStep != 0){
 		ledCountStep = 0;
 	}
-	else if(userLedNoStatus[USERLED_COMMUN] == 1 && ledCountStep == 0){
+	else if(userLedNoStatus[USERLED_COMMUN] == USERLED_ON && ledCountStep == 0){
 		ledCountStep = 1;
 		communLedCount = GetTimer1Tick();
 	}
@@ -94,13 +94,13 @@ void SetUserLedStatus(uint8_t ledNo, uint8_t state)
 	if(ledNo < USERLED_NUMALL){
 		switch(state){
 			case USERLED_OFF:
-				if(GetLedStatus(userLedNoTab[ledNo]) == LEDON){
-					userLedNoStatus[ledNo] = 1;
+				if(userLedNoStatus[ledNo] == USERLED_ON || GetLedStatus(userLedNoTab[ledNo]) == LEDON){
+					userLedNoStatus[ledNo] = USERLED_OFF;
 					SetLedState(userLedNoTab[ledNo], LEDOFF);
 				}break;
 			case USERLED_ON:
-				if(GetLedStatus(userLedNoTab[ledNo]) == LEDOFF){
-					userLedNoStatus[ledNo] = 0;
+				if(userLedNoStatus[ledNo] == USERLED_OFF || GetLedStatus(userLedNoTab[ledNo]) == LEDOFF){
+					userLedNoStatus[ledNo] = USERLED_ON;
 					SetLedState(userLedNoTab[ledNo], LEDON);
 				}break;
 			default:break;

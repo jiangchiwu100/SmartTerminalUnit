@@ -735,6 +735,13 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 	uint16_t memMall;//用于内存分配
 	float tempFloat;
 	if(*flag == 0){//初始化
+		if(info->num == 0){//如果没有Item,直接退出
+			*flag = 0;
+			userGUITopWindowHide();
+			userGUITopWindowRedraw();
+			userGUIMenuRedraw();
+			return;
+		}
 		itemsNum = info->num;
 		memMall = 0;
 		list = (LIST  *)&userGUIBuff[memMall];
@@ -1105,8 +1112,7 @@ static void MenuM1Fun(void)
 		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
 		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
 		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
-		case 8:userGUIMenuAdd(&MenuM1S8);break;//其他设置
+		case 7:userGUIMenuAdd(&MenuM1S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1197,8 +1203,7 @@ static void MenuM0S4Fun(void)
 		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
 		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
 		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
-		case 8:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
+		case 7:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1606,16 +1611,6 @@ static void OverVoltageFun(void)
 static void BatterySetFun(void)
 {
 	DZModfiyDisplay(&dzhi1Info[DZ1_IBATTERY_SET],&stepTab[STEP_NORMAL]);
-}
-
-/**
-  *@brief 自动复归
-  *@param  None
-  *@retval None
-  */
-static void AutoResetFun(void)
-{
-	DZModfiyDisplay(&dzhi1Info[DZ1_AUTO_RESET],&stepTab[STEP_NORMAL]);
 }
 
 /**

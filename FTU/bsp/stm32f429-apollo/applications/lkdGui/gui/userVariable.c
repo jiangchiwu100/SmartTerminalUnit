@@ -214,6 +214,9 @@ static void Dzhi0DisplayInit(void)
 			dzhiItem ++;
 		}
 		dzhi0Info[i].num = dzhiItem;
+		if(dzhi0Info[i].num == 0){
+			continue;
+		}
 		dzhi0Info[i].pBuff = (uint8_t *)rt_malloc(dzhi0Info[i].num);
 		if(dzhi0Info[i].pBuff == NULL){
 			rt_kprintf("定值内存获取失败");
@@ -244,7 +247,6 @@ static void Dzhi1TypeRemap(uint16_t i,uint16_t *type)
 		case DZ1_HEAVY_LOAD:*type = HEAVY_LOAD;break;
 		case DZ1_OVERLOAD:*type = OVERLOAD;break;
 		case DZ1_IBATTERY_SET:*type = BATTERY_SET;break;
-		case DZ1_AUTO_RESET:*type = AUTO_RESET;break;
 		case DZ1_LIMIT_V_F:*type = LIMIT_V_F;break;
 		case DZ1_LOOP_CLOSE:*type = LOOP_CLOSE;break;
 		case DZ1_FAULT_SWITCH:*type = FAULT_SWITCH;break;
@@ -276,6 +278,9 @@ static void Dzhi1DisplayInit(void)
 			dzhiItem ++;
 		}
 		dzhi1Info[i].num = dzhiItem;
+		if(dzhi1Info[i].num == 0){
+			continue;
+		}
 		dzhi1Info[i].pBuff = (uint8_t *)rt_malloc(dzhi1Info[i].num);
 		if(dzhi1Info[i].pBuff == NULL){
 			rt_kprintf("定值内存获取失败");
@@ -647,10 +652,14 @@ uint8_t CheckUpdataProgram(void)
   */
 void userVariableDisplayInit(void)
 {
-	YaoxinDisplayInit();
-	YaoceDisplayInit();
-	Dzhi1DisplayInit();
-	Dzhi0DisplayInit();
+	static uint8_t flag;
+	if(flag == 0){//涉及到内存分配，上电只初始化一次
+		YaoxinDisplayInit();
+		YaoceDisplayInit();
+		Dzhi1DisplayInit();
+		Dzhi0DisplayInit();
+		flag = 1;
+	}
 	HmiCmdSendInit();
 	VersionInfoInit();
 	SoeCoInfoInit();
