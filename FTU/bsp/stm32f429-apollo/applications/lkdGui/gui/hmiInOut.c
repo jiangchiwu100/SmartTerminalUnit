@@ -328,7 +328,6 @@ void YaoxinMapToLed(void)
   */
 void AnalogCmdResult(uint8_t analogNo, float analogVal)
 {
-	rt_kprintf("Ä£Äâ´úºÅ %d,Öµ %f\r\n",analogNo,analogVal);
 	switch(analogNo){
 		case AI_TEMPERATURE:g_TelemetryDB[g_TelemetryAddr.T] = analogVal;break;
 	}

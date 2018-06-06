@@ -10,6 +10,7 @@
 #include "keyDriver.h"
 #include "GuiDisplay.h"
 #include "inoutUser.h"
+#include "ds18b20.h"
 
 static void IwdgInit(void);
 static void IwdgReloadCounter(void);
@@ -34,6 +35,7 @@ int main(void)
 		ScanKeyStatus();
 		Hmi101Main();
 		InOutUserMain();
+		Ds18B20Main();
 		IwdgReloadCounter();
 	}
 }

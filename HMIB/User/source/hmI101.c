@@ -561,7 +561,7 @@ void AnalogCmdSend(void)
 	}
 	temper.tf = GetTemperature();
 	if(GetTimer1IntervalTick(sendTick) > 15000 ||\
-		temper.tf + 0.5 >= currentTemper || temper.tf - 0.5 <= currentTemper)
+		temper.tf >= currentTemper + 0.5 || temper.tf <= currentTemper - 0.5)
 	{
 		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_CMD] = 3;
 		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_TYPE] = C003TYPE_DISCRETE;
