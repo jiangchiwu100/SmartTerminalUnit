@@ -50,8 +50,7 @@ typedef struct
     STelesignalStr switchClose;            // 开关合位
     STelesignalStr recloseHardStrap;       // 重合闸硬压板
     STelesignalStr functionHardStrap;      // 功能投退硬压板  
-    STelesignalStr swtichclass;            // 开关类型
-    STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	    
+    STelesignalStr swtichclass;            // 开关类型   
     
     STelesignalStr shortCircuitFault;        // 短路故障   
     STelesignalStr earthingFault;            // 接地故障

@@ -33,7 +33,7 @@
 #ifdef COMMON
 
 //#define SYNTHESIS_I0_ENABLE              // 合成零序电流使能
-#define TERMINAL_PRODUCT_SERIAL_NUMBER   "F01C.1.A0000.000x.180504"    // 产品序列号
+#define TERMINAL_PRODUCT_SERIAL_NUMBER   "F01C.1.B0000.000x.180504"    // 产品序列号
 
 #endif /* 配置区 COMMON */
 
@@ -42,7 +42,7 @@
 #define LOGICLOCKINGMANUALREMOTECONTROL  // 逻辑闭锁手动遥控
 //#define GETPOWERLOSSVOLTAGELOCKCLOSE     // 得电合闸过程中失压闭锁合闸
 //#define FAPROTECTIONENABLING             // FA保护使能
-#define TERMINAL_PRODUCT_SERIAL_NUMBER   "F01C.1.A0000.0750.180426"    // 产品序列号
+#define TERMINAL_PRODUCT_SERIAL_NUMBER   "F01C.1.B0000.0750.180426"    // 产品序列号
 
 #endif /* 配置区 JIANGMEN_0750_0 */ 
 

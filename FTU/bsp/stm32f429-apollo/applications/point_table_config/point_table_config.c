@@ -266,7 +266,7 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,  ME_BASIC_SET,   "开入防抖时间",    &g_Parameter[DI_SHAKING_TIME],              "ms",     99999,        0,     20.0f,     0,         3,         {"-",  "-"         },   " "    },	
     { 1,  ME_BASIC_SET,   "合闸脉宽时间",    &g_Parameter[CLOSING_PULSE_TIME],           "ms",     99999,        0,     60,        0,         3,         {"-",  "-"         },   " "    },
     { 1,  ME_BASIC_SET,   "分闸脉宽时间",    &g_Parameter[OPENING_PULSE_TIME],           "ms",     99999,        0,     60,        0,         3,         {"-",  "-"         },   " "    },	
-    { 1,  ME_BASIC_SET,   "反校时间",        &g_Parameter[REVERSE_TIME],                 "ms",     99999,        0,     10000.0,   0,         0,         {"-",  "-"         },   " "    },	
+    { 1,  ME_BASIC_SET,   "反校时间",        &g_Parameter[REVERSE_TIME],                 "ms",     99999,        5,     60000.0,   0,         0,         {"-",  "-"         },   " "    },	
     { 1,  ME_BASIC_SET,   "电源告警取反",    &g_Parameter[POWERLOSS_NEGATE],             "-",       1,           0,     0,         2,         0,         {"无", "取反"},   " "   },	  
  
     { 1,  ME_ZERODRIFT,   "频率零漂",        &g_Parameter[ZERODRIFT_F],                 "Hz",     99.99f,     0.00001f,   0.1f,        0,         3,         {"-",  "-"         },   " "    },	

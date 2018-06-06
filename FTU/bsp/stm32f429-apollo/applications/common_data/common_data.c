@@ -18,6 +18,7 @@
 #include "drv_fm25vxx.h"
 #include "calculator.h"
 #include "common_data.h"
+#include "drv_timer.h"
 #include "file_operate.h"
 #include "breaker_interface.h"
 #include "load_switch_interface.h"
@@ -849,7 +850,7 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     
     if((yc_addr == NULL)||(yc_num == 0))
     {
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = 8; 
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = 10; 
 
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].addr = g_TelemetryAddr.Ia + TELEMETRY_START_ADDR;
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].value = g_TelemetryDB[g_TelemetryAddr.Ia];     
@@ -874,7 +875,11 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].addr = g_TelemetryAddr.Uac + TELEMETRY_START_ADDR;
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].value = g_TelemetryDB[g_TelemetryAddr.Uac];   
         g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].addr = g_TelemetryAddr.U0 + TELEMETRY_START_ADDR;
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].value = g_TelemetryDB[g_TelemetryAddr.U0];          
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].value = g_TelemetryDB[g_TelemetryAddr.U0]; 
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[8].addr = g_TelemetryAddr.F + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[8].value = g_FreGatherUab.freValueProtect; 
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[9].addr = g_TelemetryAddr.F2 + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[9].value = g_TelemetryDB[g_TelemetryAddr.F2];         
     }
     else
     {
@@ -1058,6 +1063,64 @@ static void DBClear(uint16_t addr)
 }
 
 /**
+  * @brief : 遥控校对（远程）
+  * @param : [addr]-遥控地址
+  * @param : [operate_type]-操作类型（包括DO_CLOSE/DO_CLOSE_RECOVERY/DO_OPEN/DO_OPEN_RECOVERY/DO_COIL_ENERGY_STORAGE/DO_ALARM_LED/DO_BATTERY_ACTIVE/
+                           DO_BATTERY_ACTIVE_RECOVERY/DO_BATTERY_ACTIVE_END/DO_BATTERY_ACTIVE_END_RECOVERY/DO_BATTERY_DROP_OUT/DO_BATTERY_DROP_OUT_RECOVERY）
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+uint8_t rt_multi_telecontrl_proof(uint16_t addr, uint8_t operate_type)
+{
+    uint8_t res = 0;
+    
+    if(g_TelesignalDB[g_TelesignalAddr.remote] == ON)
+    {
+        switch (addr)     
+        {
+            case ADDR_REMOTE_OPERATE:
+                if(operate_type == DO_OPEN)
+                {
+                    #ifdef LOGICLOCKINGMANUALREMOTECONTROL
+                    if((g_TelesignalDB[g_TelesignalAddr.switchClose] == ON)&& (g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF)
+                        && (g_TelesignalDB[g_TelesignalAddr.openingLocked] == OFF) && (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))
+                    #else
+                    if((g_TelesignalDB[g_TelesignalAddr.switchClose] == ON)&& (g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF)
+                        && (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))                    
+                    #endif
+                    {res = 1;}            
+                }
+                else if(operate_type == DO_CLOSE)
+                {                                    
+                    #ifdef LOGICLOCKINGMANUALREMOTECONTROL
+                    if((g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON)&& (g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF)
+                        && (g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON) && (g_TelesignalDB[g_TelesignalAddr.closingLocked] == OFF) && (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))
+                    #else
+                    if((g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON)&& (g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF)
+                        && (g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == ON) && (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF))                   
+                    #endif
+                    {res = 1;}                 
+                } 
+                break;                
+            case ADDR_REMOTE_PRO_OUT:
+                if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+                {
+                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF))
+                    {res = 1;} 
+                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == ON))
+                    {res = 1;} 
+                }
+                break;
+            default:
+                {res = 1;}
+                break;
+        }
+    }
+    
+    return(res);
+}
+
+/**
   * @brief : 遥控操作（包括远程与本地操作）
   * @param : [addr]-遥控地址
   * @param : [operate_type]-操作类型（包括DO_CLOSE/DO_CLOSE_RECOVERY/DO_OPEN/DO_OPEN_RECOVERY/DO_COIL_ENERGY_STORAGE/DO_ALARM_LED/DO_BATTERY_ACTIVE/
@@ -1088,7 +1151,7 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
             {
                 if(operate_type == DO_OPEN)
                 {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
-                else
+                else if(operate_type == DO_CLOSE)
                 {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
             }
             break;	   		
@@ -1871,11 +1934,6 @@ void rt_multi_common_data_config(void)
 		
     memset(&g_TelemetryDB, 0, sizeof(g_TelemetryDB));
     memset(&g_TelemetryLastDB, 0, sizeof(g_TelemetryLastDB));
-    
-    if(g_Parameter[REMOTE_PRO_SWITCH] == 0)
-    {
-        {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}
-    }
 }
 
 /**

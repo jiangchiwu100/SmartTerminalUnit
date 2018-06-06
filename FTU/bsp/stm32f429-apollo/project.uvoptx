@@ -101,7 +101,7 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <nTsel>5</nTsel>
+        <nTsel>3</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -112,13 +112,13 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>STLink\ST-LINKIII-KEIL_SWO.dll</pMon>
+        <pMon>Segger\JL2CM3.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>(105=-1,-1,-1,-1,0)</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -220,6 +220,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>g_FlagDB.queue_co.out</ItemText>
         </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>OverFrequency.delay</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -267,7 +272,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>0</periodic>
-        <aLwin>0</aLwin>
+        <aLwin>1</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
@@ -299,10 +304,6 @@
       <pszMrule></pszMrule>
       <pSingCmds></pSingCmds>
       <pMultCmds></pMultCmds>
-      <pMisraNamep></pMisraNamep>
-      <pszMrulep></pszMrulep>
-      <pSingCmdsp></pSingCmdsp>
-      <pMultCmdsp></pMultCmdsp>
       <DebugDescription>
         <Enable>1</Enable>
         <EnableLog>0</EnableLog>
@@ -478,7 +479,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3238,7 +3239,7 @@
 
   <Group>
     <GroupName>lkdGui</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3378,7 +3379,7 @@
 
   <Group>
     <GroupName>IEC60870</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

@@ -231,7 +231,7 @@ static void OverVoltageCheck(struct OverVoltage *over)
                 *over->counter = 0;
                 DBWriteSOE(over->soeAddr, ON);
 
-				if (*over->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF)
+				if (*over->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && (g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
                     DBWriteFEVENT(over->soeAddr,NULL,0);
@@ -288,7 +288,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
                 DBWriteSOE(down->soeAddr, ON);
                 down->flag &= ~OVERVOLTAGESTA1;
 				
-				if (*down->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF)
+				if (*down->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && (g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
                     DBWriteFEVENT(down->soeAddr,NULL,0);
@@ -735,7 +735,7 @@ void other_protect_init(void)
 
     ApplyForCounter(pdrv, &DownVoltageUab.counter);
     ApplyForCounter(pdrv, &DownVoltageUab.counterReverse);	
-    DownVoltageUab.delay = &g_pFixedValue[DOWNVOLTAGE_VALUE];
+    DownVoltageUab.delay = &g_pFixedValue[DOWNVOLTAGE_TIME];
     DownVoltageUab.state = &g_TelesignalDB[g_TelesignalAddr.downVoltageProtection];
     DownVoltageUab.soeAddr = g_TelesignalAddr.downVoltageProtection;
     DownVoltageUab.value = &g_pFixedValue[DOWNVOLTAGE_VALUE];
@@ -756,17 +756,17 @@ void other_protect_init(void)
 
     ApplyForCounter(pdrv, &DownVoltageUBC.counter);
     ApplyForCounter(pdrv, &DownVoltageUBC.counterReverse);
-    DownVoltageUBC.delay = &g_pFixedValue[OVERVOLTAGE_TIME];
+    DownVoltageUBC.delay = &g_pFixedValue[DOWNVOLTAGE_TIME];
     DownVoltageUBC.state = &g_TelesignalDB[g_TelesignalAddr.downVoltageProtection];
     DownVoltageUBC.soeAddr = g_TelesignalAddr.downVoltageProtection;
-    DownVoltageUBC.value = &g_pFixedValue[OVERVOLTAGE_VALUE];
-    DownVoltageUBC.funSwitch = &g_pFixedValue[OVERVOLTAGE_SWITCH];
+    DownVoltageUBC.value = &g_pFixedValue[DOWNVOLTAGE_VALUE];
+    DownVoltageUBC.funSwitch = &g_pFixedValue[DOWNVOLTAGE_SWITCH];
     DownVoltageUBC.factor = &g_pFixedValue[DOWNVOLTAGE_FACTOR];
     DownVoltageUBC.flag = 0;
 
     ApplyForCounter(pdrv, &OverFrequency.counter);
     ApplyForCounter(pdrv, &OverFrequency.counterReverse);
-    OverFrequency.delay = &g_pFixedValue[OVERFREQUENCY_VALUE];
+    OverFrequency.delay = &g_pFixedValue[OVERFREQUENCY_TIME];
     OverFrequency.state = &g_TelesignalDB[g_TelesignalAddr.overFrequencyProtection];
     OverFrequency.soeAddr = g_TelesignalAddr.overFrequencyProtection;
     OverFrequency.value = &g_pFixedValue[OVERFREQUENCY_VALUE];

@@ -50,7 +50,6 @@ typedef struct
     STelesignalStr functionHardStrap;      // 功能投退硬压板 
 	STelesignalStr FA_HardStrap;           // FA功能投退硬压板 
     STelesignalStr swtichclass;            // 开关类型
-    STelesignalStr telecontrol_Pro_Out;    // 遥控保护退出	
 
     STelesignalStr closingLocked;
     STelesignalStr openingLocked;
