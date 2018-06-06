@@ -114,6 +114,7 @@ static void MenuM0Fun(void);
 	static void MenuM0S4Fun(void);		//定值查询 
 		static void MenuM0S4S0Fun(void);
 	static void MenuM0S5Fun(void);		//配置查询
+        static void MenuM0S4S8Fun(void);//其他
 /* M1 定值设置  */
 static void MenuM1Fun(void);
 	static void MenuM1S0Fun(void);		//保护功能

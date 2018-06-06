@@ -598,7 +598,7 @@ void CalibrationFactorCal(uint8_t num)
         {
             if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR && (g_ValueParaPresetDB.property[i].addr <= (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len)))
             {
-                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;                
+                offset = g_ValueParaPresetDB.property[i].addr - CALIBRATE_VALUE_START_ADDR;   
                 telemetry[offset] += g_TelemetryDB[*CalibrateFactorCfg[offset].pAddr];
                 counter[offset]++;
 
@@ -606,14 +606,14 @@ void CalibrationFactorCal(uint8_t num)
                 {
                     counter[offset] = 0;
                     telemetry[offset] /= (float)AVERAGE_TIMER;
-
-                    if (g_ValueParaPresetDB.property[i].addr >= CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - sizeof(g_Alpha)/sizeof(float))
+                    
+                    if(CalibrateFactorCfg[offset].dataType == 0)
                     {
-						*CalibrateFactorCfg[offset].factorVal -= (g_ValueParaPresetDB.value[i] - g_Alpha[sizeof(g_Alpha)/sizeof(float) - (CALIBRATE_VALUE_START_ADDR + g_CalibrateFactorCfg_Len - g_ValueParaPresetDB.property[i].addr)]);
+                        *CalibrateFactorCfg[offset].factorVal *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);
                     }
                     else
                     {
-                        *CalibrateFactorCfg[offset].factorVal *= (g_ValueParaPresetDB.value[i] / telemetry[offset]);                      
+                        *CalibrateFactorCfg[offset].factorVal -= g_ValueParaPresetDB.value[i] - telemetry[offset];
                     }
 					
                     g_ValueParaOperateInfo.num = 0;
@@ -846,12 +846,45 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.msecondH = HIBYTE(g_SystemTime.second * 1000 + g_SystemTime.msecond); 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.msecondL = LOBYTE(g_SystemTime.second * 1000 + g_SystemTime.msecond);
     g_FeventDB[g_FlagDB.queue_fevent.in].yc_type = COMMON_DATA_M_ME_NC_1;
-    g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = yc_num;
-        
-    for (i = 0; i < yc_num; i++)
+    
+    if((yc_addr == NULL)||(yc_num == 0))
     {
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i] - TELEMETRY_START_ADDR];         
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = 8; 
+
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].addr = g_TelemetryAddr.Ia + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].value = g_TelemetryDB[g_TelemetryAddr.Ia];     
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[1].addr = g_TelemetryAddr.Ib + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[1].value = g_TelemetryDB[g_TelemetryAddr.Ib]; 
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[2].addr = g_TelemetryAddr.Ic + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[2].value = g_TelemetryDB[g_TelemetryAddr.Ic];        
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[3].addr = g_TelemetryAddr.I0 + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[3].value = g_TelemetryDB[g_TelemetryAddr.I0];   
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[4].addr = g_TelemetryAddr.Uab + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[4].value = g_TelemetryDB[g_TelemetryAddr.Uab];  
+        if(g_Parameter[CFG_PRO_VOL_N] == 0)
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].addr = g_TelemetryAddr.UAB + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].value = g_TelemetryDB[g_TelemetryAddr.UAB];  
+        }
+        else
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].addr = g_TelemetryAddr.UCB + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].value = g_TelemetryDB[g_TelemetryAddr.UCB]; 
+        }
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].addr = g_TelemetryAddr.Uac + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].value = g_TelemetryDB[g_TelemetryAddr.Uac];   
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].addr = g_TelemetryAddr.U0 + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].value = g_TelemetryDB[g_TelemetryAddr.U0];          
+    }
+    else
+    {
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = yc_num;
+            
+        for (i = 0; i < yc_num; i++)
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i]];         
+        }
     }
 
     if (++g_FlagDB.queue_fevent.in >= FEVENT_MAX_NUM)
@@ -1079,22 +1112,22 @@ void rt_multi_common_data_save_value_to_fram(uint8_t sn)
     case DB_SN0:
         len = sizeof(g_Parameter);
         addr = ADDR_FRAM_AREA0;
-        pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
+        pInfo = g_Parameter;
         break;
     case DB_SN1:
         len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue1;
         break;
     case DB_SN2:
         len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue2;
         break;
     case DB_CALI:
         len = sizeof(g_CalibrateFactor);
         addr = ADDR_FRAM_CALI_FACTOR;
-        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        pInfo = g_CalibrateFactor;
         break;	
     default:
         break;
@@ -1120,22 +1153,22 @@ void rt_multi_common_data_get_value_from_fram(uint8_t sn)
     case DB_SN0:
         len = sizeof(g_Parameter);
         addr = ADDR_FRAM_AREA0;
-        pInfo = GetValueArray(RUNPARAMETER_START_ADDR, sn);
+        pInfo = g_Parameter;
         break;
     case DB_SN1: 
         len = sizeof(g_FixedValue1);
         addr = ADDR_FRAM_AREA1;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue1;
         break;
     case DB_SN2:
         len = sizeof(g_FixedValue2);
         addr = ADDR_FRAM_AREA2;
-        pInfo = GetValueArray(FIXED_VALUE_START_ADDR, sn);
+        pInfo = g_FixedValue2;
         break;
     case DB_CALI:
         len = sizeof(g_CalibrateFactor);
         addr = ADDR_FRAM_CALI_FACTOR;
-        pInfo = GetValueArray(CALIBRATE_FACTOR_START_ADDR, sn);
+        pInfo = g_CalibrateFactor;
         break;	    
     default:
         break;
@@ -1754,7 +1787,15 @@ void rt_multi_common_data_config(void)
     }	
     
     //遥信配置  
-    g_NewMaxNumTelesignal = g_ConfigurationSetDB->YXSetNum;//新点表总数
+    for(i=0,temp1=0,g_NewMaxNumTelesignal=0;i<g_ConfigurationSetDB->YXSetNum;i++)//取消最后一行空行//新点表总数
+    {
+        if(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM)
+        {
+            g_NewMaxNumTelesignal = i+1;
+        }
+        temp1 += (g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM) + 1;
+    }
+
     for(i=0,temp1=0,temp2=0,value=0;i<g_NewMaxNumTelesignal;i++)//原点表内添加地址和初始遥信
     {
         for(j=0,value=0;j<(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM);j++)

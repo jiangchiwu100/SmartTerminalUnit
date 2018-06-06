@@ -1263,6 +1263,30 @@ static void MenuM0S4S0Fun(void)
 		}
 	}
 }
+
+/**
+  *@brief MenuM0S4S8 其他查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S4S8Fun(void)
+{
+    switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM0S4S8.currentItem){
+		case 0:userGUIWindowAdd(&RingUniteWin);break;//合环
+		case 1:userGUIWindowAdd(&BreakDownWin);break;//故障投退
+		default:break;
+		}
+	}
+}
+    
 /**
   *@brief MenuM1S0 deal with function 保护功能
   *@param  None
@@ -2105,7 +2129,7 @@ static void FaultEventFun(void)
 		sprintf((char *)pEventStr->itemNum,"%d",pEventStr->pRead + 1);
 		pEventStr->itemNum[3] = '\0';
 		GuiExchangeColor();
-		GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEventStr->itemNum);//序号
+		GuiFont12Align(FaultEventWin.x+1,y+1,20,FONT_MID,pEventStr->itemNum);//序号
 		GuiExchangeColor();	
 		GuiRPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//垂直线
 		GuiFont12Align(FaultEventWin.x + 21,y+1,133,FONT_RIGHT,pEventStr->time);
@@ -2123,7 +2147,11 @@ static void FaultEventFun(void)
 		yaoCeScroll.lump = yaoCeNum;
 		GuiVScroll(&yaoCeScroll);
 		GuiFillRect(FaultEventWin.x+1,y,151,158, backcolor);
-		for(i = 0;i < 8;i ++){
+        uint8_t ycNum = 8;
+        if(pEventStr->pFevent.yaoceNum < 8){
+            ycNum = pEventStr->pFevent.yaoceNum;
+        }
+		for(i = 0;i < ycNum;i ++){
 			GuiFont12Align(FaultEventWin.x+2,y+1+i*14,40,FONT_LEFT,\
 				pEventStr->pFevent.pYaoceName[i + yaoCeNum - 1]);			
 			GuiRPointLine(FaultEventWin.x+43,y+i*14,y+13+i*14,2,forecolor);

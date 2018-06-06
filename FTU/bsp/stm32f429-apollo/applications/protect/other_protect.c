@@ -234,8 +234,7 @@ static void OverVoltageCheck(struct OverVoltage *over)
 				if (*over->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF)
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
-                    uint16_t addr = over->telemetry - g_TelemetryDB;
-                    DBWriteFEVENT(over->soeAddr,&addr,1);
+                    DBWriteFEVENT(over->soeAddr,NULL,0);
 				}
             }
         }
@@ -273,7 +272,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
         return;
     }
 
-    if ((*down->telemetry < *down->value)&&(down->flag)&OVERVOLTAGESTA1)
+    if ((*down->telemetry < *down->value)&&((down->flag)&OVERVOLTAGESTA1))
     {
 		*down->counterReverse = 0;
         if (*down->state == OFF)
@@ -292,8 +291,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
 				if (*down->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON && g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF)
 				{
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
-                    uint16_t addr = down->telemetry - g_TelemetryDB;
-                    DBWriteFEVENT(down->soeAddr,&addr,1);
+                    DBWriteFEVENT(down->soeAddr,NULL,0);
 				}
             }
         }
@@ -301,7 +299,7 @@ static void DownVoltageCheck(struct OverVoltage *down)
     else
     {
         *down->counter = 0;
-        if (*down->state == ON && *down->telemetry > (*down->value * (*down->factor)))
+        if ((!((down->flag)&OVERVOLTAGESTA1)) && *down->telemetry > (*down->value * (*down->factor)))
         {
             if (!(*down->counterReverse & DB_COUNTER_EN))
             {

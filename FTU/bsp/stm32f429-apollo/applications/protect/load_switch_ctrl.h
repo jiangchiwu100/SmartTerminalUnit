@@ -322,7 +322,6 @@ typedef struct
 {
     TelesignalStr yx;
     TelemetryStr yc;
-    uint16_t fevent_yc_addr[10];
 	int WorkMode;                          // 工作模式
 	float *pBreakWorkMode;                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	float *pLoadWorkMode;                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)

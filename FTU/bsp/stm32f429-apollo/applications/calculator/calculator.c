@@ -626,6 +626,9 @@ static void CalculateData(void)
 
 	g_TelemetryDB[g_TelemetryAddr.DC1] = Udc1;
 	g_TelemetryDB[g_TelemetryAddr.DC2] = Udc2;
+    
+    g_TelemetryDB[g_TelemetryAddr.alphy_Uab_Ia] = g_Alpha[ALPHA_UabIa];
+    g_TelemetryDB[g_TelemetryAddr.alphy_Ucb_Ic] = g_Alpha[ALPHA_UcbIc];
 	
     if((g_TelemetryDB[g_TelemetryAddr.U0] == 0)||(g_TelemetryDB[g_TelemetryAddr.I0] == 0))
     {g_TelemetryDB[g_TelemetryAddr.alphy_U0_I0] = 0;}
