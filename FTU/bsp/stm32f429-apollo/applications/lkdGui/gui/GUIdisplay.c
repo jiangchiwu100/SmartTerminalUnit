@@ -2129,7 +2129,7 @@ static void FaultEventFun(void)
 		sprintf((char *)pEventStr->itemNum,"%d",pEventStr->pRead + 1);
 		pEventStr->itemNum[3] = '\0';
 		GuiExchangeColor();
-		GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEventStr->itemNum);//ÐòºÅ
+		GuiFont12Align(FaultEventWin.x+1,y+1,20,FONT_MID,pEventStr->itemNum);//ÐòºÅ
 		GuiExchangeColor();	
 		GuiRPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//´¹Ö±Ïß
 		GuiFont12Align(FaultEventWin.x + 21,y+2,133,FONT_RIGHT,pEventStr->time);
@@ -2147,7 +2147,11 @@ static void FaultEventFun(void)
 		yaoCeScroll.lump = yaoCeNum;
 		GuiVScroll(&yaoCeScroll);
 		GuiFillRect(FaultEventWin.x+1,y,151,158, backcolor);
-		for(i = 0;i < 8;i ++){
+        uint8_t ycNum = 8;
+        if(pEventStr->pFevent.yaoceNum < 8){
+            ycNum = pEventStr->pFevent.yaoceNum;
+        }
+		for(i = 0;i < ycNum;i ++){
 			GuiFont12Align(FaultEventWin.x+2,y+1+i*14,40,FONT_LEFT,\
 				pEventStr->pFevent.pYaoceName[i + yaoCeNum - 1]);			
 			GuiRPointLine(FaultEventWin.x+43,y+i*14,y+13+i*14,2,forecolor);

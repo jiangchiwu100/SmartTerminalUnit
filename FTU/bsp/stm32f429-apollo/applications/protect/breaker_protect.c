@@ -85,7 +85,7 @@ static void addSOE(ComProSts *comProSts, STelesignalStr *telesignal, uint8_t val
         comProSts->outputSoe(telesignal->addr,value);
         if(value == ON)
         {
-            comProSts->outputFevent(telesignal->addr,comProSts->fevent_yc_addr,8);
+            comProSts->outputFevent(telesignal->addr,NULL,0);
         }
         if(telesignal->addr == comProSts->yx.shortCircuitFault.addr)
         {
@@ -1062,14 +1062,6 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];
             s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[g_TelemetryAddr.Uac];
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];
-            
-            s_ComProSts[pdrv].fevent_yc_addr[0] = g_TelemetryAddr.Ia;
-            s_ComProSts[pdrv].fevent_yc_addr[1] = g_TelemetryAddr.Ib;
-            s_ComProSts[pdrv].fevent_yc_addr[2] = g_TelemetryAddr.Ic;
-            s_ComProSts[pdrv].fevent_yc_addr[3] = g_TelemetryAddr.I0;
-            s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;         
-            s_ComProSts[pdrv].fevent_yc_addr[6] = g_TelemetryAddr.Uac;
-            s_ComProSts[pdrv].fevent_yc_addr[7] = g_TelemetryAddr.U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
             s_ComProSts[pdrv].closing = &rt_hw_do_operate;
@@ -1258,11 +1250,6 @@ void BreakerCtrlClock(void)
                 {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
                 else
                 {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
-                
-                if(g_Parameter[CFG_PRO_VOL_N] == 0)
-                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
-                else
-                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}  
             
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{

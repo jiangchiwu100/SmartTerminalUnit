@@ -846,12 +846,45 @@ rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.msecondH = HIBYTE(g_SystemTime.second * 1000 + g_SystemTime.msecond); 
     g_FeventDB[g_FlagDB.queue_fevent.in].yx[0].time.msecondL = LOBYTE(g_SystemTime.second * 1000 + g_SystemTime.msecond);
     g_FeventDB[g_FlagDB.queue_fevent.in].yc_type = COMMON_DATA_M_ME_NC_1;
-    g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = yc_num;
-        
-    for (i = 0; i < yc_num; i++)
+    
+    if((yc_addr == NULL)||(yc_num == 0))
     {
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
-        g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i]];         
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = 8; 
+
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].addr = g_TelemetryAddr.Ia + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[0].value = g_TelemetryDB[g_TelemetryAddr.Ia];     
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[1].addr = g_TelemetryAddr.Ib + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[1].value = g_TelemetryDB[g_TelemetryAddr.Ib]; 
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[2].addr = g_TelemetryAddr.Ic + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[2].value = g_TelemetryDB[g_TelemetryAddr.Ic];        
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[3].addr = g_TelemetryAddr.I0 + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[3].value = g_TelemetryDB[g_TelemetryAddr.I0];   
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[4].addr = g_TelemetryAddr.Uab + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[4].value = g_TelemetryDB[g_TelemetryAddr.Uab];  
+        if(g_Parameter[CFG_PRO_VOL_N] == 0)
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].addr = g_TelemetryAddr.UAB + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].value = g_TelemetryDB[g_TelemetryAddr.UAB];  
+        }
+        else
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].addr = g_TelemetryAddr.UCB + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[5].value = g_TelemetryDB[g_TelemetryAddr.UCB]; 
+        }
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].addr = g_TelemetryAddr.Uac + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[6].value = g_TelemetryDB[g_TelemetryAddr.Uac];   
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].addr = g_TelemetryAddr.U0 + TELEMETRY_START_ADDR;
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc[7].value = g_TelemetryDB[g_TelemetryAddr.U0];          
+    }
+    else
+    {
+        g_FeventDB[g_FlagDB.queue_fevent.in].yc_num = yc_num;
+            
+        for (i = 0; i < yc_num; i++)
+        {
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].addr = yc_addr[i] + TELEMETRY_START_ADDR;
+            g_FeventDB[g_FlagDB.queue_fevent.in].yc[i].value = g_TelemetryDB[yc_addr[i]];         
+        }
     }
 
     if (++g_FlagDB.queue_fevent.in >= FEVENT_MAX_NUM)
