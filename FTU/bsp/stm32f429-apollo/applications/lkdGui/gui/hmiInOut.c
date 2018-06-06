@@ -322,6 +322,18 @@ void YaoxinMapToLed(void)
 }
 
 /**
+  *@brief  模拟量命令处理
+  *@param  analogNo 模拟号
+  *@retval analogVal 模拟值
+  */
+void AnalogCmdResult(uint8_t analogNo, float analogVal)
+{
+	rt_kprintf("模拟代号 %d,值 %f\r\n",analogNo,analogVal);
+	switch(analogNo){
+		case AI_TEMPERATURE:g_TelemetryDB[g_TelemetryAddr.T] = analogVal;break;
+	}
+}
+/**
   *@brief  HmiOut初始化
   *@param  None
   *@retval None

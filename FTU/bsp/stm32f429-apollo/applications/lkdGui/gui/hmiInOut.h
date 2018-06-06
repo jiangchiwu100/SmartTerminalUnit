@@ -103,9 +103,15 @@ enum UserLedState{
 	ULED_ON,
 };
 
+/* 模拟量使用定义 */
+enum UserAnalogDefine{
+	AI_TEMPERATURE = 1,
+};
+
 enum KeyStatus GetKeyStatus(void);
 void SetKeyIsNoKey(void);
 void KeyCmdResult(uint8_t keyNo, uint8_t state);
+void AnalogCmdResult(uint8_t analogNo, float analogVal);
 void LedChangeCheck(void);
 void HmiInOutInit(void);
 

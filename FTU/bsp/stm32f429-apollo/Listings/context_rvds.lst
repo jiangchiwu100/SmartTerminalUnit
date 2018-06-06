@@ -343,7 +343,7 @@ Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\context_rvds.d -o.\objects\context_rvds.o -I.\RTE\_FT
 U_V03.020 -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\Drivers\CMSIS\Device\
 ST\STM32F4xx\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERS
-ION SETA 523" --predefine="STM32F429xx SETA 1" --list=.\listings\context_rvds.l
+ION SETA 524" --predefine="STM32F429xx SETA 1" --list=.\listings\context_rvds.l
 st ..\..\libcpu\arm\cortex-m4\context_rvds.S
 
 

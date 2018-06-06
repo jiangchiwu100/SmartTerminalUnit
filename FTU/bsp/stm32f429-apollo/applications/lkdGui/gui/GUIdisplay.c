@@ -1971,7 +1971,7 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 			GuiFont12Align(SOEWin.x+1,y + i*28+1,19,FONT_MID,soeStr->itemNum);//序号
 			GuiExchangeColor();	
 			GuiRPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
-			GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,soeStr->time);
+			GuiFont12Align(SOEWin.x + 21,y + i*28+1,133,FONT_RIGHT,soeStr->time);
 			GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
 			GuiFont12Align(SOEWin.x+2,y + i*28+15,72,FONT_MID,soeStr->pSoe.pName);
 			GuiRPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
@@ -2108,7 +2108,7 @@ static void FaultEventFun(void)
 		GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEventStr->itemNum);//序号
 		GuiExchangeColor();	
 		GuiRPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//垂直线
-		GuiFont12Align(FaultEventWin.x + 21,y+2,133,FONT_RIGHT,pEventStr->time);
+		GuiFont12Align(FaultEventWin.x + 21,y+1,133,FONT_RIGHT,pEventStr->time);
 		GuiHPointLine(FaultEventWin.x,y+13,155,2,forecolor);
 		GuiFont12Align(FaultEventWin.x+2,y+15,72,FONT_LEFT,pEventStr->pFevent.pName);
 		GuiRPointLine(FaultEventWin.x+10+72,y+15,y+27,2,forecolor);

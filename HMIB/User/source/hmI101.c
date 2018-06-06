@@ -13,6 +13,7 @@
 #include "dlt634_HMImaster_disk.h"
 #include "inoutUser.h"
 #include "imageArray.h"
+#include "ds18b20.h"
 
 /* Hmi101发送处理 */
 Hmi101CmdSend hmiSendInfo;
@@ -543,6 +544,43 @@ void KeyChangeCmdSend(void)
 }
 
 /**
+  *@brief 模拟量下发
+  *@param  None
+  *@retval None
+  */
+void AnalogCmdSend(void)
+{
+	static uint32_t sendTick;
+	static float currentTemper;
+	union{
+		float tf;
+		uint8_t t8[4];
+	}temper;
+	if(Cmd101DownControl(9) != 0){
+		return;
+	}
+	temper.tf = GetTemperature();
+	if(GetTimer1IntervalTick(sendTick) > 15000 ||\
+		temper.tf + 0.5 >= currentTemper || temper.tf - 0.5 <= currentTemper)
+	{
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_CMD] = 3;
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_TYPE] = C003TYPE_DISCRETE;
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_NUM] = 1;
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_NUMBER] = 0x01;
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_VALUE_LL] = temper.t8[0];
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_VALUE_LH] = temper.t8[1];
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_VALUE_HL] = temper.t8[2];
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_VALUE_HH] = temper.t8[3];	
+		hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD003_LEN] = 9;
+		hmiSendInfo.pIn += hmiSendInfo.packBuff[hmiSendInfo.pIn + CMD002_LEN];
+		hmiSendInfo.cmdNum += 1;
+		EndCmd101Down();
+		currentTemper = temper.tf;
+		sendTick = GetTimer1Tick();
+	}
+}
+
+/**
   *@brief hmi101主函数
   *@param  pbuff 内容数组
   *@retval 0 成功 1 失败
@@ -564,6 +602,7 @@ void Hmi101Main(void)
 	KeyChangeCmdSend();
 	SwitchChangeCmdSend();
 	SwitchAllStateSendControl(&switchflag);
+	AnalogCmdSend();
 }
 
 /**

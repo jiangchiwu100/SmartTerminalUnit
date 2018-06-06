@@ -78,6 +78,25 @@ enum Cmd002Type{
 	C002TYPE_CONTINUOUS,/* 连续 */
 };
 
+/* 模拟量命令 */
+enum HmiInputCmd_003{
+	CMD003_LEN,		/* 命令长度 */
+	CMD003_CMD,		/* 命令标识 */
+	CMD003_TYPE,	/* 0 非连续 1 连续 */
+	CMD003_NUM,		/* 开出数量 */
+	CMD003_NUMBER,/* 开出号 */
+	CMD003_VALUE_LL,	/* 对应值 */
+	CMD003_VALUE_LH,
+	CMD003_VALUE_HL,
+	CMD003_VALUE_HH,
+	/* 如果是连续 全部为值 */
+	/* 如果非连续  CMD002_NUMBER0 CMD002_VALUE0 CMD002_NUMBER1 CMD002_VALUE1 ... */
+};
+enum Cmd003Type{
+	C003TYPE_DISCRETE,	/* 非连续 */
+	C003TYPE_CONTINUOUS,/* 连续 */
+};
+
 /* 画线命令 */
 enum HmiGuiCmd_100{
 	CMD100_LEN,		/* 命令长度 */

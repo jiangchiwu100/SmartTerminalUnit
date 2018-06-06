@@ -579,6 +579,41 @@ uint16_t HmiCmd002Fun(uint8_t *pbuff)
 	}
 	return pbuff[CMD002_LEN];
 }
+
+/**
+  *@brief 模拟量命令处理
+  *@param  pbuff 内容数组
+  *@retval 内容大小
+  */
+uint16_t HmiCmd003Fun(uint8_t *pbuff)
+{
+	uint8_t i;
+	union{
+		float tf;
+		uint8_t t8[4];
+	}analog;
+	switch(pbuff[CMD003_TYPE])
+	{
+	case C003TYPE_DISCRETE://不连续的
+		for(i = 0; i < pbuff[CMD003_NUM]; i++){
+			analog.t8[0] = pbuff[CMD003_VALUE_LL + i*5];
+			analog.t8[1] = pbuff[CMD003_VALUE_LH + i*5];
+			analog.t8[2] = pbuff[CMD003_VALUE_HL + i*5];
+			analog.t8[3] = pbuff[CMD003_VALUE_HH + i*5];
+			AnalogCmdResult(pbuff[CMD003_NUMBER + i*5], analog.tf);
+		}break;
+	case C003TYPE_CONTINUOUS://连续的
+		for(i = 0; i < pbuff[CMD003_NUM]; i++){
+			analog.t8[0] = pbuff[CMD003_VALUE_LL + i*4];
+			analog.t8[1] = pbuff[CMD003_VALUE_LH + i*4];
+			analog.t8[2] = pbuff[CMD003_VALUE_HL + i*4];
+			analog.t8[3] = pbuff[CMD003_VALUE_HH + i*4];
+			AnalogCmdResult(pbuff[CMD003_NUMBER] + i, analog.tf);
+		}break;
+	default:break;
+	}
+	return pbuff[CMD003_LEN];
+}
 /**
   *@brief Hmi10Cmd解析命令处理
   *@param  pbuff 内容数组
@@ -590,6 +625,7 @@ void Hmi101CmdResult(Hmi101FrameResult *pFrame)
 	switch(pFrame->cmdBegin[1])
 	{
 	case HmiCmd002:pFrame->pContent = HmiCmd002Fun(&pFrame->cmdBegin[0]);break;
+	case HmiCmd003:pFrame->pContent = HmiCmd003Fun(&pFrame->cmdBegin[0]);break;
 	default:pFrame->pContent = 0;break;
 	}
 	//GuiUpdateDisplayAll();
