@@ -16,8 +16,8 @@ MENU MenuM0 = {
 	MenuM0Fun/* itemFunction */	
 };
 MENU MenuM1 = {
-	0,0,&mianMenu,0,9,{1,0,0,0,0,0,0,0,1},//x,y,fatherMenu,currentItem,mun
-	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","自动复归","其他设置",NULL},
+	0,0,&mianMenu,0,8,{1,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
+	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他设置",NULL},
 	MenuM1Fun/* itemFunction */
 };
 MENU MenuM2 = {
@@ -31,8 +31,8 @@ MENU MenuM0S1 = {
 	MenuM0S1Fun/* itemFunction */
 };
 MENU MenuM0S4 = {
-	0,0,&MenuM0,0,9,{1,0,0,0,0,0,0,0,1},//x,y,fatherMenu,currentItem,mun
-	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","自动复归","其他查询",NULL},
+	0,0,&MenuM0,0,8,{1,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
+	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他查询",NULL},
 	MenuM0S4Fun/* itemFunction */
 };
 MENU MenuM0S5 = {
@@ -48,7 +48,7 @@ MENU MenuM0S4S0 = {
 MENU MenuM0S4S8 = {
 	0,0,&MenuM0S4,0,2,{0,0,0},//x,y,fatherMenu,currentItem,mun
 	{"合    环","故障投退",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-	MenuM1S8Fun/* itemFunction */
+	MenuM0S4S8Fun/* itemFunction */
 };
 MENU MenuM1S0 = {
 	0,0,&MenuM1,0,3,{0,0,0},//x,y,fatherMenu,currentItem,mun
@@ -89,7 +89,6 @@ WINDOW OverLoadMuchWin = {0,0,160,160,NULL,"重过载窗口",OverLoadMuchFun};
 WINDOW OverLoadWin     = {0,0,160,160,NULL,"过负荷窗口",OverLoadFun};
 WINDOW OverVoltageWin  = {0,0,160,160,NULL,"过电压窗口",OverVoltageFun};
 WINDOW BatterySetWin   = {0,0,160,160,NULL,"电池管理窗口",BatterySetFun};
-WINDOW AutoResetWin    = {0,0,160,160,NULL,"自动复归窗口",AutoResetFun};
 	WINDOW RingUniteWin        = {0,0,160,160,NULL,"合环设置窗口",RingUniteFun};
 	WINDOW BreakDownWin        = {0,0,160,160,NULL,"故障投退窗口",BreakDownFun};
 /* 配置设置 */

@@ -44,7 +44,7 @@ typedef struct{
 #define PACKBUFFMAX 1024
 typedef struct{
 	uint8_t state;
-	uint8_t packBuff[PACKBUFFMAX];
+	uint8_t *packBuff;
 	uint16_t pIn;
 	uint8_t cmdNum;
 }Gui101CmdControl;
@@ -90,6 +90,7 @@ void HmiCmd001Fill(uint8_t type, uint8_t num,uint8_t *pBuff);
 void Cmd101SendFinish(void);
 
 void Hmi101Init(void);
+void HmiStaticMemoryApply(void);
 
 extern uint32_t GetTimer1Tick(void);
 extern uint32_t GetTimer1IntervalTick(uint32_t beginTick);

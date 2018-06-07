@@ -28,6 +28,7 @@
 #define SOE_FILE_MAXNUM             512
 #define CO_FILE_MAXNUM              64
 #define FEVENT_FILE_MAXNUM          64
+#define ULOG_FILE_MAXNUM            64
 #define COMTRADE_FILE_MAXNUM        64
 //#define EXV_FILE_MAXNUM        31
 //#define EXV_START_ADDR         4001
@@ -82,7 +83,7 @@ extern unsigned char file_operate_DirCall(unsigned char dev,unsigned char *pbuf)
 extern unsigned char file_operate_ReadFileAct(unsigned char dev,unsigned char *pbuf);
 extern unsigned char file_operate_ReadFile(unsigned char dev,unsigned char *pbuf);
 extern void file_operate_WriteFileAct(unsigned char dev,unsigned char *pbuf);
-
+extern void CreateJsonFile(void);
 
 #endif /* __FILE_OPERATE_H__ */
 

@@ -27,8 +27,8 @@
 
 /* LED */
 #define BOARD_RUN_LED              56
-#define BOTTOM_RUN_LED             85
-#define BOTTOM_POWER_LED           84
+#define BOTTOM_OPEN_LED            85
+#define BOTTOM_CLOSE_LED           84
 /* DO */
 #define SWITCH_OPEN_DO             151
 #define SWITCH_CLOSE_DO            150
@@ -47,8 +47,9 @@
 #define BATTERYA_CTIVATE_DI        128
 #define BETTERY_UNDERVOLTAGE_DI    129
 #define POWER_FAILURE_ALARM_DI     130
-#define MCU_POWER_ALARM_DI         145
 
+//“‘œ¬”≤±‡¬Î
+#define MCU_POWER_ALARM_DI         145
 #define HANDHELD_OPEN_PRESET       173
 #define HANDHELD_OPEN_EXECUTE      174
 #define HANDHELD_CLOSE_PRESET      175
@@ -65,8 +66,8 @@
 enum PIN_INDEX
 {
     INDEX_BOARD_RUN_LED = 0,
-    INDEX_BOTTOM_RUN_LED,
-    INDEX_BOTTOM_POWER_LED,
+    INDEX_BOTTOM_OPEN_LED,
+    INDEX_BOTTOM_CLOSE_LED,
 	
     INDEX_SWITCH_OPEN_DO,
     INDEX_SWITCH_CLOSE_DO,

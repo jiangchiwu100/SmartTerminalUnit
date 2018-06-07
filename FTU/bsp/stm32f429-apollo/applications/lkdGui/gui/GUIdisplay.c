@@ -17,10 +17,10 @@
 #include "gui_101_cmd.h"
 #include "hmiInOut.h"
 
+uint8_t *userGUIBuff; /* 用于内存分配 */
 const static uint8_t *modfiyKey[14] = {/* 软按键 */
 	"0","1","2","3","4",".","esc","5","6","7","8","9","<-","ok"};
 static enum KeyStatus keyStatus;	/* 按键值 */
-static uint8_t userGUIBuff[1024*3]; /* 用于内存分配 */
 static struct DZModfiy dZModfiy;	/* 定值修改 */
 static struct Message MessageIs;	/* 消息管理 */
 static struct PassWordPipe passWordPipe;		/* 密码管理 */
@@ -735,6 +735,13 @@ void DZModfiyDisplay(DzhiDisplayInfo *info,uint8_t *flag)
 	uint16_t memMall;//用于内存分配
 	float tempFloat;
 	if(*flag == 0){//初始化
+		if(info->num == 0){//如果没有Item,直接退出
+			*flag = 0;
+			userGUITopWindowHide();
+			userGUITopWindowRedraw();
+			userGUIMenuRedraw();
+			return;
+		}
 		itemsNum = info->num;
 		memMall = 0;
 		list = (LIST  *)&userGUIBuff[memMall];
@@ -1105,8 +1112,7 @@ static void MenuM1Fun(void)
 		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
 		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
 		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
-		case 8:userGUIMenuAdd(&MenuM1S8);break;//其他设置
+		case 7:userGUIMenuAdd(&MenuM1S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1197,8 +1203,7 @@ static void MenuM0S4Fun(void)
 		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
 		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
 		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIWindowAdd(&AutoResetWin);break;//自动复归
-		case 8:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
+		case 7:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1258,6 +1263,30 @@ static void MenuM0S4S0Fun(void)
 		}
 	}
 }
+
+/**
+  *@brief MenuM0S4S8 其他查询
+  *@param  None
+  *@retval None
+  */
+static void MenuM0S4S8Fun(void)
+{
+    switch(keyStatus){
+	case UpKey:userGUIMenuIremModfiy(0);break;	
+	case DownKey:userGUIMenuIremModfiy(1);break;	
+	case LeftKey:
+	case CancelKey:
+		userGUIMenuHide();break;
+	case RightKey:
+	case OkKey:
+		switch( MenuM0S4S8.currentItem){
+		case 0:userGUIWindowAdd(&RingUniteWin);break;//合环
+		case 1:userGUIWindowAdd(&BreakDownWin);break;//故障投退
+		default:break;
+		}
+	}
+}
+    
 /**
   *@brief MenuM1S0 deal with function 保护功能
   *@param  None
@@ -1606,16 +1635,6 @@ static void OverVoltageFun(void)
 static void BatterySetFun(void)
 {
 	DZModfiyDisplay(&dzhi1Info[DZ1_IBATTERY_SET],&stepTab[STEP_NORMAL]);
-}
-
-/**
-  *@brief 自动复归
-  *@param  None
-  *@retval None
-  */
-static void AutoResetFun(void)
-{
-	DZModfiyDisplay(&dzhi1Info[DZ1_AUTO_RESET],&stepTab[STEP_NORMAL]);
 }
 
 /**
@@ -1976,7 +1995,7 @@ static void SoeCoDisplay(SoeDisplayInfo *pInfo)
 			GuiFont12Align(SOEWin.x+1,y + i*28+1,19,FONT_MID,soeStr->itemNum);//序号
 			GuiExchangeColor();	
 			GuiRPointLine(SOEWin.x+20,y+i*28+1,y+i*28+13,2,forecolor);//垂直线
-			GuiFont12Align(SOEWin.x + 21,y + i*28+2,133,FONT_RIGHT,soeStr->time);
+			GuiFont12Align(SOEWin.x + 21,y + i*28+1,133,FONT_RIGHT,soeStr->time);
 			GuiHPointLine(SOEWin.x,y+i*28+13,155,2,forecolor);
 			GuiFont12Align(SOEWin.x+2,y + i*28+15,72,FONT_MID,soeStr->pSoe.pName);
 			GuiRPointLine(SOEWin.x+10+72,y+i*28+15,y+i*28+27,2,forecolor);
@@ -2110,10 +2129,10 @@ static void FaultEventFun(void)
 		sprintf((char *)pEventStr->itemNum,"%d",pEventStr->pRead + 1);
 		pEventStr->itemNum[3] = '\0';
 		GuiExchangeColor();
-		GuiFont12Align(FaultEventWin.x+1,y+2,20,FONT_MID,pEventStr->itemNum);//序号
+		GuiFont12Align(FaultEventWin.x+1,y+1,20,FONT_MID,pEventStr->itemNum);//序号
 		GuiExchangeColor();	
 		GuiRPointLine(FaultEventWin.x+20,y+1,y+13,2,forecolor);//垂直线
-		GuiFont12Align(FaultEventWin.x + 21,y+2,133,FONT_RIGHT,pEventStr->time);
+		GuiFont12Align(FaultEventWin.x + 21,y+1,133,FONT_RIGHT,pEventStr->time);
 		GuiHPointLine(FaultEventWin.x,y+13,155,2,forecolor);
 		GuiFont12Align(FaultEventWin.x+2,y+15,72,FONT_LEFT,pEventStr->pFevent.pName);
 		GuiRPointLine(FaultEventWin.x+10+72,y+15,y+27,2,forecolor);
@@ -2128,7 +2147,11 @@ static void FaultEventFun(void)
 		yaoCeScroll.lump = yaoCeNum;
 		GuiVScroll(&yaoCeScroll);
 		GuiFillRect(FaultEventWin.x+1,y,151,158, backcolor);
-		for(i = 0;i < 8;i ++){
+        uint8_t ycNum = 8;
+        if(pEventStr->pFevent.yaoceNum < 8){
+            ycNum = pEventStr->pFevent.yaoceNum;
+        }
+		for(i = 0;i < ycNum;i ++){
 			GuiFont12Align(FaultEventWin.x+2,y+1+i*14,40,FONT_LEFT,\
 				pEventStr->pFevent.pYaoceName[i + yaoCeNum - 1]);			
 			GuiRPointLine(FaultEventWin.x+43,y+i*14,y+13+i*14,2,forecolor);

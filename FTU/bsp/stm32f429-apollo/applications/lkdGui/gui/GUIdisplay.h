@@ -92,6 +92,9 @@ enum RunStepType{
 	STEP_MAINMENU,
 	STEP_ALLNUM,
 };
+
+extern uint8_t *userGUIBuff;
+
 /* 首页界面窗口 */
 static void HomeWindowFun(void);
 /* 菜单窗口 */
@@ -111,6 +114,7 @@ static void MenuM0Fun(void);
 	static void MenuM0S4Fun(void);		//定值查询 
 		static void MenuM0S4S0Fun(void);
 	static void MenuM0S5Fun(void);		//配置查询
+        static void MenuM0S4S8Fun(void);//其他
 /* M1 定值设置  */
 static void MenuM1Fun(void);
 	static void MenuM1S0Fun(void);		//保护功能
@@ -123,7 +127,6 @@ static void MenuM1Fun(void);
 	static void OverLoadFun(void);		//过负荷
 	static void OverVoltageFun(void);	//过电压
 	static void BatterySetFun(void);	//电池设置
-	static void AutoResetFun(void);		//自动复归
 	static void MenuM1S8Fun(void);		//其他
 		static void RingUniteFun(void); //合环
 		static void BreakDownFun(void); //故障投退

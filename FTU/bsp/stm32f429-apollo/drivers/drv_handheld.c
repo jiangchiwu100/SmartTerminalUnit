@@ -57,7 +57,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
     static uint32_t s_close_shake_timer = 0;
     static uint32_t s_reserve_time;
 
-    if (g_TelesignalDB[g_TelesignalAddr.remoteEarth] == OFF) // Local mode does not allow operation
+    if (g_TelesignalDB[g_TelesignalAddr.remote] == OFF) // Local mode does not allow operation
     {
         return;
     }
@@ -94,7 +94,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_OPEN_EXECUTE].status)
             {
-                s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, rt_hw_do_operate(DO_OPEN, HANDHELD) : s_open_shake_timer++;
+                s_open_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_open_shake_timer = 0, rt_hw_do_operate(ADDR_HANDHELD_OPER, DO_OPEN) : s_open_shake_timer++;
             }
         }
     }
@@ -118,7 +118,7 @@ void rt_hw_handheld_remote_task(rt_uint8_t clock)
         {
             if (pin_status[INDEX_HANDHELD_CLOSE_EXECUTE].status)
             {
-                s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, rt_hw_do_operate(DO_CLOSE, HANDHELD) : s_close_shake_timer++;
+                s_close_shake_timer / clock >= g_Parameter[DI_SHAKING_TIME] ? s_close_shake_timer = 0, rt_hw_do_operate(ADDR_HANDHELD_OPER, DO_CLOSE) : s_close_shake_timer++;
             }
         }
     }

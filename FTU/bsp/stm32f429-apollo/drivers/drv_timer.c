@@ -568,7 +568,7 @@ void GetFrequency(void)
         g_TelemetryDB[g_TelemetryAddr.F2] += 0.001f;
     }
 
-        if (g_CalibrateFactor[CALIFACTOR_F2] != 0)
+    if (g_CalibrateFactor[CALIFACTOR_F2] != 0)
     {
         g_TelemetryDB[g_TelemetryAddr.F2] *= g_CalibrateFactor[CALIFACTOR_F2];
     }
@@ -581,6 +581,16 @@ void GetFrequency(void)
     {
         g_TelemetryDB[g_TelemetryAddr.F] = 0;
     }
+    if (g_TelemetryDB[g_TelemetryAddr.F2] < g_Parameter[ZERODRIFT_F])
+    {
+        g_TelemetryDB[g_TelemetryAddr.F2] = 0;
+    }  
+
+    if (((g_TelemetryDB[g_TelemetryAddr.UAB] <= 1) && (g_Parameter[CFG_PRO_VOL_N] == 0))||\
+       ((g_TelemetryDB[g_TelemetryAddr.UCB] <= 1)&& (g_Parameter[CFG_PRO_VOL_N] == 1)))
+    {
+        g_TelemetryDB[g_TelemetryAddr.F2] = 0;
+    }
 	
 	g_FreGatherUab.freValueProtect = g_TelemetryDB[g_TelemetryAddr.F];
 	
@@ -589,14 +599,7 @@ void GetFrequency(void)
         TIM5->ARR = 6250 - 1; // 若Uab未接入，设定采集PWM为初始值
 		g_FreGatherUab.freValueProtect = 0;
 		
-        if (g_TelemetryDB[g_TelemetryAddr.UCB] <= 1)
-        {
-            g_TelemetryDB[g_TelemetryAddr.F] = 0;
-        }
-        else
-        {
-            g_TelemetryDB[g_TelemetryAddr.F] = 50.0f;
-        }
+        g_TelemetryDB[g_TelemetryAddr.F] = 0;
     }
     else
     {	

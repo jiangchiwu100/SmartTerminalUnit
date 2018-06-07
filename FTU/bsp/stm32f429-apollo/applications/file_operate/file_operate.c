@@ -16,9 +16,12 @@
 #include "wave_recording.h"
 #include <dfs_posix.h>
 
+#include "point_table_config.h"
+#include "drv_wdg.h"
+	
+	
 #include "JsonFileOperation.h"
-	
-	
+
 /* PUBLIC VARIABLES ----------------------------------------------------------*/
 
 
@@ -36,7 +39,6 @@ static struct DIR_ARRAY *Dir_ArrayClear;// __attribute__((at(0x00050000 + SDRAM_
 static struct READ_DIR Read_Dir[DEV_MAX_NUM];
 static struct READ_FILE Read_File[DEV_MAX_NUM];
 static struct WRITE_FILE Write_File[DEV_MAX_NUM];
-	
 	
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
@@ -1385,14 +1387,27 @@ void file_operate_Init(void)
 //    if (dfs_mount("W25Q256FV", "/sojo", "elm", 0, 0) == 0)
     if (dfs_mount(RT_SPI_FLASH_NAME, "/sojo", "elm", 0, 0) == 0)
     {  
-        FILE_PRINTF("spi flash mount to /spi !\n");        
+        FILE_PRINTF("spi flash mount to /spi !\n");
+        
+        if(((g_FlagDB.fatfs_soe.currentnum >= SOE_FILE_MAXNUM)||(g_FlagDB.fatfs_soe.fullnum >= SOE_FILE_MAXNUM))||\
+           ((g_FlagDB.fatfs_co.currentnum >= CO_FILE_MAXNUM)||(g_FlagDB.fatfs_co.fullnum >= CO_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_fevent.currentnum >= FEVENT_FILE_MAXNUM)||(g_FlagDB.fatfs_fevent.fullnum >= FEVENT_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_ulog.currentnum >= ULOG_FILE_MAXNUM)||(g_FlagDB.fatfs_ulog.fullnum >= ULOG_FILE_MAXNUM)))
+        {
+            memset(&g_FlagDB.fatfs_soe,0,sizeof(g_FlagDB.fatfs_soe));
+            memset(&g_FlagDB.fatfs_co,0,sizeof(g_FlagDB.fatfs_co));
+            memset(&g_FlagDB.fatfs_fevent,0,sizeof(g_FlagDB.fatfs_fevent));
+            memset(&g_FlagDB.fatfs_ulog,0,sizeof(g_FlagDB.fatfs_ulog));
+            file_operate_Format(); 
+            FILE_PRINTF("spi flash mount to /spi restart!\n");  
+        }
     }
     else
     {
         FILE_PRINTF("spi flash mount to /spi failed!\n");  
         file_operate_Format();        
     }
-	
+    
     memset(&Read_Dir, 0, sizeof(Read_Dir));
     memset(&Read_File, 0, sizeof(Read_File));
     
@@ -1402,6 +1417,4 @@ void file_operate_Init(void)
 }
 
 /* END OF FILE ---------------------------------------------------------------*/
-
-
 

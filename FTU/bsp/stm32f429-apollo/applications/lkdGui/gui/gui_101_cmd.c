@@ -21,8 +21,8 @@
 /* hmi101线程使用 */
 #define HMI101_STACKSIZE 2048
 #define HMI101_THREADPRIORITY 24
-static struct rt_thread Hmi101Thread;
-static rt_uint8_t Hmi101Threadstack[HMI101_STACKSIZE];
+static rt_thread_t Hmi101Thread;
+static rt_uint8_t *Hmi101Threadstack;
 
 /* cmd101发送事件 */
 struct rt_event Cmd101SendEvent;
@@ -579,6 +579,41 @@ uint16_t HmiCmd002Fun(uint8_t *pbuff)
 	}
 	return pbuff[CMD002_LEN];
 }
+
+/**
+  *@brief 模拟量命令处理
+  *@param  pbuff 内容数组
+  *@retval 内容大小
+  */
+uint16_t HmiCmd003Fun(uint8_t *pbuff)
+{
+	uint8_t i;
+	union{
+		float tf;
+		uint8_t t8[4];
+	}analog;
+	switch(pbuff[CMD003_TYPE])
+	{
+	case C003TYPE_DISCRETE://不连续的
+		for(i = 0; i < pbuff[CMD003_NUM]; i++){
+			analog.t8[0] = pbuff[CMD003_VALUE_LL + i*5];
+			analog.t8[1] = pbuff[CMD003_VALUE_LH + i*5];
+			analog.t8[2] = pbuff[CMD003_VALUE_HL + i*5];
+			analog.t8[3] = pbuff[CMD003_VALUE_HH + i*5];
+			AnalogCmdResult(pbuff[CMD003_NUMBER + i*5], analog.tf);
+		}break;
+	case C003TYPE_CONTINUOUS://连续的
+		for(i = 0; i < pbuff[CMD003_NUM]; i++){
+			analog.t8[0] = pbuff[CMD003_VALUE_LL + i*4];
+			analog.t8[1] = pbuff[CMD003_VALUE_LH + i*4];
+			analog.t8[2] = pbuff[CMD003_VALUE_HL + i*4];
+			analog.t8[3] = pbuff[CMD003_VALUE_HH + i*4];
+			AnalogCmdResult(pbuff[CMD003_NUMBER] + i, analog.tf);
+		}break;
+	default:break;
+	}
+	return pbuff[CMD003_LEN];
+}
 /**
   *@brief Hmi10Cmd解析命令处理
   *@param  pbuff 内容数组
@@ -590,6 +625,7 @@ void Hmi101CmdResult(Hmi101FrameResult *pFrame)
 	switch(pFrame->cmdBegin[1])
 	{
 	case HmiCmd002:pFrame->pContent = HmiCmd002Fun(&pFrame->cmdBegin[0]);break;
+	case HmiCmd003:pFrame->pContent = HmiCmd003Fun(&pFrame->cmdBegin[0]);break;
 	default:pFrame->pContent = 0;break;
 	}
 	//GuiUpdateDisplayAll();
@@ -633,7 +669,6 @@ static void Hmi101ThreadEntity(void *param)
 	userVariableDisplayInit();
 	GUIDisplayInit();
 	HmiInOutInit();
-	rt_kprintf("\r\n面板初始化完成");
 	for (;;){ 				
 		GUIDisplayMian();
 		LedChangeCheck();
@@ -653,9 +688,7 @@ void HmiThreadDelete(void)
 	if (result != RT_EOK){  
 	}
 	time_static_detach();
-	if (result != RT_EOK){  
-	}
-	result = rt_thread_detach(&Hmi101Thread);
+	result = rt_thread_detach(Hmi101Thread);
 	if (result != RT_EOK){  
 	}
 }
@@ -668,20 +701,36 @@ void HmiThreadDelete(void)
 void Hmi101Init(void)
 {
 	rt_err_t result;
-	static uint8_t flag;
+	static uint8_t flag,mallocFlag;
 	if(flag == 1){
 		HmiThreadDelete();
 		flag = 0;
 	}
 	if(flag == 0){
-		rt_kprintf("\r\n面板线程");
-		result = rt_thread_init(&Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
+		if(mallocFlag == 0){//只在上电时分配一次
+			Hmi101Thread = (rt_thread_t)rt_malloc(sizeof(struct rt_thread));
+			Hmi101Threadstack = (rt_uint8_t *)rt_malloc(HMI101_STACKSIZE);
+			userGUIBuff = (uint8_t *)rt_malloc(1024*4);
+			cmd101.packBuff = (uint8_t *)rt_malloc(PACKBUFFMAX);
+			mallocFlag = 1;
+		}
+		result = rt_thread_init(Hmi101Thread,"Hmi101",Hmi101ThreadEntity,
 			RT_NULL,Hmi101Threadstack,HMI101_STACKSIZE,HMI101_THREADPRIORITY,20);
 		if(result == RT_EOK){
-			rt_thread_startup(&Hmi101Thread);
+			rt_thread_startup(Hmi101Thread);
 			flag = 1;
 		}
 	}
+}
+
+/**
+  *@brief Hmi线程等全局buff申请
+  *@param  None
+  *@retval None
+  */
+void HmiStaticMemoryApply(void)
+{
+	
 }
 
 /* END */

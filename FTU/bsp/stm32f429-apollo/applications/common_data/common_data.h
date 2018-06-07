@@ -283,15 +283,6 @@ enum DoOperateType
     DO_COIL_ENERGY_STORAGE,            // 线圈储能
     DO_ALARM_LED,                      // 告警灯
 };
-/* 遥控操作动作类型 */
-enum ActReasion
-{
-    HANDHELD = 1,              // 手持遥控
-    LOCAL,                     // 本地操作
-    DISTANCE,                  // 远方
-    LOGIC_ACT,                 // 逻辑动作
-    OTHER                      // 其他
-};
 
 enum Frequency
 {
@@ -316,7 +307,9 @@ enum Frequency
 #define ADDR_FRAM_CO                    0x04000  // 操作记录起始地址 0x300
 #define ADDR_FRAM_LOG                   0x04300  // 日志起始地址 0x1000
 #define ADDR_FRAM_MEMORY                0x05300  // 状态标志地址 0x100
-#define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x100
+#define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x200
+#define ADDR_FRAM_JSON_MD5              0x05600  // MDK5数值   0x20
+
 
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x1000
 
@@ -340,6 +333,7 @@ enum FramArea
     CFG_RECODE,                        // 配置    
     TELESIGNAL,                        // 遥信数据
     CURRENT_SN,                        // 当前定值区号
+    JSON_MD5,                          // JSON校验码
     FRAM_AREA_NUM                      // 分区数量
 };
 
@@ -374,7 +368,8 @@ typedef struct TagTelesignalAddr
     breakContact,                                   // 分断/联络
     recloseFAHardStrap,                             // 重合硬/FA压板
     functionHardStrap,                              // 功能投退硬压板
-    remoteEarth,                                    // 远方/就地
+    remote,                                         // 远方
+    earth,                                          // 就地
     shortCircuitFault,                              // 短路故障/过流保护
     earthingFault,                                  // 接地故障/零序保护
     protectionAct,                                  // 保护动作
@@ -597,7 +592,6 @@ enum AddrRunParameter
     CFG_POW_VOL_CB,                       // 功率电压CB
     CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
-	SWITCH_TYPE,						  // 开关类型(0-断路器/1-负荷开关)
 	BREAK_WORK_MODE,                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	LOAD_WORK_MODE,                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
 	CONNECT_SWITCH_RECOGNIZE,             // 联络开关识别
@@ -778,9 +772,9 @@ enum AddrFixedValue
 	OVERLOAD_FACTOR,                     // 过负荷返回系数		
 	OVERLOAD_TIME,	                     // 过负荷延时
     BATTERY_LOWVOLTAGE_ALARM_SWITCH,     // 蓄电池低压报警投退	
-	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
-	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
-	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
+//	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
+//	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
+//	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
     BATTERY_ACTIVE_SWITCH,               // 电池活化投退
     BATTERY_ACTIVE_CYCLE,                // 电池活化周期(天)
     BATTERY_ACTIVE_TIME,                 // 电池活化时间(h)
@@ -1020,6 +1014,7 @@ struct ConfigurationSetDatabase
     uint16_t ID_Value[12];//值
 };
 
+
 /* 属性值 */
 #define NEWJUDG_AND 0x2
 
@@ -1176,6 +1171,7 @@ extern void rt_multi_common_data_powerdown_storage(void);
 
 
 extern int rt_multi_common_data_init(void);
+extern uint8_t rt_multi_telecontrl_proof(uint16_t addr, rt_uint8_t operate_type);
 extern void rt_multi_telecontrl_operate(uint16_t addr, rt_uint8_t operate_type);
 extern float* GetValueArray(uint16_t addr, uint8_t sn);
 extern void ParameterCheck(void);

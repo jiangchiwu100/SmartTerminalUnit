@@ -30,7 +30,7 @@ uint8_t UpadaProgramCheck(uint32_t proBeginAddr)
 	uint32_t appxaddr;
 	appxaddr = *(volatile uint32_t *)proBeginAddr;
 	DebugPrintf("µÿ÷∑ºÏ≤‚: 0x%08X \r\n",appxaddr);
-	if((appxaddr & 0x2FFE0000) == 0x20000000 ||\
+	if((appxaddr & 0x2FFC0000) == 0x20000000 ||\
 		(appxaddr & 0x1FFE0000) == 0x10000000){
 		return 0;
 	}

@@ -92,7 +92,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	if(keyNo == YK_OPENSWITCH){
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){//分闸
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){//分闸
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_OPEN);
 			}
 		}
@@ -100,7 +100,7 @@ void YaoKongKeyCmdResult(enum UserKeyNomberMap keyNo)
 	else if(keyNo == YK_CLOSESWITCH){//合闸
 		if(ykKeyValue.shift == 1){
 			ykKeyValue.shift = 0;
-			if(g_TelesignalDB[g_TelesignalAddr.remoteEarth] != ON){
+			if(g_TelesignalDB[g_TelesignalAddr.earth] == ON){
 				rt_hw_do_operate(ADDR_LOCAL_OPERATE, DO_CLOSE);
 			}
 		}
@@ -152,23 +152,25 @@ void SwitchResult(uint8_t switchNo, uint8_t state)
 	if(state == 1){//0为有效状态
 		switch(switchNo){
 			/* 他俩为一个点 统一放在有效状态处理 */
-//			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.remoteEarth, OFF);break;
-//			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remoteEarth, ON);break;
+			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.earth, OFF);break;
+			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remote, OFF);break;
 			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, OFF);break;
 			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, OFF);break;
 			/* 他俩为一个点 统一放在有效状态处理 */
 //			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
 //			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
+			case SW_LSCB:DBWriteSOE(g_TelesignalAddr.swtichclass, OFF);break;
 		}
 	}
 	else{
 		switch(switchNo){
-			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.remoteEarth, OFF);break;
-			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remoteEarth, ON);break;
+			case SW_LOCAL:DBWriteSOE(g_TelesignalAddr.earth, ON);break;
+			case SW_REMORE:DBWriteSOE(g_TelesignalAddr.remote, ON);break;
 			case SW_RECLOSE:DBWriteSOE(g_TelesignalAddr.recloseFAHardStrap, ON);break;
 			case SW_PROTECT:DBWriteSOE(g_TelesignalAddr.functionHardStrap, ON);break;
 			case SW_CONTACT:DBWriteSOE(g_TelesignalAddr.breakContact, ON);break;
 			case SW_SECTION:DBWriteSOE(g_TelesignalAddr.breakContact, OFF);break;
+			case SW_LSCB:DBWriteSOE(g_TelesignalAddr.swtichclass, ON);break;
 		}
 	}
 }
@@ -195,7 +197,8 @@ void KeyCmdResult(uint8_t keyNo, uint8_t state)
 		case SW_RECLOSE:
 		case SW_PROTECT:
 		case SW_CONTACT:
-		case SW_SECTION:SwitchResult(keyNo,state);break;
+		case SW_SECTION:
+		case SW_LSCB:SwitchResult(keyNo,state);break;
 	}
 }
 
@@ -247,7 +250,7 @@ void LedChangeCheck(void)
 		if(LastYxLed[i] != *(RealYxLed[i])){
 			LastYxLed[i] = *RealYxLed[i];
 			if(LastYxLed[i] == OFF){
-				if(i == ULED_NOENERGY || i == ULED_CB){
+				if(i == ULED_NOENERGY){
 					ULedStateSet(i,ULED_ON);
 				}
 				else{
@@ -255,7 +258,7 @@ void LedChangeCheck(void)
 				}
 			}
 			else{
-				if(i == ULED_NOENERGY || i == ULED_CB){
+				if(i == ULED_NOENERGY){
 					ULedStateSet(i,ULED_OFF);
 				}
 				else{
@@ -277,6 +280,7 @@ void LedChangeCheck(void)
   */
 void YaoxinMapToLed(void)
 {
+	static uint8_t noUseLed = OFF;
 	RealYxLed[ULED_COMMUN] = &g_TelesignalDB[g_TelesignalAddr.communication];
 	RealYxLed[ULED_NOENERGY] = &g_TelesignalDB[g_TelesignalAddr.operatingMechanism];
 	RealYxLed[ULED_SWITCHOPEN] = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
@@ -289,13 +293,16 @@ void YaoxinMapToLed(void)
 	RealYxLed[ULED_DEVICEFAULT] = &g_TelesignalDB[g_TelesignalAddr.deviceFault];
 	RealYxLed[ULED_SELFCHECK] = &g_TelesignalDB[g_TelesignalAddr.selfCheckAbnomal];
 	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[g_TelesignalAddr.recloseLock];
-	RealYxLed[ULED_LS] = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
-	RealYxLed[ULED_CB] = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
-	
+	RealYxLed[ULED_BATTERYALARM] = &g_TelesignalDB[g_TelesignalAddr.batteryLossAlarm];
+	RealYxLed[ULED_BATTERYRELEASE] = &g_TelesignalDB[g_TelesignalAddr.batteryActivationStatus];
+	RealYxLed[ULED_PROTECTOFF] = &g_TelesignalDB[g_TelesignalAddr.protectionLock];
+	RealYxLed[ULED_BATTERYLOWV] = &g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm];
+	RealYxLed[ULED_LS] = &noUseLed;
+	RealYxLed[ULED_CB] = &noUseLed;	
 	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
 		LastYxLed[i] = *(RealYxLed[i]);
 		if(LastYxLed[i] == OFF){
-			if(i == ULED_NOENERGY || i == ULED_CB){//取反
+			if(i == ULED_NOENERGY ){//取反
 				ULedStateSet(i,ULED_ON);
 			}
 			else{
@@ -303,7 +310,7 @@ void YaoxinMapToLed(void)
 			}
 		}
 		else{
-			if(i == ULED_NOENERGY || i == ULED_CB){//取反
+			if(i == ULED_NOENERGY){//取反
 				ULedStateSet(i,ULED_OFF);
 			}
 			else{
@@ -314,6 +321,17 @@ void YaoxinMapToLed(void)
 	ULedStateSend();
 }
 
+/**
+  *@brief  模拟量命令处理
+  *@param  analogNo 模拟号
+  *@retval analogVal 模拟值
+  */
+void AnalogCmdResult(uint8_t analogNo, float analogVal)
+{
+	switch(analogNo){
+		case AI_TEMPERATURE:g_TelemetryDB[g_TelemetryAddr.T] = analogVal;break;
+	}
+}
 /**
   *@brief  HmiOut初始化
   *@param  None

@@ -83,7 +83,7 @@ static void addSOE(ComProSts *comProSts,STelesignalStr *telesignal,uint8_t value
         comProSts->outputSoe(telesignal->addr,value);
         if(value == ON)
         {
-            comProSts->outputFevent(telesignal->addr,comProSts->fevent_yc_addr,8);
+            comProSts->outputFevent(telesignal->addr,NULL,0);
         }
     }
 }
@@ -1257,7 +1257,6 @@ void LoadSwitchCtrlInit(void)
         case LOAD_DEV0:
             list_init(&s_ListTimers[pdrv]);
             //通用
-			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
 			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
 			s_ComProSts[pdrv].pLoadWorkMode = &g_Parameter[LOAD_WORK_MODE];
             s_ComProSts[pdrv].pConnectSwitchRecognize = &g_Parameter[CONNECT_SWITCH_RECOGNIZE];
@@ -1265,7 +1264,7 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
             s_ComProSts[pdrv].yx.FA_HardStrap.value = &g_TelesignalDB[g_TelesignalAddr.recloseFAHardStrap];
-            s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[g_TelesignalAddr.telecontrolProOut];
+            s_ComProSts[pdrv].yx.swtichclass.value = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
 
             s_ComProSts[pdrv].yx.breakContact.addr =  g_TelesignalAddr.breakContact;
             s_ComProSts[pdrv].yx.closingLocked.addr = g_TelesignalAddr.closingLocked;
@@ -1327,14 +1326,6 @@ void LoadSwitchCtrlInit(void)
             s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[g_TelemetryAddr.I0];
             s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];            
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];
-            
-            s_ComProSts[pdrv].fevent_yc_addr[0] = g_TelemetryAddr.Ia;
-            s_ComProSts[pdrv].fevent_yc_addr[1] = g_TelemetryAddr.Ib;
-            s_ComProSts[pdrv].fevent_yc_addr[2] = g_TelemetryAddr.Ic;
-            s_ComProSts[pdrv].fevent_yc_addr[3] = g_TelemetryAddr.I0;
-            s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;          
-            s_ComProSts[pdrv].fevent_yc_addr[6] = g_TelemetryAddr.Uac;
-            s_ComProSts[pdrv].fevent_yc_addr[7] = g_TelemetryAddr.U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
             s_ComProSts[pdrv].closing = &rt_hw_do_operate;
@@ -1460,34 +1451,28 @@ void LoadSwitchCtrlClock(void)
     for(pdrv=0; pdrv<LOAD_DEVMAXNUM; pdrv++)
     {
         add_timers(pdrv);//定时增加
-
-		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
-		{
-			s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
-		}
-		else
-		{
-			s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
-		}
-		
+        		
         switch(pdrv)
         {
         case LOAD_DEV0:
+            if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+            {
+                s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+            }
+            else
+            {
+                s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+            }
             if(g_Parameter[CFG_PRO_VOL_N] == 0)
             {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
             else
             {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
             
-            if(g_Parameter[CFG_PRO_VOL_N] == 0)
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
-            else
-            {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}  
-            
 			if((!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_NONE))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_LOADSWTICH_NONE)))
 			{
-				if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板
+				if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//保护压板
 				{
 					state_judge(&s_ComProSts[pdrv],&s_stateJudge[pdrv]);//状态判断
 				  #ifdef FAPROTECTIONENABLING

@@ -173,7 +173,7 @@ uint16_t ReadProgram(uint32_t addr, uint8_t *pBuff,uint32_t sizeByte)
   */
 uint32_t IapLoadApp(uint32_t appxaddr)
 {
-	if(((*(volatile uint32_t *)appxaddr)&0x2FFE0000) == 0x20000000 ||\
+	if(((*(volatile uint32_t *)appxaddr)&0x2FFC0000) == 0x20000000 ||\
 		((*(volatile uint32_t *)appxaddr)&0x1FFE0000) == 0x10000000)//检查栈顶地址是否合法.
 	{ 
 		jump2app=(Iapfun)*(volatile uint32_t *)(appxaddr+4);//用户代码区第二个字为程序开始地址(复位地址)		

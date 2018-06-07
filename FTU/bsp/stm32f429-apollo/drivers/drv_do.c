@@ -61,30 +61,36 @@ static rt_uint8_t rt_hw_close_operate(void)
     else
     {uCB = g_TelemetryDB[g_TelemetryAddr.UCB];}
         
-    if (g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && !CLOSING && !OPENING && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF)
+  #ifdef LOGICLOCKINGMANUALREMOTECONTROL
+    if ((g_TelesignalDB[g_TelesignalAddr.closingLocked] == OFF || (g_pFixedValue[CLOSING_LOOP_SWITCH]))&& g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && 
+        !CLOSING && !OPENING && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF )//合环操作不用判断合闸闭锁
+  #else
+    if (g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && !CLOSING && !OPENING && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF)         
+  #endif 	    
     {
-		if (g_pFixedValue[CLOSING_LOOP_SWITCH] && uab >= g_pFixedValue[VOLTAGE_VALUE] && uCB >= g_pFixedValue[VOLTAGE_VALUE])
+		if (g_pFixedValue[CLOSING_LOOP_SWITCH])
 		{
             // 合环条件不满足
-	        if (((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE])&& (g_Parameter[CFG_PRO_VOL_N] == 0))||\
-                ((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] - 60) > g_pFixedValue[PHASEANGLE_DIFFERENCE])&& (g_Parameter[CFG_PRO_VOL_N] == 1))||\
+	        if (uab < g_pFixedValue[VOLTAGE_VALUE] || uCB < g_pFixedValue[VOLTAGE_VALUE] || 
+                ((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux]) > g_pFixedValue[PHASEANGLE_DIFFERENCE]) && (g_Parameter[CFG_PRO_VOL_N] == 0))||\
+                ((fabs(g_TelemetryDB[g_TelemetryAddr.alphy_Ux_Ux] + 60) > g_pFixedValue[PHASEANGLE_DIFFERENCE])&& (g_Parameter[CFG_PRO_VOL_N] == 1))||\
                 (fabs(uab - uCB) > g_pFixedValue[VOLTAGE_DIFFERENCE]) || (fabs(g_TelemetryDB[g_TelemetryAddr.F] - g_TelemetryDB[g_TelemetryAddr.F]) > g_pFixedValue[FREQUENCY_DIFFERENCE])) 
 			{
 				switch (DoStr.actSource)
 				{
-                    case HANDHELD:
+                    case ADDR_HANDHELD_OPER:
                         DBWriteCO(ADDR_HANDHELD_OPER, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
-                    case LOCAL:
+                    case ADDR_LOCAL_OPERATE:
                         DBWriteCO(ADDR_LOCAL_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
-                    case DISTANCE:
+                    case ADDR_REMOTE_OPERATE:
                         DBWriteCO(ADDR_REMOTE_OPERATE, CLOSE_LOOP_EXECUTE_FAIL);
                         DoStr.actSource = 0;
                         break;
-                    case LOGIC_ACT:
+                    case ADDR_LOGIC_ACT:
                         DoStr.actSource = 0;
                         break;
                     default:
@@ -93,41 +99,61 @@ static rt_uint8_t rt_hw_close_operate(void)
 
 			    return FALSE;
 			}
-		}
-      #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-		else
-		{
-			if (g_TelesignalDB[ADDR_CLOSING_CLOCK] == ON)
-			{
-			    return FALSE;
-			}			    
-		}         
-      #endif  		
-		
-        /* Permanent magnet mechanism */
-        if (g_Parameter[OPERATING_MECHANISM] == MAGNET && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == OFF)
-        {
-            return FALSE;
-        }
+            else
+            {
+                 /* Permanent magnet mechanism */
+                if (g_Parameter[OPERATING_MECHANISM] == MAGNET && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == OFF)
+                {
+                    return FALSE;
+                }
 
-        if (g_Parameter[OUTPUT_OVERTURN] == 0)
-        { 
-            pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;	
-            pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
-            rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));				
-            rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));			
-        }
+                if (g_Parameter[OUTPUT_OVERTURN] == 0)
+                { 
+                    pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;	
+                    pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
+                    rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));				
+                    rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));			
+                }
+                else
+                {
+                    pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
+                    pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
+                    rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));				
+                    rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));					
+                }            
+
+                CLOSING = 1;
+                DoStr.closingDelay = g_Parameter[CLOSING_PULSE_TIME] <= 10 ? PULSE_TIME : g_Parameter[CLOSING_PULSE_TIME];
+                return TRUE;              
+            }
+		}
         else
         {
-            pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
-            pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
-            rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));				
-            rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));					
-        }            
+            /* Permanent magnet mechanism */
+            if (g_Parameter[OPERATING_MECHANISM] == MAGNET && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == OFF)
+            {
+                return FALSE;
+            }
 
-        CLOSING = 1;
-        DoStr.closingDelay = g_Parameter[CLOSING_PULSE_TIME] <= 10 ? PULSE_TIME : g_Parameter[CLOSING_PULSE_TIME];
-        return TRUE;
+            if (g_Parameter[OUTPUT_OVERTURN] == 0)
+            { 
+                pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;	
+                pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
+                rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));				
+                rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));			
+            }
+            else
+            {
+                pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
+                pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
+                rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));				
+                rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));					
+            }            
+
+            CLOSING = 1;
+            DoStr.closingDelay = g_Parameter[CLOSING_PULSE_TIME] <= 10 ? PULSE_TIME : g_Parameter[CLOSING_PULSE_TIME];
+            return TRUE;        
+        }            
     }
     else
     {
@@ -160,9 +186,9 @@ static rt_uint8_t rt_hw_close_recovery(void)
             s_fault_counter = 0;
             DoStr.closingDelay = 0;
 			
-			if (g_pFixedValue[CLOSING_LOOP_SWITCH])
+		    if (g_pFixedValue[CLOSING_LOOP_SWITCH])
 			{
-			    rlt = CLOSE_LOOP_EXECUTE_SUCCESS;
+                rlt = CLOSE_LOOP_EXECUTE_SUCCESS;  
 			}
 			else
 			{
@@ -184,9 +210,9 @@ static rt_uint8_t rt_hw_close_recovery(void)
             CLOSING = 0;
             s_fault_counter = 0;
             
-		    if (g_pFixedValue[CLOSING_LOOP_SWITCH] && g_TelemetryDB[g_TelemetryAddr.Uab] >= g_pFixedValue[VOLTAGE_VALUE] && g_TelemetryDB[g_TelemetryAddr.UCB] >= g_pFixedValue[VOLTAGE_VALUE])
+		    if (g_pFixedValue[CLOSING_LOOP_SWITCH])
 			{
-			    rlt = CLOSE_LOOP_EXECUTE_FAIL;
+                rlt = CLOSE_LOOP_EXECUTE_FAIL;  
 			}
 			else
 			{
@@ -209,7 +235,7 @@ static rt_uint8_t rt_hw_open_operate(void)
 {
   #ifdef LOGICLOCKINGMANUALREMOTECONTROL
     if (g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.open] == OFF && !CLOSING && !OPENING
-        && g_TelesignalDB[g_TelesignalAddr.openING_CLOCK] == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF) 				
+        && g_TelesignalDB[g_TelesignalAddr.openingLocked] == OFF && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF) 				
   #else
     if (g_TelesignalDB[g_TelesignalAddr.switchClose] == ON && g_TelesignalDB[g_TelesignalAddr.switchOpen] == OFF && !CLOSING && !OPENING 
 		&& g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF)            
@@ -351,8 +377,8 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
             switch (operate_type)	
 			{
 				case DO_CLOSE: // 合闸
-					rtl = rt_hw_close_operate();
-					DoStr.actSource = addr;
+                    DoStr.actSource = addr;
+					rtl = rt_hw_close_operate();					
 					break;
 					
 				case DO_CLOSE_RECOVERY: // 合闸收回
@@ -365,8 +391,8 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 					break;
 							
 				case DO_OPEN: // 分闸
+					DoStr.actSource = addr;                    
 					rtl = rt_hw_open_operate();
-					DoStr.actSource = addr;
 					break;
 					
 				case DO_OPEN_RECOVERY: // 分闸收回
@@ -393,13 +419,13 @@ rt_uint8_t rt_hw_do_operate(rt_uint16_t addr, rt_uint8_t operate_type)
             switch (operate_type)	
 			{
 				case DO_CLOSE: // 合闸
-					rtl = rt_hw_close_operate();
-					DoStr.actSource = addr;
+                    DoStr.actSource = addr;
+					rtl = rt_hw_close_operate();					
 					break;
 							
 				case DO_OPEN: // 分闸
-					rtl = rt_hw_open_operate();
-					DoStr.actSource = addr;
+                    DoStr.actSource = addr;
+					rtl = rt_hw_open_operate();					
 					break;		
 			}				
 		    break;

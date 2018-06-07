@@ -32,7 +32,6 @@ enum
 
 extern rt_err_t rt_s2j_init(void);  //初始化struct2json
 extern uint8_t Create_JsonFile(void);
-extern uint8_t GetJsonForFile(char* fileName, uint8_t name);
 
 #endif
 

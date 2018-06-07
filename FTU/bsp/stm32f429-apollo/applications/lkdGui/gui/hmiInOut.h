@@ -15,6 +15,7 @@
 #define USERKEY_DOWN	1
 #define USERKEY_UP 		0
 
+
 /* 按键映射 */
 enum UserKeyNomberMap{
 	/* 菜单按键映射 */
@@ -23,7 +24,7 @@ enum UserKeyNomberMap{
 	MENUKEY_DOWN = 2,
 	MENUKEY_RIGHT = 3,
 	MENUKEY_ESC = 4,
-	MENUKEY_OK = 5,
+	MENUKEY_OK = 12,
 	/* 遥控按键映射 */
 	YK_RESET = 6,
 	YK_CLOSESWITCH = 7,
@@ -36,6 +37,8 @@ enum UserKeyNomberMap{
 	SW_PROTECT = 53,
 	SW_CONTACT = 54,
 	SW_SECTION = 55,
+	SW_FA = 56,
+	SW_LSCB = 57,
 };
 /* 按键枚举 */
 enum KeyStatus{
@@ -87,6 +90,10 @@ enum UserLedDefine{
 	ULED_SELFCHECK,		/* 自检异常 */
 	ULED_COMMUN,			/* 通信 */
 	ULED_RECLOSELOCK,	/* 重合闭锁 */
+	ULED_BATTERYALARM,/* 电池告警 */
+	ULED_BATTERYRELEASE,/* 电池活化 */
+	ULED_PROTECTOFF,	/* 保护闭锁 */
+	ULED_BATTERYLOWV,	/* 电池欠压 */
 	ULED_LS,					/* 负荷开关 */
 	ULED_CB,					/* 断路器 */
 	ULED_ALLNUM
@@ -96,9 +103,15 @@ enum UserLedState{
 	ULED_ON,
 };
 
+/* 模拟量使用定义 */
+enum UserAnalogDefine{
+	AI_TEMPERATURE = 1,
+};
+
 enum KeyStatus GetKeyStatus(void);
 void SetKeyIsNoKey(void);
 void KeyCmdResult(uint8_t keyNo, uint8_t state);
+void AnalogCmdResult(uint8_t analogNo, float analogVal);
 void LedChangeCheck(void);
 void HmiInOutInit(void);
 

@@ -85,7 +85,7 @@ static void addSOE(ComProSts *comProSts, STelesignalStr *telesignal, uint8_t val
         comProSts->outputSoe(telesignal->addr,value);
         if(value == ON)
         {
-            comProSts->outputFevent(telesignal->addr,comProSts->fevent_yc_addr,8);
+            comProSts->outputFevent(telesignal->addr,NULL,0);
         }
         if(telesignal->addr == comProSts->yx.shortCircuitFault.addr)
         {
@@ -978,17 +978,16 @@ void BreakerCtrlInit(void)
     {
         switch(pdrv)
         {
-        case BRE_DEV0:
+        case BRE_DEV0:            		      
             list_init(&s_ListTimers[pdrv]);
             //通用
-			s_ComProSts[pdrv].pSwitchType = &g_Parameter[SWITCH_TYPE];
 			s_ComProSts[pdrv].pBreakWorkMode = &g_Parameter[BREAK_WORK_MODE];
 			s_ComProSts[pdrv].pLoadWorkMode = &g_Parameter[LOAD_WORK_MODE];
             s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
             s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];
             s_ComProSts[pdrv].yx.recloseHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.recloseFAHardStrap];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
-            s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[g_TelesignalAddr.telecontrolProOut];
+            s_ComProSts[pdrv].yx.swtichclass.value = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
 
             s_ComProSts[pdrv].yx.shortCircuitFault.addr = g_TelesignalAddr.shortCircuitFault;
             s_ComProSts[pdrv].yx.earthingFault.addr = g_TelesignalAddr.earthingFault;
@@ -1062,14 +1061,6 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];
             s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[g_TelemetryAddr.Uac];
             s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];
-            
-            s_ComProSts[pdrv].fevent_yc_addr[0] = g_TelemetryAddr.Ia;
-            s_ComProSts[pdrv].fevent_yc_addr[1] = g_TelemetryAddr.Ib;
-            s_ComProSts[pdrv].fevent_yc_addr[2] = g_TelemetryAddr.Ic;
-            s_ComProSts[pdrv].fevent_yc_addr[3] = g_TelemetryAddr.I0;
-            s_ComProSts[pdrv].fevent_yc_addr[4] = g_TelemetryAddr.Uab;         
-            s_ComProSts[pdrv].fevent_yc_addr[6] = g_TelemetryAddr.Uac;
-            s_ComProSts[pdrv].fevent_yc_addr[7] = g_TelemetryAddr.U0;
 
             s_ComProSts[pdrv].opening = &rt_hw_do_operate;
             s_ComProSts[pdrv].closing = &rt_hw_do_operate;
@@ -1242,32 +1233,26 @@ void BreakerCtrlClock(void)
     for(pdrv=0; pdrv<BRE_DEVMAXNUM; pdrv++)
     {
         add_timers(pdrv);//定时增加
-		
-		if(*(s_ComProSts[pdrv].pSwitchType) == SWITCH_OFF)
-		{
-			s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
-		}
-		else
-		{
-			s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
-		}
         
         switch(pdrv)
         {
 			case BRE_DEV0:
+                if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+                {
+                    s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+                }
+                else
+                {
+                    s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+                }  
                 if(g_Parameter[CFG_PRO_VOL_N] == 0)
                 {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
                 else
                 {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
-                
-                if(g_Parameter[CFG_PRO_VOL_N] == 0)
-                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UAB;}
-                else
-                {s_ComProSts[pdrv].fevent_yc_addr[5] = g_TelemetryAddr.UCB;}  
             
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{
-					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板
+					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//保护压板
 					{
 						inrush_ctrl(&s_ComProSts[pdrv],&s_Inrush[pdrv]);//涌流抑制
 						iACC_ctrl(&s_ComProSts[pdrv],&s_IACC[pdrv]);//后加速

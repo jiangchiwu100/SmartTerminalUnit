@@ -353,6 +353,7 @@
 #define RT_USING_TELEMETRY_SET                                         (1) // 遥测置数
 
 /* thread cfg */
+
 #define RT_USING_PROTECT                                               (1) // 保护任务
 #define RT_USING_WATCH                                                 (1) // 监听任务
 #define RT_USING_CAL                                                   (1) // 计算任务
