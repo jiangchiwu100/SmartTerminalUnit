@@ -66,19 +66,20 @@ uint8_t Create_JsonFile(void)
 {
     //TERMINAL_PRODUCT_SERIAL_NUMBER
     char* string;
-    uint8_t md5Buffer[16];
+//    uint8_t md5Buffer[16];
+    uint8_t res = 0;
 
     strcpy(Json_FileName,"/sojo");
 	strcat(Json_FileName,"/AllJsonCfg.json");
 
-//unlink(Json_FileName);  //删除文件
+    unlink(Json_FileName);  //删除文件
 
-    uint8_t res = Get_MD5ID_For_Json(Json_FileName);
+//    uint8_t res = Get_MD5ID_For_Json(Json_FileName);
 
-    if(res == 0)   //ID号能对应上则退出
-    {
-        return 0;
-    }
+//    if(res == 0)   //ID号能对应上则退出
+//    {
+//        return 0;
+//    }
      
     g_ProductID.pointTableType = "AllJsonCfg.json";    //json内同时写入文件名称以作区分
 
@@ -102,8 +103,8 @@ uint8_t Create_JsonFile(void)
     
 	close(Json_MyFile);
 
-    getFileMD5(Json_FileName, md5Buffer);
-    rt_multi_common_data_fram_record_write(JSON_MD5, (uint8_t *)md5Buffer, sizeof(md5Buffer));   //将MD5校验码写入到FRAM中
+//   getFileMD5(Json_FileName, md5Buffer);
+//    rt_multi_common_data_fram_record_write(JSON_MD5, (uint8_t *)md5Buffer, sizeof(md5Buffer));   //将MD5校验码写入到FRAM中
     //TODO:应该在读取一遍，校验一次
     return res;
 }
@@ -240,47 +241,47 @@ static void Struct_To_Json(int file)
     }
 }
 
-/**
- * @fn Get_MD5ID_For_Json
- * @brief 从json文件中获取MD5校验码
- * @param fileName 指向要读取的文件
- * @return 0    md5校验正确
- *         1    md5校验不正确
- *         2    不存在MD5校验码
- *         3    字符串位置不正确
- *         4    获取文件MD5校验码失败
- * 
- */
-static uint8_t Get_MD5ID_For_Json(const char* fileName)
-{
-    uint8_t res = 1;    //要返回的结果
-    uint8_t md5Buffer[16];    //保存md5校验码的数组
-    uint8_t md5Fram[16];   //保存在FRAM中的MD5校验码
+///**
+// * @fn Get_MD5ID_For_Json
+// * @brief 从json文件中获取MD5校验码
+// * @param fileName 指向要读取的文件
+// * @return 0    md5校验正确
+// *         1    md5校验不正确
+// *         2    不存在MD5校验码
+// *         3    字符串位置不正确
+// *         4    获取文件MD5校验码失败
+// * 
+// */
+//static uint8_t Get_MD5ID_For_Json(const char* fileName)
+//{
+//    uint8_t res = 1;    //要返回的结果
+//    uint8_t md5Buffer[16];    //保存md5校验码的数组
+//    uint8_t md5Fram[16];   //保存在FRAM中的MD5校验码
 
-    rt_multi_common_data_fram_record_read(JSON_MD5, md5Fram);   //读取
+////    rt_multi_common_data_fram_record_read(JSON_MD5, md5Fram);   //读取
 
-    //此处直接判断MD5
-    if(getFileMD5(fileName, md5Buffer) == 0)
-    {
-        for(uint8_t i = 0; i < sizeof(md5Buffer); i++)
-        {
-            if(md5Buffer[i] != md5Fram[i])
-            {
-                res = 1;    //md5校验码不正确
-                break;
-            }
-            else
-            {
-                res = 0;    //md5校验码正确
-            }
-        }
-    }
-    else
-    {
-        res = 2;    //获取文件MD5校验码失败
-    }
+//    //此处直接判断MD5
+//    if(getFileMD5(fileName, md5Buffer) == 0)
+//    {
+//        for(uint8_t i = 0; i < sizeof(md5Buffer); i++)
+//        {
+//            if(md5Buffer[i] != md5Fram[i])
+//            {
+//                res = 1;    //md5校验码不正确
+//                break;
+//            }
+//            else
+//            {
+//                res = 0;    //md5校验码正确
+//            }
+//        }
+//    }
+//    else
+//    {
+//        res = 2;    //获取文件MD5校验码失败
+//    }
 
-    return res;
-}
+//    return res;
+//}
 
 
