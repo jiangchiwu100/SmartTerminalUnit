@@ -311,8 +311,8 @@ enum Frequency
 #define ADDR_FRAM_JSON_MD5              0x05600  // MDK5数值   0x20
 
 
-#define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x1000
-
+#define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x2000
+#define ADDR_FRAM_GRID                  0x0A000  // 网架起始地址   0x2000
 
 /* flag */                                        
 
@@ -330,7 +330,8 @@ enum FramArea
     CO_RECODE,                         // 操作记录  
     LOG_RECODE,                        // 日志记录   
 	MEMORY_FLAG,                       // 记录标志缓存
-    CFG_RECODE,                        // 配置    
+    CFG_RECODE,                        // 配置文件   
+    GRID_RECODE,                       // 网架文件     
     TELESIGNAL,                        // 遥信数据
     CURRENT_SN,                        // 当前定值区号
     JSON_MD5,                          // JSON校验码
@@ -1041,6 +1042,9 @@ struct ConfigurationSetDatabase
 #define NEWCAL_NEG          0 //非
 #define NEWONEYX_CAL        12 //运算
 
+//网架结构大小
+#define GRIDSTRUCTUERSETSIZE   0x2000 
+
 /* PUBLIC VALUE ----------------------------------------------------------------------*/
 /* 缓存后的数据，防止计算被打断 */
 extern double g_IaSampleBuf[ADC_SAMPLE_NUM * 2]; 
@@ -1066,6 +1070,7 @@ extern uint16_t g_StartWave;
 
 /* 系统配置 */
 extern struct ConfigurationSetDatabase *g_ConfigurationSetDB;
+extern uint8_t *GridStructureSet; // 网架配置文件
 
 /* 系统时间 */
 extern struct SD2405Time g_SystemTime;

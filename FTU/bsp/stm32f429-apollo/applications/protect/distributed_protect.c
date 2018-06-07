@@ -852,7 +852,29 @@ DevStr *ListDevStorage(uint8_t pdrv,uint8_t ip,uint32_t steadyState)
     }
     return(dev);
 }
+ 
+/**
+  * @Description: 状态转换.
+  * @param:  无
+  * @return: 无
+  * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
+  */
+uint32_t steadyStateChange(uint8_t pdrv,uint8_t sta1,uint8_t sta2)
+{
+    uint32_t State = 0;
     
+    if(sta1)
+    {State |= _DISTRIBUT_S_BREAKER;}
+    else
+    {State |= _DISTRIBUT_S_LOADSWTICH;}
+    if(sta2)
+    {State |= _DISTRIBUT_S_TRUNK;}
+    else
+    {State |= _DISTRIBUT_S_BRANCH;}
+    
+    return(State);
+}
+
 /**
   * @Description: 链表初始化.
   * @param:  无
@@ -861,9 +883,11 @@ DevStr *ListDevStorage(uint8_t pdrv,uint8_t ip,uint32_t steadyState)
   */
 void ListInit(uint8_t pdrv)
 {
-    uint16_t i,j,temp1,iptemp;
+    uint16_t iS,iM,iN,iL,jL,tempS,tempM,tempN,tempLi,tempLj;
     DevStr *dev;
     List *list;
+    uint8_t ip;
+    uint32_t steadyState;
     
     list_init(&s_ListTimers[pdrv]);
     list_init(&s_ListDevStorage[pdrv]);
@@ -871,35 +895,49 @@ void ListInit(uint8_t pdrv)
     list_init(&s_ListDevN[pdrv]);
     list_init(&s_ListDevSupply[pdrv]);       
     
-    iptemp = g_Parameter[NET_IP2_3] - 1;
-    s_SelfSts[pdrv].ip = Sdev[iptemp][0];
-    s_SelfSts[pdrv].steadyState = Sdev[iptemp][1];
+    s_SelfSts[pdrv].ip = g_Parameter[NET_IP2_3];
+    s_SelfSts[pdrv].steadyState = 0;
     addtimers(pdrv,&s_SelfSts[pdrv].gTime);
-    
-    for(i=0;i<Mdev[iptemp][0];i++)//M侧链表添加
+    for(iS=0,tempS=1;iS<GridStructureSet[0];iS++)
     {
-        dev = ListDevStorage(pdrv,Mdev[iptemp][1+i*2],Mdev[iptemp][1+i*2+1]);
-        list_ins_next(&s_ListDevM[pdrv],NULL,dev);
-    }
-    
-    for(i=0;i<Ndev[iptemp][0];i++)//N侧链表添加
-    {
-        dev = ListDevStorage(pdrv,Ndev[iptemp][1+i*2],Ndev[iptemp][1+i*2+1]);
-        list_ins_next(&s_ListDevN[pdrv],NULL,dev);
-    }
-    
-    for(i=0,temp1=1;i<Supplydev[iptemp][0];i++)//供电链表添加
-    {
-        list = rt_malloc(sizeof(List));
-        list_init(list); 
-        list_ins_next(&s_ListDevSupply[pdrv],NULL,list);
-        for(j=0;j<Supplydev[iptemp][temp1];j++)
+        if(GridStructureSet[tempS + 2] == s_SelfSts[pdrv].ip)
         {
-            dev = ListDevStorage(pdrv,Supplydev[iptemp][1+temp1+j*2],Supplydev[iptemp][1+temp1+j*2+1]);
-            list_ins_next(list,list->tail,dev);
+            s_SelfSts[pdrv].steadyState = steadyStateChange(pdrv,GridStructureSet[tempS + 3],GridStructureSet[tempS + 4]);
+            for(iM=0,tempM=tempS+6;iM<GridStructureSet[tempS + 5];iM++)
+            {
+                ip = GridStructureSet[tempM];
+                steadyState = steadyStateChange(pdrv,GridStructureSet[tempM + 1],GridStructureSet[tempM + 2]);
+                dev = ListDevStorage(pdrv,ip,steadyState);
+                list_ins_next(&s_ListDevM[pdrv],NULL,dev);
+                tempM += 3;
+            }
+            for(iN=0,tempN=tempM+1;iN<GridStructureSet[tempM];iN++)
+            {
+                ip = GridStructureSet[tempN];
+                steadyState = steadyStateChange(pdrv,GridStructureSet[tempN + 1],GridStructureSet[tempN + 2]);
+                dev = ListDevStorage(pdrv,ip,steadyState);
+                list_ins_next(&s_ListDevN[pdrv],NULL,dev);
+                tempN += 3;            
+            }
+            for(iL=0,tempLi=tempN+1;iL<GridStructureSet[tempN];iL++)//供电链表添加
+            {
+                list = rt_malloc(sizeof(List));
+                list_init(list); 
+                list_ins_next(&s_ListDevSupply[pdrv],NULL,list);
+                for(jL=0,tempLj=tempLi+1;jL<GridStructureSet[tempLi];jL++)
+                {
+                    ip = GridStructureSet[tempLj];
+                    steadyState = steadyStateChange(pdrv,GridStructureSet[tempLj + 1],GridStructureSet[tempLj + 2]);
+                    dev = ListDevStorage(pdrv,ip,steadyState);
+                    list_ins_next(list,list->tail,dev);
+                    tempLj += 3; 
+                }
+                tempLi = tempLj;
+            } 
+            break;       
         }
-        temp1 += (1 + Supplydev[iptemp][temp1]);
-    }    
+        tempS += *(uint16_t *)&GridStructureSet[tempS] + 2;
+    }  
 }
 
 /**

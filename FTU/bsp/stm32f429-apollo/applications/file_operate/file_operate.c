@@ -609,7 +609,7 @@ uint8_t file_operate_ReadFileAct(uint8_t dev,uint8_t *pbuf)
   * @return: none
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
-void ReadDoc_Record(void)
+void Read_ConfigurationSet(void)
 { 	
     strcpy(FileName,"/sojo");
     strcat(FileName,"/ConfigurationSet.cfg");
@@ -635,6 +635,34 @@ void ReadDoc_Record(void)
     {
         rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase) - sizeof(g_ConfigurationSetDB->ID_Value));
     }
+    
+	close(MyFile);
+}
+
+/**
+  * @brief : ReadDoc_Record.
+  * @return: none
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+void Read_GridStructureSet(void)
+{ 	
+    strcpy(FileName,"/sojo");
+    strcat(FileName,"/GridStructureSet.cfg");
+	
+    MyFile = open(FileName, O_WRONLY, 0);
+    
+    if (MyFile == -1)
+    {
+        FILE_PRINTF("NO GridStructureSet.cfg\n", MyFile);
+        return;
+    }
+	
+    read(MyFile, GridStructureSet, GRIDSTRUCTUERSETSIZE);
+   
+    FILE_PRINTF("f_read GridStructureSet.cfg\n", MyFile);
+    
+//存储FRAM语句 	
+    rt_multi_common_data_fram_record_write(GRID_RECODE, (uint8_t *)GridStructureSet, GRIDSTRUCTUERSETSIZE);
     
 	close(MyFile);
 }
@@ -674,7 +702,13 @@ void file_operate_WriteFileAct(uint8_t dev,uint8_t *pbuf)
                     strcpy(Read_File[dev].filename,"/sojo");
                     strcat(Read_File[dev].filename,"/ConfigurationSet.cfg");
                     break;   
-                }       
+                }   
+                if(!strncmp("GridStructureSet",(char *)&pbuf[i+13],sizeof("GridStructureSet") - 1))
+                {
+                    strcpy(Read_File[dev].filename,"/sojo");
+                    strcat(Read_File[dev].filename,"/GridStructureSet.cfg");
+                    break;   
+                }                  
                 if(!strncmp("UpdateProgram",(char *)&pbuf[i+13],sizeof("UpdateProgram") - 1))
                 {
                     strcpy(Read_File[dev].filename,"/sojo");
@@ -728,11 +762,15 @@ void file_operate_WriteFileAct(uint8_t dev,uint8_t *pbuf)
 
 				if(pbuf[20] ==0)
                 {
-                    FILE_PRINTF("recive success\n",*(unsigned long *)SDRAM_ADDR_UPDATE);
+                    FILE_PRINTF("recive success\n");
                     if(strcmp(Read_File[dev].filename,"/sojo/ConfigurationSet.cfg") == 0)//读配置文件
                     {
-                        ReadDoc_Record();
-                    }                            
+                        Read_ConfigurationSet();
+                    }  
+                    if(strcmp(Read_File[dev].filename,"/sojo/GridStructureSet.cfg") == 0)//读配置文件
+                    {
+                        Read_GridStructureSet();
+                    }                    
                 }
                 else
                 {
@@ -771,6 +809,28 @@ uint8_t CreatDoc_Record(void)
     write(MyFile,(uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));
    
     FILE_PRINTF("f_write ConfigurationSet.cfg\n", MyFile );
+    
+	close(MyFile);
+    
+ 
+	memset(FileName,0,sizeof(DirName));
+	strcpy(FileName,"/sojo");
+	strcat(FileName,"/GridStructureSet.cfg");
+    
+    unlink(FileName);  //删除文件
+	
+	MyFile = open(FileName, O_RDWR | O_CREAT, 0);
+    
+    if (MyFile == -1)
+    {
+        failnum++;
+        FILE_PRINTF("/sojo/GridStructureSet.cfg write failed!\n");
+        return 1;
+    }
+	
+    write(MyFile,(uint8_t *)GridStructureSet, GRIDSTRUCTUERSETSIZE);
+   
+    FILE_PRINTF("f_write GridStructureSet.cfg\n", MyFile );
     
 	close(MyFile);
     

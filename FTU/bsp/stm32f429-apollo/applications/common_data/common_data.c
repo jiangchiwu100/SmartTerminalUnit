@@ -31,6 +31,7 @@ uint16_t                            g_ThreadRunSta;
 uint16_t                            g_AddrCount;
 uint16_t                            g_StartWave;
 struct ConfigurationSetDatabase     *g_ConfigurationSetDB; // 系统配置结构
+uint8_t                             *GridStructureSet; // 网架配置文件
 struct SD2405Time                   g_SystemTime; // 系统时间
 
 // 遥信缓存
@@ -1281,9 +1282,15 @@ rt_uint16_t rt_multi_common_data_fram_record_write(uint8_t type, uint8_t *pBuf, 
         case CFG_RECODE:
             rt_device_write(device_fram, ADDR_FRAM_CONFIG, pBuf, len);	
             break;
+        
+        case GRID_RECODE:
+            rt_device_write(device_fram, ADDR_FRAM_GRID, pBuf, len);	
+            break;
+                
         case CURRENT_SN: // 当前定值区号	
             rt_device_write(device_fram, ADDR_FRAM_CURRENT_SN, pBuf, len);            						
-            break;		
+            break;	
+        
         case JSON_MD5: // JSON_MD5
             rt_device_write(device_fram, ADDR_FRAM_JSON_MD5, pBuf, len);            						
             break;			
@@ -1366,7 +1373,11 @@ void rt_multi_common_data_fram_record_read(uint8_t type, uint8_t *pBuf)
         case CFG_RECODE:
             rt_device_read(device_fram, ADDR_FRAM_CONFIG, pBuf, sizeof(struct ConfigurationSetDatabase));									
             break;
-       
+ 
+        case GRID_RECODE:
+            rt_device_read(device_fram, ADDR_FRAM_GRID, pBuf, GRIDSTRUCTUERSETSIZE);									
+            break;
+        
         case JSON_MD5: // JSON_MD5
             rt_device_read(device_fram, ADDR_FRAM_JSON_MD5, pBuf, 16);					
             break;		
@@ -1427,7 +1438,9 @@ void rt_multi_common_data_configure_default(void)
 
     memcpy(&g_ConfigurationSetDB->ID_Value, (char *)&("F31xxxxxxxxx20171211xxxx"), sizeof("F31xxxxxxxxx20171211xxxx"));   
         
-    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));    
+    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase)); 
+
+    rt_multi_common_data_fram_record_write(GRID_RECODE, (uint8_t *)GridStructureSet, GRIDSTRUCTUERSETSIZE);     
 }
 
 /**
@@ -1709,6 +1722,9 @@ void rt_multi_common_data_read_config_from_fram(void)
     {
         rt_multi_common_data_configure_default();
     }
+    
+    /* 读取网架文件 */
+    rt_multi_common_data_fram_record_read(GRID_RECODE, (uint8_t *)GridStructureSet);
 }
 
 /**
@@ -1945,6 +1961,7 @@ void rt_multi_common_data_config(void)
 int rt_multi_common_data_init(void)
 {
     g_ConfigurationSetDB = rt_malloc(sizeof(struct ConfigurationSetDatabase));
+    GridStructureSet = rt_malloc(GRIDSTRUCTUERSETSIZE);
     
     device_fram = rt_device_find(RT_SPI_FRAM_NAME);
 	
