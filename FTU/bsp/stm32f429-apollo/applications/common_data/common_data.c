@@ -581,6 +581,7 @@ uint8_t DBSwitchValueArea(uint8_t sn)
         g_ValueParaOperateInfo.currentSN = sn;
         /* 存储当前定值区号 */
 		rt_multi_common_data_fram_record_write(CURRENT_SN, &g_ValueParaOperateInfo.currentSN, 1);
+        ParameterCheck();
         return TRUE;
     }
 }
