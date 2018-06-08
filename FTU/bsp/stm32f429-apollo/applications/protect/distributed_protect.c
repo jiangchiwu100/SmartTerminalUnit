@@ -864,13 +864,13 @@ uint32_t steadyStateChange(uint8_t pdrv,uint8_t sta1,uint8_t sta2)
     uint32_t State = 0;
     
     if(sta1)
-    {State |= _DISTRIBUT_S_BREAKER;}
-    else
     {State |= _DISTRIBUT_S_LOADSWTICH;}
-    if(sta2)
-    {State |= _DISTRIBUT_S_TRUNK;}
     else
+    {State |= _DISTRIBUT_S_BREAKER;}
+    if(sta2)
     {State |= _DISTRIBUT_S_BRANCH;}
+    else
+    {State |= _DISTRIBUT_S_TRUNK;}
     
     return(State);
 }
