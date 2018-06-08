@@ -45,7 +45,9 @@ struct KeyQueue{
 	uint8_t number[KEYQUEUE_MAX];
 	uint8_t state[KEYQUEUE_MAX];
 };
-
+void SetRunLedStartFlag(uint8_t OnOff);
+void SetRunLedFrequency(uint16_t frequency);
+uint16_t GetRunLedFrequency(void);
 void SetUserLedStatus(uint8_t ledNo, uint8_t state);
 void ContinuousOutResult(uint8_t beginNo,uint8_t num,uint8_t *pBuff);
 struct KeyQueue *GetkeyQueueP(void);
