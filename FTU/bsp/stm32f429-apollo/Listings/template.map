@@ -15335,266 +15335,266 @@ Image Symbol Table
     rt_thread_dp83848_stack                  0x200059b8   Data        4096  multi_thread.o(.bss)
     rt_thread_w5500                          0x200069b8   Data         128  multi_thread.o(.bss)
     rt_thread_w5500_stack                    0x20006a38   Data        4096  multi_thread.o(.bss)
-    .bss                                     0x20007a98   Section    25820  common_data.o(.bss)
-    telemetry                                0x2000de78   Data         200  common_data.o(.bss)
-    counter                                  0x2000df40   Data          52  common_data.o(.bss)
-    .bss                                     0x2000df74   Section     6384  point_table_config.o(.bss)
-    .bss                                     0x2000f864   Section      844  breaker_protect.o(.bss)
-    s_ListTimers                             0x2000f864   Data          12  breaker_protect.o(.bss)
-    s_ComProSts                              0x2000f870   Data         360  breaker_protect.o(.bss)
-    s_Rest                                   0x2000f9d8   Data          44  breaker_protect.o(.bss)
-    s_Inrush                                 0x2000fa04   Data          16  breaker_protect.o(.bss)
-    s_IACC                                   0x2000fa14   Data          48  breaker_protect.o(.bss)
-    s_Inverse                                0x2000fa44   Data          48  breaker_protect.o(.bss)
-    s_Overcur                                0x2000fa74   Data          80  breaker_protect.o(.bss)
-    s_OvercurI0                              0x2000fac4   Data          64  breaker_protect.o(.bss)
-    s_SecondaryRecloseLock                   0x2000fb04   Data          44  breaker_protect.o(.bss)
-    s_Reclose                                0x2000fb30   Data          68  breaker_protect.o(.bss)
-    s_RecloseI0                              0x2000fb74   Data          60  breaker_protect.o(.bss)
-    .bss                                     0x2000fbb0   Section      668  load_switch_ctrl.o(.bss)
-    s_ListTimers                             0x2000fbb0   Data          12  load_switch_ctrl.o(.bss)
-    s_ComProSts                              0x2000fbbc   Data         308  load_switch_ctrl.o(.bss)
-    s_Rest                                   0x2000fcf0   Data          48  load_switch_ctrl.o(.bss)
-    s_stateJudge                             0x2000fd20   Data         120  load_switch_ctrl.o(.bss)
-    s_OvercurI0                              0x2000fd98   Data          12  load_switch_ctrl.o(.bss)
-    s_LossTrip                               0x2000fda4   Data          28  load_switch_ctrl.o(.bss)
-    s_GetVolClose                            0x2000fdc0   Data          24  load_switch_ctrl.o(.bss)
-    s_OpenCloseLocking                       0x2000fdd8   Data          40  load_switch_ctrl.o(.bss)
-    s_FewVolLock                             0x2000fe00   Data          36  load_switch_ctrl.o(.bss)
-    s_DoubleVol                              0x2000fe24   Data          16  load_switch_ctrl.o(.bss)
-    s_SingleLossClose                        0x2000fe34   Data          24  load_switch_ctrl.o(.bss)
-    .bss                                     0x2000fe4c   Section     1232  other_protect.o(.bss)
-    s_ListTimers                             0x2000fe4c   Data          12  other_protect.o(.bss)
-    OverLimitUab                             0x2000fe58   Data          56  other_protect.o(.bss)
-    OverLimitUbc                             0x2000fe90   Data          56  other_protect.o(.bss)
-    OverLimitUac                             0x2000fec8   Data          56  other_protect.o(.bss)
-    OverLimitUAB                             0x2000ff00   Data          56  other_protect.o(.bss)
-    OverLimitUBC                             0x2000ff38   Data          56  other_protect.o(.bss)
-    OverLimitIa                              0x2000ff70   Data          56  other_protect.o(.bss)
-    OverLimitIb                              0x2000ffa8   Data          56  other_protect.o(.bss)
-    OverLimitIc                              0x2000ffe0   Data          56  other_protect.o(.bss)
-    OverLimitU0                              0x20010018   Data          56  other_protect.o(.bss)
-    OverLimitI0                              0x20010050   Data          56  other_protect.o(.bss)
-    OverLimitDC_U                            0x20010088   Data          56  other_protect.o(.bss)
-    OverLimitDC_I                            0x200100c0   Data          56  other_protect.o(.bss)
-    OverLoad                                 0x200100f8   Data          44  other_protect.o(.bss)
-    HeavyOverLoad                            0x20010124   Data          44  other_protect.o(.bss)
-    OverVoltageUab                           0x20010150   Data          40  other_protect.o(.bss)
-    OverVoltageUBC                           0x20010178   Data          40  other_protect.o(.bss)
-    DownVoltageUab                           0x200101a0   Data          40  other_protect.o(.bss)
-    DownVoltageUBC                           0x200101c8   Data          40  other_protect.o(.bss)
-    OverFrequency                            0x200101f0   Data          40  other_protect.o(.bss)
-    DownFrequency                            0x20010218   Data          40  other_protect.o(.bss)
-    CommunicatLock                           0x20010240   Data          28  other_protect.o(.bss)
-    s_Flag_DB1                               0x2001025c   Data          96  other_protect.o(.bss)
-    s_Flag_DB2                               0x200102bc   Data          96  other_protect.o(.bss)
-    .bss                                     0x2001031c   Section     8112  calculator.o(.bss)
-    Scfft                                    0x2001032c   Data          20  calculator.o(.bss)
-    FFT_InputBufUa                           0x20010340   Data         768  calculator.o(.bss)
-    FFT_InputBufUb                           0x20010640   Data         768  calculator.o(.bss)
-    FFT_InputBufUc                           0x20010940   Data         768  calculator.o(.bss)
-    FFT_InputBufU0                           0x20010c40   Data         768  calculator.o(.bss)
-    FFT_InputBufIa                           0x20010f40   Data         768  calculator.o(.bss)
-    FFT_InputBufIb                           0x20011240   Data         768  calculator.o(.bss)
-    FFT_InputBufIc                           0x20011540   Data         768  calculator.o(.bss)
-    FFT_InputBufI0                           0x20011840   Data         768  calculator.o(.bss)
-    FFT_InputBufUA                           0x20011b40   Data         768  calculator.o(.bss)
-    FFT_InputBufUC                           0x20011e40   Data         768  calculator.o(.bss)
-    VUa                                      0x20012140   Data          12  calculator.o(.bss)
-    VUb                                      0x2001214c   Data          12  calculator.o(.bss)
-    VUc                                      0x20012158   Data          12  calculator.o(.bss)
-    VU0                                      0x20012164   Data          12  calculator.o(.bss)
-    VIa                                      0x20012170   Data          12  calculator.o(.bss)
-    VIb                                      0x2001217c   Data          12  calculator.o(.bss)
-    VIc                                      0x20012188   Data          12  calculator.o(.bss)
-    VI0                                      0x20012194   Data          12  calculator.o(.bss)
-    VUa3                                     0x200121a0   Data          12  calculator.o(.bss)
-    VUb3                                     0x200121ac   Data          12  calculator.o(.bss)
-    VUc3                                     0x200121b8   Data          12  calculator.o(.bss)
-    VU03                                     0x200121c4   Data          12  calculator.o(.bss)
-    VUa5                                     0x200121d0   Data          12  calculator.o(.bss)
-    VUb5                                     0x200121dc   Data          12  calculator.o(.bss)
-    VUc5                                     0x200121e8   Data          12  calculator.o(.bss)
-    VU05                                     0x200121f4   Data          12  calculator.o(.bss)
-    VUA                                      0x20012200   Data          12  calculator.o(.bss)
-    VUC                                      0x2001220c   Data          12  calculator.o(.bss)
-    VUA3                                     0x20012218   Data          12  calculator.o(.bss)
-    VUC3                                     0x20012224   Data          12  calculator.o(.bss)
-    VUA5                                     0x20012230   Data          12  calculator.o(.bss)
-    VUC5                                     0x2001223c   Data          12  calculator.o(.bss)
-    VIa2                                     0x20012248   Data          12  calculator.o(.bss)
-    VIb2                                     0x20012254   Data          12  calculator.o(.bss)
-    VIc2                                     0x20012260   Data          12  calculator.o(.bss)
-    VIa3                                     0x2001226c   Data          12  calculator.o(.bss)
-    VIb3                                     0x20012278   Data          12  calculator.o(.bss)
-    VIc3                                     0x20012284   Data          12  calculator.o(.bss)
-    VI03                                     0x20012290   Data          12  calculator.o(.bss)
-    VIa5                                     0x2001229c   Data          12  calculator.o(.bss)
-    VIb5                                     0x200122a8   Data          12  calculator.o(.bss)
-    VIc5                                     0x200122b4   Data          12  calculator.o(.bss)
-    VI05                                     0x200122c0   Data          12  calculator.o(.bss)
-    .bss                                     0x200122cc   Section       56  tcp_server.o(.bss)
-    DP83848TcpServerRxCB                     0x200122cc   Data          28  tcp_server.o(.bss)
-    W5500TcpServerRxCB                       0x200122e8   Data          28  tcp_server.o(.bss)
-    .bss                                     0x20012304   Section     2692  file_operate.o(.bss)
-    FileSta                                  0x20012304   Data          20  file_operate.o(.bss)
-    content                                  0x20012318   Data         512  file_operate.o(.bss)
-    FileName                                 0x20012518   Data         255  file_operate.o(.bss)
-    DirName                                  0x20012617   Data         255  file_operate.o(.bss)
-    temp_array                               0x20012716   Data         256  file_operate.o(.bss)
-    Read_Dir                                 0x20012818   Data          48  file_operate.o(.bss)
-    Read_File                                0x20012848   Data         672  file_operate.o(.bss)
-    Write_File                               0x20012ae8   Data         672  file_operate.o(.bss)
-    .bss                                     0x20012d88   Section      300  wave_recording.o(.bss)
-    buftemp                                  0x20012d88   Data         100  wave_recording.o(.bss)
-    firsttime                                0x20012dec   Data         100  wave_recording.o(.bss)
-    filenameDAT                              0x20012e50   Data         100  wave_recording.o(.bss)
-    .bss                                     0x20012eb4   Section      480  drv_usart.o(.bss)
-    .bss                                     0x20013094   Section       68  drv_sdram.o(.bss)
-    hsdram1                                  0x20013094   Data          52  drv_sdram.o(.bss)
-    command                                  0x200130c8   Data          16  drv_sdram.o(.bss)
-    .bss                                     0x200130d8   Section    12692  drv_eth.o(.bss)
-    DMARxDscrTab                             0x200130d8   Data         128  drv_eth.o(.bss)
-    DMATxDscrTab                             0x20013158   Data         128  drv_eth.o(.bss)
-    Rx_Buff                                  0x200131d8   Data        6096  drv_eth.o(.bss)
-    Tx_Buff                                  0x200149a8   Data        6096  drv_eth.o(.bss)
-    EthHandle                                0x20016178   Data          72  drv_eth.o(.bss)
-    stm32_eth_device                         0x200161c0   Data         140  drv_eth.o(.bss)
-    tx_wait                                  0x2001624c   Data          32  drv_eth.o(.bss)
-    .bss                                     0x2001626c   Section      132  drv_iic.o(.bss)
-    bus                                      0x2001626c   Data         132  drv_iic.o(.bss)
-    .bss                                     0x200162f0   Section      360  drv_spi.o(.bss)
-    spi2_bus                                 0x200162f0   Data         120  drv_spi.o(.bss)
-    spi4_bus                                 0x20016368   Data         120  drv_spi.o(.bss)
-    spi5_bus                                 0x200163e0   Data         120  drv_spi.o(.bss)
-    .bss                                     0x20016458   Section       76  drv_sd2405.o(.bss)
-    sd2405_device                            0x20016458   Data          76  drv_sd2405.o(.bss)
-    .bss                                     0x200164a4   Section      120  drv_io_spi.o(.bss)
-    io_spi1_bus                              0x200164a4   Data         120  drv_io_spi.o(.bss)
-    .bss                                     0x2001651c   Section       88  drv_spi_flash.o(.bss)
-    spi_device                               0x2001651c   Data          88  drv_spi_flash.o(.bss)
-    .bss                                     0x20016574   Section      220  drv_fm25vxx.o(.bss)
-    fm25vxx                                  0x20016574   Data         132  drv_fm25vxx.o(.bss)
-    spi_device                               0x200165f8   Data          88  drv_fm25vxx.o(.bss)
-    .bss                                     0x20016650   Section      208  drv_w5500.o(.bss)
-    device_w5500                             0x20016650   Data         120  drv_w5500.o(.bss)
-    spi_device                               0x200166c8   Data          88  drv_w5500.o(.bss)
-    .bss                                     0x20016720   Section       16  drv_w5500_socket.o(.bss)
-    sock_remained_size                       0x20016720   Data          16  drv_w5500_socket.o(.bss)
-    .bss                                     0x20016730   Section      432  drv_timer.o(.bss)
-    TIM6_Handler                             0x20016798   Data          60  drv_timer.o(.bss)
-    TIM7_Handler                             0x200167d4   Data          60  drv_timer.o(.bss)
-    TIM2_Handler                             0x20016810   Data          60  drv_timer.o(.bss)
-    TIM3_Handler                             0x2001684c   Data          60  drv_timer.o(.bss)
-    TIM5_Handler                             0x20016888   Data          60  drv_timer.o(.bss)
-    TIM5_CH1Handler                          0x200168c4   Data          28  drv_timer.o(.bss)
-    .bss                                     0x200168e0   Section       56  drv_di.o(.bss)
-    .bss                                     0x20016918   Section       12  drv_do.o(.bss)
-    DoStr                                    0x20016918   Data          12  drv_do.o(.bss)
-    .bss                                     0x20016924   Section       12  drv_handheld.o(.bss)
-    Handheld                                 0x20016924   Data          12  drv_handheld.o(.bss)
-    .bss                                     0x20016930   Section       80  drv_ad7616.o(.bss)
-    hsram2                                   0x20016930   Data          80  drv_ad7616.o(.bss)
-    .bss                                     0x20016980   Section       88  drv_sc1161y.o(.bss)
-    spi_device                               0x20016980   Data          88  drv_sc1161y.o(.bss)
-    .bss                                     0x200169d8   Section       32  stm32f4xx_hal_flash.o(.bss)
-    .bss                                     0x200169f8   Section     1152  idle.o(.bss)
-    idle                                     0x200169f8   Data         128  idle.o(.bss)
-    rt_thread_stack                          0x20016a78   Data        1024  idle.o(.bss)
-    .bss                                     0x20016e78   Section      128  kservice.o(.bss)
-    rt_log_buf                               0x20016e78   Data         128  kservice.o(.bss)
-    .bss                                     0x20016ef8   Section       32  mem.o(.bss)
-    heap_sem                                 0x20016ef8   Data          32  mem.o(.bss)
-    .bss                                     0x20016f18   Section      256  scheduler.o(.bss)
-    .bss                                     0x20017018   Section      640  timer.o(.bss)
-    timer_thread                             0x20017018   Data         128  timer.o(.bss)
-    timer_thread_stack                       0x20017098   Data         512  timer.o(.bss)
-    .bss                                     0x20017298   Section      244  dfs.o(.bss)
-    fslock                                   0x200172e8   Data          36  dfs.o(.bss)
-    .bss                                     0x2001738c   Section      292  dfs_file.o(.bss)
-    fd                                       0x2001738c   Data          32  dfs_file.o(.bss)
-    dirent                                   0x200173ac   Data         260  dfs_file.o(.bss)
-    .bss                                     0x200174b0   Section     3464  dfs_uffs.o(.bss)
-    nand_part                                0x200174b0   Data        3464  dfs_uffs.o(.bss)
-    .bss                                     0x20018238   Section     4620  uffs_fd.o(.bss)
-    _dir_pool_data                           0x20018238   Data        4600  uffs_fd.o(.bss)
-    _dir_pool                                0x20019430   Data          20  uffs_fd.o(.bss)
-    .bss                                     0x20019444   Section     3020  uffs_fs.o(.bss)
-    _object_data                             0x20019444   Data        3000  uffs_fs.o(.bss)
-    _object_pool                             0x20019ffc   Data          20  uffs_fs.o(.bss)
-    .bss                                     0x2001a010   Section      128  spi_flash_sfud.o(.bss)
-    log_buf                                  0x2001a010   Data         128  spi_flash_sfud.o(.bss)
-    .bss                                     0x2001a090   Section       80  pin.o(.bss)
-    _hw_pin                                  0x2001a090   Data          80  pin.o(.bss)
-    .bss                                     0x2001a0e0   Section     2305  shell.o(.bss)
-    finsh_thread                             0x2001a0e0   Data         128  shell.o(.bss)
-    finsh_thread_stack                       0x2001a160   Data        2048  shell.o(.bss)
-    finsh_prompt                             0x2001a960   Data         129  shell.o(.bss)
-    .bss                                     0x2001a9e4   Section      128  finsh_heap.o(.bss)
-    .bss                                     0x2001aa64   Section      320  finsh_node.o(.bss)
-    .bss                                     0x2001aba4   Section      192  finsh_var.o(.bss)
-    .bss                                     0x2001ac64   Section      384  finsh_vm.o(.bss)
-    .bss                                     0x2001ade4   Section       96  sockets.o(.bss)
-    sockets                                  0x2001ade4   Data          96  sockets.o(.bss)
-    .bss                                     0x2001ae44   Section     1635  dns.o(.bss)
-    dns_table                                0x2001ae44   Data        1120  dns.o(.bss)
-    dns_payload_buffer                       0x2001b2a4   Data         515  dns.o(.bss)
-    .bss                                     0x2001b4a8   Section    27775  memp.o(.bss)
-    memp_tab                                 0x2001b4a8   Data          56  memp.o(.bss)
-    memp_memory                              0x2001b4e0   Data       27719  memp.o(.bss)
-    .bss                                     0x20022128   Section       16  tcp_in.o(.bss)
-    inseg                                    0x20022128   Data          16  tcp_in.o(.bss)
-    .bss                                     0x20022138   Section       16  ip_addr.o(.bss)
-    str                                      0x20022138   Data          16  ip_addr.o(.bss)
-    .bss                                     0x20022148   Section      200  etharp.o(.bss)
-    arp_table                                0x20022148   Data         200  etharp.o(.bss)
-    .bss                                     0x20022210   Section     2464  ethernetif.o(.bss)
-    eth_tx_thread_mb                         0x20022210   Data          48  ethernetif.o(.bss)
-    eth_tx_thread                            0x20022240   Data         128  ethernetif.o(.bss)
-    eth_tx_thread_mb_pool                    0x200222c0   Data          32  ethernetif.o(.bss)
-    eth_tx_thread_stack                      0x200222e0   Data        1024  ethernetif.o(.bss)
-    eth_rx_thread_mb                         0x200226e0   Data          48  ethernetif.o(.bss)
-    eth_rx_thread                            0x20022710   Data         128  ethernetif.o(.bss)
-    eth_rx_thread_mb_pool                    0x20022790   Data          32  ethernetif.o(.bss)
-    eth_rx_thread_stack                      0x200227b0   Data        1024  ethernetif.o(.bss)
-    .bss                                     0x20022bb0   Section       20  hmi_101_app.o(.bss)
-    .bss                                     0x20022bc4   Section       44  gui_101_cmd.o(.bss)
-    .bss                                     0x20022bf0   Section       44  gui_common.o(.bss)
-    Timer1                                   0x20022bf0   Data          44  gui_common.o(.bss)
-    .bss                                     0x20022c1c   Section       52  lkdguimenu.o(.bss)
-    .bss                                     0x20022c50   Section       52  lkdguiwindow.o(.bss)
-    winManage                                0x20022c50   Data          52  lkdguiwindow.o(.bss)
-    .bss                                     0x20022c84   Section       28  guidisplay.o(.bss)
-    dZModfiy                                 0x20022c84   Data          12  guidisplay.o(.bss)
-    modfiyStr                                0x20022c90   Data          16  guidisplay.o(.bss)
-    .bss                                     0x20022ca0   Section      348  uservariable.o(.bss)
-    .bss                                     0x20022dfc   Section       90  hmiinout.o(.bss)
-    .bss                                     0x20022e56   Section     1024  dlt634_5101slave_disk.o(.bss)
-    file_array                               0x20022e56   Data         512  dlt634_5101slave_disk.o(.bss)
-    temp_array                               0x20023056   Data         512  dlt634_5101slave_disk.o(.bss)
-    .bss                                     0x20023256   Section       80  dlt634_5101slave_app.o(.bss)
-    .bss                                     0x200232a6   Section     1024  dlt634_5104slave_disk.o(.bss)
-    file_array                               0x200232a6   Data         512  dlt634_5104slave_disk.o(.bss)
-    temp_array                               0x200234a6   Data         512  dlt634_5104slave_disk.o(.bss)
-    .bss                                     0x200236a6   Section       90  dlt634_5104slave_app.o(.bss)
-    .bss                                     0x20023700   Section       24  encrypt_disk.o(.bss)
-    .bss                                     0x20023718   Section      512  channel_monitor.o(.bss)
-    .bss                                     0x20023918   Section      512  mini_xml.o(.bss)
-    .bss                                     0x20023b18   Section      255  jsonfileoperation.o(.bss)
-    Json_FileName                            0x20023b18   Data         255  jsonfileoperation.o(.bss)
-    .bss                                     0x20023c18   Section       84  stdio_streams.o(.bss)
-    .bss                                     0x20023c6c   Section       84  stdio_streams.o(.bss)
-    .bss                                     0x20023cc0   Section       84  stdio_streams.o(.bss)
-    .bss                                     0x20023d14   Section       44  localtime.o(.bss)
-    _tms                                     0x20023d14   Data          44  localtime.o(.bss)
-    .bss                                     0x20023d40   Section       68  asctime.o(.bss)
-    _timebuf                                 0x20023d40   Data          68  asctime.o(.bss)
-    .bss                                     0x20023d84   Section       96  libspace.o(.bss)
-    HEAP                                     0x20023de8   Section     2048  startup_stm32f429xx.o(HEAP)
-    Heap_Mem                                 0x20023de8   Data        2048  startup_stm32f429xx.o(HEAP)
-    STACK                                    0x200245e8   Section     2048  startup_stm32f429xx.o(STACK)
-    Stack_Mem                                0x200245e8   Data        2048  startup_stm32f429xx.o(STACK)
-    __initial_sp                             0x20024de8   Data           0  startup_stm32f429xx.o(STACK)
+    .bss                                     0x20007a98   Section    25796  common_data.o(.bss)
+    telemetry                                0x2000de60   Data         200  common_data.o(.bss)
+    counter                                  0x2000df28   Data          52  common_data.o(.bss)
+    .bss                                     0x2000df5c   Section     6384  point_table_config.o(.bss)
+    .bss                                     0x2000f84c   Section      844  breaker_protect.o(.bss)
+    s_ListTimers                             0x2000f84c   Data          12  breaker_protect.o(.bss)
+    s_ComProSts                              0x2000f858   Data         360  breaker_protect.o(.bss)
+    s_Rest                                   0x2000f9c0   Data          44  breaker_protect.o(.bss)
+    s_Inrush                                 0x2000f9ec   Data          16  breaker_protect.o(.bss)
+    s_IACC                                   0x2000f9fc   Data          48  breaker_protect.o(.bss)
+    s_Inverse                                0x2000fa2c   Data          48  breaker_protect.o(.bss)
+    s_Overcur                                0x2000fa5c   Data          80  breaker_protect.o(.bss)
+    s_OvercurI0                              0x2000faac   Data          64  breaker_protect.o(.bss)
+    s_SecondaryRecloseLock                   0x2000faec   Data          44  breaker_protect.o(.bss)
+    s_Reclose                                0x2000fb18   Data          68  breaker_protect.o(.bss)
+    s_RecloseI0                              0x2000fb5c   Data          60  breaker_protect.o(.bss)
+    .bss                                     0x2000fb98   Section      668  load_switch_ctrl.o(.bss)
+    s_ListTimers                             0x2000fb98   Data          12  load_switch_ctrl.o(.bss)
+    s_ComProSts                              0x2000fba4   Data         308  load_switch_ctrl.o(.bss)
+    s_Rest                                   0x2000fcd8   Data          48  load_switch_ctrl.o(.bss)
+    s_stateJudge                             0x2000fd08   Data         120  load_switch_ctrl.o(.bss)
+    s_OvercurI0                              0x2000fd80   Data          12  load_switch_ctrl.o(.bss)
+    s_LossTrip                               0x2000fd8c   Data          28  load_switch_ctrl.o(.bss)
+    s_GetVolClose                            0x2000fda8   Data          24  load_switch_ctrl.o(.bss)
+    s_OpenCloseLocking                       0x2000fdc0   Data          40  load_switch_ctrl.o(.bss)
+    s_FewVolLock                             0x2000fde8   Data          36  load_switch_ctrl.o(.bss)
+    s_DoubleVol                              0x2000fe0c   Data          16  load_switch_ctrl.o(.bss)
+    s_SingleLossClose                        0x2000fe1c   Data          24  load_switch_ctrl.o(.bss)
+    .bss                                     0x2000fe34   Section     1232  other_protect.o(.bss)
+    s_ListTimers                             0x2000fe34   Data          12  other_protect.o(.bss)
+    OverLimitUab                             0x2000fe40   Data          56  other_protect.o(.bss)
+    OverLimitUbc                             0x2000fe78   Data          56  other_protect.o(.bss)
+    OverLimitUac                             0x2000feb0   Data          56  other_protect.o(.bss)
+    OverLimitUAB                             0x2000fee8   Data          56  other_protect.o(.bss)
+    OverLimitUBC                             0x2000ff20   Data          56  other_protect.o(.bss)
+    OverLimitIa                              0x2000ff58   Data          56  other_protect.o(.bss)
+    OverLimitIb                              0x2000ff90   Data          56  other_protect.o(.bss)
+    OverLimitIc                              0x2000ffc8   Data          56  other_protect.o(.bss)
+    OverLimitU0                              0x20010000   Data          56  other_protect.o(.bss)
+    OverLimitI0                              0x20010038   Data          56  other_protect.o(.bss)
+    OverLimitDC_U                            0x20010070   Data          56  other_protect.o(.bss)
+    OverLimitDC_I                            0x200100a8   Data          56  other_protect.o(.bss)
+    OverLoad                                 0x200100e0   Data          44  other_protect.o(.bss)
+    HeavyOverLoad                            0x2001010c   Data          44  other_protect.o(.bss)
+    OverVoltageUab                           0x20010138   Data          40  other_protect.o(.bss)
+    OverVoltageUBC                           0x20010160   Data          40  other_protect.o(.bss)
+    DownVoltageUab                           0x20010188   Data          40  other_protect.o(.bss)
+    DownVoltageUBC                           0x200101b0   Data          40  other_protect.o(.bss)
+    OverFrequency                            0x200101d8   Data          40  other_protect.o(.bss)
+    DownFrequency                            0x20010200   Data          40  other_protect.o(.bss)
+    CommunicatLock                           0x20010228   Data          28  other_protect.o(.bss)
+    s_Flag_DB1                               0x20010244   Data          96  other_protect.o(.bss)
+    s_Flag_DB2                               0x200102a4   Data          96  other_protect.o(.bss)
+    .bss                                     0x20010304   Section     8112  calculator.o(.bss)
+    Scfft                                    0x20010314   Data          20  calculator.o(.bss)
+    FFT_InputBufUa                           0x20010328   Data         768  calculator.o(.bss)
+    FFT_InputBufUb                           0x20010628   Data         768  calculator.o(.bss)
+    FFT_InputBufUc                           0x20010928   Data         768  calculator.o(.bss)
+    FFT_InputBufU0                           0x20010c28   Data         768  calculator.o(.bss)
+    FFT_InputBufIa                           0x20010f28   Data         768  calculator.o(.bss)
+    FFT_InputBufIb                           0x20011228   Data         768  calculator.o(.bss)
+    FFT_InputBufIc                           0x20011528   Data         768  calculator.o(.bss)
+    FFT_InputBufI0                           0x20011828   Data         768  calculator.o(.bss)
+    FFT_InputBufUA                           0x20011b28   Data         768  calculator.o(.bss)
+    FFT_InputBufUC                           0x20011e28   Data         768  calculator.o(.bss)
+    VUa                                      0x20012128   Data          12  calculator.o(.bss)
+    VUb                                      0x20012134   Data          12  calculator.o(.bss)
+    VUc                                      0x20012140   Data          12  calculator.o(.bss)
+    VU0                                      0x2001214c   Data          12  calculator.o(.bss)
+    VIa                                      0x20012158   Data          12  calculator.o(.bss)
+    VIb                                      0x20012164   Data          12  calculator.o(.bss)
+    VIc                                      0x20012170   Data          12  calculator.o(.bss)
+    VI0                                      0x2001217c   Data          12  calculator.o(.bss)
+    VUa3                                     0x20012188   Data          12  calculator.o(.bss)
+    VUb3                                     0x20012194   Data          12  calculator.o(.bss)
+    VUc3                                     0x200121a0   Data          12  calculator.o(.bss)
+    VU03                                     0x200121ac   Data          12  calculator.o(.bss)
+    VUa5                                     0x200121b8   Data          12  calculator.o(.bss)
+    VUb5                                     0x200121c4   Data          12  calculator.o(.bss)
+    VUc5                                     0x200121d0   Data          12  calculator.o(.bss)
+    VU05                                     0x200121dc   Data          12  calculator.o(.bss)
+    VUA                                      0x200121e8   Data          12  calculator.o(.bss)
+    VUC                                      0x200121f4   Data          12  calculator.o(.bss)
+    VUA3                                     0x20012200   Data          12  calculator.o(.bss)
+    VUC3                                     0x2001220c   Data          12  calculator.o(.bss)
+    VUA5                                     0x20012218   Data          12  calculator.o(.bss)
+    VUC5                                     0x20012224   Data          12  calculator.o(.bss)
+    VIa2                                     0x20012230   Data          12  calculator.o(.bss)
+    VIb2                                     0x2001223c   Data          12  calculator.o(.bss)
+    VIc2                                     0x20012248   Data          12  calculator.o(.bss)
+    VIa3                                     0x20012254   Data          12  calculator.o(.bss)
+    VIb3                                     0x20012260   Data          12  calculator.o(.bss)
+    VIc3                                     0x2001226c   Data          12  calculator.o(.bss)
+    VI03                                     0x20012278   Data          12  calculator.o(.bss)
+    VIa5                                     0x20012284   Data          12  calculator.o(.bss)
+    VIb5                                     0x20012290   Data          12  calculator.o(.bss)
+    VIc5                                     0x2001229c   Data          12  calculator.o(.bss)
+    VI05                                     0x200122a8   Data          12  calculator.o(.bss)
+    .bss                                     0x200122b4   Section       56  tcp_server.o(.bss)
+    DP83848TcpServerRxCB                     0x200122b4   Data          28  tcp_server.o(.bss)
+    W5500TcpServerRxCB                       0x200122d0   Data          28  tcp_server.o(.bss)
+    .bss                                     0x200122ec   Section     2692  file_operate.o(.bss)
+    FileSta                                  0x200122ec   Data          20  file_operate.o(.bss)
+    content                                  0x20012300   Data         512  file_operate.o(.bss)
+    FileName                                 0x20012500   Data         255  file_operate.o(.bss)
+    DirName                                  0x200125ff   Data         255  file_operate.o(.bss)
+    temp_array                               0x200126fe   Data         256  file_operate.o(.bss)
+    Read_Dir                                 0x20012800   Data          48  file_operate.o(.bss)
+    Read_File                                0x20012830   Data         672  file_operate.o(.bss)
+    Write_File                               0x20012ad0   Data         672  file_operate.o(.bss)
+    .bss                                     0x20012d70   Section      300  wave_recording.o(.bss)
+    buftemp                                  0x20012d70   Data         100  wave_recording.o(.bss)
+    firsttime                                0x20012dd4   Data         100  wave_recording.o(.bss)
+    filenameDAT                              0x20012e38   Data         100  wave_recording.o(.bss)
+    .bss                                     0x20012e9c   Section      480  drv_usart.o(.bss)
+    .bss                                     0x2001307c   Section       68  drv_sdram.o(.bss)
+    hsdram1                                  0x2001307c   Data          52  drv_sdram.o(.bss)
+    command                                  0x200130b0   Data          16  drv_sdram.o(.bss)
+    .bss                                     0x200130c0   Section    12692  drv_eth.o(.bss)
+    DMARxDscrTab                             0x200130c0   Data         128  drv_eth.o(.bss)
+    DMATxDscrTab                             0x20013140   Data         128  drv_eth.o(.bss)
+    Rx_Buff                                  0x200131c0   Data        6096  drv_eth.o(.bss)
+    Tx_Buff                                  0x20014990   Data        6096  drv_eth.o(.bss)
+    EthHandle                                0x20016160   Data          72  drv_eth.o(.bss)
+    stm32_eth_device                         0x200161a8   Data         140  drv_eth.o(.bss)
+    tx_wait                                  0x20016234   Data          32  drv_eth.o(.bss)
+    .bss                                     0x20016254   Section      132  drv_iic.o(.bss)
+    bus                                      0x20016254   Data         132  drv_iic.o(.bss)
+    .bss                                     0x200162d8   Section      360  drv_spi.o(.bss)
+    spi2_bus                                 0x200162d8   Data         120  drv_spi.o(.bss)
+    spi4_bus                                 0x20016350   Data         120  drv_spi.o(.bss)
+    spi5_bus                                 0x200163c8   Data         120  drv_spi.o(.bss)
+    .bss                                     0x20016440   Section       76  drv_sd2405.o(.bss)
+    sd2405_device                            0x20016440   Data          76  drv_sd2405.o(.bss)
+    .bss                                     0x2001648c   Section      120  drv_io_spi.o(.bss)
+    io_spi1_bus                              0x2001648c   Data         120  drv_io_spi.o(.bss)
+    .bss                                     0x20016504   Section       88  drv_spi_flash.o(.bss)
+    spi_device                               0x20016504   Data          88  drv_spi_flash.o(.bss)
+    .bss                                     0x2001655c   Section      220  drv_fm25vxx.o(.bss)
+    fm25vxx                                  0x2001655c   Data         132  drv_fm25vxx.o(.bss)
+    spi_device                               0x200165e0   Data          88  drv_fm25vxx.o(.bss)
+    .bss                                     0x20016638   Section      208  drv_w5500.o(.bss)
+    device_w5500                             0x20016638   Data         120  drv_w5500.o(.bss)
+    spi_device                               0x200166b0   Data          88  drv_w5500.o(.bss)
+    .bss                                     0x20016708   Section       16  drv_w5500_socket.o(.bss)
+    sock_remained_size                       0x20016708   Data          16  drv_w5500_socket.o(.bss)
+    .bss                                     0x20016718   Section      432  drv_timer.o(.bss)
+    TIM6_Handler                             0x20016780   Data          60  drv_timer.o(.bss)
+    TIM7_Handler                             0x200167bc   Data          60  drv_timer.o(.bss)
+    TIM2_Handler                             0x200167f8   Data          60  drv_timer.o(.bss)
+    TIM3_Handler                             0x20016834   Data          60  drv_timer.o(.bss)
+    TIM5_Handler                             0x20016870   Data          60  drv_timer.o(.bss)
+    TIM5_CH1Handler                          0x200168ac   Data          28  drv_timer.o(.bss)
+    .bss                                     0x200168c8   Section       56  drv_di.o(.bss)
+    .bss                                     0x20016900   Section       12  drv_do.o(.bss)
+    DoStr                                    0x20016900   Data          12  drv_do.o(.bss)
+    .bss                                     0x2001690c   Section       12  drv_handheld.o(.bss)
+    Handheld                                 0x2001690c   Data          12  drv_handheld.o(.bss)
+    .bss                                     0x20016918   Section       80  drv_ad7616.o(.bss)
+    hsram2                                   0x20016918   Data          80  drv_ad7616.o(.bss)
+    .bss                                     0x20016968   Section       88  drv_sc1161y.o(.bss)
+    spi_device                               0x20016968   Data          88  drv_sc1161y.o(.bss)
+    .bss                                     0x200169c0   Section       32  stm32f4xx_hal_flash.o(.bss)
+    .bss                                     0x200169e0   Section     1152  idle.o(.bss)
+    idle                                     0x200169e0   Data         128  idle.o(.bss)
+    rt_thread_stack                          0x20016a60   Data        1024  idle.o(.bss)
+    .bss                                     0x20016e60   Section      128  kservice.o(.bss)
+    rt_log_buf                               0x20016e60   Data         128  kservice.o(.bss)
+    .bss                                     0x20016ee0   Section       32  mem.o(.bss)
+    heap_sem                                 0x20016ee0   Data          32  mem.o(.bss)
+    .bss                                     0x20016f00   Section      256  scheduler.o(.bss)
+    .bss                                     0x20017000   Section      640  timer.o(.bss)
+    timer_thread                             0x20017000   Data         128  timer.o(.bss)
+    timer_thread_stack                       0x20017080   Data         512  timer.o(.bss)
+    .bss                                     0x20017280   Section      244  dfs.o(.bss)
+    fslock                                   0x200172d0   Data          36  dfs.o(.bss)
+    .bss                                     0x20017374   Section      292  dfs_file.o(.bss)
+    fd                                       0x20017374   Data          32  dfs_file.o(.bss)
+    dirent                                   0x20017394   Data         260  dfs_file.o(.bss)
+    .bss                                     0x20017498   Section     3464  dfs_uffs.o(.bss)
+    nand_part                                0x20017498   Data        3464  dfs_uffs.o(.bss)
+    .bss                                     0x20018220   Section     4620  uffs_fd.o(.bss)
+    _dir_pool_data                           0x20018220   Data        4600  uffs_fd.o(.bss)
+    _dir_pool                                0x20019418   Data          20  uffs_fd.o(.bss)
+    .bss                                     0x2001942c   Section     3020  uffs_fs.o(.bss)
+    _object_data                             0x2001942c   Data        3000  uffs_fs.o(.bss)
+    _object_pool                             0x20019fe4   Data          20  uffs_fs.o(.bss)
+    .bss                                     0x20019ff8   Section      128  spi_flash_sfud.o(.bss)
+    log_buf                                  0x20019ff8   Data         128  spi_flash_sfud.o(.bss)
+    .bss                                     0x2001a078   Section       80  pin.o(.bss)
+    _hw_pin                                  0x2001a078   Data          80  pin.o(.bss)
+    .bss                                     0x2001a0c8   Section     2305  shell.o(.bss)
+    finsh_thread                             0x2001a0c8   Data         128  shell.o(.bss)
+    finsh_thread_stack                       0x2001a148   Data        2048  shell.o(.bss)
+    finsh_prompt                             0x2001a948   Data         129  shell.o(.bss)
+    .bss                                     0x2001a9cc   Section      128  finsh_heap.o(.bss)
+    .bss                                     0x2001aa4c   Section      320  finsh_node.o(.bss)
+    .bss                                     0x2001ab8c   Section      192  finsh_var.o(.bss)
+    .bss                                     0x2001ac4c   Section      384  finsh_vm.o(.bss)
+    .bss                                     0x2001adcc   Section       96  sockets.o(.bss)
+    sockets                                  0x2001adcc   Data          96  sockets.o(.bss)
+    .bss                                     0x2001ae2c   Section     1635  dns.o(.bss)
+    dns_table                                0x2001ae2c   Data        1120  dns.o(.bss)
+    dns_payload_buffer                       0x2001b28c   Data         515  dns.o(.bss)
+    .bss                                     0x2001b490   Section    27775  memp.o(.bss)
+    memp_tab                                 0x2001b490   Data          56  memp.o(.bss)
+    memp_memory                              0x2001b4c8   Data       27719  memp.o(.bss)
+    .bss                                     0x20022110   Section       16  tcp_in.o(.bss)
+    inseg                                    0x20022110   Data          16  tcp_in.o(.bss)
+    .bss                                     0x20022120   Section       16  ip_addr.o(.bss)
+    str                                      0x20022120   Data          16  ip_addr.o(.bss)
+    .bss                                     0x20022130   Section      200  etharp.o(.bss)
+    arp_table                                0x20022130   Data         200  etharp.o(.bss)
+    .bss                                     0x200221f8   Section     2464  ethernetif.o(.bss)
+    eth_tx_thread_mb                         0x200221f8   Data          48  ethernetif.o(.bss)
+    eth_tx_thread                            0x20022228   Data         128  ethernetif.o(.bss)
+    eth_tx_thread_mb_pool                    0x200222a8   Data          32  ethernetif.o(.bss)
+    eth_tx_thread_stack                      0x200222c8   Data        1024  ethernetif.o(.bss)
+    eth_rx_thread_mb                         0x200226c8   Data          48  ethernetif.o(.bss)
+    eth_rx_thread                            0x200226f8   Data         128  ethernetif.o(.bss)
+    eth_rx_thread_mb_pool                    0x20022778   Data          32  ethernetif.o(.bss)
+    eth_rx_thread_stack                      0x20022798   Data        1024  ethernetif.o(.bss)
+    .bss                                     0x20022b98   Section       20  hmi_101_app.o(.bss)
+    .bss                                     0x20022bac   Section       44  gui_101_cmd.o(.bss)
+    .bss                                     0x20022bd8   Section       44  gui_common.o(.bss)
+    Timer1                                   0x20022bd8   Data          44  gui_common.o(.bss)
+    .bss                                     0x20022c04   Section       52  lkdguimenu.o(.bss)
+    .bss                                     0x20022c38   Section       52  lkdguiwindow.o(.bss)
+    winManage                                0x20022c38   Data          52  lkdguiwindow.o(.bss)
+    .bss                                     0x20022c6c   Section       28  guidisplay.o(.bss)
+    dZModfiy                                 0x20022c6c   Data          12  guidisplay.o(.bss)
+    modfiyStr                                0x20022c78   Data          16  guidisplay.o(.bss)
+    .bss                                     0x20022c88   Section      348  uservariable.o(.bss)
+    .bss                                     0x20022de4   Section       90  hmiinout.o(.bss)
+    .bss                                     0x20022e3e   Section     1024  dlt634_5101slave_disk.o(.bss)
+    file_array                               0x20022e3e   Data         512  dlt634_5101slave_disk.o(.bss)
+    temp_array                               0x2002303e   Data         512  dlt634_5101slave_disk.o(.bss)
+    .bss                                     0x2002323e   Section       80  dlt634_5101slave_app.o(.bss)
+    .bss                                     0x2002328e   Section     1024  dlt634_5104slave_disk.o(.bss)
+    file_array                               0x2002328e   Data         512  dlt634_5104slave_disk.o(.bss)
+    temp_array                               0x2002348e   Data         512  dlt634_5104slave_disk.o(.bss)
+    .bss                                     0x2002368e   Section       90  dlt634_5104slave_app.o(.bss)
+    .bss                                     0x200236e8   Section       24  encrypt_disk.o(.bss)
+    .bss                                     0x20023700   Section      512  channel_monitor.o(.bss)
+    .bss                                     0x20023900   Section      512  mini_xml.o(.bss)
+    .bss                                     0x20023b00   Section      255  jsonfileoperation.o(.bss)
+    Json_FileName                            0x20023b00   Data         255  jsonfileoperation.o(.bss)
+    .bss                                     0x20023c00   Section       84  stdio_streams.o(.bss)
+    .bss                                     0x20023c54   Section       84  stdio_streams.o(.bss)
+    .bss                                     0x20023ca8   Section       84  stdio_streams.o(.bss)
+    .bss                                     0x20023cfc   Section       44  localtime.o(.bss)
+    _tms                                     0x20023cfc   Data          44  localtime.o(.bss)
+    .bss                                     0x20023d28   Section       68  asctime.o(.bss)
+    _timebuf                                 0x20023d28   Data          68  asctime.o(.bss)
+    .bss                                     0x20023d6c   Section       96  libspace.o(.bss)
+    HEAP                                     0x20023dd0   Section     2048  startup_stm32f429xx.o(HEAP)
+    Heap_Mem                                 0x20023dd0   Data        2048  startup_stm32f429xx.o(HEAP)
+    STACK                                    0x200245d0   Section     2048  startup_stm32f429xx.o(STACK)
+    Stack_Mem                                0x200245d0   Data        2048  startup_stm32f429xx.o(STACK)
+    __initial_sp                             0x20024dd0   Data           0  startup_stm32f429xx.o(STACK)
     .ARM.__AT_0xC0600000                     0xc0600000   Section    23019520  malloc.o(.ARM.__AT_0xC0600000)
     mem2_pool                                0xc0600000   Data       23019520  malloc.o(.ARM.__AT_0xC0600000)
     .ARM.__AT_0xC1BF4000                     0xc1bf4000   Section    1438720  malloc.o(.ARM.__AT_0xC1BF4000)
@@ -16678,7 +16678,7 @@ Image Symbol Table
     open                                     0x08087a35   Thumb Code    94  dfs_posix.o(i.open)
     opendir                                  0x08087f73   Thumb Code   128  dfs_posix.o(i.opendir)
     other_protect_clock                      0x08087ff3   Thumb Code    26  other_protect.o(i.other_protect_clock)
-    other_protect_init                       0x0808800d   Thumb Code  2856  other_protect.o(i.other_protect_init)
+    other_protect_init                       0x0808800d   Thumb Code  2854  other_protect.o(i.other_protect_init)
     pbuf_alloc                               0x08089319   Thumb Code   668  pbuf.o(i.pbuf_alloc)
     pbuf_cat                                 0x08089725   Thumb Code   132  pbuf.o(i.pbuf_cat)
     pbuf_chain                               0x08089851   Thumb Code    22  pbuf.o(i.pbuf_chain)
@@ -17712,79 +17712,79 @@ Image Symbol Table
     g_NewToOldRemote                         0x200088f8   Data          18  common_data.o(.bss)
     g_NewToOldPropertyRemote                 0x2000890a   Data          18  common_data.o(.bss)
     g_CommunicatFlag                         0x2000891c   Data          12  common_data.o(.bss)
-    g_FixedValue1                            0x20008928   Data         468  common_data.o(.bss)
-    g_FixedValue2                            0x20008afc   Data         468  common_data.o(.bss)
-    g_Parameter                              0x20008cd0   Data         376  common_data.o(.bss)
-    g_CalibrateFactor                        0x20008e48   Data          92  common_data.o(.bss)
-    g_ValueParaOperateInfo                   0x20008ea4   Data          16  common_data.o(.bss)
-    g_ValueParaPresetDB                      0x20008eb4   Data        4316  common_data.o(.bss)
-    g_FlagDB                                 0x20009f90   Data          96  common_data.o(.bss)
-    g_COSDB                                  0x20009ff0   Data         192  common_data.o(.bss)
-    g_SOEDB                                  0x2000a0b0   Data        2560  common_data.o(.bss)
-    g_SOENewDB                               0x2000aab0   Data         640  common_data.o(.bss)
-    g_CoDB                                   0x2000ad30   Data         640  common_data.o(.bss)
-    g_FeventDB                               0x2000afb0   Data        1184  common_data.o(.bss)
-    g_UlogDB                                 0x2000b450   Data        1088  common_data.o(.bss)
-    g_NVADB                                  0x2000b890   Data         384  common_data.o(.bss)
-    g_COSDBOut                               0x2000ba10   Data          24  common_data.o(.bss)
-    g_NVADBOut                               0x2000ba28   Data          24  common_data.o(.bss)
-    g_EthW5500                               0x2000ba40   Data          27  common_data.o(.bss)
-    g_EthDP83848                             0x2000ba5b   Data          27  common_data.o(.bss)
-    g_IaSampleBuf                            0x2000ba78   Data         768  common_data.o(.bss)
-    g_IbSampleBuf                            0x2000bd78   Data         768  common_data.o(.bss)
-    g_IcSampleBuf                            0x2000c078   Data         768  common_data.o(.bss)
-    g_I0SampleBuf                            0x2000c378   Data         768  common_data.o(.bss)
-    g_UaSampleBuf                            0x2000c678   Data         768  common_data.o(.bss)
-    g_UbSampleBuf                            0x2000c978   Data         768  common_data.o(.bss)
-    g_UcSampleBuf                            0x2000cc78   Data         768  common_data.o(.bss)
-    g_U0SampleBuf                            0x2000cf78   Data         768  common_data.o(.bss)
-    g_UASampleBuf                            0x2000d278   Data         768  common_data.o(.bss)
-    g_UCSampleBuf                            0x2000d578   Data         768  common_data.o(.bss)
-    g_Udc1SampleBuf                          0x2000d878   Data         768  common_data.o(.bss)
-    g_Udc2SampleBuf                          0x2000db78   Data         768  common_data.o(.bss)
-    FixedValueCfg2                           0x2000df74   Data        6384  point_table_config.o(.bss)
-    g_Alpha                                  0x2001031c   Data          16  calculator.o(.bss)
-    serial1                                  0x20012eb4   Data          96  drv_usart.o(.bss)
-    serial3                                  0x20012f14   Data          96  drv_usart.o(.bss)
-    serial4                                  0x20012f74   Data          96  drv_usart.o(.bss)
-    serial5                                  0x20012fd4   Data          96  drv_usart.o(.bss)
-    serial6                                  0x20013034   Data          96  drv_usart.o(.bss)
-    g_FreGatherUab                           0x20016730   Data          52  drv_timer.o(.bss)
-    g_FreGatherUCB                           0x20016764   Data          52  drv_timer.o(.bss)
-    g_DiCollect                              0x200168e0   Data          56  drv_di.o(.bss)
-    pFlash                                   0x200169d8   Data          32  stm32f4xx_hal_flash.o(.bss)
-    rt_thread_priority_table                 0x20016f18   Data         256  scheduler.o(.bss)
-    filesystem_operation_table               0x20017298   Data          16  dfs.o(.bss)
-    filesystem_table                         0x200172a8   Data          64  dfs.o(.bss)
-    fd_table                                 0x2001730c   Data         128  dfs.o(.bss)
-    finsh_heap                               0x2001a9e4   Data         128  finsh_heap.o(.bss)
-    global_node_table                        0x2001aa64   Data         320  finsh_node.o(.bss)
-    global_variable                          0x2001aba4   Data         192  finsh_var.o(.bss)
-    finsh_vm_stack                           0x2001ac64   Data         256  finsh_vm.o(.bss)
-    text_segment                             0x2001ad64   Data         128  finsh_vm.o(.bss)
-    DLT634_HMISLAVE_Pad                      0x20022bb0   Data          20  hmi_101_app.o(.bss)
-    Cmd101SendEvent                          0x20022bc4   Data          32  gui_101_cmd.o(.bss)
-    cmd101                                   0x20022be4   Data          12  gui_101_cmd.o(.bss)
-    menuManage                               0x20022c1c   Data          52  lkdguimenu.o(.bss)
-    yxInfo                                   0x20022ca0   Data          12  uservariable.o(.bss)
-    yceInfo                                  0x20022cac   Data          36  uservariable.o(.bss)
-    dzhi0Info                                0x20022cd0   Data          80  uservariable.o(.bss)
-    dzhi1Info                                0x20022d20   Data         176  uservariable.o(.bss)
-    soeInfo                                  0x20022dd0   Data          16  uservariable.o(.bss)
-    coInfo                                   0x20022de0   Data          16  uservariable.o(.bss)
-    hcmdInfo                                 0x20022df0   Data          12  uservariable.o(.bss)
-    RealYxLed                                0x20022dfc   Data          72  hmiinout.o(.bss)
-    LastYxLed                                0x20022e44   Data          18  hmiinout.o(.bss)
-    DLT634_5101Slave_Pad                     0x20023256   Data          80  dlt634_5101slave_app.o(.bss)
-    DLT634_5104Slave_Pad                     0x200236a6   Data          90  dlt634_5104slave_app.o(.bss)
-    Encrypt_Pad                              0x20023700   Data          24  encrypt_disk.o(.bss)
-    RxdBuf                                   0x20023718   Data         512  channel_monitor.o(.bss)
-    temp                                     0x20023918   Data         512  mini_xml.o(.bss)
-    __stdin                                  0x20023c18   Data          84  stdio_streams.o(.bss)
-    __stdout                                 0x20023c6c   Data          84  stdio_streams.o(.bss)
-    __stderr                                 0x20023cc0   Data          84  stdio_streams.o(.bss)
-    __libspace_start                         0x20023d84   Data          96  libspace.o(.bss)
-    __temporary_stack_top$libspace           0x20023de4   Data           0  libspace.o(.bss)
+    g_FixedValue1                            0x20008928   Data         464  common_data.o(.bss)
+    g_FixedValue2                            0x20008af8   Data         464  common_data.o(.bss)
+    g_Parameter                              0x20008cc8   Data         376  common_data.o(.bss)
+    g_CalibrateFactor                        0x20008e40   Data          92  common_data.o(.bss)
+    g_ValueParaOperateInfo                   0x20008e9c   Data          16  common_data.o(.bss)
+    g_ValueParaPresetDB                      0x20008eac   Data        4296  common_data.o(.bss)
+    g_FlagDB                                 0x20009f74   Data          96  common_data.o(.bss)
+    g_COSDB                                  0x20009fd4   Data         192  common_data.o(.bss)
+    g_SOEDB                                  0x2000a094   Data        2560  common_data.o(.bss)
+    g_SOENewDB                               0x2000aa94   Data         640  common_data.o(.bss)
+    g_CoDB                                   0x2000ad14   Data         640  common_data.o(.bss)
+    g_FeventDB                               0x2000af94   Data        1184  common_data.o(.bss)
+    g_UlogDB                                 0x2000b434   Data        1088  common_data.o(.bss)
+    g_NVADB                                  0x2000b874   Data         384  common_data.o(.bss)
+    g_COSDBOut                               0x2000b9f4   Data          24  common_data.o(.bss)
+    g_NVADBOut                               0x2000ba0c   Data          24  common_data.o(.bss)
+    g_EthW5500                               0x2000ba24   Data          27  common_data.o(.bss)
+    g_EthDP83848                             0x2000ba3f   Data          27  common_data.o(.bss)
+    g_IaSampleBuf                            0x2000ba60   Data         768  common_data.o(.bss)
+    g_IbSampleBuf                            0x2000bd60   Data         768  common_data.o(.bss)
+    g_IcSampleBuf                            0x2000c060   Data         768  common_data.o(.bss)
+    g_I0SampleBuf                            0x2000c360   Data         768  common_data.o(.bss)
+    g_UaSampleBuf                            0x2000c660   Data         768  common_data.o(.bss)
+    g_UbSampleBuf                            0x2000c960   Data         768  common_data.o(.bss)
+    g_UcSampleBuf                            0x2000cc60   Data         768  common_data.o(.bss)
+    g_U0SampleBuf                            0x2000cf60   Data         768  common_data.o(.bss)
+    g_UASampleBuf                            0x2000d260   Data         768  common_data.o(.bss)
+    g_UCSampleBuf                            0x2000d560   Data         768  common_data.o(.bss)
+    g_Udc1SampleBuf                          0x2000d860   Data         768  common_data.o(.bss)
+    g_Udc2SampleBuf                          0x2000db60   Data         768  common_data.o(.bss)
+    FixedValueCfg2                           0x2000df5c   Data        6384  point_table_config.o(.bss)
+    g_Alpha                                  0x20010304   Data          16  calculator.o(.bss)
+    serial1                                  0x20012e9c   Data          96  drv_usart.o(.bss)
+    serial3                                  0x20012efc   Data          96  drv_usart.o(.bss)
+    serial4                                  0x20012f5c   Data          96  drv_usart.o(.bss)
+    serial5                                  0x20012fbc   Data          96  drv_usart.o(.bss)
+    serial6                                  0x2001301c   Data          96  drv_usart.o(.bss)
+    g_FreGatherUab                           0x20016718   Data          52  drv_timer.o(.bss)
+    g_FreGatherUCB                           0x2001674c   Data          52  drv_timer.o(.bss)
+    g_DiCollect                              0x200168c8   Data          56  drv_di.o(.bss)
+    pFlash                                   0x200169c0   Data          32  stm32f4xx_hal_flash.o(.bss)
+    rt_thread_priority_table                 0x20016f00   Data         256  scheduler.o(.bss)
+    filesystem_operation_table               0x20017280   Data          16  dfs.o(.bss)
+    filesystem_table                         0x20017290   Data          64  dfs.o(.bss)
+    fd_table                                 0x200172f4   Data         128  dfs.o(.bss)
+    finsh_heap                               0x2001a9cc   Data         128  finsh_heap.o(.bss)
+    global_node_table                        0x2001aa4c   Data         320  finsh_node.o(.bss)
+    global_variable                          0x2001ab8c   Data         192  finsh_var.o(.bss)
+    finsh_vm_stack                           0x2001ac4c   Data         256  finsh_vm.o(.bss)
+    text_segment                             0x2001ad4c   Data         128  finsh_vm.o(.bss)
+    DLT634_HMISLAVE_Pad                      0x20022b98   Data          20  hmi_101_app.o(.bss)
+    Cmd101SendEvent                          0x20022bac   Data          32  gui_101_cmd.o(.bss)
+    cmd101                                   0x20022bcc   Data          12  gui_101_cmd.o(.bss)
+    menuManage                               0x20022c04   Data          52  lkdguimenu.o(.bss)
+    yxInfo                                   0x20022c88   Data          12  uservariable.o(.bss)
+    yceInfo                                  0x20022c94   Data          36  uservariable.o(.bss)
+    dzhi0Info                                0x20022cb8   Data          80  uservariable.o(.bss)
+    dzhi1Info                                0x20022d08   Data         176  uservariable.o(.bss)
+    soeInfo                                  0x20022db8   Data          16  uservariable.o(.bss)
+    coInfo                                   0x20022dc8   Data          16  uservariable.o(.bss)
+    hcmdInfo                                 0x20022dd8   Data          12  uservariable.o(.bss)
+    RealYxLed                                0x20022de4   Data          72  hmiinout.o(.bss)
+    LastYxLed                                0x20022e2c   Data          18  hmiinout.o(.bss)
+    DLT634_5101Slave_Pad                     0x2002323e   Data          80  dlt634_5101slave_app.o(.bss)
+    DLT634_5104Slave_Pad                     0x2002368e   Data          90  dlt634_5104slave_app.o(.bss)
+    Encrypt_Pad                              0x200236e8   Data          24  encrypt_disk.o(.bss)
+    RxdBuf                                   0x20023700   Data         512  channel_monitor.o(.bss)
+    temp                                     0x20023900   Data         512  mini_xml.o(.bss)
+    __stdin                                  0x20023c00   Data          84  stdio_streams.o(.bss)
+    __stdout                                 0x20023c54   Data          84  stdio_streams.o(.bss)
+    __stderr                                 0x20023ca8   Data          84  stdio_streams.o(.bss)
+    __libspace_start                         0x20023d6c   Data          96  libspace.o(.bss)
+    __temporary_stack_top$libspace           0x20023dcc   Data           0  libspace.o(.bss)
 
 
 
@@ -17794,7 +17794,7 @@ Memory Map of the image
 
   Image Entry point : 0x080401ad
 
-  Load Region LR_IROM1 (Base: 0x08040000, Size: 0x0007b728, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00077600])
+  Load Region LR_IROM1 (Base: 0x08040000, Size: 0x0007b728, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00077604])
 
     Execution Region ER_IROM1 (Base: 0x08040000, Size: 0x00075e70, Max: 0x00100000, ABSOLUTE)
 
@@ -20383,7 +20383,7 @@ Memory Map of the image
     0x080b5cf0   0x00000180   Data   RO        23588    locale$$data        c_w.l(lc_time_c.o)
 
 
-    Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x00024de8, Max: 0x00030000, ABSOLUTE, COMPRESSED[0x00001790])
+    Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x00024dd0, Max: 0x00030000, ABSOLUTE, COMPRESSED[0x00001794])
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -20494,86 +20494,86 @@ Memory Map of the image
     0x200058b0   0x00000004   Data   RW        23093    .data               c_w.l(stdio_streams.o)
     0x200058b4   0x00000004   Data   RW        23094    .data               c_w.l(stdio_streams.o)
     0x200058b8   0x000021e0   Zero   RW          508    .bss                multi_thread.o
-    0x20007a98   0x000064dc   Zero   RW          807    .bss                common_data.o
-    0x2000df74   0x000018f0   Zero   RW         1083    .bss                point_table_config.o
-    0x2000f864   0x0000034c   Zero   RW         1137    .bss                breaker_protect.o
-    0x2000fbb0   0x0000029c   Zero   RW         1290    .bss                load_switch_ctrl.o
-    0x2000fe4c   0x000004d0   Zero   RW         1424    .bss                other_protect.o
-    0x2001031c   0x00001fb0   Zero   RW         1512    .bss                calculator.o
-    0x200122cc   0x00000038   Zero   RW         1582    .bss                tcp_server.o
-    0x20012304   0x00000a84   Zero   RW         1806    .bss                file_operate.o
-    0x20012d88   0x0000012c   Zero   RW         2048    .bss                wave_recording.o
-    0x20012eb4   0x000001e0   Zero   RW         2468    .bss                drv_usart.o
-    0x20013094   0x00000044   Zero   RW         2560    .bss                drv_sdram.o
-    0x200130d8   0x00003194   Zero   RW         2772    .bss                drv_eth.o
-    0x2001626c   0x00000084   Zero   RW         2900    .bss                drv_iic.o
-    0x200162f0   0x00000168   Zero   RW         2964    .bss                drv_spi.o
-    0x20016458   0x0000004c   Zero   RW         3040    .bss                drv_sd2405.o
-    0x200164a4   0x00000078   Zero   RW         3106    .bss                drv_io_spi.o
-    0x2001651c   0x00000058   Zero   RW         3146    .bss                drv_spi_flash.o
-    0x20016574   0x000000dc   Zero   RW         3213    .bss                drv_fm25vxx.o
-    0x20016650   0x000000d0   Zero   RW         3317    .bss                drv_w5500.o
-    0x20016720   0x00000010   Zero   RW         3672    .bss                drv_w5500_socket.o
-    0x20016730   0x000001b0   Zero   RW         3769    .bss                drv_timer.o
-    0x200168e0   0x00000038   Zero   RW         3919    .bss                drv_di.o
-    0x20016918   0x0000000c   Zero   RW         3968    .bss                drv_do.o
-    0x20016924   0x0000000c   Zero   RW         4028    .bss                drv_handheld.o
-    0x20016930   0x00000050   Zero   RW         4115    .bss                drv_ad7616.o
-    0x20016980   0x00000058   Zero   RW         4222    .bss                drv_sc1161y.o
-    0x200169d8   0x00000020   Zero   RW         5240    .bss                stm32f4xx_hal_flash.o
-    0x200169f8   0x00000480   Zero   RW         9661    .bss                idle.o
-    0x20016e78   0x00000080   Zero   RW        10044    .bss                kservice.o
-    0x20016ef8   0x00000020   Zero   RW        10216    .bss                mem.o
-    0x20016f18   0x00000100   Zero   RW        10502    .bss                scheduler.o
-    0x20017018   0x00000280   Zero   RW        10730    .bss                timer.o
-    0x20017298   0x000000f4   Zero   RW        10916    .bss                dfs.o
-    0x2001738c   0x00000124   Zero   RW        11072    .bss                dfs_file.o
-    0x200174b0   0x00000d88   Zero   RW        12508    .bss                dfs_uffs.o
-    0x20018238   0x0000120c   Zero   RW        13431    .bss                uffs_fd.o
-    0x20019444   0x00000bcc   Zero   RW        13849    .bss                uffs_fs.o
-    0x2001a010   0x00000080   Zero   RW        15251    .bss                spi_flash_sfud.o
-    0x2001a090   0x00000050   Zero   RW        15916    .bss                pin.o
-    0x2001a0e0   0x00000901   Zero   RW        15989    .bss                shell.o
-    0x2001a9e1   0x00000003   PAD
-    0x2001a9e4   0x00000080   Zero   RW        16364    .bss                finsh_heap.o
-    0x2001aa64   0x00000140   Zero   RW        16453    .bss                finsh_node.o
-    0x2001aba4   0x000000c0   Zero   RW        16919    .bss                finsh_var.o
-    0x2001ac64   0x00000180   Zero   RW        16969    .bss                finsh_vm.o
-    0x2001ade4   0x00000060   Zero   RW        18032    .bss                sockets.o
-    0x2001ae44   0x00000663   Zero   RW        18343    .bss                dns.o
-    0x2001b4a7   0x00000001   PAD
-    0x2001b4a8   0x00006c7f   Zero   RW        18456    .bss                memp.o
-    0x20022127   0x00000001   PAD
-    0x20022128   0x00000010   Zero   RW        19052    .bss                tcp_in.o
-    0x20022138   0x00000010   Zero   RW        19453    .bss                ip_addr.o
-    0x20022148   0x000000c8   Zero   RW        19521    .bss                etharp.o
-    0x20022210   0x000009a0   Zero   RW        19616    .bss                ethernetif.o
-    0x20022bb0   0x00000014   Zero   RW        19741    .bss                hmi_101_app.o
-    0x20022bc4   0x0000002c   Zero   RW        19982    .bss                gui_101_cmd.o
-    0x20022bf0   0x0000002c   Zero   RW        20184    .bss                gui_common.o
-    0x20022c1c   0x00000034   Zero   RW        20232    .bss                lkdguimenu.o
-    0x20022c50   0x00000034   Zero   RW        20307    .bss                lkdguiwindow.o
-    0x20022c84   0x0000001c   Zero   RW        20416    .bss                guidisplay.o
-    0x20022ca0   0x0000015c   Zero   RW        20723    .bss                uservariable.o
-    0x20022dfc   0x0000005a   Zero   RW        20877    .bss                hmiinout.o
-    0x20022e56   0x00000400   Zero   RW        20991    .bss                dlt634_5101slave_disk.o
-    0x20023256   0x00000050   Zero   RW        21189    .bss                dlt634_5101slave_app.o
-    0x200232a6   0x00000400   Zero   RW        21366    .bss                dlt634_5104slave_disk.o
-    0x200236a6   0x0000005a   Zero   RW        21552    .bss                dlt634_5104slave_app.o
-    0x20023700   0x00000018   Zero   RW        21971    .bss                encrypt_disk.o
-    0x20023718   0x00000200   Zero   RW        22030    .bss                channel_monitor.o
-    0x20023918   0x00000200   Zero   RW        22116    .bss                mini_xml.o
-    0x20023b18   0x000000ff   Zero   RW        22705    .bss                jsonfileoperation.o
-    0x20023c17   0x00000001   PAD
-    0x20023c18   0x00000054   Zero   RW        23089    .bss                c_w.l(stdio_streams.o)
-    0x20023c6c   0x00000054   Zero   RW        23090    .bss                c_w.l(stdio_streams.o)
-    0x20023cc0   0x00000054   Zero   RW        23091    .bss                c_w.l(stdio_streams.o)
-    0x20023d14   0x0000002c   Zero   RW        23126    .bss                c_w.l(localtime.o)
-    0x20023d40   0x00000044   Zero   RW        23333    .bss                c_w.l(asctime.o)
-    0x20023d84   0x00000060   Zero   RW        23397    .bss                c_w.l(libspace.o)
-    0x20023de4   0x00000004   PAD
-    0x20023de8   0x00000800   Zero   RW         9484    HEAP                startup_stm32f429xx.o
-    0x200245e8   0x00000800   Zero   RW         9483    STACK               startup_stm32f429xx.o
+    0x20007a98   0x000064c4   Zero   RW          807    .bss                common_data.o
+    0x2000df5c   0x000018f0   Zero   RW         1083    .bss                point_table_config.o
+    0x2000f84c   0x0000034c   Zero   RW         1137    .bss                breaker_protect.o
+    0x2000fb98   0x0000029c   Zero   RW         1290    .bss                load_switch_ctrl.o
+    0x2000fe34   0x000004d0   Zero   RW         1424    .bss                other_protect.o
+    0x20010304   0x00001fb0   Zero   RW         1512    .bss                calculator.o
+    0x200122b4   0x00000038   Zero   RW         1582    .bss                tcp_server.o
+    0x200122ec   0x00000a84   Zero   RW         1806    .bss                file_operate.o
+    0x20012d70   0x0000012c   Zero   RW         2048    .bss                wave_recording.o
+    0x20012e9c   0x000001e0   Zero   RW         2468    .bss                drv_usart.o
+    0x2001307c   0x00000044   Zero   RW         2560    .bss                drv_sdram.o
+    0x200130c0   0x00003194   Zero   RW         2772    .bss                drv_eth.o
+    0x20016254   0x00000084   Zero   RW         2900    .bss                drv_iic.o
+    0x200162d8   0x00000168   Zero   RW         2964    .bss                drv_spi.o
+    0x20016440   0x0000004c   Zero   RW         3040    .bss                drv_sd2405.o
+    0x2001648c   0x00000078   Zero   RW         3106    .bss                drv_io_spi.o
+    0x20016504   0x00000058   Zero   RW         3146    .bss                drv_spi_flash.o
+    0x2001655c   0x000000dc   Zero   RW         3213    .bss                drv_fm25vxx.o
+    0x20016638   0x000000d0   Zero   RW         3317    .bss                drv_w5500.o
+    0x20016708   0x00000010   Zero   RW         3672    .bss                drv_w5500_socket.o
+    0x20016718   0x000001b0   Zero   RW         3769    .bss                drv_timer.o
+    0x200168c8   0x00000038   Zero   RW         3919    .bss                drv_di.o
+    0x20016900   0x0000000c   Zero   RW         3968    .bss                drv_do.o
+    0x2001690c   0x0000000c   Zero   RW         4028    .bss                drv_handheld.o
+    0x20016918   0x00000050   Zero   RW         4115    .bss                drv_ad7616.o
+    0x20016968   0x00000058   Zero   RW         4222    .bss                drv_sc1161y.o
+    0x200169c0   0x00000020   Zero   RW         5240    .bss                stm32f4xx_hal_flash.o
+    0x200169e0   0x00000480   Zero   RW         9661    .bss                idle.o
+    0x20016e60   0x00000080   Zero   RW        10044    .bss                kservice.o
+    0x20016ee0   0x00000020   Zero   RW        10216    .bss                mem.o
+    0x20016f00   0x00000100   Zero   RW        10502    .bss                scheduler.o
+    0x20017000   0x00000280   Zero   RW        10730    .bss                timer.o
+    0x20017280   0x000000f4   Zero   RW        10916    .bss                dfs.o
+    0x20017374   0x00000124   Zero   RW        11072    .bss                dfs_file.o
+    0x20017498   0x00000d88   Zero   RW        12508    .bss                dfs_uffs.o
+    0x20018220   0x0000120c   Zero   RW        13431    .bss                uffs_fd.o
+    0x2001942c   0x00000bcc   Zero   RW        13849    .bss                uffs_fs.o
+    0x20019ff8   0x00000080   Zero   RW        15251    .bss                spi_flash_sfud.o
+    0x2001a078   0x00000050   Zero   RW        15916    .bss                pin.o
+    0x2001a0c8   0x00000901   Zero   RW        15989    .bss                shell.o
+    0x2001a9c9   0x00000003   PAD
+    0x2001a9cc   0x00000080   Zero   RW        16364    .bss                finsh_heap.o
+    0x2001aa4c   0x00000140   Zero   RW        16453    .bss                finsh_node.o
+    0x2001ab8c   0x000000c0   Zero   RW        16919    .bss                finsh_var.o
+    0x2001ac4c   0x00000180   Zero   RW        16969    .bss                finsh_vm.o
+    0x2001adcc   0x00000060   Zero   RW        18032    .bss                sockets.o
+    0x2001ae2c   0x00000663   Zero   RW        18343    .bss                dns.o
+    0x2001b48f   0x00000001   PAD
+    0x2001b490   0x00006c7f   Zero   RW        18456    .bss                memp.o
+    0x2002210f   0x00000001   PAD
+    0x20022110   0x00000010   Zero   RW        19052    .bss                tcp_in.o
+    0x20022120   0x00000010   Zero   RW        19453    .bss                ip_addr.o
+    0x20022130   0x000000c8   Zero   RW        19521    .bss                etharp.o
+    0x200221f8   0x000009a0   Zero   RW        19616    .bss                ethernetif.o
+    0x20022b98   0x00000014   Zero   RW        19741    .bss                hmi_101_app.o
+    0x20022bac   0x0000002c   Zero   RW        19982    .bss                gui_101_cmd.o
+    0x20022bd8   0x0000002c   Zero   RW        20184    .bss                gui_common.o
+    0x20022c04   0x00000034   Zero   RW        20232    .bss                lkdguimenu.o
+    0x20022c38   0x00000034   Zero   RW        20307    .bss                lkdguiwindow.o
+    0x20022c6c   0x0000001c   Zero   RW        20416    .bss                guidisplay.o
+    0x20022c88   0x0000015c   Zero   RW        20723    .bss                uservariable.o
+    0x20022de4   0x0000005a   Zero   RW        20877    .bss                hmiinout.o
+    0x20022e3e   0x00000400   Zero   RW        20991    .bss                dlt634_5101slave_disk.o
+    0x2002323e   0x00000050   Zero   RW        21189    .bss                dlt634_5101slave_app.o
+    0x2002328e   0x00000400   Zero   RW        21366    .bss                dlt634_5104slave_disk.o
+    0x2002368e   0x0000005a   Zero   RW        21552    .bss                dlt634_5104slave_app.o
+    0x200236e8   0x00000018   Zero   RW        21971    .bss                encrypt_disk.o
+    0x20023700   0x00000200   Zero   RW        22030    .bss                channel_monitor.o
+    0x20023900   0x00000200   Zero   RW        22116    .bss                mini_xml.o
+    0x20023b00   0x000000ff   Zero   RW        22705    .bss                jsonfileoperation.o
+    0x20023bff   0x00000001   PAD
+    0x20023c00   0x00000054   Zero   RW        23089    .bss                c_w.l(stdio_streams.o)
+    0x20023c54   0x00000054   Zero   RW        23090    .bss                c_w.l(stdio_streams.o)
+    0x20023ca8   0x00000054   Zero   RW        23091    .bss                c_w.l(stdio_streams.o)
+    0x20023cfc   0x0000002c   Zero   RW        23126    .bss                c_w.l(localtime.o)
+    0x20023d28   0x00000044   Zero   RW        23333    .bss                c_w.l(asctime.o)
+    0x20023d6c   0x00000060   Zero   RW        23397    .bss                c_w.l(libspace.o)
+    0x20023dcc   0x00000004   PAD
+    0x20023dd0   0x00000800   Zero   RW         9484    HEAP                startup_stm32f429xx.o
+    0x200245d0   0x00000800   Zero   RW         9483    STACK               startup_stm32f429xx.o
 
 
 
@@ -20607,14 +20607,14 @@ Image component sizes
       6390       2006          0          0          0      19687   api_msg.o
         88         26        179          0          0      21617   application.o
        322         24          0          0          0       6444   board.o
-     11812        346          0          8        844      45282   breaker_protect.o
+     11812        346          0          8        844      45246   breaker_protect.o
      17080       1394         23        181       8112      22904   calculator.o
        240         24        942          0          0       2819   ccsbcs.o
       1156         54          0         16        512       8563   channel_monitor.o
       3602        224          0         12          0      22861   cjson.o
         94         12          0          4          0       2250   clock.o
       3770       1546       1076          4          0      25044   cmd.o
-     11720       1028         34        338      25820      52561   common_data.o
+     11720       1028         34        338      25796      52525   common_data.o
        228          0          0          0          0       4735   completion.o
        204        106         80          0          0       4094   components.o
        272         26          0          0          0        820   context_rvds.o
@@ -20663,7 +20663,7 @@ Image component sizes
       4044       1124         80          1        200      15157   etharp.o
       1270        272        228          0       2464      25501   ethernetif.o
      11774        168        170          6          0      55061   ff.o
-      9970       1686        374         24       2692      56373   file_operate.o
+      9970       1686        374         24       2692      56337   file_operate.o
       6170        156          0          8          0      11758   finsh_compiler.o
         56         22        243         64          0       2879   finsh_error.o
        552         42          0          8        128       6215   finsh_heap.o
@@ -20678,7 +20678,7 @@ Image component sizes
        128         44          0          4         44       3720   gui_common.o
      17016       1856       1011       1632         28      49849   guidisplay.o
       6812        150          0          5         20      17060   hmi_101_app.o
-       390         32          0          6          0      26752   hmi_101_disk.o
+       390         32          0          6          0      26716   hmi_101_disk.o
       1534        116          8          8         90       9269   hmiinout.o
       1124          4         12          0          0      12101   i2c-bit-ops.o
        268         16         25          0          0       4574   i2c_core.o
@@ -20709,7 +20709,7 @@ Image component sizes
        554        102          0          9          0       9428   netif.o
        260         18          0          0          0       4967   netifapi.o
        340         28          0        180          0       7556   object.o
-      5878        396          0         13       1232      38603   other_protect.o
+      5878        398          0         13       1232      38603   other_protect.o
       3408       1274          0          1          0      11995   pbuf.o
        284         34        141          0         80       6222   pin.o
          0          0       5921      17984       6384       3387   point_table_config.o
@@ -20784,7 +20784,7 @@ Image component sizes
       4800        544         21         64        300      14250   wave_recording.o
 
     ----------------------------------------------------------------------
-    395234      43742      20752      22700   24586080    3075144   Object Totals
+    395234      43744      20752      22700   24586056    3075000   Object Totals
          0          0         32          0          0          0   (incl. Generated)
        302          0         58         38          6          0   (incl. Padding)
 
@@ -21001,15 +21001,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-    425808      45608      57120      22712   24586544    2913845   Grand Totals
-    425808      45608      57120       6032   24586544    2913845   ELF Image Totals (compressed)
-    425808      45608      57120       6032          0          0   ROM Totals
+    425808      45610      57120      22712   24586520    2913701   Grand Totals
+    425808      45610      57120       6036   24586520    2913701   ELF Image Totals (compressed)
+    425808      45610      57120       6036          0          0   ROM Totals
 
 ==============================================================================
 
     Total RO  Size (Code + RO Data)               482928 ( 471.61kB)
-    Total RW  Size (RW Data + ZI Data)          24609256 (24032.48kB)
-    Total ROM Size (Code + RO Data + RW Data)     488960 ( 477.50kB)
+    Total RW  Size (RW Data + ZI Data)          24609232 (24032.45kB)
+    Total ROM Size (Code + RO Data + RW Data)     488964 ( 477.50kB)
 
 ==============================================================================
 
