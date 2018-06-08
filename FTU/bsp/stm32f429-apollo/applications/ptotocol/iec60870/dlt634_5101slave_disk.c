@@ -424,13 +424,13 @@ void DLT634_5101_SLAVE_C_SR(uint8_t pdrv, uint8_t *pbuf)//定值参数
                 {
                     addr = INTRIPARAME_START_ADDR;
 //                            addr = RUNPARAMETER_START_ADDR;
-                    NUM_temp = INHERENT_PARAMETER_NUM + RUN_PARAMETER_NUM;
+                    NUM_temp = INHERENT_PARAMETER_NUM + g_ParameterCfg_Len;
 //                            NUM_temp = RUN_PARAMETER_NUM+CALIBRATE_FACTOR_NUM;
                 }
                 else
                 {
                     addr = FIXED_VALUE_START_ADDR;
-                    NUM_temp = FIXED_VALUE_NUM;
+                    NUM_temp = g_FixedValueCfg1_Len;
                 }
             }
             else
@@ -458,7 +458,7 @@ void DLT634_5101_SLAVE_C_SR(uint8_t pdrv, uint8_t *pbuf)//定值参数
                             }
                             if(pbuf[8] == 0)
                             {
-                                if(++addr > RUNPARAMETER_START_ADDR+RUN_PARAMETER_NUM)
+                                if(++addr > RUNPARAMETER_START_ADDR+g_ParameterCfg_Len)
                                 {
                                     break;
                                 }
@@ -469,7 +469,7 @@ void DLT634_5101_SLAVE_C_SR(uint8_t pdrv, uint8_t *pbuf)//定值参数
                             }
                             else
                             {
-                                if (++addr > FIXED_VALUE_START_ADDR + FIXED_VALUE_NUM)
+                                if (++addr > FIXED_VALUE_START_ADDR + g_FixedValueCfg1_Len)
                                 {
                                     break;
                                 }
