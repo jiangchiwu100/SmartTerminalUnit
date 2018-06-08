@@ -11,7 +11,6 @@
 
 #include "stdint.h"
 
-#define USEPOWERONIMAGE 0
 #define VERSIONNUMBER "V001.001.180528"
 
 /* GUI∆Ù∂ØΩÁ√Ê */

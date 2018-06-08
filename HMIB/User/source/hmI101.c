@@ -612,6 +612,8 @@ void Hmi101Main(void)
   */
 void Hmi101Init(void)
 {
+	SetRunLedStartFlag(1);
+	SetRunLedFrequency(500);
 	FirstRunState = 0;
 }
 

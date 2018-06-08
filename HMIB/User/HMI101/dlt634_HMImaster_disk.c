@@ -252,6 +252,7 @@ void DLT634_HMI_MasterTask(void* arg)
 		{
 				if(hmi_init == 0)
 				{
+						SetRunLedFrequency(100);
 						hmi_init = 1;	
 				}		
 		}

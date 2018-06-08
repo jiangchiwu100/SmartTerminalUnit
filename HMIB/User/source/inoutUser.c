@@ -30,6 +30,39 @@ struct SwitchQueue switchQueue;
 /* 突变按键队列 */
 struct KeyQueue keyQueue;
 
+/* 运行等相关变量 */
+static uint8_t RunLedStartFlag;
+static uint16_t RunLedFrequency;
+
+/**
+  *@brief 运行信号灯开关
+  *@param  OnOff 0 关闭 1启动
+  *@retval None
+  */
+void SetRunLedStartFlag(uint8_t OnOff)
+{
+	RunLedStartFlag = OnOff;
+}
+
+/**
+  *@brief 设置运行信号灯频率
+  *@param  frequency 运行频率
+  *@retval None
+  */
+void SetRunLedFrequency(uint16_t frequency)
+{
+	RunLedFrequency = frequency;
+}
+/**
+  *@brief 获取运行信号灯频率
+  *@param  None
+  *@retval 频率
+  */
+uint16_t GetRunLedFrequency(void)
+{
+	return RunLedFrequency;
+}
+
 /**
   *@brief 运行信号灯控制
   *@param  None
@@ -38,7 +71,10 @@ struct KeyQueue keyQueue;
 static void UserRunLed(void)
 {
 	static uint32_t LedRunCount;
-	if(GetTimer1IntervalTick(LedRunCount) >= 500){
+	if(RunLedStartFlag == 0){
+		return;
+	}
+	if(GetTimer1IntervalTick(LedRunCount) >= RunLedFrequency){
 		LedRunCount = GetTimer1Tick();
 		if(GetLedStatus(userLedNoTab[USERLED_RUN]) == LEDOFF){
 			SetLedState(userLedNoTab[USERLED_RUN], LEDON);;
@@ -48,6 +84,7 @@ static void UserRunLed(void)
 		}
 	}
 }
+
 /**
   *@brief 通讯信号灯信号灯控制
   *@param  None
