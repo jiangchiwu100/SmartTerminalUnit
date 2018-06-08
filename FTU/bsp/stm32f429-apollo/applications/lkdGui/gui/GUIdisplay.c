@@ -523,7 +523,6 @@ void DZModfiyFun(void)
 	int16_t x,y;
 	float fValue;
 	if(stepTab[STEP_DZHIMODFIY] == 0){//³õÊ¼»¯
-        rt_kprintf("step2\r\n");
 		DZModfiyInit();
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){
 			keyIs = dZModfiy.str[0];
