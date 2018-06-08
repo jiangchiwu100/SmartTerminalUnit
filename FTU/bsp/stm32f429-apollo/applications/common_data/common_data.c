@@ -248,7 +248,7 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         array = (float *)g_InherentPara.terminalType;
         offset = (addr - INTRIPARAME_START_ADDR) * 24 / 4;
     }
-    else if((RUNPARAMETER_START_ADDR <= addr) && (addr < (RUNPARAMETER_START_ADDR + RUN_PARAMETER_NUM)))
+    else if((RUNPARAMETER_START_ADDR <= addr) && (addr < (RUNPARAMETER_START_ADDR + g_ParameterCfg_Len)))
     {
         // running para block 运行参数
         array = g_Parameter;
@@ -266,7 +266,7 @@ float* GetValueArray(uint16_t addr, uint8_t sn)
         array = NULL;
         offset = 0;
     }
-    else if((FIXED_VALUE_START_ADDR <= addr) && ( addr < (FIXED_VALUE_START_ADDR + FIXED_VALUE_NUM)))
+    else if((FIXED_VALUE_START_ADDR <= addr) && ( addr < (FIXED_VALUE_START_ADDR + g_FixedValueCfg1_Len)))
     {
         // public para block 定值公共信息
         array = pFixedValue;
@@ -517,17 +517,22 @@ uint8_t DBReadValue(uint16_t *pAddr, uint32_t num, uint8_t *pData, uint8_t sn, u
     {
         addr = *(pAddr + i);
         /* 获取定值属性 */
-        if (addr >= RUNPARAMETER_START_ADDR)
+        if (((addr >= RUNPARAMETER_START_ADDR) && (addr < RUNPARAMETER_START_ADDR + g_ParameterCfg_Len))||
+           ((addr >= FIXED_VALUE_START_ADDR) && (addr < FIXED_VALUE_START_ADDR + g_FixedValueCfg1_Len))) 
         {
             PropertyTemp.addr = addr;
             PropertyTemp.length = 4;
             PropertyTemp.tag = 38;
         }
-        else if (addr >= INTRIPARAME_START_ADDR && addr <= INTRIPARAME_START_ADDR + INHERENT_PARAMETER_NUM)// 对固有参数特殊处理
+        else if ((addr >= INTRIPARAME_START_ADDR) && (addr < INTRIPARAME_START_ADDR + INHERENT_PARAMETER_NUM))// 对固有参数特殊处理
         {
             PropertyTemp.addr = addr;
             PropertyTemp.length = 24;
             PropertyTemp.tag = 4;
+        }
+        else
+        {
+            break;       
         }
         /* 获取定值 */
         pValueTemp = GetValueArray(addr, sn);
@@ -656,7 +661,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     rt_uint8_t Property;
     uint16_t newaddr;
     
-    if (state == g_TelesignalDB[addr])
+    if ((state == g_TelesignalDB[addr])||(addr >= g_TelesignalCfg_Len))
     {
         return FALSE;
     }
@@ -833,6 +838,11 @@ rt_uint8_t DBWriteCO(uint16_t addr, rt_uint8_t state)
 rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t yc_num)
 {
     rt_uint32_t i;
+ 
+    if (yx_addr >= g_TelesignalCfg_Len)
+    {
+        return FALSE;
+    }
     
     memset(&g_FeventDB[g_FlagDB.queue_fevent.in],0,sizeof(g_FeventDB[g_FlagDB.queue_fevent.in]));
 
