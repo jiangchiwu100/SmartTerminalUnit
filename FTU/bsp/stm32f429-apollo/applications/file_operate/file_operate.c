@@ -807,8 +807,8 @@ void file_operate_Format(void)
     strcat(DirName,"/HISTORY/COMTRADE");//建立SOE文件目录
     mkdir(DirName,0);//建立目录
     
-    memset(&g_FlagDB.fatfs_co,0,sizeof(g_FlagDB.fatfs_co));
     memset(&g_FlagDB.fatfs_soe,0,sizeof(g_FlagDB.fatfs_soe));
+    memset(&g_FlagDB.fatfs_co,0,sizeof(g_FlagDB.fatfs_co));
     memset(&g_FlagDB.fatfs_fevent,0,sizeof(g_FlagDB.fatfs_fevent));
     memset(&g_FlagDB.fatfs_ulog,0,sizeof(g_FlagDB.fatfs_ulog));
     
@@ -1231,8 +1231,7 @@ uint8_t AddDoc_Random(void)
     if(AddDoc_CO())
     {return(1);}
     if(AddDoc_FEVNET())
-    {return(1);}
-    rt_multi_common_data_fram_record_write(MEMORY_FLAG, (uint8_t *)&g_FlagDB, sizeof(g_FlagDB));    
+    {return(1);}   
     return(0);
 }
 
@@ -1389,15 +1388,11 @@ void file_operate_Init(void)
     {  
         FILE_PRINTF("spi flash mount to /spi !\n");
         
-        if(((g_FlagDB.fatfs_soe.currentnum >= SOE_FILE_MAXNUM)||(g_FlagDB.fatfs_soe.fullnum >= SOE_FILE_MAXNUM))||\
-           ((g_FlagDB.fatfs_co.currentnum >= CO_FILE_MAXNUM)||(g_FlagDB.fatfs_co.fullnum >= CO_FILE_MAXNUM))||\
-        ((g_FlagDB.fatfs_fevent.currentnum >= FEVENT_FILE_MAXNUM)||(g_FlagDB.fatfs_fevent.fullnum >= FEVENT_FILE_MAXNUM))||\
-        ((g_FlagDB.fatfs_ulog.currentnum >= ULOG_FILE_MAXNUM)||(g_FlagDB.fatfs_ulog.fullnum >= ULOG_FILE_MAXNUM)))
+        if(((g_FlagDB.fatfs_soe.currentnum > SOE_FILE_MAXNUM)||(g_FlagDB.fatfs_soe.fullnum > SOE_FILE_MAXNUM))||\
+           ((g_FlagDB.fatfs_co.currentnum > CO_FILE_MAXNUM)||(g_FlagDB.fatfs_co.fullnum > CO_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_fevent.currentnum > FEVENT_FILE_MAXNUM)||(g_FlagDB.fatfs_fevent.fullnum > FEVENT_FILE_MAXNUM))||\
+        ((g_FlagDB.fatfs_ulog.currentnum > ULOG_FILE_MAXNUM)||(g_FlagDB.fatfs_ulog.fullnum > ULOG_FILE_MAXNUM)))
         {
-            memset(&g_FlagDB.fatfs_soe,0,sizeof(g_FlagDB.fatfs_soe));
-            memset(&g_FlagDB.fatfs_co,0,sizeof(g_FlagDB.fatfs_co));
-            memset(&g_FlagDB.fatfs_fevent,0,sizeof(g_FlagDB.fatfs_fevent));
-            memset(&g_FlagDB.fatfs_ulog,0,sizeof(g_FlagDB.fatfs_ulog));
             file_operate_Format(); 
             FILE_PRINTF("spi flash mount to /spi restart!\n");  
         }
