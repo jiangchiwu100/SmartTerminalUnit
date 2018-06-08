@@ -308,7 +308,7 @@ enum Frequency
 #define ADDR_FRAM_LOG                   0x04300  // 日志起始地址 0x1000
 #define ADDR_FRAM_MEMORY                0x05300  // 状态标志地址 0x100
 #define ADDR_FRAM_TELISIGNAL            0x05400  // 遥信起始地址 0x200
-#define ADDR_FRAM_JSON_MD5              0x05600  // MDK5数值   0x20
+//#define ADDR_FRAM_JSON_MD5              0x05600  // MDK5数值   0x20
 
 
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x1000
@@ -771,7 +771,7 @@ enum AddrFixedValue
 	OVERLOAD_VALUE,                      // 过负荷定值
 	OVERLOAD_FACTOR,                     // 过负荷返回系数		
 	OVERLOAD_TIME,	                     // 过负荷延时
-    BATTERY_LOWVOLTAGE_ALARM_SWITCH,     // 蓄电池低压报警投退	
+//  BATTERY_LOWVOLTAGE_ALARM_SWITCH,     // 蓄电池低压报警投退	
 //	BATTERY_LOWVOLTAGE_VALUE,            // 电池低压定值
 //	BATTERY_LOWVOLTAGE_FACTOR,           // 电池低压返回系数		
 //	BATTERY_LOWVOLTAGE_TIME,             // 电池低压延时	
@@ -1171,6 +1171,7 @@ extern void rt_multi_common_data_powerdown_storage(void);
 
 
 extern int rt_multi_common_data_init(void);
+extern uint8_t rt_multi_telecontrl_proof(uint16_t addr, rt_uint8_t operate_type);
 extern void rt_multi_telecontrl_operate(uint16_t addr, rt_uint8_t operate_type);
 extern float* GetValueArray(uint16_t addr, uint8_t sn);
 extern void ParameterCheck(void);

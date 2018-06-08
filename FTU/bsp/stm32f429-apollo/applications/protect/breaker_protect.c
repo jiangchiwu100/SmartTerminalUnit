@@ -988,7 +988,6 @@ void BreakerCtrlInit(void)
             s_ComProSts[pdrv].yx.recloseHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.recloseFAHardStrap];
             s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
             s_ComProSts[pdrv].yx.swtichclass.value = &g_TelesignalDB[g_TelesignalAddr.swtichclass];
-            s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value = &g_TelesignalDB[g_TelesignalAddr.telecontrolProOut];
 
             s_ComProSts[pdrv].yx.shortCircuitFault.addr = g_TelesignalAddr.shortCircuitFault;
             s_ComProSts[pdrv].yx.earthingFault.addr = g_TelesignalAddr.earthingFault;
@@ -1253,7 +1252,7 @@ void BreakerCtrlClock(void)
             
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{
-					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(*(s_ComProSts[pdrv].yx.telecontrol_Pro_Out.value)==OFF))//保护压板
+					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//保护压板
 					{
 						inrush_ctrl(&s_ComProSts[pdrv],&s_Inrush[pdrv]);//涌流抑制
 						iACC_ctrl(&s_ComProSts[pdrv],&s_IACC[pdrv]);//后加速

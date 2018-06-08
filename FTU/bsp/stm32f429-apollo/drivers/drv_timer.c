@@ -590,6 +590,12 @@ void GetFrequency(void)
     {
         g_TelemetryDB[g_TelemetryAddr.F2] = 0;
     }
+
+    if ((((g_TelemetryDB[g_TelemetryAddr.UAB] >= 1) && (g_Parameter[CFG_PRO_VOL_N] == 0))||\
+       ((g_TelemetryDB[g_TelemetryAddr.UCB] >= 1)&& (g_Parameter[CFG_PRO_VOL_N] == 1))) && g_TelemetryDB[g_TelemetryAddr.F2] == 0)    
+    {
+        g_TelemetryDB[g_TelemetryAddr.F2] = g_TelemetryDB[g_TelemetryAddr.F];
+    }
 	
 	g_FreGatherUab.freValueProtect = g_TelemetryDB[g_TelemetryAddr.F];
 	
