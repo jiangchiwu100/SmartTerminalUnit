@@ -15,67 +15,6 @@
 #include "string.h"
 
 uint8_t g_dataHaveChange;
-//test
-static uint8_t Sdev[][20] = {{1,5},//1
-                            {2,5},//2
-                            {3,5},//3
-                            {4,9},//4
-                            {5,5}};//5
-static uint8_t Mdev[][20] = {{0},//1
-                            {1, 1,5},//2
-                            {1, 2,5},//3
-                            {1, 3,5},//4
-                            {1, 4,9}};//5
-static uint8_t Ndev[][20] = {{1, 2,5},//1
-                            {1, 3,5},//2
-                            {1, 4,9},//3
-                            {1, 5,5},//4
-                            {0}};//5
-static uint8_t Supplydev[][40] = {{1, 4, 2,5,3,5,4,9,5,5},//1
-                                {0},//2
-                                {0},//3
-                                {0},//4
-                                {1, 4, 4,9,3,5,2,5,1,5}};//5
-//static uint8_t Sdev[][20] = {{1,5},//1
-//                            {2,9},//2
-//                            {3,5},//3
-//                            {4,4},//4
-//                            {5,9},//5
-//                            {6,5},//6
-//                            {7,5},//7
-//                            {8,6},//8
-//                            {9,6},//9
-//                            {10,6}};//10
-//static uint8_t Mdev[][20] = {{0},//1
-//                            {2, 1,5, 8,6},//2
-//                            {1, 2,9},//3
-//                            {3, 3,5, 5,9, 9,6},//4
-//                            {3, 3,5, 4,5, 9,6},//5
-//                            {1, 5,9},//6
-//                            {2, 6,5, 10,6},//7
-//                            {2, 1,5, 2,9},//8
-//                            {3, 3,5, 4,5, 5,9},//9
-//                            {2, 6,5, 7,5}};//10
-//static uint8_t Ndev[][20] = {{2, 2,9, 8,6},//1
-//                            {1, 3,5},//2
-//                            {4, 4,5, 5,9, 9,6},//3
-//                            {0},//4
-//                            {1, 6,5},//5
-//                            {2, 7,5, 10,6},//6
-//                            {0},//7
-//                            {0},//8
-//                            {0},//9
-//                            {0}};//10
-//static uint8_t Supplydev[][40] = {{1, 4, 1,5,2,9,3,5,4,5},//1
-//                                {0},//2
-//                                {0},//3
-//                                {2, 4, 4,5,3,5,2,9,1,5,  4, 4,5,5,9,6,5,7,5},//4
-//                                {0},//5
-//                                {0},//6
-//                                {1, 4, 7,5,6,5,5,9,4,5},//7
-//                                {0},//8
-//                                {0},//9
-//                                {0}};//10
 /* PUBLIC VARIABLES --------------------------------------------------------*/
 DevStr g_SelfSts[DISTRIBUT_DEVMAXNUM];
 
@@ -146,7 +85,6 @@ static void functional_retreat(uint8_t pdrv)
     ListElmt *element;
     DevStr *dev;
     
-//    variableState[pdrv] &= ~_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT;
     //投退开关引用
     element = s_ListDevStorage[pdrv].head;
     while(element != NULL)
@@ -346,7 +284,6 @@ static void selfstate_judge(uint8_t pdrv)
 static void direction_judge(uint8_t pdrv)
 {
     ListElmt *element;
-//    static uint8_t sta[DISTRIBUT_DEVMAXNUM] = {0};
     
     if(((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))
         &&((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON)))//合位//两侧有压
@@ -642,8 +579,6 @@ static void change_power(uint8_t pdrv)
         ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))&&\
         ((s_ListDevSupply[pdrv].head != NULL)&&(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_TRUNK)))//开关合位//双侧有压有链表//主线
     {
-//        if(((s_ListDevM[pdrv].head != NULL)&&(!(s_SelfSts[pdrv].variableState&_DISTRIBUT_V_VOLTAGE_M)))||\
-//          ((s_ListDevN[pdrv].head != NULL)&&(!(s_SelfSts[pdrv].variableState&_DISTRIBUT_V_VOLTAGE_N))))  //M侧有设备无压//N侧有设备无压
         {
             //加延时
             
@@ -966,13 +901,7 @@ void distributUpdataSelfState(uint8_t pdrv)
 void distributUpdataQueue(uint8_t pdrv,uint8_t ip,uint32_t *pdata)   
 {
     s_StoreQueueMemberStr[pdrv][ip].getflag = ON;
-    memcpy(&s_StoreQueueMemberStr[pdrv][ip].comstr,pdata,sizeof(s_StoreQueueMemberStr[pdrv][ip].comstr));
-//    s_SstoreQueue[pdrv].storeIn->ip = ip;
-//    memcpy(&s_SstoreQueue[pdrv].storeIn->comstr,pdata,sizeof(ComStr));
-//    if(++s_SstoreQueue[pdrv].storeIn >= s_SstoreQueue[pdrv].store + _DISTRIBUT_STOREQUEUE_SIZE)
-//    {
-//        s_SstoreQueue[pdrv].storeIn = s_SstoreQueue[pdrv].store;
-//    }    
+    memcpy(&s_StoreQueueMemberStr[pdrv][ip].comstr,pdata,sizeof(s_StoreQueueMemberStr[pdrv][ip].comstr));   
 }
 
 /**
@@ -999,27 +928,6 @@ void distributUpdataDevStorage(uint8_t pdrv)
         }
         element = element->next;
     }          
-    
-//    while(s_SstoreQueue[pdrv].storeIn != s_SstoreQueue[pdrv].storeOut)
-//    {        
-//        element = s_ListDevStorage[pdrv].head;
-//        while(element != NULL)
-//        {
-//            dev = (DevStr *)(element->data);
-//            if(dev->ip == s_SstoreQueue[pdrv].storeOut->ip)//ip符合
-//            {
-//                *(dev->gTime) = DISTRIBUT_ENTIMERS;//定时清零
-//                dev->comstr.variableState = s_SstoreQueue[pdrv].storeOut->comstr.variableState;//赋值
-//                dev->comstr.operation = s_SstoreQueue[pdrv].storeOut->comstr.operation;//赋值
-//                break;
-//            }
-//            element = element->next;
-//        }
-//        if(++s_SstoreQueue[pdrv].storeOut >= s_SstoreQueue[pdrv].store + _DISTRIBUT_STOREQUEUE_SIZE)
-//        {
-//            s_SstoreQueue[pdrv].storeOut = s_SstoreQueue[pdrv].store;
-//        }           
-//    }
 }
 
 /**
@@ -1037,8 +945,6 @@ void distributInit(void)
         switch(pdrv)
         {
             case DISTRIBUT_DEV0:
-//                s_SstoreQueue[pdrv].storeIn = s_SstoreQueue[pdrv].store;
-//                s_SstoreQueue[pdrv].storeOut = s_SstoreQueue[pdrv].store;
                 ListInit(pdrv);  
                 s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
                 s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];    

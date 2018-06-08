@@ -1051,6 +1051,7 @@ static void DBRevert(uint16_t addr)
 
     BreakerCtrlReset(BRE_DEV0);
     LoadSwitchCtrlReset(BRE_DEV0);
+    distributReset(BRE_DEV0);
 
     rt_hw_alarm_led_operate(OFF);	// 底部告警灯灭
 
@@ -1448,9 +1449,7 @@ void rt_multi_common_data_configure_default(void)
 
     memcpy(&g_ConfigurationSetDB->ID_Value, (char *)&("F31xxxxxxxxx20171211xxxx"), sizeof("F31xxxxxxxxx20171211xxxx"));   
         
-    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase)); 
-
-    rt_multi_common_data_fram_record_write(GRID_RECODE, (uint8_t *)GridStructureSet, GRIDSTRUCTUERSETSIZE);     
+    rt_multi_common_data_fram_record_write(CFG_RECODE, (uint8_t *)g_ConfigurationSetDB, sizeof(struct ConfigurationSetDatabase));     
 }
 
 /**
@@ -1534,6 +1533,10 @@ static void rt_common_data_save_value_default_to_fram(void)
             }
 
             rt_multi_common_data_configure_default(); //配置参数写入默认值     
+            
+            memset((uint8_t *)GridStructureSet,0,GRIDSTRUCTUERSETSIZE);
+
+            rt_multi_common_data_fram_record_write(GRID_RECODE, (uint8_t *)GridStructureSet, GRIDSTRUCTUERSETSIZE); 
 			
 			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
 		}
