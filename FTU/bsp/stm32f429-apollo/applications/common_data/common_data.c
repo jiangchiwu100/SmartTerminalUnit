@@ -660,7 +660,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
     rt_uint8_t Property;
     uint16_t newaddr;
     
-    if (state == g_TelesignalDB[addr])
+    if ((state == g_TelesignalDB[addr])||(addr >= g_TelesignalCfg_Len))
     {
         return FALSE;
     }
@@ -837,6 +837,11 @@ rt_uint8_t DBWriteCO(uint16_t addr, rt_uint8_t state)
 rt_uint8_t DBWriteFEVENT(rt_uint16_t yx_addr, rt_uint16_t *yc_addr, rt_uint16_t yc_num)
 {
     rt_uint32_t i;
+ 
+    if (yx_addr >= g_TelesignalCfg_Len)
+    {
+        return FALSE;
+    }
     
     memset(&g_FeventDB[g_FlagDB.queue_fevent.in],0,sizeof(g_FeventDB[g_FlagDB.queue_fevent.in]));
 
