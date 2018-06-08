@@ -523,6 +523,7 @@ void DZModfiyFun(void)
 	int16_t x,y;
 	float fValue;
 	if(stepTab[STEP_DZHIMODFIY] == 0){//初始化
+        rt_kprintf("step2\r\n");
 		DZModfiyInit();
 		if(dZModfiy.info->pRoot[dZModfiy.info->pBuff[dZModfiy.itemIs]].dataType){
 			keyIs = dZModfiy.str[0];
@@ -627,7 +628,7 @@ void DZModfiyFun(void)
 //		if(GetIntervalTick(inputCursorTick) > 100){//延时退出
 //		}
 	}
-	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] >= 4){
+	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] == 0){
 		keyStatus = NoKey;
 	}
 	switch(keyStatus){
