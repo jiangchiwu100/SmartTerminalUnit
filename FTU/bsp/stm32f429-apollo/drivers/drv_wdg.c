@@ -77,7 +77,7 @@ int rt_hw_wdg_deal_init(void)
 		
     return(RT_EOK);
 }
-//INIT_PREV_EXPORT(rt_hw_wdg_deal_init);
+INIT_PREV_EXPORT(rt_hw_wdg_deal_init);
 
 #endif /* USING_SOFTWARE_IWDG */
 /**
@@ -87,12 +87,12 @@ int rt_hw_wdg_deal_init(void)
   */  
 int rt_hw_wdg_deal_task(void)
 {
-//  #if USING_SOFTWARE_IWDG	
-//	HAL_IWDG_Refresh(&IWDG_Handler); 	
-//  #else	 
-//    pin_status[INDEX_WDG_FEED].status = !pin_status[INDEX_WDG_FEED].status;    
-//    rt_device_write(&wdg_deal_pin->parent, 0, &pin_status[INDEX_WDG_FEED], sizeof(struct rt_device_pin_status));       
-//  #endif /* USING_SOFTWARE_IWDG */	
+  #if USING_SOFTWARE_IWDG	
+	HAL_IWDG_Refresh(&IWDG_Handler); 	
+  #else	 
+    pin_status[INDEX_WDG_FEED].status = !pin_status[INDEX_WDG_FEED].status;    
+    rt_device_write(&wdg_deal_pin->parent, 0, &pin_status[INDEX_WDG_FEED], sizeof(struct rt_device_pin_status));       
+  #endif /* USING_SOFTWARE_IWDG */	
     return(RT_EOK);
 }
 
