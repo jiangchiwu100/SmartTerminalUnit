@@ -1139,23 +1139,26 @@ uint8_t rt_multi_telecontrl_proof(uint16_t addr, uint8_t operate_type)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
+rt_uint8_t rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 {
+    rt_uint8_t rtl = 0; 
     switch (addr)     
 	{
 		case ADDR_REMOTE_OPERATE:
 	    case ADDR_REMOTE_ACTIVE:
         case ADDR_LOCAL_OPERATE:		
 		case ADDR_HANDHELD_OPER:			
-			rt_hw_do_operate(addr, operate_type);
+			rtl = rt_hw_do_operate(addr, operate_type);
 			break;
 		case ADDR_REMOTE_RESET:		
 		case ADDR_LOCAL_RESET:
 			DBRevert(addr);
+            rtl = TRUE;
 			break;
 		case ADDR_REMOTE_CLEAR:
 		case ADDR_LOCAL_CLEAR:
 			DBClear(addr);
+            rtl = TRUE;
             break;
         case ADDR_REMOTE_PRO_OUT:
             if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
@@ -1165,8 +1168,10 @@ void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
                 else if(operate_type == DO_CLOSE)
                 {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
             }
+            rtl = TRUE;
             break;	   		
 	}
+    return(rtl);
 }
 /* FRAM ------------------------------------------------------------------*/
 /**

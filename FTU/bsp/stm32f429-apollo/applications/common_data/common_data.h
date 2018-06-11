@@ -1172,7 +1172,7 @@ extern void rt_multi_common_data_powerdown_storage(void);
 
 extern int rt_multi_common_data_init(void);
 extern uint8_t rt_multi_telecontrl_proof(uint16_t addr, rt_uint8_t operate_type);
-extern void rt_multi_telecontrl_operate(uint16_t addr, rt_uint8_t operate_type);
+extern rt_uint8_t rt_multi_telecontrl_operate(uint16_t addr, rt_uint8_t operate_type);
 extern float* GetValueArray(uint16_t addr, uint8_t sn);
 extern void ParameterCheck(void);
 

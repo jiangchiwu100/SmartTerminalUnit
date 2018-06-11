@@ -25,7 +25,7 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 1,  "电源故障告警", &g_TelesignalAddr.powerFaultAlarm,             NULL,          {"无", "告警"},    {"告警->复位","无->告警"}},
     { 1,  "电池欠压告警", &g_TelesignalAddr.batteryUnderVoltageAlarm,    NULL,          {"无", "告警"},    {"告警->复位","无->告警"}},
     { 1,  "电池活化状态", &g_TelesignalAddr.batteryActivationStatus,     NULL,          {"无", "活化"},    {"活化->结束","开始活化"}},
-    { 1,  "电池失电告警", &g_TelesignalAddr.batteryLossAlarm,            NULL,          {"无", "告警"},    {"告警->复位","无->告警"}},
+    { 1,  "交流失电告警", &g_TelesignalAddr.batteryLossAlarm,            NULL,          {"无", "告警"},    {"告警->复位","无->告警"}},
     { 1,  "开关类型",     &g_TelesignalAddr.swtichclass,                 NULL,          {"断路器","负荷开关"}, {"断路器","负荷开关"}},
     { 1,  "工作模式",     &g_TelesignalAddr.breakContact,                NULL,          {"分段", "联络"},  {"联络->分段","分段->联络"}},
     { 1,  "重合压板/FA",  &g_TelesignalAddr.recloseFAHardStrap,          NULL,          {"退出", "投入"},  {"投->退","退->投"}},

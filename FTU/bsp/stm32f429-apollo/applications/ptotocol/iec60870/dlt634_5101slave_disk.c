@@ -260,12 +260,20 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                 if(rt_multi_telecontrl_proof(addr, DO_OPEN)&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port)))   				     
                 {
-					rt_multi_telecontrl_operate(addr, DO_OPEN);
-					
-                    valuesuc = 0;
-                    addrsuc = 0;
-                    temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;
-                    g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);
+					if(rt_multi_telecontrl_operate(addr, DO_OPEN))
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);                    
+                    }
+                    else
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ERR;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);                    
+                    }
                 }
                 else
                 {
@@ -280,12 +288,20 @@ void DLT634_5101_SLAVE_C_SC(uint8_t pdrv, uint8_t *pbuf)//遥控
                 if(rt_multi_telecontrl_proof(addr, DO_CLOSE)&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5101Slave_Pad[pdrv].Port))) 			  
                 {
-					rt_multi_telecontrl_operate(addr, DO_CLOSE);
-
-                    valuesuc = 0;
-                    addrsuc = 0;
-                    temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;
-                    g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);
+					if(rt_multi_telecontrl_operate(addr, DO_CLOSE))
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ACTCON;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);                    
+                    }
+                    else
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = _DLT634_5101SLAVE_COT_ERR;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5101Slave_Pad[pdrv].Port);                    
+                    }
                 }
                 else
                 {
