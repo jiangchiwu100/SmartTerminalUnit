@@ -451,7 +451,8 @@ typedef struct TagTelesignalAddr
     overLimitDC_I_Up,                               // 直流电流越限
     overLimitDC_I_Down,                             // 直流电流越限
     devicePowerDown,                                // 装置掉电
-    telecontrolProOut;                              // 遥控保护退出  
+    telecontrolrecloseOut,                          // 遥控重合闸退出  
+    telecontrolContactOut;                          // 遥控联络退出
 }TelesignalAddr;
 
 #define TELESIGNAL_TOTAL_NUM (sizeof(TelesignalAddr)/sizeof(rt_uint16_t))
@@ -521,7 +522,8 @@ enum TelecontrlAddr
 	ADDR_REMOTE_ACTIVE,           // 电池活化
 	ADDR_REMOTE_RESET,            // 远方复位
 	ADDR_REMOTE_CLEAR,            // 远方清除记录
-    ADDR_REMOTE_PRO_OUT,          // 保护退出
+    ADDR_REMOTE_RECLOSE_OUT,      // 重合闸退出
+    ADDR_REMOTE_CONTACT_OUT,      // 联络退出
     ADDR_LOCAL_OPERATE,           // 本地操作
 	ADDR_LOCAL_RESET,             // 本地复位
 	ADDR_LOCAL_CLEAR,             // 本地清除记录

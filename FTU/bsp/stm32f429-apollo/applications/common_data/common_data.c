@@ -1113,12 +1113,21 @@ uint8_t rt_multi_telecontrl_proof(uint16_t addr, uint8_t operate_type)
                     {res = 1;}                 
                 } 
                 break;                
-            case ADDR_REMOTE_PRO_OUT:
+            case ADDR_REMOTE_RECLOSE_OUT:
                 if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
                 {
-                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF))
+                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolrecloseOut] == OFF))
                     {res = 1;} 
-                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == ON))
+                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolrecloseOut] == ON))
+                    {res = 1;} 
+                }
+                break;
+            case ADDR_REMOTE_CONTACT_OUT:
+                if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+                {
+                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolContactOut] == OFF))
+                    {res = 1;} 
+                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolContactOut] == ON))
                     {res = 1;} 
                 }
                 break;
@@ -1160,16 +1169,26 @@ rt_uint8_t rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 			DBClear(addr);
             rtl = TRUE;
             break;
-        case ADDR_REMOTE_PRO_OUT:
+        case ADDR_REMOTE_RECLOSE_OUT:
             if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
             {
                 if(operate_type == DO_OPEN)
-                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
+                {DBWriteSOE(g_TelesignalAddr.telecontrolrecloseOut, ON);}//分闸退出
                 else if(operate_type == DO_CLOSE)
-                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+                {DBWriteSOE(g_TelesignalAddr.telecontrolrecloseOut, OFF);}//合闸退出
             }
             rtl = TRUE;
-            break;	   		
+            break;	   
+        case ADDR_REMOTE_CONTACT_OUT:
+            if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+            {
+                if(operate_type == DO_OPEN)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolContactOut, ON);}//分闸退出
+                else if(operate_type == DO_CLOSE)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolContactOut, OFF);}//合闸退出
+            }
+            rtl = TRUE;
+            break;	            
 	}
     return(rtl);
 }

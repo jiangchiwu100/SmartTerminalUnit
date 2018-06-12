@@ -1252,7 +1252,7 @@ void BreakerCtrlClock(void)
             
 				if(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_COMMON)
 				{
-					if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//保护压板
+					if(*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)//保护压板
 					{
 						inrush_ctrl(&s_ComProSts[pdrv],&s_Inrush[pdrv]);//涌流抑制
 						iACC_ctrl(&s_ComProSts[pdrv],&s_IACC[pdrv]);//后加速
@@ -1260,7 +1260,7 @@ void BreakerCtrlClock(void)
 						overcur_ctrl(&s_ComProSts[pdrv],&s_Overcur[pdrv]);//过流
 						overcurI0_ctrl(&s_ComProSts[pdrv],&s_OvercurI0[pdrv]);//零序过流
 						secondaryRecloseLock_ctrl(&s_ComProSts[pdrv],&s_SecondaryRecloseLock[pdrv]);//二次重合闸闭锁
-						if(*(s_ComProSts[pdrv].yx.recloseHardStrap.value) == ON)
+						if((*(s_ComProSts[pdrv].yx.recloseHardStrap.value) == ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolrecloseOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))
 						{
 							reclose_ctrl(&s_ComProSts[pdrv],&s_Reclose[pdrv]);//重合闸
 							recloseI0_ctrl(&s_ComProSts[pdrv],&s_RecloseI0[pdrv]);//零序重合闸
