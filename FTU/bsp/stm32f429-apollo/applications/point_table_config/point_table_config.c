@@ -139,8 +139,8 @@ struct tagTelemetryCfg TelemetryCfg[] =
     { 0,  SECONDRY,  "DC2",         "直流(DC2)",        &g_TelemetryAddr.DC2,               NULL,      "V",        24.00f,      &g_Parameter[ZERODRIFT_DC2],    &g_Parameter[DEADZONE_DC2]},
     { 1,  SECONDRY,  "T",           "温度(T)",          &g_TelemetryAddr.T,                 NULL,      "°C",       40.00f,      &g_Parameter[ZERODRIFT_T],      &g_Parameter[DEADZONE_T]},
 
-	{ 0,  SECONDRY,  "∠Uab_Ia",    "∠Uab_Ia",         &g_TelemetryAddr.alphy_Uab_Ia,      NULL,      "°",       360.00f,      NULL,                            NULL},
-    { 0,  SECONDRY,  "∠Ucb_Ic",    "∠Ucb_Ic",         &g_TelemetryAddr.alphy_Ucb_Ic,      NULL,      "°",       360.00f,      NULL,                            NULL},	
+	{ 1,  SECONDRY,  "∠Uab_Ia",    "∠Uab_Ia",         &g_TelemetryAddr.alphy_Uab_Ia,      NULL,      "°",       360.00f,      NULL,                            NULL},
+    { 1,  SECONDRY,  "∠Ucb_Ic",    "∠Ucb_Ic",         &g_TelemetryAddr.alphy_Ucb_Ic,      NULL,      "°",       360.00f,      NULL,                            NULL},	
     { 1,  SECONDRY,  "∠U0_I0",     "∠U0_I0",          &g_TelemetryAddr.alphy_U0_I0,       NULL,      "°",       360.00f,      NULL,                            NULL},
     { 1,  SECONDRY,  "∠Ux_Ux",     "∠Ux_Ux",          &g_TelemetryAddr.alphy_Ux_Ux,       NULL,      "°",       360.00f,      NULL,                            NULL},	
     { 1,  SECONDRY,  "f2",          "频率(f2)",         &g_TelemetryAddr.F2,                NULL,      "Hz",       50.00f,      &g_Parameter[ZERODRIFT_F],      &g_Parameter[DEADZONE_F]},

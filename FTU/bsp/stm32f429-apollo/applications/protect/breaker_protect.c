@@ -560,6 +560,7 @@ static void overcur_rest(ComProSts *comProSts,OvercurSts *overcurSts)
   */
 static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
 {
+    const float factor = 0.95;
     uint8_t i;
 
     if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//合位//无涌流抑制
@@ -579,10 +580,10 @@ static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
 
         for(i=0; i<2; i++) //检测过流
         {		//（零序过流保护投入||零序报警）&&（重合闸||零序重合闸||）&&无后加速&&无反时限&&无零序过流保护&&无零序过流标志&&零序过流
-            if((((*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ON)||(*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ALARM))&&\
+            if(((((*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ON)&&(!(overcurI0Sts->valstr.flag&(OVERCURI01|OVERCURI02))))||\
+                ((*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ALARM)&&(!(overcurI0Sts->valstr.flag&(OVERCURI0STA3|OVERCURI0STA4)))))&&\
 				(((*(overcurI0Sts->valstr.recloseflag)&JUDGRFLAG)||(*(overcurI0Sts->valstr.recloseI0flag)&JUDGRFLAG))||(*(overcurI0Sts->valstr.inrushflag)&JUDGRFLAG))&&\
-                    (!(*(overcurI0Sts->valstr.iACCflag)&JUDGRFLAG))&&(!(*(overcurI0Sts->valstr.inverseflag)&JUDGRFLAG))&&(!(*(overcurI0Sts->valstr.overcurflag)&JUDGRFLAG))&&\
-                    (!(overcurI0Sts->valstr.flag&(OVERCURI01|OVERCURI02))))&&\
+                    (!(*(overcurI0Sts->valstr.iACCflag)&JUDGRFLAG))&&(!(*(overcurI0Sts->valstr.inverseflag)&JUDGRFLAG))&&(!(*(overcurI0Sts->valstr.overcurflag)&JUDGRFLAG)))&&\
                     (*(comProSts->yc.I0)>*(overcurI0Sts->parastr.pValue[i])))//过流
             {
                 if(!(*(overcurI0Sts->valstr.gTime[i])&BRE_ENTIMERS))
@@ -590,17 +591,21 @@ static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
                     *(overcurI0Sts->valstr.gTime[i]) = BRE_ENTIMERS;//启动定时
                 }
                 if((*(overcurI0Sts->valstr.gTime[i])&BRE_TITIMERS)>=(uint32_t)(*(overcurI0Sts->parastr.pTime[i])*1000))
-                {
-                    overcurI0Sts->valstr.flag |= (OVERCURI01<<i)|OVERCURI0STA1;                    
-                    overcurI0Sts->valstr.flag |= RESETFLAG;
+                { 
                     if(*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ON)
                     {
                         comProSts->opening(ADDR_LOGIC_ACT,DO_OPEN);
                         addSOE(comProSts,&comProSts->yx.protectionAct,ON);
+                        overcurI0Sts->valstr.flag |= (OVERCURI01<<i)|OVERCURI0STA1;
+                        overcurI0Sts->valstr.flag |= RESETFLAG;
+                    }
+                    else if(*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ALARM)
+                    {
+                        overcurI0Sts->valstr.flag |= (OVERCURI0STA3<<i);
                     }
                     if(*(comProSts->yc.I0)>*(overcurI0Sts->parastr.pValue[i]))
                     {
-                        //SOE
+                        //SOE                        
                         addSOE(comProSts,&comProSts->yx.overcurrentI0[i],ON);
                     }
                     addSOE(comProSts,&comProSts->yx.earthingFault,ON);
@@ -609,6 +614,16 @@ static void overcurI0_ctrl(ComProSts *comProSts,OvercurI0Sts *overcurI0Sts)
             else
             {
                 *(overcurI0Sts->valstr.gTime[i]) = 0;
+                if((*(overcurI0Sts->parastr.pSwitch[i])==SWITCH_ALARM)&&(!(overcurI0Sts->valstr.flag&(OVERCURI01|OVERCURI02))))
+                {
+                    if(*(comProSts->yc.I0)<*(overcurI0Sts->parastr.pValue[i])*factor)
+                    {
+                        //SOE
+                        addSOE(comProSts,&comProSts->yx.overcurrentI0[i],OFF);
+                        overcurI0Sts->valstr.flag &= ~(OVERCURI0STA3<<i);
+                        addSOE(comProSts,&comProSts->yx.earthingFault,OFF);
+                    }                                   
+                }
             }
         }
     }

@@ -965,31 +965,39 @@ uint16_t DLT634_5101_SLAVE_R_YXDATA(uint8_t pdrv,uint16_t addr,uint16_t num, uin
                 start_add = (g_NewToOldTelesignal[temp1]>>NEWONEYX_ADDR)&NEWJUDG_ADDR;
             }        
         }
-        
-        for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
+
+        if(((g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM)&0xff) == 0)
         {
-            valuetemp = *(TelesignalCfg[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5101Slave_Pad[pdrv].YX_FirstAddr].pVal) - 1;
-            if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
-            {
-                valuetemp = (~valuetemp)&0x01;                
-            }
-            if(((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_AND)&NEWPROPERTY_JUDG) == NEWJUDG_AND)
-            {
-                value &= valuetemp;                 
-            }  
-            else
-            {
-                value |= valuetemp;  
-            }   
+            temp_array[pdrv][sendnum + 10] = 1;                 
         }
-        
-        value = value + 1;
-        
-        temp_array[pdrv][sendnum + 10] = value;
-        
-        if((Property>>NEWPROPERTY_NEG)&NEWPROPERTY_JUDG)//取反
-        {
-            temp_array[pdrv][sendnum + 10] = (~temp_array[pdrv][sendnum + 10])&0x03;        
+        else 
+        { 
+            Property = (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_PROPERTY)&NEWJUDG_PROPERTY;            
+            for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
+            {
+                valuetemp = *(TelesignalCfg[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5101Slave_Pad[pdrv].YX_FirstAddr].pVal) - 1;
+                if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
+                {
+                    valuetemp = (~valuetemp)&0x01;                
+                }
+                if(((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_AND)&NEWPROPERTY_JUDG) == NEWJUDG_AND)
+                {
+                    value &= valuetemp;                 
+                }  
+                else
+                {
+                    value |= valuetemp;  
+                }   
+            }
+            
+            value = value + 1;
+            
+            temp_array[pdrv][sendnum + 10] = value;
+            
+            if((Property>>NEWPROPERTY_NEG)&NEWPROPERTY_JUDG)//取反
+            {
+                temp_array[pdrv][sendnum + 10] = (~temp_array[pdrv][sendnum + 10])&0x03;        
+            }
         }
             
         if(((Property>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG) == _DLT634_5101SLAVE_M_SP_NA_1)//单点
@@ -1009,9 +1017,9 @@ uint16_t DLT634_5101_SLAVE_R_YXDATA(uint8_t pdrv,uint16_t addr,uint16_t num, uin
         }
         if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_NUM)&0xff) == 0)
         {
-            break;//下一个点号=0
+            continue;//下一个点号=0
         }
-        if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_PROPERTY)&0xff) != (Property))
+        if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_PROPERTY>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG) != ((Property>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG))
         {
             break;//下一个属性不同
         }
