@@ -26,10 +26,8 @@ void GuiUpdateDisplayAll(void)
 	LCD_CS_LOW();
 	SetLcdCol(0x25);
 	SetLcdRow(0);
-//	WriteLcdCommand(0x60);	//row address LSB     
-//	WriteLcdCommand(0x70);	//row address MSB	
-//	WriteLcdCommand(0x05);	//Column address LSB 
-//	WriteLcdCommand(0x12);	//Column address MSB
+	LCD_RS_HIGH();
+	LCD_RD_HIGH();
 	for(y = 0; y < GUIYMAX; y++){
 		for(x = 0;x < 20; x++){
 			Write8DotsUC1698U(lkdGuiBuff[y][x]);
