@@ -80,6 +80,66 @@ static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(uint8_t pdrv, uin
 }
 
 /**
+  * @brief : Slave Frame 11 RESPONSE.监听应答
+  * @param : [pdrv]
+  * @return: res
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame12Response(uint8_t pdrv, uint8_t protocol)
+{
+    uint8_t pBuf[6];
+	
+	if (channel_monitor.ByAddr)                                                              //被监听通道地址不为零
+    {
+        pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE12;                                            //起始码
+        pBuf[1] = _DLT634_ChannelToMonitor_SLAVE_FC_RESPONSE;                                            //控制域，回答响应
+		pBuf[2] = channel_monitor.ByAddr & 0xff;
+        pBuf[3] = (channel_monitor.ByAddr>>8) & 0xff;
+
+        pBuf[2+AddrSize] = DLT634_ChannelToMonitor_SLAVE_CKS(pdrv, pBuf);                               //帧校验和
+        pBuf[3+AddrSize] = _DLT634_ChannelToMonitor_SLAVE_ENDCODE66;                                     //终止码
+        if(protocol == DLT634_5101)
+        {
+            DLT634_5101_SLAVE_WriteData(pdrv, pBuf, 6);                                     //应答发送
+        }
+        if(protocol == DLT634_5104)
+        {
+            DLT634_5104_SLAVE_WriteData(pdrv, pBuf, 6);                                     //应答发送
+        }                                               
+    }        
+}
+
+/**
+  * @brief : Slave Frame 01 RESPONSE.监听测试应答
+  * @param : [pdrv]
+  * @return: res
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame01Response(uint8_t pdrv, uint8_t protocol)
+{
+    uint8_t pBuf[6];
+	
+	if (channel_monitor.ByAddr)                                                              //被监听通道地址不为零
+    {
+        pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE11;                                            //起始码
+        pBuf[1] = _DLT634_ChannelToMonitor_SLAVE_FC_TEST_CON;                                            //控制域，回答响应
+		pBuf[2] = channel_monitor.ByAddr & 0xff;
+        pBuf[3] = (channel_monitor.ByAddr>>8) & 0xff;
+
+        pBuf[2+AddrSize] = DLT634_ChannelToMonitor_SLAVE_CKS(pdrv, pBuf);                               //帧校验和
+        pBuf[3+AddrSize] = _DLT634_ChannelToMonitor_SLAVE_ENDCODE66;                                     //终止码
+        if(protocol == DLT634_5101)
+        {
+            DLT634_5101_SLAVE_WriteData(pdrv, pBuf, 6);                                     //应答发送
+        }
+        if(protocol == DLT634_5104)
+        {
+            DLT634_5104_SLAVE_WriteData(pdrv, pBuf, 6);                                     //应答发送
+        }                                               
+    }        
+}
+
+/**
   * @brief : Monitor Addr Error
   * @param : [pdrv]
   * @return: [none]
@@ -120,6 +180,15 @@ static void DLT634_ChannelToMonitor_AddError(uint8_t pdrv, uint8_t protocol)
 static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t protocol, uint8_t *RxdBuf)
 {
    // memcpy(RxdBuf, CRxdBuf, 6);
+	
+	channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];                              //被监测端口地址
+	if(channel_monitor.ByAddr == channel_monitor.Addr)
+	{
+		DLT634_ChannelToMonitor_AddError(pdrv, protocol);
+		memset(RxdBuf, 0, 256);
+		return 0;
+	}	
+	
     if(protocol == DLT634_5101)                                                             //101解析
     {
         if(pdrv == DLT634_5101SLAVE_DISK0)
@@ -130,38 +199,27 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         {
             channel_monitor.Addr = SerialPort2;
         }
-        if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_ON)                                           //启动通道监听
-        {
-            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];                              //被监测端口地址
-            if(channel_monitor.ByAddr != channel_monitor.Addr)
-            {
-                channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor1_START;              //串口启动监听
-                DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                          //应答回复
-                memset(RxdBuf, 0, 256);
-                return 1;
-            }  
-            else
-            {
-                DLT634_ChannelToMonitor_AddError(pdrv, protocol);
-                memset(RxdBuf, 0, 256);
-                return 0;
-            }
-            
-        }
-        else if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_OFF)                            
-        {
-            channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor1_START;                 //串口监听关闭
-            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
-            DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                              //应答回复
-            memset(RxdBuf, 0, 256);
-            return 0;
-        }
-        else		                                                                        //错误
-        {
-            channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor1_START;
-            channel_monitor.ByAddr = 0;
-            return 0;
-        }
+		
+		switch(RxdBuf[1])
+		{
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_ON: 
+				channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor1_START;              //串口启动监听
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                          //应答回复
+				memset(RxdBuf, 0, 256);
+				return 1;			
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_OFF: 
+				channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor1_START;                 //串口监听关闭
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame12Response(pdrv, protocol);                              //应答回复
+				memset(RxdBuf, 0, 256);
+				return 0;				
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_TEST: 
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame01Response(pdrv, protocol);
+			    return 1;
+		    default: 
+				channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor1_START;
+				channel_monitor.ByAddr = 0;
+				return 0;							
+		}
     }
     
     else if(protocol == DLT634_5104)                                                        //104解析
@@ -174,37 +232,27 @@ static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t
         {
              channel_monitor.Addr = InternetAccess2;
         }
-        if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_ON)                                           //启动通道监听
-        {
-            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
-            if(channel_monitor.ByAddr != channel_monitor.Addr)
-            {
-                channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor2_START;              //串口启动监听
-                DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                          //应答回复
-                memset(RxdBuf, 0, 256);
-                return 1;
-            }  
-            else
-            {
-                DLT634_ChannelToMonitor_AddError(pdrv, protocol);
-                memset(RxdBuf, 0, 256);
-                return 0;
-            }
-        }
-        else if (RxdBuf[1] == _DLT634_ChannelToMonitor_SLAVE_FC_OFF)                                     // 禁止通道监听
-        {
-            channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor2_START;
-            channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];
-//            DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                              //应答回复
-            memset(RxdBuf, 0, 256);
-            return 0;
-        }
-        else		                                                                        //错误
-        {
-            channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor2_START;
-            channel_monitor.ByAddr = 0;
-            return 0;
-        }
+		
+		switch(RxdBuf[1])
+		{
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_ON: 
+				channel_monitor.MonitorFlag[pdrv] |= _ChannelToMonitor2_START;              //串口启动监听
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame11Response(pdrv, protocol);                          //应答回复
+				memset(RxdBuf, 0, 256);
+				return 1;			
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_OFF: 
+				channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor2_START;                 //串口监听关闭
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame12Response(pdrv, protocol);                              //应答回复
+				memset(RxdBuf, 0, 256);
+				return 0;				
+		    case _DLT634_ChannelToMonitor_SLAVE_FC_TEST: 
+				DLT634_ChannelToMonitor_SLAVE_SlaveFrame01Response(pdrv, protocol);
+			    return 1;
+		    default: 
+				channel_monitor.MonitorFlag[pdrv] &= ~_ChannelToMonitor2_START;
+				channel_monitor.ByAddr = 0;
+				return 0;							
+		}		
     }
     else
     {
@@ -294,9 +342,12 @@ uint8_t DLT634_ChannelToMonitor_SLAVE_SearchMonitorFrame(uint8_t pdrv, uint8_t p
   */
 void MonitoringDataTransmission(uint8_t *pbuf, uint16_t count, uint8_t ReceiveAndDispatch)
 {
-   uint8_t Buf[2];					//发送数据标志
+    uint8_t Buf[2];					//发送数据标志
 	Buf[0] = 0xAA;
 	Buf[1] = 0x55;
+	
+	channel_monitor.LinkCounter = 0;
+	
     switch(channel_monitor.Addr)
     {
         case SerialPort1:                                                                   //串口1
@@ -331,6 +382,40 @@ void MonitoringDataTransmission(uint8_t *pbuf, uint16_t count, uint8_t ReceiveAn
 }
 
 /**
+  * @brief : channel_monitor_clock
+  * @param : [none]
+  * @return: [1]
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+int rt_channel_monitor_clock(uint8_t pdrv)
+{
+	if (channel_monitor.MonitorFlag[pdrv] != 0)
+	{
+		if (++channel_monitor.LinkCounter >= LinkAliveTime)
+		{
+			channel_monitor.LinkCounter = 0;
+			channel_monitor.MonitorFlag[pdrv] = 0;
+			channel_monitor.ByAddr = 0;
+		}	    
+	}
+}
+
+/**
+  * @brief : task.
+  * @return: none
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+void rt_channel_monitor_task(void)
+{
+    uint8_t pdrv;
+    
+    for (pdrv = 0; pdrv < DLT634_CHANNEL_MONITOR_VOLUMES; pdrv++)
+    {
+        rt_channel_monitor_clock(pdrv);
+    }
+}
+
+/**
   * @brief : channel_monitor_init
   * @param : [none]
   * @return: [1]
@@ -338,11 +423,21 @@ void MonitoringDataTransmission(uint8_t *pbuf, uint16_t count, uint8_t ReceiveAn
   */
 int rt_channel_monitor_init(void)
 {
-    dev[DLT634_5101SLAVE_DISK0] = rt_device_find(RT_UART4_NAME);    
-    dev[DLT634_5101SLAVE_DISK1] = rt_device_find(RT_USART3_NAME); 
+    dev[DLT634_5101SLAVE_DISK0] = rt_device_find(RT_UART5_NAME); 
+	
+	if ((uint16_t)g_Parameter[UART_PORT] == 0)
+	{    
+	    dev[DLT634_5101SLAVE_DISK1] = rt_device_find(RT_USART3_NAME);
+	}
+	else
+	{
+	    dev[DLT634_5101SLAVE_DISK1] = rt_device_find(RT_USART1_NAME);
+	}
+	
     rt_device_open(dev[DLT634_5101SLAVE_DISK0], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);
     rt_device_open(dev[DLT634_5101SLAVE_DISK1], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);  
     return 1;
 }
 //INIT_APP_EXPORT(rt_channel_monitor_init);
 
+	
