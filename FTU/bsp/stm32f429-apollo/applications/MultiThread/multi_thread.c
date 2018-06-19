@@ -30,7 +30,7 @@
 #include "dlt634_5104slave_disk.h"
 #include "tcp_server.h"
 #include "file_operate.h"
-
+#include "channel_monitor.h"
 #include "gui_common.h"
 #include "gui_101_cmd.h"
 #include "hmi_101_disk.h"
@@ -365,6 +365,9 @@ static void rt_watch_thread_entry(void *param)
 
             /* 电池活化 */
             rt_hw_battery_activation(1);
+            
+            /* 通道监听 */
+            rt_channel_monitor_task();
         }           
     }  
 }
