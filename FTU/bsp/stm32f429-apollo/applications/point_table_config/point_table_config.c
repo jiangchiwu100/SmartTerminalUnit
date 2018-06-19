@@ -316,10 +316,10 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,  ME_UART_COM,    "校验位",          &g_Parameter[UART_PARITY],                  "-",       2,           0,     0,          3,         0,         {"无校验", "奇校验", "偶校验"},   " "   },                      
     { 1,  ME_UART_COM,    "101模式",         &g_Parameter[UART_BALANMODE],               "-",       1,           0,     1,          2,         0,         {"非平衡", "平衡"},   " "   },                 
     { 1,  ME_UART_COM,    "从站地址",        &g_Parameter[UART_SOURCEADDR],              "-",   65535.00f,     1.00f,    1.00f,     0,         0,         {"-",  "-"         },   " "    },                 
-    { 1,  ME_UART_COM,    "地址长度",        &g_Parameter[UART_LINKADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },                    
-    { 1,  ME_UART_COM,    "原因长度",        &g_Parameter[UART_ASDUCOTSIZE],             "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },              
+    { 1,  ME_UART_COM,    "从站地址长度",    &g_Parameter[UART_LINKADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },                    
+    { 1,  ME_UART_COM,    "传送原因长度",    &g_Parameter[UART_ASDUCOTSIZE],             "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },              
     { 1,  ME_UART_COM,    "ASDU地址",        &g_Parameter[UART_ASDUADDR],                "-",   65535.00f,     1.00f,    1.00f,     0,         0,         {"-",  "-"         },   " "    },                
-    { 1,  ME_UART_COM,    "ASDU长度",        &g_Parameter[UART_ASDUADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },                         
+    { 1,  ME_UART_COM,    "ASDU地址长度",    &g_Parameter[UART_ASDUADDRSIZE],            "-",       2.00f,     1.00f,    2.00f,     0,         0,         {"-",  "-"         },   " "    },                         
     
     { 1,  ME_NET_COM,     "上IP_1",         &g_Parameter[NET_IP1_0],                     "-",     255.00f,     0.00f,  192.00f,     0,         0,         {"-",  "-"         },   " "    }, 
     { 1,  ME_NET_COM,     "上IP_2",         &g_Parameter[NET_IP1_1],                     "-",     255.00f,     0.00f,  168.00f,     0,         0,         {"-",  "-"         },   " "    },

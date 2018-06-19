@@ -823,6 +823,7 @@ static void reclose_ctrl(ComProSts *comProSts,RecloseSts *recloseSts)
             {
                 recloseSts->valstr.time = 0;
                 recloseSts->valstr.flag &= ~(RECLOSE1|RECLOSE2|RECLOSE3|RECLOSE4);
+                addSOE(comProSts,&comProSts->yx.recloseAct,OFF);
             }
         }
         else
@@ -943,6 +944,7 @@ static void recloseI0_ctrl(ComProSts *comProSts,RecloseI0Sts *recloseI0Sts)
             {
                 recloseI0Sts->valstr.time = 0;
                 recloseI0Sts->valstr.flag &= ~(RECLOSEI01|RECLOSEI02);
+                addSOE(comProSts,&comProSts->yx.recloseAct,OFF);
             }
         }
         else
