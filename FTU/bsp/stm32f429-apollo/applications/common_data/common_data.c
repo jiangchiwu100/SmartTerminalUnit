@@ -24,6 +24,7 @@
 #include "load_switch_interface.h"
 #include ".\MultiThread\multi_thread.h"
 #include "common_config.h"
+#include "drv_wdg.h"
 
 
 /* PUBLIC VARIABLES ---------------------------------------------------------*/
@@ -1517,7 +1518,9 @@ static void rt_common_data_save_value_default_to_fram(void)
 			for (i = 0; i < FM25V10_MAX_ADDR; i++)//清除FRAM
 			{
 				rt_device_write(device_fram, 0x01 + i, &flag, 1); 
-			}          
+                if(i%100 == 0)
+                {rt_hw_wdg_deal_task();}
+			}           
             
 			flag = FRAM_HWFLAG1;
 
@@ -1547,7 +1550,9 @@ static void rt_common_data_save_value_default_to_fram(void)
 
             rt_multi_common_data_configure_default(); //配置参数写入默认值     
 			
-			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
+			FRAM_PRINTF("fram is powered on firstly! \r\n");
+
+            rt_hw_wdg_deal_task();             
 		}
     }  	
 }
