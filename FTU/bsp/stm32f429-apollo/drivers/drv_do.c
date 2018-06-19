@@ -62,7 +62,7 @@ static rt_uint8_t rt_hw_close_operate(void)
     {uCB = g_TelemetryDB[g_TelemetryAddr.UCB];}
         
   #ifdef LOGICLOCKINGMANUALREMOTECONTROL
-    if ((g_TelesignalDB[g_TelesignalAddr.closingLocked] == OFF || (g_pFixedValue[CLOSING_LOOP_SWITCH]))&& g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && 
+    if ((g_TelesignalDB[g_TelesignalAddr.closingLocked] == OFF)&& g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && 
         !CLOSING && !OPENING && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF )//合环操作判断合闸闭锁
   #else
     if (g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON && g_TelesignalDB[g_TelesignalAddr.switchClose] == OFF && !CLOSING && !OPENING && g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF)         
