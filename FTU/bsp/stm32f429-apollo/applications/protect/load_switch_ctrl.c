@@ -1415,9 +1415,9 @@ void LoadSwitchCtrlInit(void)
             s_FewVolLock[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_FewVolLock[pdrv].valstr.gUabTime);
             addtimers(pdrv,&s_FewVolLock[pdrv].valstr.gUcbTime);
-            s_FewVolLock[pdrv].parastr.pSwitch = &g_pFixedValue[LOSS_ELECTRICITY_SWITCH];
+            s_FewVolLock[pdrv].parastr.pSwitch = &g_pFixedValue[REMAIN_VOLTAGE_SWITCH];
             s_FewVolLock[pdrv].parastr.pValue = &g_pFixedValue[REMAIN_VOLTAGE_VALUE];
-            s_FewVolLock[pdrv].parastr.pXTime = &g_pFixedValue[GET_VOLTAGE_CLOSSING_SWITCH];
+            s_FewVolLock[pdrv].parastr.pXTime = &g_pFixedValue[GET_VOLTAGE_CLOSSING_X_TIME];
             s_FewVolLock[pdrv].parastr.pXLTime = &g_pFixedValue[SINGLE_LOSS_VOLTAGE_XLTIME];
             //双侧有压
             s_DoubleVol[pdrv].valstr.flag = 0;
@@ -1472,7 +1472,7 @@ void LoadSwitchCtrlClock(void)
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_BREAKER_NONE))&&\
 				(!(s_ComProSts[pdrv].WorkMode == TYPE_LOADSWTICH_NONE)))
 			{
-				if((*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//保护压板
+				if(*(s_ComProSts[pdrv].yx.functionHardStrap.value)==ON)//保护压板
 				{
 					state_judge(&s_ComProSts[pdrv],&s_stateJudge[pdrv]);//状态判断
 				  #ifdef FAPROTECTIONENABLING
@@ -1497,20 +1497,21 @@ void LoadSwitchCtrlClock(void)
 						}
 						else
 						{
-							if(*(s_ComProSts[pdrv].yx.breakContact.value)==OFF)//分断
+							if((*(s_ComProSts[pdrv].yx.breakContact.value)==ON)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolContactOut] == OFF || g_Parameter[REMOTE_PRO_SWITCH] == 0))//联络
+							{
+                                SingleLossClose_ctrl(&s_ComProSts[pdrv],&s_SingleLossClose[pdrv]);//单侧失压合闸
+								openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
+								lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
+								fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
+								doubleVol_ctrl(&s_ComProSts[pdrv],&s_DoubleVol[pdrv]);//双侧有压禁止合闸
+
+							}
+							else//分段
 							{
 								getVolClose_ctrl(&s_ComProSts[pdrv],&s_GetVolClose[pdrv]);//得电合闸
 								openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
 								lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
 								fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
-							}
-							else//联络
-							{
-								SingleLossClose_ctrl(&s_ComProSts[pdrv],&s_SingleLossClose[pdrv]);//单侧失压合闸
-								openCloseLocking_ctrl(&s_ComProSts[pdrv],&s_OpenCloseLocking[pdrv]);//分合闸闭锁
-								lossTrip_ctrl(&s_ComProSts[pdrv],&s_LossTrip[pdrv]);//失压跳闸
-								fewVolLock_ctrl(&s_ComProSts[pdrv],&s_FewVolLock[pdrv]);//残压闭锁
-								doubleVol_ctrl(&s_ComProSts[pdrv],&s_DoubleVol[pdrv]);//双侧有压禁止合闸
 							}
 						}
 					}

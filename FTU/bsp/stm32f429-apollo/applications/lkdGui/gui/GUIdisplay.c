@@ -627,7 +627,7 @@ void DZModfiyFun(void)
 //		if(GetIntervalTick(inputCursorTick) > 100){//ÑÓÊ±ÍË³ö
 //		}
 	}
-	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] >= 4){
+	if(keyStatus != CancelKey && stepTab[STEP_DZHIMODFIY] == 0){
 		keyStatus = NoKey;
 	}
 	switch(keyStatus){

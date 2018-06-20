@@ -250,7 +250,7 @@ void LedChangeCheck(void)
 		if(LastYxLed[i] != *(RealYxLed[i])){
 			LastYxLed[i] = *RealYxLed[i];
 			if(LastYxLed[i] == OFF){
-				if(i == ULED_NOENERGY){
+				if(i == ULED_NOENERGY || i == ULED_PROTECTOFF){
 					ULedStateSet(i,ULED_ON);
 				}
 				else{
@@ -258,7 +258,7 @@ void LedChangeCheck(void)
 				}
 			}
 			else{
-				if(i == ULED_NOENERGY){
+				if(i == ULED_NOENERGY || i == ULED_PROTECTOFF){
 					ULedStateSet(i,ULED_OFF);
 				}
 				else{
@@ -295,14 +295,14 @@ void YaoxinMapToLed(void)
 	RealYxLed[ULED_RECLOSELOCK] = &g_TelesignalDB[g_TelesignalAddr.recloseLock];
 	RealYxLed[ULED_BATTERYALARM] = &g_TelesignalDB[g_TelesignalAddr.batteryLossAlarm];
 	RealYxLed[ULED_BATTERYRELEASE] = &g_TelesignalDB[g_TelesignalAddr.batteryActivationStatus];
-	RealYxLed[ULED_PROTECTOFF] = &g_TelesignalDB[g_TelesignalAddr.protectionLock];
+	RealYxLed[ULED_PROTECTOFF] = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
 	RealYxLed[ULED_BATTERYLOWV] = &g_TelesignalDB[g_TelesignalAddr.batteryUnderVoltageAlarm];
 	RealYxLed[ULED_LS] = &noUseLed;
 	RealYxLed[ULED_CB] = &noUseLed;	
 	for(uint8_t i = 0; i < ULED_ALLNUM; i++){
 		LastYxLed[i] = *(RealYxLed[i]);
 		if(LastYxLed[i] == OFF){
-			if(i == ULED_NOENERGY ){//取反
+			if(i == ULED_NOENERGY || i == ULED_PROTECTOFF){//取反
 				ULedStateSet(i,ULED_ON);
 			}
 			else{
@@ -310,7 +310,7 @@ void YaoxinMapToLed(void)
 			}
 		}
 		else{
-			if(i == ULED_NOENERGY){//取反
+			if(i == ULED_NOENERGY || i == ULED_PROTECTOFF){//取反
 				ULedStateSet(i,ULED_OFF);
 			}
 			else{

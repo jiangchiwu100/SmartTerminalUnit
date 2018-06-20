@@ -215,6 +215,8 @@ typedef struct
 #define OVERCURI02 0x00000002
 #define OVERCURI0STA1  0x00010000    //合闸位置发生过流
 #define OVERCURI0STA2  0x00020000    //分闸位置允许复位
+#define OVERCURI0STA3  0x01000000    //ALAMIO1
+#define OVERCURI0STA4  0x00000000    //ALAMIO2
 typedef struct
 {
     struct

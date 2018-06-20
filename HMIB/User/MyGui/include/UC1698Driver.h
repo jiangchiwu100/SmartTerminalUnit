@@ -49,6 +49,14 @@
 	if(TxData&0x40){LCD_DB6_HIGH();}else{LCD_DB6_LOW();}\
 	if(TxData&0x80){LCD_DB7_HIGH();}else{LCD_DB7_LOW();}
 
+	
+#define LCD_DATATOBIT(TxData)	\
+	if(TxData == 0){LCD_DB3_LOW();LCD_DB7_LOW();}\
+	else if(TxData == 1){LCD_DB3_HIGH();LCD_DB7_LOW();}\
+	else if(TxData == 2){LCD_DB3_LOW();LCD_DB7_HIGH();}\
+	else if(TxData == 3){LCD_DB3_HIGH();LCD_DB7_HIGH();}	
+	
+	
 #define OPEN_LCDDISPLAY 	0xAD/* 开显示 */
 #define CLOSE_LCDDISPLAY	0xAC/* 关显示 */
 #define CMD_ROWADDRH			0x70/* 行高位CMD */

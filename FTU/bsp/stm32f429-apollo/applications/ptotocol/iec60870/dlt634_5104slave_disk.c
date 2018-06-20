@@ -275,12 +275,20 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
                 if(rt_multi_telecontrl_proof(addr, DO_OPEN)&&(valuesuc==OFF)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))      
                 {
-					rt_multi_telecontrl_operate(addr, DO_OPEN);
-					
-                    valuesuc = 0;
-                    addrsuc = 0;
-                    temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ACTCON;
-                    g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);
+					if(rt_multi_telecontrl_operate(addr, DO_OPEN))
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ACTCON;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);                    
+                    }
+                    else
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ERR;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);
+                    }
                 }
                 else
                 {
@@ -295,12 +303,20 @@ void DLT634_5104_SLAVE_HandleCtrlProcess(uint8_t pdrv, uint8_t *pbuf)
                 if(rt_multi_telecontrl_proof(addr, DO_CLOSE)&&(valuesuc==ON)&&(addrsuc==addr)&&\
                     (g_CommunicatFlag[COM_YK]&(1<<DLT634_5104Slave_Pad[pdrv].Port)))  
                 {
-					rt_multi_telecontrl_operate(addr, DO_CLOSE);
-		
-                    valuesuc = 0;
-                    addrsuc = 0;
-                    temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ACTCON;
-                    g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);
+					if(rt_multi_telecontrl_operate(addr, DO_CLOSE))
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ACTCON;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);                    
+                    }
+                    else
+                    {
+                        valuesuc = 0;
+                        addrsuc = 0;
+                        temp_array[pdrv][4] = DLT634_5104SLAVE_COT_ERR;
+                        g_CommunicatFlag[COM_YK] &= ~(1<<DLT634_5104Slave_Pad[pdrv].Port);                   
+                    }
                 }
                 else
                 {
@@ -1005,36 +1021,44 @@ uint16_t DLT634_5104_SLAVE_ReadYxData(uint8_t pdrv, uint16_t addr, uint16_t num,
             }        
         }
         
-        for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
+        if(((g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM)&0xff) == 0)
         {
-            valuetemp = *(TelesignalCfg[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5104Slave_Pad[pdrv].YX_FirstAddr].pVal) - 1;
-            if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
+            temp_array[pdrv][sendnum + 11] = 1;                 
+        }
+        else     
+        {
+            Property = (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_PROPERTY)&NEWJUDG_PROPERTY;
+            for(j=0,value=0;j<(g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM);j++)
             {
-                valuetemp = (~valuetemp)&0x01;                
+                valuetemp = *(TelesignalCfg[((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_ADDR)&NEWJUDG_ADDR) - DLT634_5104Slave_Pad[pdrv].YX_FirstAddr].pVal) - 1;
+                if((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_NEG)&NEWPROPERTY_JUDG)
+                {
+                    valuetemp = (~valuetemp)&0x01;                
+                }
+                if(((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_AND)&NEWPROPERTY_JUDG) == NEWJUDG_AND)
+                {
+                    value &= valuetemp;                 
+                }  
+                else
+                {
+                    value |= valuetemp;  
+                }   
             }
-            if(((g_NewToOldTelesignal[temp1 + 2 + j]>>NEWONEYX_CAL>>NEWCAL_AND)&NEWPROPERTY_JUDG) == NEWJUDG_AND)
-            {
-                value &= valuetemp;                 
-            }  
-            else
-            {
-                value |= valuetemp;  
-            }   
-        }
-        
-        value = value + 1;
-        
-        temp_array[pdrv][sendnum + 11] = value;
-        
-        if((Property>>NEWPROPERTY_NEG)&NEWPROPERTY_JUDG)//取反
-        {
-            temp_array[pdrv][sendnum + 11] = (~temp_array[pdrv][sendnum + 11])&0x03;        
-        }
             
+            value = value + 1;
+            
+            temp_array[pdrv][sendnum + 11] = value;
+            
+            if((Property>>NEWPROPERTY_NEG)&NEWPROPERTY_JUDG)//取反
+            {
+                temp_array[pdrv][sendnum + 11] = (~temp_array[pdrv][sendnum + 11])&0x03;        
+            }       
+        }  
+        
         if(((Property>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG) == DLT634_5104SLAVE_M_SP_NA_1)//单点
         {
             temp_array[pdrv][sendnum + 11] = (temp_array[pdrv][sendnum + 11]>>1)&0x01;        
-        }        
+        }         
         
         sendnum++;
         
@@ -1048,9 +1072,9 @@ uint16_t DLT634_5104_SLAVE_ReadYxData(uint8_t pdrv, uint16_t addr, uint16_t num,
         }
 		if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_NUM)&0xff) == 0)
         {
-            break;//下一个点号=0
+            continue;//下一个点号=0
         }
-        if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_PROPERTY)&0xff) != (Property))
+        if(((g_NewToOldTelesignal[temp1 + 1 + (g_NewToOldTelesignal[temp1 + 1]>>NEWONEYX_NUM) + 1 + 1]>>NEWONEYX_PROPERTY>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG) != ((Property>>NEWPROPERTY_TI)&NEWPROPERTY_JUDG))
         {
             break;//下一个属性不同
         }
@@ -1103,7 +1127,6 @@ uint16_t DLT634_5104_SLAVE_ReadYcData(uint8_t pdrv, uint16_t addr, uint16_t num,
                 start_add = g_NewAddTelemetry[g_NewToOldTelemetry[addr - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr + i] - DLT634_5104Slave_Pad[pdrv].YC_FirstAddr];
             }        
         } 
-
         
         switch(Property)
         {

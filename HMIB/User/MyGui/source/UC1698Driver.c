@@ -58,9 +58,9 @@ void WriteLcdCommand(uint8_t cmd)
 	LCD_RS_LOW();
 	LCD_RD_HIGH();
 	LCD_DATABUS(cmd);
-	Delay_us(1);
+	__NOP();
 	LCD_WR_LOW();
-	Delay_us(1);
+	__NOP();
 	LCD_WR_HIGH();
 }
 
@@ -69,14 +69,13 @@ void WriteLcdCommand(uint8_t cmd)
   *@param  data 数据
   *@retval None
   */
+
 void WriteLcdData(uint8_t data)
 {
 	LCD_RS_HIGH();
 	LCD_RD_HIGH();
-	LCD_DATABUS(data);
-	Delay_us(1);
+	LCD_DATATOBIT((data&0x03));
 	LCD_WR_LOW();
-	Delay_us(1);
 	LCD_WR_HIGH();
 }
 
@@ -122,35 +121,20 @@ void OpenLcdDisplay(void)
   */
 void Write8DotsUC1698U(uint8_t Data)
 {
-    uint8_t  TempData = 0;
-	
-   if(Data & 0x80)
-       TempData=0xf0;
-   if(Data & 0x40)
-       TempData|=0x0f;
-   WriteLcdData(TempData);
-
-   TempData=0;
-   if(Data & 0x20)
-       TempData=0xf0;
-   if(Data & 0x10)
-       TempData|=0x0f;
-   WriteLcdData(TempData);
-
-   TempData=0;
-   if(Data & 0x08)
-       TempData=0xf0;
-   if(Data & 0x04)
-       TempData|=0x0f;
-   WriteLcdData(TempData);
-
-   TempData=0;
-   if(Data & 0x02)
-       TempData=0xf0;
-   if(Data & 0x01)
-       TempData|=0x0f;
-   WriteLcdData(TempData);
+	LCD_DATATOBIT((Data >> 6));
+	LCD_WR_LOW();
+	LCD_WR_HIGH();
+	LCD_DATATOBIT(((Data >> 4)&0x03));
+	LCD_WR_LOW();
+	LCD_WR_HIGH();
+	LCD_DATATOBIT(((Data >> 2)&0x03));
+	LCD_WR_LOW();
+	LCD_WR_HIGH();
+	LCD_DATATOBIT((Data & 0x03));
+	LCD_WR_LOW();
+	LCD_WR_HIGH();
 }
+
 
 /**
   *@brief 关显示

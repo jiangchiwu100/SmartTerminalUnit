@@ -375,7 +375,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         { 			
             if ((g_ThreadRunSta & 0x19B) == 0x19B)
             {
-                rt_hw_wdg_deal_task();      
+                rt_hw_wdg_deal_task();
+                s_run_cnt = 0;                
             }
 	        else
 	        {
