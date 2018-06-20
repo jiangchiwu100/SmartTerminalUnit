@@ -91,8 +91,8 @@ static void DLT634_ChannelToMonitor_SLAVE_SlaveFrame12Response(uint8_t pdrv, uin
 	
 	if (channel_monitor.ByAddr)                                                              //被监听通道地址不为零
     {
-        pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE12;                                            //起始码
-        pBuf[1] = _DLT634_ChannelToMonitor_SLAVE_FC_RESPONSE;                                            //控制域，回答响应
+        pBuf[0] = _DLT634_ChannelToMonitor_SLAVE_STARTCODE11;                                            //起始码
+        pBuf[1] = _DLT634_ChannelToMonitor_SLAVE_FC_OFF_RESPONSE;                                            //控制域，回答响应
 		pBuf[2] = channel_monitor.ByAddr & 0xff;
         pBuf[3] = (channel_monitor.ByAddr>>8) & 0xff;
 
@@ -180,7 +180,7 @@ static void DLT634_ChannelToMonitor_AddError(uint8_t pdrv, uint8_t protocol)
 static uint8_t DLT634_ChannelToMonitor_SLAVE_DecodeFrame11(uint8_t pdrv, uint8_t protocol, uint8_t *RxdBuf)
 {
    // memcpy(RxdBuf, CRxdBuf, 6);
-	
+	channel_monitor.LinkCounter = 0;
 	channel_monitor.ByAddr = (RxdBuf[3]<<8)|RxdBuf[2];                              //被监测端口地址
 	if(channel_monitor.ByAddr == channel_monitor.Addr)
 	{
@@ -393,6 +393,7 @@ int rt_channel_monitor_clock(uint8_t pdrv)
 	{
 		if (++channel_monitor.LinkCounter >= LinkAliveTime)
 		{
+			DLT634_5104_SLAVE_StopLink(pdrv);
 			channel_monitor.LinkCounter = 0;
 			channel_monitor.MonitorFlag[pdrv] = 0;
 			channel_monitor.ByAddr = 0;

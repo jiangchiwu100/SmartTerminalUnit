@@ -16,7 +16,6 @@
 
 /* 通道监视报文修饰词***************************************************************/
 #define  _DLT634_ChannelToMonitor_SLAVE_STARTCODE11	             0x11					// 起始码
-#define  _DLT634_ChannelToMonitor_SLAVE_STARTCODE12              0x12                   // 停止监听
 #define  _DLT634_ChannelToMonitor_SLAVE_ENDCODE66                0x66					// 终止码
 
 #define  _DLT634_ChannelToMonitor_SLAVE_FC_TEST                  0x01 					// 通道监听测试
@@ -24,6 +23,7 @@
 #define  _DLT634_ChannelToMonitor_SLAVE_FC_ON                    0x09 					// 通道监听启动
 #define  _DLT634_ChannelToMonitor_SLAVE_FC_OFF                   0x0A 					// 通道监听结束
 #define  _DLT634_ChannelToMonitor_SLAVE_FC_RESPONSE              0x0B 					// 通道监听应答
+#define  _DLT634_ChannelToMonitor_SLAVE_FC_OFF_RESPONSE          0x0C 					// 停止通道监听应答
 #define  _DLT634_ChannelToMonitor_AddError                       0X0F                   // 地址错误
 
 #define _ChannelToMonitor1_START         	        0x01					//串口启动通道监听标志
