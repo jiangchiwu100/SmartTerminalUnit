@@ -24,6 +24,7 @@ struct HmiCmdSend hmiCmdItems[] = {
 	{"分闸",1},
 	{"合闸",2},
 	{"复归",3},
+    {"重启主板",4},
 };
 HmiCmdSendInfo hcmdInfo;
 /* 版本信息 */
@@ -603,6 +604,8 @@ static void HmiCmdSendFun(uint8_t cmdIs)
 			}break;
 		case 3:/* 复归 */
 			rt_multi_telecontrl_operate(ADDR_LOCAL_RESET, 0);
+        case 4:/* 主板复位 */
+			g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKRESET;
 		    break;
 		default:break;
 	}

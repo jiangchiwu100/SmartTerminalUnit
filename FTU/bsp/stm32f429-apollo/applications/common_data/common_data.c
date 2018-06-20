@@ -24,6 +24,7 @@
 #include "load_switch_interface.h"
 #include ".\MultiThread\multi_thread.h"
 #include "common_config.h"
+#include "drv_wdg.h"
 
 
 /* PUBLIC VARIABLES ---------------------------------------------------------*/
@@ -1113,12 +1114,21 @@ uint8_t rt_multi_telecontrl_proof(uint16_t addr, uint8_t operate_type)
                     {res = 1;}                 
                 } 
                 break;                
-            case ADDR_REMOTE_PRO_OUT:
+            case ADDR_REMOTE_RECLOSE_OUT:
                 if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
                 {
-                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == OFF))
+                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolrecloseOut] == OFF))
                     {res = 1;} 
-                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolProOut] == ON))
+                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolrecloseOut] == ON))
+                    {res = 1;} 
+                }
+                break;
+            case ADDR_REMOTE_CONTACT_OUT:
+                if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+                {
+                    if((operate_type == DO_OPEN)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolContactOut] == OFF))
+                    {res = 1;} 
+                    else if((operate_type == DO_CLOSE)&&(g_TelesignalDB[g_TelesignalAddr.telecontrolContactOut] == ON))
                     {res = 1;} 
                 }
                 break;
@@ -1139,34 +1149,49 @@ uint8_t rt_multi_telecontrl_proof(uint16_t addr, uint8_t operate_type)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
+rt_uint8_t rt_multi_telecontrl_operate(uint16_t addr, uint8_t operate_type)
 {
+    rt_uint8_t rtl = 0; 
     switch (addr)     
 	{
 		case ADDR_REMOTE_OPERATE:
 	    case ADDR_REMOTE_ACTIVE:
         case ADDR_LOCAL_OPERATE:		
 		case ADDR_HANDHELD_OPER:			
-			rt_hw_do_operate(addr, operate_type);
+			rtl = rt_hw_do_operate(addr, operate_type);
 			break;
 		case ADDR_REMOTE_RESET:		
 		case ADDR_LOCAL_RESET:
 			DBRevert(addr);
+            rtl = TRUE;
 			break;
 		case ADDR_REMOTE_CLEAR:
 		case ADDR_LOCAL_CLEAR:
 			DBClear(addr);
+            rtl = TRUE;
             break;
-        case ADDR_REMOTE_PRO_OUT:
+        case ADDR_REMOTE_RECLOSE_OUT:
             if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
             {
                 if(operate_type == DO_OPEN)
-                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, ON);}//分闸退出
+                {DBWriteSOE(g_TelesignalAddr.telecontrolrecloseOut, ON);}//分闸退出
                 else if(operate_type == DO_CLOSE)
-                {DBWriteSOE(g_TelesignalAddr.telecontrolProOut, OFF);}//合闸退出
+                {DBWriteSOE(g_TelesignalAddr.telecontrolrecloseOut, OFF);}//合闸退出
             }
-            break;	   		
+            rtl = TRUE;
+            break;	   
+        case ADDR_REMOTE_CONTACT_OUT:
+            if(g_Parameter[REMOTE_PRO_SWITCH] == 1)
+            {
+                if(operate_type == DO_OPEN)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolContactOut, ON);}//分闸退出
+                else if(operate_type == DO_CLOSE)
+                {DBWriteSOE(g_TelesignalAddr.telecontrolContactOut, OFF);}//合闸退出
+            }
+            rtl = TRUE;
+            break;	            
 	}
+    return(rtl);
 }
 /* FRAM ------------------------------------------------------------------*/
 /**
@@ -1493,7 +1518,9 @@ static void rt_common_data_save_value_default_to_fram(void)
 			for (i = 0; i < FM25V10_MAX_ADDR; i++)//清除FRAM
 			{
 				rt_device_write(device_fram, 0x01 + i, &flag, 1); 
-			}          
+                if(i%100 == 0)
+                {rt_hw_wdg_deal_task();}
+			}           
             
 			flag = FRAM_HWFLAG1;
 
@@ -1523,7 +1550,9 @@ static void rt_common_data_save_value_default_to_fram(void)
 
             rt_multi_common_data_configure_default(); //配置参数写入默认值     
 			
-			FRAM_PRINTF("fram is powered on firstly! \r\n"); 		
+			FRAM_PRINTF("fram is powered on firstly! \r\n");
+
+            rt_hw_wdg_deal_task();             
 		}
     }  	
 }
