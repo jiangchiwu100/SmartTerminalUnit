@@ -272,6 +272,7 @@ uint8_t DLT634_5104_AppInitReset(uint8_t pdrv)
     DLT104SlaveLink[pdrv].Connect = FALSE;
     DLT104SlaveLink[pdrv].NR = 0;
     DLT104SlaveLink[pdrv].NS = 0;
+	DLT104SlaveLink[pdrv].NRACK = 0;
     DLT104SlaveLink[pdrv].PeerNoAckNum = 0;
     DLT104SlaveLink[pdrv].FrameHead = 0;
     DLT104SlaveLink[pdrv].TxdHead = 0;

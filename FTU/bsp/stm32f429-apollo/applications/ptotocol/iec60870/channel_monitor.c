@@ -399,6 +399,8 @@ int rt_channel_monitor_clock(uint8_t pdrv)
 			channel_monitor.ByAddr = 0;
 		}	    
 	}
+	
+	return 1;
 }
 
 /**
@@ -440,5 +442,3 @@ int rt_channel_monitor_init(void)
     return 1;
 }
 //INIT_APP_EXPORT(rt_channel_monitor_init);
-
-	
