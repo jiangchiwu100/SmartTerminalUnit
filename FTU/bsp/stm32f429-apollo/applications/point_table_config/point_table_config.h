@@ -41,6 +41,7 @@ enum FIXED_VALUE_MENU
 	AUTO_RESET,      // 自动复归
 	LOOP_CLOSE,      // 合环
 	FAULT_SWITCH,    // 故障投退
+	DISTRIBUTE,      // 分布式
 };  
 
 /**

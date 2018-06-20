@@ -114,6 +114,11 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 0,  "DC_I越上限",   &g_TelesignalAddr.overLimitDC_I_Up,            NULL,          {"复位","越上限"}, {"复位","越上限"}},	
     { 0,  "DC_I越下限",   &g_TelesignalAddr.overLimitDC_I_Down,          NULL,          {"复位","越下限"}, {"复位","越下限"}},		
     { 0,  "装置掉电",     &g_TelesignalAddr.devicePowerDown,             NULL,          {"复位","掉电"},   {"复位","掉电"}},
+    { 1,  "对等通讯投退", &g_TelesignalAddr.p2p_communication_switch,    NULL,          {"退出", "投入"},  {"退出", "投入"}},	
+    { 0,  "故障切除",     &g_TelesignalAddr.fault_removal,               NULL,          {"复位","故障切除"},  {"复位","故障切除"}},	
+    { 0,  "故障隔离",     &g_TelesignalAddr.fault_isolated,              NULL,          {"复位","故障隔离"},  {"复位","故障隔离"}},	
+    { 0,  "开关拒动",     &g_TelesignalAddr.switch_refused,              NULL,          {"复位","开关拒动"},  {"复位","开关拒动"}},	
+    { 0,  "对等通讯异常", &g_TelesignalAddr.p2p_communication_abnormal,  NULL,          {"复位","异常"},  {"复位","异常"}},	
 };
 	
 /* 遥测 */
@@ -468,7 +473,13 @@ struct tagValueParaCfg FixedValueCfg1[] =
     { 1,  LOGICAL_FUN,  "U0保护电压",      &g_FixedValue1[VOLTAGE_U0_VALUE],              "V",      99.99f,     0.00f,   100,        0,         3,         {"-",  "-"         },   " "    },	
     { 1,  LOGICAL_FUN,  "U0保护延时",      &g_FixedValue1[VOLTAGE_U0_TIME],               "S",      99.99f,     0.00f,   1,          0,         3,         {"-",  "-"         },   " "    },
     { 1,  LOGICAL_FUN,  "非遮断投退",      &g_FixedValue1[BREAKING_CURRENT_SWITCH],       "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },	
-    { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue1[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },		
+    { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue1[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },
+	{ 1,  DISTRIBUTE,   "对等通讯投退",    &g_FixedValue1[DISTRIBUTE_SWITCH],             "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },
+	{ 1,  DISTRIBUTE,   "动作类型",        &g_FixedValue1[DISTRIBUTE_ACTION_TYPE],        "-",       1,           0,     0,          2,         0,         {"速动型", "缓动型",},   " "    },
+	{ 1,  DISTRIBUTE,   "对等通讯过流",    &g_FixedValue1[DISTRIBUTE_OVER_CURRENT_VAL],   "A",     99.99f,      0.00f,  5.0f,        0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等通讯有压",    &g_FixedValue1[DISTRIBUTE_OVER_VOLTAGE_VAL],   "V",     9999.99f,    0.00f,  176.0f,      0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等通讯无压",    &g_FixedValue1[DISTRIBUTE_OVER_NO_VOLTAGE_VAL],"V",     9999.99f,    0.00f,   80.0f,      0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "转供电负荷",      &g_FixedValue1[DISTRIBUTE_POWER_CHANGE_LOAD],  "A",     9999.99f,    0.00f,   20.0f,      0,         0,         {"-",  "-",        },   " "    },
 }; 
 
 /* 定值二区 */
