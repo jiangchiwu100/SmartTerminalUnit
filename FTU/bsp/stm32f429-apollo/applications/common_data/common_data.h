@@ -453,7 +453,13 @@ typedef struct TagTelesignalAddr
     overLimitDC_I_Down,                             // 直流电流越限
     devicePowerDown,                                // 装置掉电
     telecontrolrecloseOut,                          // 遥控重合闸退出  
-    telecontrolContactOut;                          // 遥控联络退出
+    telecontrolContactOut,                          // 遥控联络退出
+	p2p_communication_switch,                       // 对等通讯投退
+	fault_removal,                                  // 对等通讯故障切除
+	fault_isolated,                                 // 对等通讯故障隔离
+	switch_refused,                                 // 开关拒动
+	p2p_communication_abnormal;                     // 对等通讯异常
+	
 }TelesignalAddr;
 
 #define TELESIGNAL_TOTAL_NUM (sizeof(TelesignalAddr)/sizeof(rt_uint16_t))
@@ -843,7 +849,12 @@ enum AddrFixedValue
 	VOLTAGE_U0_TIME,                     // 零序电压延时
 	BREAKING_CURRENT_SWITCH,             // 非遮断电流投退
 	BREAKING_CURRENT_VALUE,        		 // 非遮断电流
-	
+	DISTRIBUTE_SWITCH,                   // 分布式投退
+	DISTRIBUTE_ACTION_TYPE,              // 动作类型（速动型、缓动型）
+	DISTRIBUTE_OVER_CURRENT_VAL,         // 分布式过流定值
+	DISTRIBUTE_OVER_VOLTAGE_VAL,         // 分布式有压定值
+    DISTRIBUTE_OVER_NO_VOLTAGE_VAL,      // 分布式无压定值	
+	DISTRIBUTE_POWER_CHANGE_LOAD,        // 分布式转供电负荷
 	
 	FIXED_VALUE_NUM                      // 定值数量
 };
