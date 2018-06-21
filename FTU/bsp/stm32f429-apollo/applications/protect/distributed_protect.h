@@ -52,6 +52,7 @@
 #define  _DISTRIBUT_FLAG_DOUBLEVOLTAGE               0x00000010   //到双侧有压状态
 #define  _DISTRIBUT_FLAG_FLAUT                       0x00000100   //故障点判断
 #define  _DISTRIBUT_FLAG_OVERCURRENT_ACT             0x00001000   //过流导致动作
+#define  _DISTRIBUT_FLAG_CLEANOVERCURRENT            0x00010000   //过流清除标志
 
 
 enum

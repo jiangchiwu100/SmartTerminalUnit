@@ -85,7 +85,6 @@ static void functional_retreat(uint8_t pdrv)
     ListElmt *element;
     DevStr *dev;
     
-    //投退开关引用
     element = s_ListDevStorage[pdrv].head;
     while(element != NULL)
     {
@@ -103,36 +102,6 @@ static void functional_retreat(uint8_t pdrv)
                 *(s_FunctionalRetreat->valstr.gTime) = DISTRIBUT_ENTIMERS;//启动定时
                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT;
             }
-        }
-        if(((dev->comstr.operation&_DISTRIBUT_O_IP) == s_SelfSts[pdrv].ip)&&(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||\
-                        (s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))))//无拒动//无隔离
-        {
-            if((dev->comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
-            {
-                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
-                {
-                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//控分
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                }
-            }
-            else if((dev->comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF))//分位
-            {
-                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
-                {
-                    s_ComProSts[pdrv].closing(ADDR_LOGIC_ACT,DO_CLOSE);//控合
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                }
-            }           
-        }
-        if(dev->ip == (s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_IP))
-        {
-            if(((dev->comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||(dev->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))||\
-                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHOPEN))||\
-                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHCLOSE)))
-                //拒动//隔离//分位控分//合位控合
-            {
-                s_SelfSts[pdrv].comstr.operation = 0;
-            }              
         }
         element = element->next;
     }
@@ -180,8 +149,14 @@ static void functional_retreat(uint8_t pdrv)
                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_EXIT_OTHER;             
             }
             element = element->next;
-        }        
-    }       
+        }
+    }
+
+    //分布式投退开关引用
+    if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    {
+        //分布式模式切换
+    }
 }
 
 /**
@@ -235,16 +210,6 @@ static void selfstate_judge(uint8_t pdrv)
         s_SelfFlag[pdrv] &= ~_DISTRIBUT_FLAG_SWTICHOPEN;
         *(s_SelfstateJudge->valstr.gTime) = 0;
     }
-      
-
-    if((*(s_ComProSts[pdrv].yc.Ia)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ib)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ic)> (float)0.3))//过流
-    {
-        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT;
-    }
-    else if((*(s_ComProSts[pdrv].yc.Ia)< (float)0.3*factor)&&(*(s_ComProSts[pdrv].yc.Ib)< (float)0.3*factor)&&(*(s_ComProSts[pdrv].yc.Ic)< (float)0.3*factor))
-    {
-        s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_OVERCURRENT;
-    }
     
     if(*(s_ComProSts[pdrv].yc.Uab)> 20)//M侧有压
     {
@@ -261,6 +226,23 @@ static void selfstate_judge(uint8_t pdrv)
     else if(*(s_ComProSts[pdrv].yc.Ubc)< 20*factor)
     {
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_VOLTAGE_N;
+    }    
+
+    if((*(s_ComProSts[pdrv].yc.Ia)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ib)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ic)> (float)0.3))//过流
+    {
+        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT;
+    }
+    else if(((*(s_ComProSts[pdrv].yc.Ia)< (float)0.1*factor)&&(*(s_ComProSts[pdrv].yc.Ib)< (float)0.1*factor)&&(*(s_ComProSts[pdrv].yc.Ic)< (float)0.1*factor))&&
+        ((!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M))&&(!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))))//无压无流
+    {
+        s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_CLEANOVERCURRENT;
+    }
+    
+    if((s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_CLEANOVERCURRENT)&&
+        ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N)))
+    {
+        s_SelfFlag[pdrv] &= ~_DISTRIBUT_FLAG_CLEANOVERCURRENT;
+        s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_OVERCURRENT;
     }
            
     if((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
@@ -272,6 +254,7 @@ static void selfstate_judge(uint8_t pdrv)
     {
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_SWTICHOPEN;
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_SWTICHCLOSE;
+        s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_OVERCURRENT;
     } 
 }
     
@@ -573,7 +556,9 @@ static void change_power(uint8_t pdrv)
 {
     ListElmt *elementfirst;//主链表
     ListElmt *elementSecond;//辅链表
-    uint8_t ip=0;    
+    uint8_t ip=0; 
+    ListElmt *element;
+    DevStr *dev;    
     
     if(((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))&&\
         ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))&&\
@@ -630,6 +615,43 @@ static void change_power(uint8_t pdrv)
                 elementfirst = elementfirst->next;
             }
         }
+    }
+    
+    element = s_ListDevStorage[pdrv].head;
+    while(element != NULL)
+    {
+        dev = (DevStr *)(element->data);
+        if(((dev->comstr.operation&_DISTRIBUT_O_IP) == s_SelfSts[pdrv].ip)&&(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||\
+                        (s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))))//无拒动//无隔离
+        {
+            if((dev->comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
+            {
+                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                {
+                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//控分
+                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                }
+            }
+            else if((dev->comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF))//分位
+            {
+                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                {
+                    s_ComProSts[pdrv].closing(ADDR_LOGIC_ACT,DO_CLOSE);//控合
+                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                }
+            }           
+        }
+        if(dev->ip == (s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_IP))
+        {
+            if(((dev->comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||(dev->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))||\
+                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHOPEN))||\
+                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHCLOSE)))
+                //拒动//隔离//分位控分//合位控合
+            {
+                s_SelfSts[pdrv].comstr.operation = 0;
+            }              
+        }
+        element = element->next;
     }
 }
  

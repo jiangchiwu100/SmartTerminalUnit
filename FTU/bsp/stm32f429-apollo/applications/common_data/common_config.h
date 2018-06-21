@@ -33,7 +33,7 @@
 #ifdef COMMON
 
 //#define SYNTHESIS_I0_ENABLE              // 合成零序电流使能
-#define LOGICLOCKINGMANUALREMOTECONTROL  // 逻辑闭锁手动遥控
+//#define LOGICLOCKINGMANUALREMOTECONTROL  // 逻辑闭锁手动遥控
 #define TERMINAL_PRODUCT_SERIAL_NUMBER   "F01C.1.B0000.000x.180620"    // 产品序列号
 
 #endif /* 配置区 COMMON */
