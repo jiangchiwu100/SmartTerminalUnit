@@ -84,7 +84,7 @@ void rt_w5500_udp_thread_entry(void *param)
 	uint8_t goose_have_change = 0;
     uint8_t buf[256];
     uint8_t srcip[4];
-	uint8_t defautip[4] = {192,168,60,255};	
+	uint8_t defautip[4] = {g_EthW5500.ip[0],g_EthW5500.ip[1],g_EthW5500.ip[2],255};	
     uint16_t destport;	
     w5500_udp_init();
 	

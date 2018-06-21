@@ -448,109 +448,113 @@ static void fault_isolation(uint8_t pdrv)
         
         if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT)//自身过流
         {
-            if(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_BRANCH)//支线
+            if((*(s_ComProSts[pdrv].Val.action_type) == SWITCH_OFF)||
+               ((*(s_ComProSts[pdrv].Val.action_type) == SWITCH_ON)&&(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_CLEANOVERCURRENT)))
             {
-                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                if(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_BRANCH)//支线
                 {
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸    
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON);          
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
-                }
-            }
-            else if(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_TRUNK)//主线
-            {
-                if(!(*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_ENTIMERS))
-                {
-                    *(s_FaultIsolation->valstr.gTime) = DISTRIBUT_ENTIMERS;//启动定时
-                }
-                if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 10)//过流20ms
-                {                 
-                    if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_POSITIVE)//正向
+                    if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
                     {
-                        //N侧
-                        element = s_ListDevN[pdrv].head;
-                        while(element != NULL)
-                        {
-                            if(((((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_POSITIVE)&&\
-                                (((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_OVERCURRENT)))//正向过流
-                            {
-                                if(((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)//拒动
-                                {
-                                    if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
-                                    {
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
-                                        s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
-                                    }
-                                }
-                                s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
-                                return;
-                            }
-                            element = element->next; 
-                        }
-                        if((!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))&&\
-                            (!(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_FLAUT)))//自身过流，前端未检测出故障点
-                        {
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;//无正向过流
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
-                            s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
-                        }
-                        return;
+                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                        s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸    
+                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON);          
+                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                     }
-                    if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_BACKWARD)//反向
+                }
+                else if(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_TRUNK)//主线
+                {
+                    if(!(*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_ENTIMERS))
                     {
-                        //M侧
-                        element = s_ListDevM[pdrv].head;
-                        while(element != NULL)
+                        *(s_FaultIsolation->valstr.gTime) = DISTRIBUT_ENTIMERS;//启动定时
+                    }
+                    if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 10)//过流20ms
+                    {                 
+                        if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_POSITIVE)//正向
                         {
-                            if(((((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_BACKWARD)&&\
-                                (((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_OVERCURRENT)))//反向过流
+                            //N侧
+                            element = s_ListDevN[pdrv].head;
+                            while(element != NULL)
                             {
-                                if(((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)//拒动
+                                if(((((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_POSITIVE)&&\
+                                    (((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_OVERCURRENT)))//正向过流
                                 {
-                                    if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                                    if(((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)//拒动
                                     {
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
-                                        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
-                                        s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                                        if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                                        {
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
+                                            s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                                        }
                                     }
+                                    s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
+                                    return;
                                 }
-                                s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
-                                return;
+                                element = element->next; 
                             }
-                            element = element->next; 
+                            if((!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))&&\
+                                (!(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_FLAUT)))//自身过流，前端未检测出故障点
+                            {
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;//无正向过流
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
+                                s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                            }
+                            return;
                         }
-                        if((!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))&&\
-                            (!(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_FLAUT)))//自身过流，前端未检测出故障点
+                        if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_BACKWARD)//反向
                         {
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;//无反向过流
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
-                            s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
-                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
+                            //M侧
+                            element = s_ListDevM[pdrv].head;
+                            while(element != NULL)
+                            {
+                                if(((((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_BACKWARD)&&\
+                                    (((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_OVERCURRENT)))//反向过流
+                                {
+                                    if(((DevStr *)(element->data))->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)//拒动
+                                    {
+                                        if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                                        {
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
+                                            s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
+                                            s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                                        }
+                                    }
+                                    s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
+                                    return;
+                                }
+                                element = element->next; 
+                            }
+                            if((!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))&&\
+                                (!(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_FLAUT)))//自身过流，前端未检测出故障点
+                            {
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;//无反向过流
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
+                                s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                                s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
             }
@@ -1183,7 +1187,7 @@ void distributClock(void)
                 
                 distributUpdataDevStorage(pdrv);//更新仓库
                 functional_retreat(pdrv);//智能分布式投退
-                if(g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)
+                if((g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)&&(*(s_ComProSts[pdrv].yx.functionHardStrap.value) == SWITCH_ON))
                 {
                     selfstate_judge(pdrv);//状态判断
                     direction_judge(pdrv);//方向判断
