@@ -1175,7 +1175,7 @@ void BreakerCtrlInit(void)
             s_SecondaryRecloseLock[pdrv].valstr.recloseI0flag = &s_RecloseI0[pdrv].valstr.flag;
             s_SecondaryRecloseLock[pdrv].valstr.resetflag = &s_Rest[pdrv].valstr.flag;
             addtimers(pdrv,&s_SecondaryRecloseLock[pdrv].valstr.gTime);
-            s_SecondaryRecloseLock[pdrv].parastr.pSwitch = &g_pFixedValue[OVER_CURRENTI0_TIME2];
+            s_SecondaryRecloseLock[pdrv].parastr.pSwitch = &g_pFixedValue[SECONDARY_RECLOSE_LOCK_SWITCH];
             s_SecondaryRecloseLock[pdrv].parastr.pTime = &g_pFixedValue[SECONDARY_RECLOSE_LOCK_TIME];
             // 过流重合闸
 			s_Reclose[pdrv].valstr.flag = 0;
@@ -1254,14 +1254,21 @@ void BreakerCtrlClock(void)
         switch(pdrv)
         {
 			case BRE_DEV0:
-                if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+                if(g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)
                 {
-                    s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+                    s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NONE;
                 }
                 else
                 {
-                    s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
-                }  
+                    if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+                    {
+                        s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+                    }
+                    else
+                    {
+                        s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+                    }
+                }                
                 if(g_Parameter[CFG_PRO_VOL_N] == 0)
                 {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
                 else

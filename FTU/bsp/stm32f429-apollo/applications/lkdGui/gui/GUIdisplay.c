@@ -1107,12 +1107,13 @@ static void MenuM1Fun(void)
 		switch(MenuM1.currentItem){
 		case 0:userGUIMenuAdd(&MenuM1S0);break;//保护功能
 		case 1:userGUIWindowAdd(&LogicalFunWin);break;//逻辑功能
-		case 2:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
-		case 3:userGUIWindowAdd(&OverLoadMuchWin);break;//重过载
-		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
-		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
-		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIMenuAdd(&MenuM1S8);break;//其他设置
+        case 2:userGUIWindowAdd(&PToPComFunWin);break;//对等通信
+		case 3:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
+		case 4:userGUIWindowAdd(&OverLoadMuchWin);break;//重过载
+		case 5:userGUIWindowAdd(&OverLoadWin);break;//过负荷
+		case 6:userGUIWindowAdd(&OverVoltageWin);break;//过电压
+		case 7:userGUIWindowAdd(&BatterySetWin);break;//电池设置
+		case 8:userGUIMenuAdd(&MenuM1S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1198,12 +1199,13 @@ static void MenuM0S4Fun(void)
 		switch(MenuM0S4.currentItem){
 		case 0:userGUIMenuAdd(&MenuM0S4S0);break;//保护功能
 		case 1:userGUIWindowAdd(&LogicalFunWin);break;//逻辑功能
-		case 2:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
-		case 3:userGUIWindowAdd(&OverLoadMuchWin);break;//重过载
-		case 4:userGUIWindowAdd(&OverLoadWin);break;//过负荷
-		case 5:userGUIWindowAdd(&OverVoltageWin);break;//过电压
-		case 6:userGUIWindowAdd(&BatterySetWin);break;//电池设置
-		case 7:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
+        case 2:userGUIWindowAdd(&PToPComFunWin);break;//对等通信
+		case 3:userGUIWindowAdd(&OverLineWarnWin);break;//越线报警
+		case 4:userGUIWindowAdd(&OverLoadMuchWin);break;//重过载
+		case 5:userGUIWindowAdd(&OverLoadWin);break;//过负荷
+		case 6:userGUIWindowAdd(&OverVoltageWin);break;//过电压
+		case 7:userGUIWindowAdd(&BatterySetWin);break;//电池设置
+		case 8:userGUIMenuAdd(&MenuM0S4S8);break;//其他设置
 		default:break;
 		}
 	}
@@ -1588,6 +1590,15 @@ static void LogicalFunFun(void)
 }
 
 /**
+  *@brief 对等通信
+  *@param  None
+  *@retval None
+  */
+static void PToPComFun(void)
+{
+    DZModfiyDisplay(&dzhi1Info[DZ1_PTOPCOM_FUN],&stepTab[STEP_NORMAL]);
+}
+/**
   *@brief 越线报警
   *@param  None
   *@retval None
@@ -1715,7 +1726,7 @@ static void YaoxinFun(void)
 			col1Data[i] = (uint8_t )*(yxInfo.pRoot[yxInfo.pBuff[i]].pVal);
 		}	
 		for(i = 0;i < itemsNum;i++){
-			*(pText + i*2 + 0) = (uint8_t *)yxInfo.pRoot[i].pName;
+			*(pText + i*2 + 0) = (uint8_t *)yxInfo.pRoot[yxInfo.pBuff[i]].pName;
 			if(col1Data[i] == 1)
 				*(pText + i*2 + 1) = (uint8_t *)yxInfo.pRoot[yxInfo.pBuff[i]].pContentYx[0];
 			else

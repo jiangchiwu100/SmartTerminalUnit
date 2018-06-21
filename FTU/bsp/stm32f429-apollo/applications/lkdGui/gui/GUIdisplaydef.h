@@ -16,8 +16,8 @@ MENU MenuM0 = {
 	MenuM0Fun/* itemFunction */	
 };
 MENU MenuM1 = {
-	0,0,&mianMenu,0,8,{1,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
-	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他设置",NULL},
+	0,0,&mianMenu,0,9,{1,0,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
+	{"保护功能","逻辑功能","对等通信","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他设置",NULL},
 	MenuM1Fun/* itemFunction */
 };
 MENU MenuM2 = {
@@ -31,8 +31,8 @@ MENU MenuM0S1 = {
 	MenuM0S1Fun/* itemFunction */
 };
 MENU MenuM0S4 = {
-	0,0,&MenuM0,0,8,{1,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
-	{"保护功能","逻辑功能","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他查询",NULL},
+	0,0,&MenuM0,0,9,{1,0,0,0,0,0,0,0,1,0},//x,y,fatherMenu,currentItem,mun
+	{"保护功能","逻辑功能","对等通信","越限报警","重 过 载","过 负 荷","越压越频","电池设置","其他查询",NULL},
 	MenuM0S4Fun/* itemFunction */
 };
 MENU MenuM0S5 = {
@@ -84,6 +84,7 @@ WINDOW FaultEventWin = {0,0,160,160,NULL,"故障事件窗口",FaultEventFun};
 	WINDOW ZeroSequenceOverWin = {0,0,160,160,NULL,"零序过流窗口",ZeroSequenceOverFun};
 	WINDOW CutoutSwitchWin     = {0,0,160,160,NULL,"其它保护窗口",  CutoutSwitchFun};
 WINDOW LogicalFunWin   = {0,0,160,160,NULL,"逻辑功能窗口",LogicalFunFun};
+WINDOW PToPComFunWin   = {0,0,160,160,NULL,"对等通信窗口",PToPComFun};
 WINDOW OverLineWarnWin = {0,0,160,160,NULL,"越限报警窗口",OverLineWarnFun};
 WINDOW OverLoadMuchWin = {0,0,160,160,NULL,"重过载窗口",OverLoadMuchFun};
 WINDOW OverLoadWin     = {0,0,160,160,NULL,"过负荷窗口",OverLoadFun};

@@ -91,6 +91,7 @@ enum Dzhi1OffsetNumber{
 	DZ1_FAULT_SWITCH,	/* 故障投退 */
 	DZ1_OTHER_PROTEC,	/* 其他保护 */
 	DZ1_LOGICAL_FUN,	/* 逻辑功能 */
+    DZ1_PTOPCOM_FUN,	/* 对等通信 */
 	DZ1_ALLNUM,				/* 定值总数 */
 };
 

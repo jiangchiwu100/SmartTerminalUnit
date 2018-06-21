@@ -633,7 +633,7 @@ void other_protect_init(void)
     OverLimitU0.soeAddrUp = g_TelesignalAddr.overLimitU0Up;
     OverLimitU0.soeAddrDown = g_TelesignalAddr.overLimitU0Down;
     OverLimitU0.uplimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U0];
-    OverLimitU0.downlimit = &g_pFixedValue[UPLIMIT_VOLTAGE_U0];
+    OverLimitU0.downlimit = &g_pFixedValue[DOWNLIMIT_VOLTAGE_U0];
     OverLimitU0.funSwitch = &g_pFixedValue[OVERLIMIT_ALARM_SWITCH_U0];
     OverLimitU0.telemetry = &g_TelemetryDB[g_TelemetryAddr.U0];
     OverLimitU0.uplimitFactor = &g_pFixedValue[UPLIMIT_FACTOR];

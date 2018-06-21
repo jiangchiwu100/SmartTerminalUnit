@@ -74,6 +74,26 @@ void add_timers(uint8_t pdrv)
 }
 
 /**
+  * @brief : Make the SOE.
+  * @param : [comProSts]
+	* @param : [telesignal]
+	* @param : [value]
+  * @return: none
+  * @updata: [YYYY-MM-DD][NAME][BRIEF]
+  */
+static void addSOE(ComProSts *comProSts, STelesignalStr *telesignal, uint8_t value)
+{
+    if (*(telesignal->value) != value)
+    {
+        comProSts->outputSoe(telesignal->addr,value);
+        if(value == ON)
+        {
+            comProSts->outputFevent(telesignal->addr,NULL,0);
+        }
+    }
+}
+
+/**
   * @Description: 智能分布式投退.
   * @param:  无
   * @return: 无
@@ -152,10 +172,21 @@ static void functional_retreat(uint8_t pdrv)
         }
     }
 
-    //分布式投退开关引用
-    if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    if(*(s_ComProSts[pdrv].yx.p2p_communication_switch.value) == ON)
     {
-        //分布式模式切换
+        s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_EXIT_SELF;
+    }
+    else
+    {
+        s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_EXIT_SELF;    
+    }
+    if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    {//分布式模式切换
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_work_situation,OFF);        
+    }
+    else
+    {
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_work_situation,ON);    
     }
 }
 
@@ -192,6 +223,8 @@ static void selfstate_judge(uint8_t pdrv)
             {
                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_FAILURE_OPERATE;
                 s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_REQUIRED_ACT;
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.switch_refused,OFF);
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.switch_refused,ON);                
             }
             if(((s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_SWTICHCLOSE)&&((*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF)))||\
                ((s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_SWTICHOPEN)&&((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON)))) //规定时间内正常动作
@@ -210,48 +243,103 @@ static void selfstate_judge(uint8_t pdrv)
         s_SelfFlag[pdrv] &= ~_DISTRIBUT_FLAG_SWTICHOPEN;
         *(s_SelfstateJudge->valstr.gTime) = 0;
     }
-    
-    if(*(s_ComProSts[pdrv].yc.Uab)> 20)//M侧有压
+ 
+    //电压判断    
+    if(*(s_ComProSts[pdrv].yc.Uab)> *(s_ComProSts[pdrv].Val.over_voltage_val))//M侧有压
     {
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_VOLTAGE_M;
     }
-    else if(*(s_ComProSts[pdrv].yc.Uab)< 20*factor)
+    else if(*(s_ComProSts[pdrv].yc.Uab)< *(s_ComProSts[pdrv].Val.over_no_voltage_val))
     {
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_VOLTAGE_M;
     }
-    if(*(s_ComProSts[pdrv].yc.Ubc)> 20)//N侧有压
+    if(*(s_ComProSts[pdrv].yc.Ucb)> *(s_ComProSts[pdrv].Val.over_voltage_val))//N侧有压
     {
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_VOLTAGE_N;
     }
-    else if(*(s_ComProSts[pdrv].yc.Ubc)< 20*factor)
+    else if(*(s_ComProSts[pdrv].yc.Ucb)< *(s_ComProSts[pdrv].Val.over_no_voltage_val))
     {
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_VOLTAGE_N;
     }    
 
-    if((*(s_ComProSts[pdrv].yc.Ia)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ib)> (float)0.3)||(*(s_ComProSts[pdrv].yc.Ic)> (float)0.3))//过流
+    //电流判断 
+    if(((*(s_ComProSts[pdrv].yc.Ia)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ib)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ic)> *(s_ComProSts[pdrv].Val.over_current_val)))||
+        (*(s_ComProSts[pdrv].yc.I0)> *(s_ComProSts[pdrv].Val.overi0_current_val)))//过流
     {
+        if((!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT))&&
+            ((*(s_ComProSts[pdrv].yc.Ia)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ib)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ic)> *(s_ComProSts[pdrv].Val.over_current_val))))
+        {
+            if(*(s_ComProSts[pdrv].yc.Ia)>*(s_ComProSts[pdrv].Val.over_current_val))
+            {
+                //SOE
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIa,OFF);
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIa,ON);
+            }
+            if(*(s_ComProSts[pdrv].yc.Ib)>*(s_ComProSts[pdrv].Val.over_current_val))
+            {
+                //SOE
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIb,OFF);
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIb,ON);
+            }
+            if(*(s_ComProSts[pdrv].yc.Ic)>*(s_ComProSts[pdrv].Val.over_current_val))
+            {
+                //SOE
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIc,OFF);
+                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIc,ON);
+            }
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.shortCircuitFault,OFF);
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.shortCircuitFault,ON);
+        }
+        
+        if((!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT))&&(*(s_ComProSts[pdrv].yc.I0)>*(s_ComProSts[pdrv].Val.overi0_current_val)))
+        {
+            //SOE
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentI0,OFF);
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentI0,ON);
+        }        
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT;
     }
-    else if(((*(s_ComProSts[pdrv].yc.Ia)< (float)0.1*factor)&&(*(s_ComProSts[pdrv].yc.Ib)< (float)0.1*factor)&&(*(s_ComProSts[pdrv].yc.Ic)< (float)0.1*factor))&&
+    else if(((*(s_ComProSts[pdrv].yc.Ia)<= *(s_ComProSts[pdrv].Val.over_current_val))&&(*(s_ComProSts[pdrv].yc.Ib)<= *(s_ComProSts[pdrv].Val.over_current_val))&&(*(s_ComProSts[pdrv].yc.Ic)<= *(s_ComProSts[pdrv].Val.over_current_val)))&&
         ((!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M))&&(!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))))//无压无流
     {
         s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_CLEANOVERCURRENT;
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIa,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIb,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIc,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentI0,OFF);
+    }
+    
+    if(!(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT))
+    {
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIa,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIb,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIc,OFF);
+        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentI0,OFF);        
     }
     
     if((s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_CLEANOVERCURRENT)&&
-        ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N)))
+        (((*(s_ComProSts[pdrv].yc.Ia)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ib)> *(s_ComProSts[pdrv].Val.over_current_val))||(*(s_ComProSts[pdrv].yc.Ic)> *(s_ComProSts[pdrv].Val.over_current_val)))||
+        ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))))//有流或有压
     {
         s_SelfFlag[pdrv] &= ~_DISTRIBUT_FLAG_CLEANOVERCURRENT;
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_OVERCURRENT;
     }
-           
+
+    //分合位 
     if((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
     {
+        if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_SWTICHOPEN)
+        {
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);
+            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.closingLocked,OFF); 
+        }
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_SWTICHCLOSE;
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_SWTICHOPEN;        
     }
     else if((*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF))//分位
     {
+        if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_SWTICHCLOSE)
+        {addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.openingLocked,OFF); }
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_SWTICHOPEN;
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_SWTICHCLOSE;
         s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_OVERCURRENT;
@@ -365,7 +453,11 @@ static void fault_isolation(uint8_t pdrv)
                 if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
                 {
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸      
+                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON);          
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                 }
             }
             else if(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_TRUNK)//主线
@@ -393,6 +485,10 @@ static void fault_isolation(uint8_t pdrv)
                                         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                                         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
                                         s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                                     }
                                 }
                                 s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
@@ -407,6 +503,10 @@ static void fault_isolation(uint8_t pdrv)
                             s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                             s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
                             s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                         }
                         return;
                     }
@@ -427,6 +527,10 @@ static void fault_isolation(uint8_t pdrv)
                                         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                                         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
                                         s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                        addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                                     }
                                 }
                                 s_SelfFlag[pdrv] |= _DISTRIBUT_FLAG_FLAUT;//检测出故障点
@@ -440,6 +544,10 @@ static void fault_isolation(uint8_t pdrv)
                             s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;//无反向过流
                             s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                             s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,ON); 
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                            addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                             s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_OVERCURRENT_ACT;
                         }
                         return;
@@ -469,6 +577,10 @@ static void fault_isolation(uint8_t pdrv)
                                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
                                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                                 s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_isolated,OFF);
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_isolated,ON); 
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                             }
                             return;
                         }
@@ -491,6 +603,10 @@ static void fault_isolation(uint8_t pdrv)
                                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
                                 s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                                 s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//跳闸
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_isolated,OFF);
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_isolated,ON); 
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                                addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                             }
                             return;
                         }
@@ -521,7 +637,8 @@ static void fault_isolation(uint8_t pdrv)
                 {
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_FINISH_SPACER;
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_BLOCKING;
+                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_BLOCKING; 
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.closingLocked,ON); 
                     return;
                 }
                 element = element->next; 
@@ -537,6 +654,7 @@ static void fault_isolation(uint8_t pdrv)
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_SPACER;
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_FINISH_SPACER;
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_BLOCKING;
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.closingLocked,ON);
                     return;
                 }
                 element = element->next; 
@@ -629,6 +747,8 @@ static void change_power(uint8_t pdrv)
                 if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
                 {
                     s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//控分
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
                 }
             }
@@ -637,6 +757,8 @@ static void change_power(uint8_t pdrv)
                 if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
                 {
                     s_ComProSts[pdrv].closing(ADDR_LOGIC_ACT,DO_CLOSE);//控合
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,ON);                    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,OFF);
                     s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
                 }
             }           
@@ -969,20 +1091,63 @@ void distributInit(void)
             case DISTRIBUT_DEV0:
                 ListInit(pdrv);  
                 s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
-                s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];    
+                s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];   
+                s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];
+                s_ComProSts[pdrv].yx.p2p_communication_switch.value = &g_TelesignalDB[g_TelesignalAddr.p2p_communication_switch];          
+            
+                s_ComProSts[pdrv].yx.closingLocked.addr = g_TelesignalAddr.closingLocked;
+                s_ComProSts[pdrv].yx.openingLocked.addr = g_TelesignalAddr.openingLocked;
+                s_ComProSts[pdrv].yx.shortCircuitFault.addr = g_TelesignalAddr.shortCircuitFault;
+                s_ComProSts[pdrv].yx.earthingFault.addr = g_TelesignalAddr.earthingFault;
+                s_ComProSts[pdrv].yx.protectionAct.addr = g_TelesignalAddr.protectionAct;           
+                s_ComProSts[pdrv].yx.overcurrentIa.addr = g_TelesignalAddr.overcurrentIa;
+                s_ComProSts[pdrv].yx.overcurrentIb.addr = g_TelesignalAddr.overcurrentIb;
+                s_ComProSts[pdrv].yx.overcurrentIc.addr = g_TelesignalAddr.overcurrentIc;
+                s_ComProSts[pdrv].yx.overcurrentI0.addr = g_TelesignalAddr.overcurrentI0;
+                s_ComProSts[pdrv].yx.fault_removal.addr = g_TelesignalAddr.fault_removal;
+                s_ComProSts[pdrv].yx.fault_isolated.addr = g_TelesignalAddr.fault_isolated;
+                s_ComProSts[pdrv].yx.p2p_change_power.addr = g_TelesignalAddr.p2p_change_power;
+                s_ComProSts[pdrv].yx.switch_refused.addr = g_TelesignalAddr.switch_refused;
+                s_ComProSts[pdrv].yx.p2p_communication_abnormal.addr = g_TelesignalAddr.p2p_communication_abnormal;
+                s_ComProSts[pdrv].yx.p2p_work_situation.addr = g_TelesignalAddr.p2p_work_situation;
 
+                s_ComProSts[pdrv].yx.closingLocked.value = &g_TelesignalDB[g_TelesignalAddr.closingLocked];
+                s_ComProSts[pdrv].yx.openingLocked.value = &g_TelesignalDB[g_TelesignalAddr.openingLocked];
+                s_ComProSts[pdrv].yx.shortCircuitFault.value = &g_TelesignalDB[g_TelesignalAddr.shortCircuitFault];
+                s_ComProSts[pdrv].yx.earthingFault.value = &g_TelesignalDB[g_TelesignalAddr.earthingFault];
+                s_ComProSts[pdrv].yx.protectionAct.value = &g_TelesignalDB[g_TelesignalAddr.protectionAct];
+                s_ComProSts[pdrv].yx.overcurrentIa.value = &g_TelesignalDB[g_TelesignalAddr.overcurrentIa];
+                s_ComProSts[pdrv].yx.overcurrentIb.value = &g_TelesignalDB[g_TelesignalAddr.overcurrentIb];
+                s_ComProSts[pdrv].yx.overcurrentIc.value = &g_TelesignalDB[g_TelesignalAddr.overcurrentIc];
+                s_ComProSts[pdrv].yx.overcurrentI0.value = &g_TelesignalDB[g_TelesignalAddr.overcurrentI0];
+                s_ComProSts[pdrv].yx.fault_removal.value = &g_TelesignalDB[g_TelesignalAddr.fault_removal];
+                s_ComProSts[pdrv].yx.fault_isolated.value = &g_TelesignalDB[g_TelesignalAddr.fault_isolated];
+                s_ComProSts[pdrv].yx.p2p_change_power.value = &g_TelesignalDB[g_TelesignalAddr.p2p_change_power];
+                s_ComProSts[pdrv].yx.switch_refused.value = &g_TelesignalDB[g_TelesignalAddr.switch_refused];
+                s_ComProSts[pdrv].yx.p2p_communication_abnormal.value = &g_TelesignalDB[g_TelesignalAddr.p2p_communication_abnormal];
+                s_ComProSts[pdrv].yx.p2p_work_situation.value = &g_TelesignalDB[g_TelesignalAddr.p2p_work_situation];
+            
                 s_ComProSts[pdrv].yc.Ia = &g_TelemetryDB[g_TelemetryAddr.Ia];
                 s_ComProSts[pdrv].yc.Ib = &g_TelemetryDB[g_TelemetryAddr.Ib];
                 s_ComProSts[pdrv].yc.Ic = &g_TelemetryDB[g_TelemetryAddr.Ic];
                 s_ComProSts[pdrv].yc.I0 = &g_TelemetryDB[g_TelemetryAddr.I0];
                 s_ComProSts[pdrv].yc.Uab = &g_TelemetryDB[g_TelemetryAddr.Uab];
-                s_ComProSts[pdrv].yc.Ubc = &g_TelemetryDB[g_TelemetryAddr.UCB];
                 s_ComProSts[pdrv].yc.Uac = &g_TelemetryDB[g_TelemetryAddr.Uac];
                 s_ComProSts[pdrv].yc.U0 = &g_TelemetryDB[g_TelemetryAddr.U0];   
+   
+                s_ComProSts[pdrv].Val.action_type = &g_pFixedValue[DISTRIBUTE_ACTION_TYPE]; 
+                s_ComProSts[pdrv].Val.over_current_val = &g_pFixedValue[DISTRIBUTE_OVER_CURRENT_VAL]; 
+                s_ComProSts[pdrv].Val.overi0_current_val = &g_pFixedValue[DISTRIBUTE_OVERI0_CURRENT_VAL]; 
+                s_ComProSts[pdrv].Val.have_current_val = &g_pFixedValue[DISTRIBUTE_HAVE_CURRENT_VAL]; 
+                s_ComProSts[pdrv].Val.over_voltage_val = &g_pFixedValue[DISTRIBUTE_OVER_VOLTAGE_VAL]; 
+                s_ComProSts[pdrv].Val.over_no_voltage_val = &g_pFixedValue[DISTRIBUTE_OVER_NO_VOLTAGE_VAL]; 
+                s_ComProSts[pdrv].Val.power_change_load = &g_pFixedValue[DISTRIBUTE_POWER_CHANGE_LOAD];
             
                 s_ComProSts[pdrv].opening = &rt_hw_do_operate;
                 s_ComProSts[pdrv].closing = &rt_hw_do_operate;
-
+                s_ComProSts[pdrv].outputSoe = &DBWriteSOE;
+                s_ComProSts[pdrv].outputFevent = &DBWriteFEVENT;
+                
                 //智能分布式投退
                 addtimers(pdrv,&s_FunctionalRetreat[pdrv].valstr.gTime);
                 //状态判断
@@ -1011,14 +1176,22 @@ void distributClock(void)
         switch(pdrv)
         {
             case DISTRIBUT_DEV0:
+                if(g_Parameter[CFG_PRO_VOL_N] == 0)
+                {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
+                else
+                {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UCB];}
+                
                 distributUpdataDevStorage(pdrv);//更新仓库
                 functional_retreat(pdrv);//智能分布式投退
-                selfstate_judge(pdrv);//状态判断
-                direction_judge(pdrv);//方向判断
-                fault_isolation(pdrv);//故障隔离
-                change_power(pdrv);//转供电
-                distributUpdataSelfState(pdrv);//更新自身状态
+                if(g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)
+                {
+                    selfstate_judge(pdrv);//状态判断
+                    direction_judge(pdrv);//方向判断
+                    fault_isolation(pdrv);//故障隔离
+                    change_power(pdrv);//转供电
 //                self_healing(pdrv);//自愈
+                }
+                distributUpdataSelfState(pdrv);//更新自身状态
             break;
         }
     }
@@ -1034,6 +1207,16 @@ void distributClock(void)
 void distributReset(uint8_t pdrv)
 {
     s_SelfSts[pdrv].comstr.variableState = 0;
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIa,OFF);
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIb,OFF);
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentIc,OFF);
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.overcurrentI0,OFF); 
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.closingLocked,OFF);  
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.openingLocked,OFF); 
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF); 
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.switch_refused,OFF);    
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_removal,OFF);
+    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.fault_isolated,OFF);
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

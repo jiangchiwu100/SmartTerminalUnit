@@ -228,15 +228,24 @@ static void rt_protect_thread_entry(void *param)
         {
 			g_ThreadRunSta |= THREAD_RUN_PROTECT;
 			
-            //if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
+//            if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
             {
                 /* 断路器主保护逻辑 */ 					
                 BreakerCtrlClock();	  					    
             }
-            //else
+//            else
             {
                 /* 负荷开关主保护逻辑 */ 
                 LoadSwitchCtrlClock();  
+            }
+            
+            if(g_Parameter[DISTRIBUTE_SWITCH] == SWITCH_ON)
+            {
+                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,ON);
+            }
+            else
+            {
+                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,OFF);            
             }
 
             distributClock();			

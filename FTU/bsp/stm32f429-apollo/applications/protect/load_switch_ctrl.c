@@ -1455,14 +1455,22 @@ void LoadSwitchCtrlClock(void)
         switch(pdrv)
         {
         case LOAD_DEV0:
-            if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+            if(g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)
             {
-                s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+                s_ComProSts[pdrv].WorkMode = TYPE_LOADSWTICH_NONE;
             }
             else
             {
-                s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+                if(*(s_ComProSts[pdrv].yx.swtichclass.value)==OFF)
+                {
+                    s_ComProSts[pdrv].WorkMode = *(s_ComProSts[pdrv].pBreakWorkMode);
+                }
+                else
+                {
+                    s_ComProSts[pdrv].WorkMode = TYPE_BREAKER_NUM + *(s_ComProSts[pdrv].pLoadWorkMode);
+                }           
             }
+            
             if(g_Parameter[CFG_PRO_VOL_N] == 0)
             {s_ComProSts[pdrv].yc.Ucb = &g_TelemetryDB[g_TelemetryAddr.UAB];}
             else

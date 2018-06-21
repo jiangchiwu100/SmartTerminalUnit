@@ -117,8 +117,14 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 1,  "对等通讯投退", &g_TelesignalAddr.p2p_communication_switch,    NULL,          {"退出", "投入"},  {"退出", "投入"}},	
     { 0,  "故障切除",     &g_TelesignalAddr.fault_removal,               NULL,          {"复位","故障切除"},  {"复位","故障切除"}},	
     { 0,  "故障隔离",     &g_TelesignalAddr.fault_isolated,              NULL,          {"复位","故障隔离"},  {"复位","故障隔离"}},	
+    { 0,  "对等转供电",   &g_TelesignalAddr.p2p_change_power,            NULL,          {"复位","动作"},   {"复位","动作"}},	
     { 0,  "开关拒动",     &g_TelesignalAddr.switch_refused,              NULL,          {"复位","开关拒动"},  {"复位","开关拒动"}},	
     { 0,  "对等通讯异常", &g_TelesignalAddr.p2p_communication_abnormal,  NULL,          {"复位","异常"},  {"复位","异常"}},	
+    { 0,  "P2P工作情况",  &g_TelesignalAddr.p2p_work_situation,          NULL,          {"异常","正常"},  {"异常","正常"}},
+    { 0,  "对等A相过流",  &g_TelesignalAddr.overcurrentIa,               NULL,          {"复位","保护"},   {"复位","保护"}},
+    { 0,  "对等B相过流",  &g_TelesignalAddr.overcurrentIb,               NULL,          {"复位","保护"},   {"复位","保护"}},	
+    { 0,  "对等C相过流",  &g_TelesignalAddr.overcurrentIc,               NULL,          {"复位","保护"},   {"复位","保护"}},
+    { 0,  "对等零序过流", &g_TelesignalAddr.overcurrentI0,               NULL,          {"复位","保护"},   {"复位","保护"}},	
 };
 	
 /* 遥测 */
@@ -251,6 +257,7 @@ struct tagValueParaCfg ParameterCfg[] =
 {
 //   使能  菜单编号          名称                             值                         单位      上限        下限   缺省值    数据类型  小数点位数       显示内容           备注  
     { 1,  ME_BASIC_SET,   "操作机构",        &g_Parameter[OPERATING_MECHANISM],          "-",       1,           0,     0,         2,         0,         {"弹簧", "永磁"    },   " "   },    
+    { 1,  ME_BASIC_SET,   "对等通讯投退",    &g_Parameter[DISTRIBUTE_SWITCH],            "-",       1,           0,     0,         2,         0,         {"退", "投",       },   " "    },
     { 1,  ME_BASIC_SET,   "断路器模式",      &g_Parameter[BREAK_WORK_MODE],              "-",       4,           0,     1,         5,         0,         {"无","常规保护","电压时间型","电压电流型","电流计数型"},   " "   },	
     { 1,  ME_BASIC_SET,   "负荷开关模式",    &g_Parameter[LOAD_WORK_MODE],               "-",       4,           0,     0,         5,         0,         {"无","电压时间型","电压电流型","电流计数型","分界"},   " "   },
     { 1,  ME_BASIC_SET,   "负荷侧线电压",    &g_Parameter[CFG_PRO_VOL_N],                "-",       1,           0,     1,         2,         0,         {"UAB", "UCB"},   " "   },     
@@ -474,11 +481,12 @@ struct tagValueParaCfg FixedValueCfg1[] =
     { 1,  LOGICAL_FUN,  "U0保护延时",      &g_FixedValue1[VOLTAGE_U0_TIME],               "S",      99.99f,     0.00f,   1,          0,         3,         {"-",  "-"         },   " "    },
     { 1,  LOGICAL_FUN,  "非遮断投退",      &g_FixedValue1[BREAKING_CURRENT_SWITCH],       "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },	
     { 1,  LOGICAL_FUN,  "非遮断电流",      &g_FixedValue1[BREAKING_CURRENT_VALUE],        "A",     999.99f,     0.00f,   5,          0,         3,         {"-",  "-"         },   " "    },
-	{ 1,  DISTRIBUTE,   "对等通讯投退",    &g_FixedValue1[DISTRIBUTE_SWITCH],             "-",       1,           0,     0,          2,         0,         {"退", "投",       },   " "    },
 	{ 1,  DISTRIBUTE,   "动作类型",        &g_FixedValue1[DISTRIBUTE_ACTION_TYPE],        "-",       1,           0,     0,          2,         0,         {"速动型", "缓动型",},   " "    },
-	{ 1,  DISTRIBUTE,   "对等通讯过流",    &g_FixedValue1[DISTRIBUTE_OVER_CURRENT_VAL],   "A",     99.99f,      0.00f,  5.0f,        0,         0,         {"-",  "-",        },   " "    },
-	{ 1,  DISTRIBUTE,   "对等通讯有压",    &g_FixedValue1[DISTRIBUTE_OVER_VOLTAGE_VAL],   "V",     9999.99f,    0.00f,  176.0f,      0,         0,         {"-",  "-",        },   " "    },
-	{ 1,  DISTRIBUTE,   "对等通讯无压",    &g_FixedValue1[DISTRIBUTE_OVER_NO_VOLTAGE_VAL],"V",     9999.99f,    0.00f,   80.0f,      0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等相间过流",    &g_FixedValue1[DISTRIBUTE_OVER_CURRENT_VAL],   "A",     99.99f,      0.00f,  5.0f,        0,         0,         {"-",  "-",        },   " "    },
+    { 1,  DISTRIBUTE,   "对等零序过流",    &g_FixedValue1[DISTRIBUTE_OVERI0_CURRENT_VAL], "A",     99.99f,      0.00f,  5.0f,        0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等有流",        &g_FixedValue1[DISTRIBUTE_HAVE_CURRENT_VAL],   "A",     99.99f,      0.00f,  0.5f,        0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等有压",        &g_FixedValue1[DISTRIBUTE_OVER_VOLTAGE_VAL],   "V",     9999.99f,    0.00f,  176.0f,      0,         0,         {"-",  "-",        },   " "    },
+	{ 1,  DISTRIBUTE,   "对等无压",        &g_FixedValue1[DISTRIBUTE_OVER_NO_VOLTAGE_VAL],"V",     9999.99f,    0.00f,   80.0f,      0,         0,         {"-",  "-",        },   " "    },
 	{ 1,  DISTRIBUTE,   "转供电负荷",      &g_FixedValue1[DISTRIBUTE_POWER_CHANGE_LOAD],  "A",     9999.99f,    0.00f,   20.0f,      0,         0,         {"-",  "-",        },   " "    },
 }; 
 

@@ -8,8 +8,8 @@
 #include "common_data.h"
 #include "drv_do.h"
 
-
-#define DISTRIBUT_MAXTIMERS (32)
+#define SWITCH_ON  (1.0f)
+#define SWITCH_OFF (0.0f)
 
 #define DISTRIBUT_ENTIMERS 0x80000000
 #define DISTRIBUT_TITIMERS 0x7fffffff
@@ -140,7 +140,25 @@ typedef struct
 typedef struct 
 {
     STelesignalStr switchOpen;             
-    STelesignalStr switchClose;           
+    STelesignalStr switchClose;  
+    STelesignalStr functionHardStrap;
+    STelesignalStr p2p_communication_switch;
+
+    STelesignalStr closingLocked;
+    STelesignalStr openingLocked;
+    STelesignalStr shortCircuitFault;  
+    STelesignalStr earthingFault;  
+    STelesignalStr protectionAct; 
+    STelesignalStr overcurrentIa;         
+    STelesignalStr overcurrentIb;         
+    STelesignalStr overcurrentIc;         
+    STelesignalStr overcurrentI0;    
+    STelesignalStr fault_removal;
+    STelesignalStr fault_isolated;
+    STelesignalStr p2p_change_power;
+    STelesignalStr switch_refused;
+    STelesignalStr p2p_communication_abnormal;
+    STelesignalStr p2p_work_situation;   
 }TelesignalStr;
 
 typedef struct 
@@ -150,15 +168,27 @@ typedef struct
     float *Ic;                    
     float *I0;                     
     float *Uab;                    
-    float *Ubc;                     
+    float *Ucb;                     
     float *Uac;                    
     float *U0;                                           
 }TelemetryStr;
+
+typedef struct 
+{
+    float *action_type;                       
+    float *over_current_val;                   
+    float *overi0_current_val;                    
+    float *have_current_val;                     
+    float *over_voltage_val;                    
+    float *over_no_voltage_val;                     
+    float *power_change_load;                                                             
+}ValStr;
 
 typedef struct
 {
     TelesignalStr yx;
     TelemetryStr yc;
+    ValStr Val;
     uint16_t fevent_yc_addr[10];
 	float *pWorkMode;
     uint8_t (*opening)(uint16_t addr, uint8_t operateType);

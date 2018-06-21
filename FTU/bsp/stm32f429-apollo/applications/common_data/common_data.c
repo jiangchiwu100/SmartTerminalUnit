@@ -25,7 +25,7 @@
 #include ".\MultiThread\multi_thread.h"
 #include "common_config.h"
 #include "drv_wdg.h"
-
+#include "distributed_interface.h"
 
 /* PUBLIC VARIABLES ---------------------------------------------------------*/
 uint16_t                            g_ThreadRunSta;

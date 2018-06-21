@@ -457,9 +457,14 @@ typedef struct TagTelesignalAddr
 	p2p_communication_switch,                       // 对等通讯投退
 	fault_removal,                                  // 对等通讯故障切除
 	fault_isolated,                                 // 对等通讯故障隔离
+    p2p_change_power,                               // 对等通讯转供电
 	switch_refused,                                 // 开关拒动
-	p2p_communication_abnormal;                     // 对等通讯异常
-	
+	p2p_communication_abnormal,                     // 对等通讯异常
+	p2p_work_situation,                             // 对等通讯工作情况
+    overcurrentIa,                                  // A相过流保护
+    overcurrentIb,                                  // B相过流保护
+    overcurrentIc,                                  // C相过流保护
+    overcurrentI0;                                  // 零序过流保护
 }TelesignalAddr;
 
 #define TELESIGNAL_TOTAL_NUM (sizeof(TelesignalAddr)/sizeof(rt_uint16_t))
@@ -601,6 +606,7 @@ enum AddrRunParameter
     CFG_POW_VOL_CB,                       // 功率电压CB
     CFG_PRO_VOL_N,                        // N侧保护电压
     OPERATING_MECHANISM,                  // 操作机构(0-弹簧/1-永磁)
+    DISTRIBUTE_SWITCH,                    // 对等通讯模式
 	BREAK_WORK_MODE,                      // 断路器工作模式(0-无/1-常规保护/2-电压时间型/3-电压电流型/4-电流计数型)
 	LOAD_WORK_MODE,                       // 负荷开关工作模式(0-无/1-电压时间型/2-电压电流型/3-电流计数型/4-分界负荷开关型)
 	CONNECT_SWITCH_RECOGNIZE,             // 联络开关识别
@@ -849,9 +855,10 @@ enum AddrFixedValue
 	VOLTAGE_U0_TIME,                     // 零序电压延时
 	BREAKING_CURRENT_SWITCH,             // 非遮断电流投退
 	BREAKING_CURRENT_VALUE,        		 // 非遮断电流
-	DISTRIBUTE_SWITCH,                   // 分布式投退
 	DISTRIBUTE_ACTION_TYPE,              // 动作类型（速动型、缓动型）
-	DISTRIBUTE_OVER_CURRENT_VAL,         // 分布式过流定值
+	DISTRIBUTE_OVER_CURRENT_VAL,         // 分布式相间过流定值
+    DISTRIBUTE_OVERI0_CURRENT_VAL,       // 分布式零序过流定值
+	DISTRIBUTE_HAVE_CURRENT_VAL,         // 分布式有流定值    
 	DISTRIBUTE_OVER_VOLTAGE_VAL,         // 分布式有压定值
     DISTRIBUTE_OVER_NO_VOLTAGE_VAL,      // 分布式无压定值	
 	DISTRIBUTE_POWER_CHANGE_LOAD,        // 分布式转供电负荷

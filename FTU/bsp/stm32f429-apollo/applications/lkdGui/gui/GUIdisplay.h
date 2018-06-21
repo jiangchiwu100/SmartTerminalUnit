@@ -122,6 +122,7 @@ static void MenuM1Fun(void);
 		static void ZeroSequenceOverFun(void);
 		static void CutoutSwitchFun(void);
 	static void LogicalFunFun(void);	//逻辑功能
+    static void PToPComFun(void);	    //对等通信
 	static void OverLineWarnFun(void);	//越线报警
 	static void OverLoadMuchFun(void);	//重过载
 	static void OverLoadFun(void);		//过负荷

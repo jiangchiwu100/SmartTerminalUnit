@@ -188,7 +188,7 @@ static void Dzhi0TypeRemap(uint16_t i,uint16_t *type)
 		case DZ0_ZERODRIFT:*type = ME_ZERODRIFT;break;
 		case DZ0_DEADEZONE:*type = ME_DEADEZONE;break;
 		case DZ0_SERIAL:*type = ME_UART_COM;break;
-		case DZ0_INTERNET:*type = ME_NET_COM;break;
+		case DZ0_INTERNET:*type = ME_NET_COM;break;      
 		default:*type = ME_BASIC_SET;break;
 	}
 }
@@ -253,6 +253,7 @@ static void Dzhi1TypeRemap(uint16_t i,uint16_t *type)
 		case DZ1_FAULT_SWITCH:*type = FAULT_SWITCH;break;
 		case DZ1_OTHER_PROTEC:*type = OTHER_PROTEC;break;
 		case DZ1_LOGICAL_FUN:*type = LOGICAL_FUN;break;
+        case DZ1_PTOPCOM_FUN:*type = DISTRIBUTE;break;
 		default:*type = INTERGHASE;break;
 	}
 }
