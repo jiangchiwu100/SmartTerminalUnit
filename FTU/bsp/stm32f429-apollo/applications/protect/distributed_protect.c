@@ -134,10 +134,6 @@ static void functional_retreat(uint8_t pdrv)
         {
             *(s_FunctionalRetreat->valstr.gTime) = 0;
         }
-        else if((*(s_FunctionalRetreat->valstr.gTime)&DISTRIBUT_TITIMERS)>2000)
-        {
-            s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT;
-        }
     }
     else
     {
@@ -180,7 +176,8 @@ static void functional_retreat(uint8_t pdrv)
     {
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_EXIT_SELF;    
     }
-    if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    //if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
     {//分布式模式切换
         addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_work_situation,OFF);        
     }
@@ -197,9 +194,7 @@ static void functional_retreat(uint8_t pdrv)
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
 static void selfstate_judge(uint8_t pdrv)
-{    
-    const float factor = 0.9;
-    
+{        
     if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)
     {
         if(!((s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_SWTICHOPEN)||(s_SelfFlag[pdrv]&_DISTRIBUT_FLAG_SWTICHCLOSE)))//记录变化前状态
@@ -682,6 +677,47 @@ static void change_power(uint8_t pdrv)
     ListElmt *element;
     DevStr *dev;    
     
+    element = s_ListDevStorage[pdrv].head;
+    while(element != NULL)
+    {
+        dev = (DevStr *)(element->data);
+        if(((dev->comstr.operation&_DISTRIBUT_O_IP) == s_SelfSts[pdrv].ip)&&(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||\
+                        (s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))))//无拒动//无隔离
+        {
+            if((dev->comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
+            {
+                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                {
+                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//控分
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
+                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                }
+            }
+            else if((dev->comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF))//分位
+            {
+                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
+                {
+                    s_ComProSts[pdrv].closing(ADDR_LOGIC_ACT,DO_CLOSE);//控合
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,ON);                    
+                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,OFF);
+                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
+                }
+            }           
+        }
+        if(dev->ip == (s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_IP))
+        {
+            if(((dev->comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||(dev->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))||\
+                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHOPEN))||\
+                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHCLOSE)))
+                //拒动//隔离//分位控分//合位控合
+            {
+                s_SelfSts[pdrv].comstr.operation = 0;
+            }              
+        }
+        element = element->next;
+    }
+    
     if(((*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))&&\
         ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_M)&&(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_VOLTAGE_N))&&\
         ((s_ListDevSupply[pdrv].head != NULL)&&(s_SelfSts[pdrv].steadyState&_DISTRIBUT_S_TRUNK)))//开关合位//双侧有压有链表//主线
@@ -737,47 +773,6 @@ static void change_power(uint8_t pdrv)
                 elementfirst = elementfirst->next;
             }
         }
-    }
-    
-    element = s_ListDevStorage[pdrv].head;
-    while(element != NULL)
-    {
-        dev = (DevStr *)(element->data);
-        if(((dev->comstr.operation&_DISTRIBUT_O_IP) == s_SelfSts[pdrv].ip)&&(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||\
-                        (s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))))//无拒动//无隔离
-        {
-            if((dev->comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == OFF)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == ON))//合位
-            {
-                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
-                {
-                    s_ComProSts[pdrv].opening(ADDR_LOGIC_ACT,DO_OPEN);//控分
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,OFF);                    
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.protectionAct,ON);
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                }
-            }
-            else if((dev->comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(*(s_ComProSts[pdrv].yx.switchOpen.value) == ON)&&(*(s_ComProSts[pdrv].yx.switchClose.value) == OFF))//分位
-            {
-                if(!((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_REQUIRED_ACT)||(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE)))
-                {
-                    s_ComProSts[pdrv].closing(ADDR_LOGIC_ACT,DO_CLOSE);//控合
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,ON);                    
-                    addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_change_power,OFF);
-                    s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_REQUIRED_ACT;
-                }
-            }           
-        }
-        if(dev->ip == (s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_IP))
-        {
-            if(((dev->comstr.variableState&_DISTRIBUT_V_REQUIRED_SPACER)||(dev->comstr.variableState&_DISTRIBUT_V_FAILURE_OPERATE))||\
-                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHOPEN)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHOPEN))||\
-                ((s_SelfSts[pdrv].comstr.operation&_DISTRIBUT_O_SWTICHCLOSE)&&(dev->comstr.variableState&_DISTRIBUT_V_SWTICHCLOSE)))
-                //拒动//隔离//分位控分//合位控合
-            {
-                s_SelfSts[pdrv].comstr.operation = 0;
-            }              
-        }
-        element = element->next;
     }
 }
  
@@ -1033,9 +1028,13 @@ void distributUpdataSelfState(uint8_t pdrv)
 {
     if((g_SelfSts[pdrv].comstr.variableState != s_SelfSts[pdrv].comstr.variableState))
     {
-        g_SelfSts[pdrv].comstr.variableState = s_SelfSts[pdrv].comstr.variableState;
-        //如果不一样发送事件  
-        rt_event_send(&w5500_event, EVENT_GOOSE_HAVE_CHANGE);
+        if(((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)))||
+            ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT))))           
+        {
+            g_SelfSts[pdrv].comstr.variableState = s_SelfSts[pdrv].comstr.variableState;
+            s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT;
+            rt_event_send(&w5500_event, EVENT_GOOSE_HAVE_CHANGE);
+        }
     }
     memcpy(&g_SelfSts[pdrv],&s_SelfSts[pdrv],sizeof(s_SelfSts[pdrv]));    
 }
@@ -1048,6 +1047,7 @@ void distributUpdataSelfState(uint8_t pdrv)
   */
 void distributUpdataQueue(uint8_t pdrv,uint8_t ip,uint32_t *pdata)   
 {
+    rt_kprintf("%d", ip);
     s_StoreQueueMemberStr[pdrv][ip].getflag = ON;
     memcpy(&s_StoreQueueMemberStr[pdrv][ip].comstr,pdata,sizeof(s_StoreQueueMemberStr[pdrv][ip].comstr));   
 }
@@ -1187,7 +1187,7 @@ void distributClock(void)
                 
                 distributUpdataDevStorage(pdrv);//更新仓库
                 functional_retreat(pdrv);//智能分布式投退
-                if((g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)&&(*(s_ComProSts[pdrv].yx.functionHardStrap.value) == SWITCH_ON))
+                if((g_TelesignalDB[g_TelesignalAddr.p2p_work_situation] == ON)&&(*(s_ComProSts[pdrv].yx.functionHardStrap.value) == ON))
                 {
                     selfstate_judge(pdrv);//状态判断
                     direction_judge(pdrv);//方向判断

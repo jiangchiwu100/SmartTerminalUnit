@@ -1791,6 +1791,11 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.ip[1] = (uint8_t)g_Parameter[NET_IP2_1];
     g_EthW5500.ip[2] = (uint8_t)g_Parameter[NET_IP2_2];
     g_EthW5500.ip[3] = (uint8_t)g_Parameter[NET_IP2_3];
+ 
+//    g_EthW5500.ip[0] = 192;
+//    g_EthW5500.ip[1] = 168;
+//    g_EthW5500.ip[2] = 60;
+//    g_EthW5500.ip[3] = 2;
     
     g_EthDP83848.mac[0] = 0x00;
     g_EthDP83848.mac[1] = 0x80;
@@ -1807,37 +1812,37 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.mac[5] = *(rt_uint8_t*)(UID_BASE + 4);
     
     //相同
-    g_EthDP83848.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
-    g_EthDP83848.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
-    g_EthDP83848.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
-    g_EthDP83848.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthDP83848.netmask[0] = 255;
+    g_EthDP83848.netmask[1] = 255;
+    g_EthDP83848.netmask[2] = 255;
+    g_EthDP83848.netmask[3] = 0;
     g_EthDP83848.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
     g_EthDP83848.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
     g_EthDP83848.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
     g_EthDP83848.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
-    g_EthDP83848.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
-    g_EthDP83848.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
-    g_EthDP83848.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
-    g_EthDP83848.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
+    g_EthDP83848.dns[0] = 114;
+    g_EthDP83848.dns[1] = 114;
+    g_EthDP83848.dns[2] = 114;
+    g_EthDP83848.dns[3] = 114;
     g_EthDP83848.remoteip[0] = 192;
     g_EthDP83848.remoteip[1] = 168;
     g_EthDP83848.remoteip[2] = 60;
     g_EthDP83848.remoteip[3] = 115;
     g_EthDP83848.dhcpstatus = 0;
     
-    g_EthW5500.netmask[0] = (uint8_t)g_Parameter[NET_NETMASK_0];
-    g_EthW5500.netmask[1] = (uint8_t)g_Parameter[NET_NETMASK_1];
-    g_EthW5500.netmask[2] = (uint8_t)g_Parameter[NET_NETMASK_2];
-    g_EthW5500.netmask[3] = (uint8_t)g_Parameter[NET_NETMASK_3];
+    g_EthW5500.netmask[0] = 255;
+    g_EthW5500.netmask[1] = 255;
+    g_EthW5500.netmask[2] = 255;
+    g_EthW5500.netmask[3] = 0;
     g_EthW5500.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
     g_EthW5500.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
     g_EthW5500.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
     g_EthW5500.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
-    g_EthW5500.dns[0] = (uint8_t)g_Parameter[NET_DNS_0];
-    g_EthW5500.dns[1] = (uint8_t)g_Parameter[NET_DNS_1];
-    g_EthW5500.dns[2] = (uint8_t)g_Parameter[NET_DNS_2];
-    g_EthW5500.dns[3] = (uint8_t)g_Parameter[NET_DNS_3];
-
+    g_EthW5500.dns[0] = 114;
+    g_EthW5500.dns[1] = 114;
+    g_EthW5500.dns[2] = 114;
+    g_EthW5500.dns[3] = 114;
+    
     g_EthW5500.remoteip[0] = 192;
     g_EthW5500.remoteip[1] = 168;
     g_EthW5500.remoteip[2] = 60;

@@ -682,18 +682,10 @@ enum AddrRunParameter
     NET_IP2_1,                            // IP下
     NET_IP2_2,                            // IP下
     NET_IP2_3,                            // IP下
-    NET_NETMASK_0,                        // 子网掩码
-    NET_NETMASK_1,                        // 子网掩码
-    NET_NETMASK_2,                        // 子网掩码
-    NET_NETMASK_3,                        // 子网掩码
     NET_GATEWAY_0,                        // 网关
     NET_GATEWAY_1,                        // 网关
     NET_GATEWAY_2,                        // 网关
-    NET_GATEWAY_3,                        // 网关
-    NET_DNS_0,                            // DNS
-    NET_DNS_1,                            // DNS
-    NET_DNS_2,                            // DNS
-    NET_DNS_3,                            // DNS    
+    NET_GATEWAY_3,                        // 网关   
     NET_SOURCEADDR,                       // 从站地址
     NET_ASDUADDR,                         // ASDU地址  
     REMOTE_PRO_SWITCH,                    // 遥控保护压板投退

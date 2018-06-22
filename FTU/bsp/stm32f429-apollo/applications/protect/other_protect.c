@@ -231,7 +231,6 @@ static void OverVoltageCheck(struct OverVoltage *over)
 
 				if (*over->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON)
 				{
-                    DBWriteSOE(g_TelesignalAddr.protectionAct, ON);
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
                     DBWriteFEVENT(over->soeAddr,NULL,0);
 				}
@@ -289,7 +288,6 @@ static void DownVoltageCheck(struct OverVoltage *down)
 				
 				if (*down->funSwitch == 1 && g_TelesignalDB[g_TelesignalAddr.functionHardStrap] == ON)
 				{                 
-                    DBWriteSOE(g_TelesignalAddr.protectionAct, ON);
 				    rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN);
                     DBWriteFEVENT(down->soeAddr,NULL,0);
 				}

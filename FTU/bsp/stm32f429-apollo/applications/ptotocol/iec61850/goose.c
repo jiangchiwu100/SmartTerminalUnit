@@ -157,6 +157,7 @@ uint8_t goose_receiver_processe(uint8_t *pbuf, uint8_t *src_ip)
 		//appdata = (uint8_t *)rec->apdu.data;  
 		
 		distributUpdataQueue(0, src_ip[3], rec->apdu.data);
+        
 	}
 	else
 	{
