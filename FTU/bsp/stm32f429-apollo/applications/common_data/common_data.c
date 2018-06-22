@@ -393,7 +393,7 @@ void ParameterCheck(void)
             else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.IcOnce)
             {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I;}
             else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.I0Once)
-            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I_ONE_TURN] / g_Parameter[RATIO_I_SECONDARY]) * RATED_VALUE_I0;}
+            {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_I0_ONE_TURN] / g_Parameter[RATIO_I0_SECONDARY]) * RATED_VALUE_I0;}
             else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UabOnce)
             {TelemetryCfg[i].RatedValue = (g_Parameter[RATIO_U_ONE_TURN] / g_Parameter[RATIO_U_SECONDARY]) * RATED_VALUE_U / 1000.0f;}
             else if(TelemetryCfg[i].pAddr == &g_TelemetryAddr.UbcOnce)
