@@ -1526,7 +1526,8 @@ static void rt_common_data_save_value_default_to_fram(void)
             }
             
             flag = 0;
-
+            
+			rt_led_fast_task();
 			for (i = 0; i < FM25V10_MAX_ADDR; i++)//清除FRAM
 			{
 				rt_device_write(device_fram, 0x01 + i, &flag, 1); 
@@ -1791,11 +1792,6 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.ip[1] = (uint8_t)g_Parameter[NET_IP2_1];
     g_EthW5500.ip[2] = (uint8_t)g_Parameter[NET_IP2_2];
     g_EthW5500.ip[3] = (uint8_t)g_Parameter[NET_IP2_3];
- 
-//    g_EthW5500.ip[0] = 192;
-//    g_EthW5500.ip[1] = 168;
-//    g_EthW5500.ip[2] = 60;
-//    g_EthW5500.ip[3] = 2;
     
     g_EthDP83848.mac[0] = 0x00;
     g_EthDP83848.mac[1] = 0x80;

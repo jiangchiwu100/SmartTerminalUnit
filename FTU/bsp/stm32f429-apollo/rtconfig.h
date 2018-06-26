@@ -380,13 +380,18 @@
 #define INIT_THREAD_PRIORITY                                           (RT_THREAD_PRIORITY_MAX / 2)
 #define INIT_THREAD_TIMESLICE                                          (20)
 
-#define W5500_8080_THREAD_NAME                                         "w5500"
-#define W5500_8080_THREAD_PRIORITY                                     (5)
-#define W5500_8080_THREAD_STACK_SIZE                                   (4096)
-#define W5500_8080_THREAD_TIMESLICE                                    (20)
+#define W5500_UDP_RX_THREAD_NAME                                       "w5500_udp_rx"
+#define W5500_UDP_RX_THREAD_PRIORITY                                   (5)
+#define W5500_UDP_RX_THREAD_STACK_SIZE                                 (4096)
+#define W5500_UDP_RX_THREAD_TIMESLICE                                  (20)
+
+#define W5500_UDP_TX_THREAD_NAME                                       "w5500_udp_tx"
+#define W5500_UDP_TX_THREAD_PRIORITY                                   (7)
+#define W5500_UDP_TX_THREAD_STACK_SIZE                                 (1024)
+#define W5500_UDP_TX_THREAD_TIMESLICE                                  (20)
 
 #define CAL_THREAD_NAME                                                "cal"
-#define CAL_THREAD_PRIORITY                                            (7)
+#define CAL_THREAD_PRIORITY                                            (8)
 #define CAL_THREAD_STACK_SIZE                                          (4096)
 #define CAL_THREAD_TIMESLICE                                           (20)
 

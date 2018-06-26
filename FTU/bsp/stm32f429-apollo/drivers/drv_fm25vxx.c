@@ -72,7 +72,7 @@ rt_uint8_t rt_hw_fram_read_register(rt_uint8_t cmd)
 static int rt_hw_fram_first_clear(void)
 {
 //    rt_uint32_t i = 0;
-//    rt_uint8_t flag = 0;
+    rt_uint8_t flag = 0;
     rt_device_t device = RT_NULL;
 		
     device = rt_device_find(RT_SPI_FRAM_NAME);
@@ -86,7 +86,7 @@ static int rt_hw_fram_first_clear(void)
 
     rt_device_open(device, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);		
     
-//    rt_device_read(device, ADDR_FRAM_UPDATE, &flag, 1); 
+    rt_device_read(device, ADDR_FRAM_UPDATE, &flag, 1); 
 		
 //    if (flag != FRAM_HWFLAG1)
 //    {
@@ -94,12 +94,12 @@ static int rt_hw_fram_first_clear(void)
 //		
 //		if (flag != FRAM_HWFLAG1)
 //		{
-//			flag = 0;
+////			flag = 0;
 
-//			for (i = 0; i < FM25V10_MAX_ADDR; i++)
-//			{
-//				rt_device_write(device, 0x01 + i, &flag, 1); 
-//			}          
+////			for (i = 0; i < FM25V10_MAX_ADDR; i++)
+////			{
+////				rt_device_write(device, 0x01 + i, &flag, 1); 
+////			}          
 //            
 //			flag = FRAM_HWFLAG1;
 

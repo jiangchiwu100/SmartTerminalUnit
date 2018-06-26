@@ -879,7 +879,7 @@ void other_protect_clock(void)
     ComunicatLock();   
  
     /* 系统自检 */
-    SysMonitorTask();	
+    //SysMonitorTask();	
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

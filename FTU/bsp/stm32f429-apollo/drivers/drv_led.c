@@ -102,6 +102,31 @@ void rt_hw_alarm_led_operate(rt_uint8_t act)
     }
 }
 
+void rt_led_fast_task()
+{
+    static rt_uint32_t s_run_counter;
+    
+	while(1)
+	{
+		if (s_run_counter == 100)
+		{
+			pin_status[INDEX_BOARD_RUN_LED].status = !pin_status[INDEX_BOARD_RUN_LED].status;
+			//pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
+			rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOARD_RUN_LED], sizeof(struct rt_device_pin_status));
+			//rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
+		}
+		else if (s_run_counter == 200)
+		{
+			s_run_counter = 0;
+			pin_status[INDEX_BOARD_RUN_LED].status = !pin_status[INDEX_BOARD_RUN_LED].status;
+			//pin_status[INDEX_BOTTOM_RUN_LED].status = !pin_status[INDEX_BOTTOM_RUN_LED].status;
+			rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOARD_RUN_LED], sizeof(struct rt_device_pin_status));
+			//rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_RUN_LED], sizeof(struct rt_device_pin_status));
+		}    
+
+		s_run_counter++;	
+	}
+}
 /**
   * @brief : led task
   * @param : [none]

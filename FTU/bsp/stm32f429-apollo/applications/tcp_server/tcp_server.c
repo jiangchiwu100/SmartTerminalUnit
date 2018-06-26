@@ -49,6 +49,9 @@ static unsigned short W5500_UDP_TxLen; // TCP服务器发送数据长度
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 
 #ifdef RT_USING_W5500
+uint8_t socketNO = UDPSERVER2404_SOCKET1;
+uint8_t goose_have_change = 0;
+uint8_t defautip[4];// = {g_EthW5500.ip[0], g_EthW5500.ip[1], g_EthW5500.ip[2], 255};	
 /**
   * @brief : Initiliaztion the tcp server of W5500.
   * @param : none
@@ -66,8 +69,31 @@ static inline void w5500_udp_init(void)
 //    }
     memset(W5500_UDP_RxBuf, 0, UDP_8080_RX_BUFSIZE); // 数据接收缓冲区清零
     memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE); // 数据发送缓冲区清零
-}
+	
+	defautip[0] = g_EthW5500.ip[0];
+	defautip[1] = g_EthW5500.ip[1];
+	defautip[2] = g_EthW5500.ip[2];
+	defautip[3] = 255;
+}	
 
+void rt_w5500_tx_tick(void)
+{
+	if (g_TelesignalDB[g_TelesignalAddr.p2p_communication_switch] != ON)
+	{
+	    return;
+	}
+	
+	W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+	if (goose_have_change)
+	{
+		goose_have_change = 0;
+	}   
+	
+	if (W5500_UDP_TxBuf[0])
+	{	
+		rt_event_send(&w5500_event, EVENT_RUN);
+	}
+}
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
   * @brief : The thread body of tcp server for W5500.
@@ -75,16 +101,13 @@ static inline void w5500_udp_init(void)
   * @return: none
   * @updata: [2017-12-07][Lexun][make the code cleanup]
   */  
-void rt_w5500_udp_thread_entry(void *param)
+void rt_w5500_udp_rx_thread_entry(void *param)
 {
     rt_err_t result;
     int32_t ret;
-    uint8_t socketNO = UDPSERVER2404_SOCKET1;
     uint16_t length = 0;
-	uint8_t goose_have_change = 0;
     uint8_t buf[256];
     uint8_t srcip[4];
-	uint8_t defautip[4] = {g_EthW5500.ip[0],g_EthW5500.ip[1],g_EthW5500.ip[2],255};	
     uint16_t destport;	
     w5500_udp_init();
 	
@@ -92,40 +115,14 @@ void rt_w5500_udp_thread_entry(void *param)
     setSn_IMR(socketNO, Sn_IR_RECV); //使能接收中断
 	
     for (;;)
-    {   		
-        result = rt_event_recv(&w5500_event, EVENT_REC_IRQ_W5500 | EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL); 
-		
+    {   	 	
 		switch (getSn_SR(socketNO))
 		{
 			case SOCK_UDP:
-				if ((w5500_event.set & EVENT_RUN) || (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE))
-				{
-					if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
-					{
-						goose_have_change = 1;
-					    w5500_event.set &= ~EVENT_GOOSE_HAVE_CHANGE;
-					}
-					
-					if (w5500_event.set & EVENT_RUN)
-					{
-					    w5500_event.set &= ~EVENT_RUN;
-					}					
-					
-					W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
-					
-					if (goose_have_change)
-					{
-						goose_have_change = 0;
-					}
-					
-					if (W5500_UDP_TxBuf[0])
-					{
-						w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
-						memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
-					}					
-				}	
-				
-				if (w5500_event.set & EVENT_REC_IRQ_W5500)						
+				result = rt_event_recv(&w5500_event, EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE | EVENT_REC_IRQ_W5500, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL);
+
+			    //if (result == RT_EOK)
+			    if (w5500_event.set & EVENT_REC_IRQ_W5500)						
 				{
 					w5500_event.set &= ~EVENT_REC_IRQ_W5500;	
 					
@@ -146,14 +143,25 @@ void rt_w5500_udp_thread_entry(void *param)
 						}
 						else
 						{
-							//goose_receiver_processe(W5500_UDP_RxBuf, srcip);
-                            rt_kprintf("%d", srcip[3]); 
-                            srcip[3] = 0;                            
+							//rt_kprintf("%d", srcip[3]);
+							goose_receiver_processe(W5500_UDP_RxBuf, srcip);
+                                                         
 						}						
 					}										
 				}				
+				else if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
+				{
+					goose_have_change = 1;
+					w5500_event.set &= ~EVENT_GOOSE_HAVE_CHANGE;									
+				}	
+                else if (w5500_event.set & EVENT_RUN)
+				{
+					w5500_event.set &= ~EVENT_RUN;
+					w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
+					memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);									
+				}					
 
-			case SOCK_CLOSED:				
+			case SOCK_CLOSED:	
 				if ((ret = w5500_socket(socketNO, Sn_MR_UDP, 8080, 0)) != socketNO)
 				{
 					
@@ -166,6 +174,53 @@ void rt_w5500_udp_thread_entry(void *param)
 		}
     }
 }
+
+/**
+  * @brief : The thread body of udp rx for W5500.
+  * @param : none
+  * @return: none
+  * @updata: [2018-04-18][Sxr][new]
+  */  
+//void rt_w5500_udp_tx_thread_entry(void *param)
+//{
+//    rt_err_t result;
+//    int32_t ret;
+//    uint8_t socketNO = UDPSERVER2404_SOCKET1;	
+//	uint8_t goose_have_change = 0;
+//	uint8_t defautip[4] = {g_EthW5500.ip[0],g_EthW5500.ip[1],g_EthW5500.ip[2],255};	
+
+//    for (;;)
+//	{
+//    	result = rt_event_recv(&w5500_event, EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL); 
+//	
+//		if (((w5500_event.set & EVENT_RUN) || (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)))
+//		{
+//			if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
+//			{
+//				goose_have_change = 1;
+//				w5500_event.set &= ~EVENT_GOOSE_HAVE_CHANGE;
+//			}
+//			
+//			if (w5500_event.set & EVENT_RUN)
+//			{
+//				w5500_event.set &= ~EVENT_RUN;
+//			}					
+//			
+////			W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+////			
+////			if (goose_have_change)
+////			{
+////				goose_have_change = 0;
+////			}
+////			
+////			if (W5500_UDP_TxBuf[0] && udp_link == 0x55)
+////			{
+////				w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
+////				memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
+////			}					
+//		}		
+//	}
+//}
 
 /**
   * @brief : Check the link state of tcp server for W5500.

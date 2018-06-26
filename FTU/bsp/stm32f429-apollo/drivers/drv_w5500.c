@@ -31,8 +31,8 @@ static LL_DMA_InitTypeDef LL_DMA_InitStructure;
 static LL_DMA_InitTypeDef LL_DMA_InitStructure_Write;
 
 #define DATA_BUF_SIZE   1024
-uint8_t pTmpBuf1[DATA_BUF_SIZE + 3];
-uint8_t pTmpBuf2[DATA_BUF_SIZE + 3];
+uint8_t *pTmpBuf1;
+uint8_t *pTmpBuf2;
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
   * @brief  w5500 device select.
@@ -99,6 +99,8 @@ static void w5500_config(void)
 
 void spi_dma_write(uint8_t* Addref, uint8_t* pTxBuf, uint16_t tx_len)
 {
+//	rt_sem_take(&w5500_sem, RT_WAITING_FOREVER);
+	
 	uint16_t i;
 	memset(pTmpBuf1, 0, tx_len + 3);
     
@@ -148,10 +150,14 @@ void spi_dma_write(uint8_t* Addref, uint8_t* pTxBuf, uint16_t tx_len)
     LL_SPI_DisableDMAReq_RX(SPI2);
     LL_SPI_DisableDMAReq_TX(SPI2);
     LL_SPI_Disable(SPI2);
+	
+//	rt_sem_release(&w5500_sem);
 }
 
 void spi_dma_read(uint8_t* Addref, uint8_t* pRxBuf, uint16_t rx_len)
 {
+//	rt_sem_take(&w5500_sem, RT_WAITING_FOREVER);
+	
 	uint16_t i;
 	memset(pTmpBuf1, 0, rx_len + 3);
 	memset(pTmpBuf2, 0, rx_len + 3);
@@ -198,6 +204,8 @@ void spi_dma_read(uint8_t* Addref, uint8_t* pRxBuf, uint16_t rx_len)
     LL_SPI_Disable(SPI2);    
     
     memcpy(pRxBuf, pTmpBuf2 + 3, rx_len);
+	
+//	rt_sem_release(&w5500_sem);
 }
 
 /**
@@ -240,6 +248,25 @@ static rt_size_t rt_hw_w5500_write(rt_device_t dev, rt_off_t addr, const void* b
     return(RT_EOK);		
 }
 
+uint8_t SPI2_SendByte(uint8_t txData)
+{
+    uint8_t rxdata;    
+    while (!LL_SPI_IsActiveFlag_TXE(SPI2));
+    LL_SPI_TransmitData8(SPI2, txData);
+    
+    while (!LL_SPI_IsActiveFlag_RXNE(SPI2));
+    rxdata = LL_SPI_ReceiveData8(SPI2);    
+    return rxdata;
+}
+
+uint8_t  IINCHIP_SpiSendData(uint8_t dat)
+{
+    //rt_sem_take(&w5500_sem, RT_WAITING_FOREVER);
+    
+	return( SPI2_SendByte(dat));
+	
+	//rt_sem_release(&w5500_sem);
+}
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
@@ -264,10 +291,14 @@ uint8_t WIZCHIP_READ(uint32_t AddrSel)
       #error "Unsupported _WIZCHIP_IO_SPI_ in W5500 !!!"
    #endif
 #if   !defined(SPI_DMA) 
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
-    ret = WIZCHIP.IF.SPI._read_byte();
+//    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
+//    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
+//    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
+//    ret = WIZCHIP.IF.SPI._read_byte();
+   IINCHIP_SpiSendData( (AddrSel & 0x00FF0000)>>16);// Address byte 1
+   IINCHIP_SpiSendData( (AddrSel & 0x0000FF00)>> 8);// Address byte 2
+   IINCHIP_SpiSendData( (AddrSel & 0x000000F8))    ;// Data read command and Read data length 1
+   ret = IINCHIP_SpiSendData(0x00);             // Data read (read 1byte data)	
 #else
    uint8_t spi_data[3];
    spi_data[0] = (AddrSel & 0x00FF0000) >> 16;
@@ -317,10 +348,14 @@ void WIZCHIP_WRITE(uint32_t AddrSel, uint8_t wb)
    #endif
 
 #if   !defined(SPI_DMA)	
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
-    WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
-    WIZCHIP.IF.SPI._write_byte(wb);
+//	WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
+//	WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
+//	WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
+//	WIZCHIP.IF.SPI._write_byte(wb);
+   IINCHIP_SpiSendData((AddrSel & 0x00FF0000)>>16);// Address byte 1
+   IINCHIP_SpiSendData((AddrSel & 0x0000FF00)>> 8);// Address byte 2
+   IINCHIP_SpiSendData((AddrSel & 0x000000F8) + 4);    // Data write command and Write data length 1
+   IINCHIP_SpiSendData(wb); 	
 #else
    uint8_t spi_data[3];
    spi_data[0] = (AddrSel & 0x00FF0000) >> 16;
@@ -365,13 +400,20 @@ void WIZCHIP_READ_BUF (uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
       AddrSel |= (_W5500_SPI_READ_ | _W5500_SPI_VDM_OP_);
 
 	#if   !defined(SPI_DMA) 
-   	  WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
-      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
-      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
-      for (i = 0; i < len; i++)
-	    {
-			    pBuf[i] = WIZCHIP.IF.SPI._read_byte();
-			}
+//   	  WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
+//      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
+//      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
+//      for (i = 0; i < len; i++)
+//	    {
+//			    pBuf[i] = WIZCHIP.IF.SPI._read_byte();
+//			}
+		IINCHIP_SpiSendData( (AddrSel & 0x00FF0000)>>16);		// 通过SPI发送16位地址段给MCU
+		IINCHIP_SpiSendData( (AddrSel & 0x0000FF00)>> 8);		// 
+		IINCHIP_SpiSendData( (AddrSel & 0x000000F8));    		// 设置SPI为读操作
+		for(i = 0; i < len; i++)                    	// 将buf中的数据通过SPI发送给MCU
+		{
+		    pBuf[i] = IINCHIP_SpiSendData(0x00);
+		}	
 	#else
 		uint8_t spi_data[3];
 		spi_data[0] = (AddrSel & 0x00FF0000) >> 16;
@@ -461,14 +503,21 @@ void WIZCHIP_WRITE_BUF(uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
       AddrSel |= (_W5500_SPI_WRITE_ | _W5500_SPI_VDM_OP_);
 
    #if   !defined(SPI_DMA) 
-   	  WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
-      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
-      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
-	
-      for (i = 0; i < len; i++)
-	    {
-          WIZCHIP.IF.SPI._write_byte(pBuf[i]);
-			}
+//   	  WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
+//      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
+//      WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
+//	
+//      for (i = 0; i < len; i++)
+//	    {
+//          WIZCHIP.IF.SPI._write_byte(pBuf[i]);
+//			}
+	   IINCHIP_SpiSendData( (AddrSel & 0x00FF0000)>>16);// Address byte 1
+	   IINCHIP_SpiSendData( (AddrSel & 0x0000FF00)>> 8);// Address byte 2
+	   IINCHIP_SpiSendData( (AddrSel & 0x000000F8) + 4);    // Data write command and Write data length 1
+	   for(i = 0; i < len; i++)                // Write data in loop
+	   {
+		   IINCHIP_SpiSendData(pBuf[i]);
+	   }	
 	#else
 	   uint8_t spi_data[3];
 	   spi_data[0] = (AddrSel & 0x00FF0000) >> 16;
@@ -875,7 +924,9 @@ int rt_hw_w5500_init(void)
     uint8_t memsize[2][8] = {{4,2,2,2,2,2,1,1}, {4,2,2,2,2,2,1,1}};
     uint8_t tmp;
     uint32_t tickstart = 0;
-       
+    pTmpBuf1 = rt_malloc(DATA_BUF_SIZE + 3);
+	pTmpBuf2 = rt_malloc(DATA_BUF_SIZE + 3);	
+		
     static rt_device_t device;	
     static struct rt_device_pin *w5500_irq_pin;	
 

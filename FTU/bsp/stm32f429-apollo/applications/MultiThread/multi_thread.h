@@ -61,11 +61,12 @@ extern struct rt_event slave101_event;
 extern struct rt_event slave104_event;
 extern struct rt_event sd2405_event;
 extern struct rt_event w5500_event; // w5500
+extern struct rt_event w5500_irq_event; // w5500
 
 extern struct rt_semaphore w5500_sem; 
 extern struct rt_semaphore protect_sem; 
 extern struct rt_semaphore watch_sem;
-
+extern struct rt_messagequeue mq;
 /* PUBLIC FUNCTIONS ----------------------------------------------------------*/
 extern int rt_multi_thread_start(void);
 

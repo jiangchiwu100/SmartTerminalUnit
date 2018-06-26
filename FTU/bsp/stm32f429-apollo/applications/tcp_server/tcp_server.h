@@ -33,7 +33,9 @@
 
 
 /* PUBLIC FUNCTION -----------------------------------------------------------*/
-extern void rt_w5500_udp_thread_entry(void *param); // UDP任务线程 
+extern void rt_w5500_udp_rx_thread_entry(void *param); // UDP任务线程 
+extern void rt_w5500_udp_tx_thread_entry(void *param);
+extern void rt_w5500_tx_tick(void);
 extern void rt_w5500_tcpserver_thread_entry(void *param); // TCP服务器任务线程 
 extern uint8_t w5500_tcpserver_linkstate(void); // 判断链路状态
 extern void w5500_tcpserver_disconnect(void); // 主动断开链路

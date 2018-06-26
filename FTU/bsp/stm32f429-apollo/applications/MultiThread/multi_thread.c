@@ -80,12 +80,20 @@ static rt_uint8_t rt_thread_dp83848_stack[DP83848_2404_THREAD_STACK_SIZE];
 #endif /* END RT_USING_DP83848 */
 
 #if RT_USING_W5500 
-static struct rt_thread rt_thread_w5500;
-static rt_uint8_t rt_thread_w5500_stack[W5500_8080_THREAD_STACK_SIZE];
+static struct rt_thread rt_thread_w5500_udp_rx;
+static rt_uint8_t rt_thread_w5500_udp_rx_stack[W5500_UDP_RX_THREAD_STACK_SIZE];
+static struct rt_thread rt_thread_w5500_udp_tx;
+static rt_uint8_t rt_thread_w5500_udp_tx_stack[W5500_UDP_RX_THREAD_STACK_SIZE];
 struct rt_semaphore w5500_sem; // w5500 semaphore
 struct rt_event w5500_event; // w5500
+struct rt_event w5500_irq_event; // w5500
 //static struct rt_thread *rt_thread_w5500;
 //static rt_uint8_t *rt_thread_w5500_stack;
+/* 消息队列控制块 */
+struct rt_messagequeue mq;
+/* 消息队列中用到的放置消息的内存池 */
+char msg_pool[20];
+
 #endif /* END RT_USING_W5500 */
 
 #if RT_USING_CAL
@@ -401,13 +409,13 @@ static void rt_ftuidle_thread_entry(void *param)
 {   
 	static uint8_t s_run_state = 0;
 
-    file_operate_Init();
+    //file_operate_Init();
     
     for (;;)
     {      
 		g_ThreadRunSta |= THREAD_RUN_IDLE;
 		
-        file_operate();  
+        //file_operate();  
 
         if (s_run_state == 0)
         {   
@@ -596,23 +604,40 @@ static void w5500_8080_thread_start(void *param)
     rt_err_t result = RT_EOK;
 	
     /* initialize thread */
-    result = rt_thread_init(&rt_thread_w5500,
-                            W5500_8080_THREAD_NAME, 
-                            rt_w5500_udp_thread_entry,
+    result = rt_thread_init(&rt_thread_w5500_udp_rx,
+                            W5500_UDP_RX_THREAD_NAME, 
+                            rt_w5500_udp_rx_thread_entry,
                             RT_NULL,
-                            &rt_thread_w5500_stack[0],
-                            sizeof(rt_thread_w5500_stack),
-                            W5500_8080_THREAD_PRIORITY,
-                            W5500_8080_THREAD_TIMESLICE);
+                            &rt_thread_w5500_udp_rx_stack[0],
+                            sizeof(rt_thread_w5500_udp_rx_stack),
+                            W5500_UDP_RX_THREAD_PRIORITY,
+                            W5500_UDP_RX_THREAD_TIMESLICE);
 
     /* startup */
     RT_ASSERT(result == RT_EOK);
 
-    result = rt_thread_startup(&rt_thread_w5500);
+    result = rt_thread_startup(&rt_thread_w5500_udp_rx);
 														
     RT_ASSERT(result == RT_EOK);
     THREAD_PRINTF("tcp server(w5500) thread start \r\n");
-									 
+
+//    /* initialize thread */
+//    result = rt_thread_init(&rt_thread_w5500_udp_tx,
+//                            W5500_UDP_TX_THREAD_NAME, 
+//                            rt_w5500_udp_tx_thread_entry,
+//                            RT_NULL,
+//                            &rt_thread_w5500_udp_tx_stack[0],
+//                            sizeof(rt_thread_w5500_udp_tx_stack),
+//                            W5500_UDP_TX_THREAD_PRIORITY,
+//                            W5500_UDP_TX_THREAD_TIMESLICE);
+
+//    /* startup */
+//    RT_ASSERT(result == RT_EOK);
+
+//    result = rt_thread_startup(&rt_thread_w5500_udp_tx);
+//														
+//    RT_ASSERT(result == RT_EOK);
+//    THREAD_PRINTF("udp rx(w5500) thread start \r\n");								
 #else
     rt_thread_t tid; 
 
@@ -1164,7 +1189,16 @@ int rt_multi_event_init(void)
       #if APP_DEBUG   
         THREAD_PRINTF("w5500_event rt_event failed.\n");
       #endif /* APP_DEBUG */  
-    } 		
+    } 	
+
+    result = rt_event_init(&w5500_irq_event, "w5500", RT_IPC_FLAG_PRIO);
+    
+    if (result != RT_EOK)
+    {
+      #if APP_DEBUG   
+        THREAD_PRINTF("w5500_irq_event rt_event failed.\n");
+      #endif /* APP_DEBUG */  
+    } 	
   #endif /* RT_USING_W5500 */ 
 	
     return(RT_EOK);    
@@ -1196,7 +1230,11 @@ int rt_multi_sem_init(void)
     if (result != RT_EOK)
     {
         THREAD_PRINTF("w5500_sem semaphore failed.\n");
-    }  
+    }
+    else
+	{
+	    rt_sem_release(&w5500_sem);
+	}		
   #endif /* RT_USING_W5500 */    
 
   #if RT_USING_WATCH    
@@ -1206,8 +1244,9 @@ int rt_multi_sem_init(void)
     {
         THREAD_PRINTF("watch_sem semaphre failed.\n");
     } 
-  #endif /* RT_USING_WATCH */   
-    return(RT_EOK);    
+  #endif /* RT_USING_WATCH */  
+			   
+    return(RT_EOK); 
 }
 INIT_BOARD_EXPORT(rt_multi_sem_init);
 

@@ -464,7 +464,7 @@ static void fault_isolation(uint8_t pdrv)
                     {
                         *(s_FaultIsolation->valstr.gTime) = DISTRIBUT_ENTIMERS;//启动定时
                     }
-                    if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 10)//过流20ms
+                    if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 20)//过流20ms
                     {                 
                         if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_POSITIVE)//正向
                         {
@@ -1047,7 +1047,6 @@ void distributUpdataSelfState(uint8_t pdrv)
   */
 void distributUpdataQueue(uint8_t pdrv,uint8_t ip,uint32_t *pdata)   
 {
-    rt_kprintf("%d", ip);
     s_StoreQueueMemberStr[pdrv][ip].getflag = ON;
     memcpy(&s_StoreQueueMemberStr[pdrv][ip].comstr,pdata,sizeof(s_StoreQueueMemberStr[pdrv][ip].comstr));   
 }
