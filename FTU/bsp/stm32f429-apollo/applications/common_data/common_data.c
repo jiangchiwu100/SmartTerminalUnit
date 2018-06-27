@@ -1527,7 +1527,7 @@ static void rt_common_data_save_value_default_to_fram(void)
             
             flag = 0;
             
-			rt_led_fast_task();
+			//rt_led_fast_task();
 			for (i = 0; i < FM25V10_MAX_ADDR; i++)//清除FRAM
 			{
 				rt_device_write(device_fram, 0x01 + i, &flag, 1); 

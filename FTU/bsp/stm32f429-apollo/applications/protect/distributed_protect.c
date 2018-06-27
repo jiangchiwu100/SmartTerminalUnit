@@ -176,7 +176,8 @@ static void functional_retreat(uint8_t pdrv)
     {
         s_SelfSts[pdrv].comstr.variableState |= _DISTRIBUT_V_EXIT_SELF;    
     }
-    //if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
+    //if((s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_COMMUNICAT_FAULT_OTHER|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))||
+	//	(s_ListDevStorage[pdrv].head == NULL))
     if(s_SelfSts[pdrv].comstr.variableState&(_DISTRIBUT_V_COMMUNICAT_FAULT_SELF|_DISTRIBUT_V_EXIT_SELF|_DISTRIBUT_V_EXIT_OTHER))
     {//分布式模式切换
         addSOE(&s_ComProSts[pdrv],&s_ComProSts[pdrv].yx.p2p_work_situation,OFF);        
@@ -464,7 +465,7 @@ static void fault_isolation(uint8_t pdrv)
                     {
                         *(s_FaultIsolation->valstr.gTime) = DISTRIBUT_ENTIMERS;//启动定时
                     }
-                    if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 20)//过流20ms
+                    if((*(s_FaultIsolation->valstr.gTime)&DISTRIBUT_TITIMERS) > 50)//过流20ms
                     {                 
                         if(s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_POSITIVE)//正向
                         {
@@ -1028,13 +1029,13 @@ void distributUpdataSelfState(uint8_t pdrv)
 {
     if((g_SelfSts[pdrv].comstr.variableState != s_SelfSts[pdrv].comstr.variableState))
     {
-        if(((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)))||
-            ((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT))))           
-        {
+        //if(((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_OVERCURRENT_ACT)))||
+            //((s_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT)&&(!(g_SelfSts[pdrv].comstr.variableState&_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT))))           
+        //{
             g_SelfSts[pdrv].comstr.variableState = s_SelfSts[pdrv].comstr.variableState;
             s_SelfSts[pdrv].comstr.variableState &= ~_DISTRIBUT_V_CLEAN_COMMUNICAT_EXIT;
             rt_event_send(&w5500_event, EVENT_GOOSE_HAVE_CHANGE);
-        }
+        //}
     }
     memcpy(&g_SelfSts[pdrv],&s_SelfSts[pdrv],sizeof(s_SelfSts[pdrv]));    
 }

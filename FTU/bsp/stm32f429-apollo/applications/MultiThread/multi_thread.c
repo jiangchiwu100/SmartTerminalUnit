@@ -409,13 +409,13 @@ static void rt_ftuidle_thread_entry(void *param)
 {   
 	static uint8_t s_run_state = 0;
 
-    //file_operate_Init();
+    file_operate_Init();
     
     for (;;)
     {      
 		g_ThreadRunSta |= THREAD_RUN_IDLE;
 		
-        //file_operate();  
+        file_operate();  
 
         if (s_run_state == 0)
         {   
