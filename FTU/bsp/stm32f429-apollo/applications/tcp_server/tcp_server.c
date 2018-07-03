@@ -115,7 +115,9 @@ void rt_w5500_udp_rx_thread_entry(void *param)
     setSn_IMR(socketNO, Sn_IR_RECV); //使能接收中断
 	
     for (;;)
-    {   	 	
+    {   	 
+        DiableW5500Int();	
+		
 		switch (getSn_SR(socketNO))
 		{
 			case SOCK_UDP:
@@ -125,6 +127,7 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 			    if (w5500_event.set & EVENT_REC_IRQ_W5500)						
 				{
 					w5500_event.set &= ~EVENT_REC_IRQ_W5500;	
+					
 					
 					if (getSn_IR(socketNO) & Sn_IR_RECV)
 					{
@@ -183,6 +186,8 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 			default:
 				break;
 		}
+		
+		EnableW5500Int();
     }
 }
 

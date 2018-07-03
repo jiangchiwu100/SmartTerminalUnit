@@ -1939,6 +1939,8 @@ void wiz_recv_ignore(uint8_t sn, uint16_t len);
  * @param (uint8_t)sn Socket number. It should be <b>0 ~ 7</b>.
  * @param len Data length
  */
+void EnableW5500Int(void);
+void DiableW5500Int(void);
 int rt_hw_w5500_init(void);
 
 

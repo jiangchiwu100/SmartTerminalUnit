@@ -914,6 +914,9 @@ void LL_SPI2_Init(void)
 	while (!LL_SPI_IsActiveFlag_TXE(SPI2));	
 }
 
+static rt_device_t device;	
+static struct rt_device_pin *w5500_irq_pin;	
+
 /**
   * @brief  w5500 device initialization.
   * @param  None.
@@ -926,9 +929,6 @@ int rt_hw_w5500_init(void)
     uint32_t tickstart = 0;
     pTmpBuf1 = rt_malloc(DATA_BUF_SIZE + 3);
 	pTmpBuf2 = rt_malloc(DATA_BUF_SIZE + 3);	
-		
-    static rt_device_t device;	
-    static struct rt_device_pin *w5500_irq_pin;	
 
 	LL_DMA_DeInit(DMA1, LL_DMA_STREAM_3);
     LL_DMA_DeInit(DMA1, LL_DMA_STREAM_4);
@@ -1008,6 +1008,15 @@ int rt_hw_w5500_init(void)
 }
 
 INIT_ENV_EXPORT(rt_hw_w5500_init);
+
+void EnableW5500Int(void)
+{
+	w5500_irq_pin->ops->pin_irq_enable(device, 2, PIN_IRQ_ENABLE, INT_EXTI3_PRIO); 
+}
+void DiableW5500Int(void)
+{
+	w5500_irq_pin->ops->pin_irq_enable(device, 2, PIN_IRQ_DISABLE, INT_EXTI3_PRIO); 
+}
 
 
 /* END OF FILE ---------------------------------------------------------------*/
