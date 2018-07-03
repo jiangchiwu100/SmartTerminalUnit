@@ -930,10 +930,11 @@ int rt_hw_w5500_init(void)
     static rt_device_t device;	
     static struct rt_device_pin *w5500_irq_pin;	
 
+	LL_DMA_DeInit(DMA1, LL_DMA_STREAM_3);
+    LL_DMA_DeInit(DMA1, LL_DMA_STREAM_4);
+		
     LL_SPI2_Init();
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
-    LL_DMA_DeInit(DMA1, LL_DMA_STREAM_3);
-    LL_DMA_DeInit(DMA1, LL_DMA_STREAM_4);
 		
     w5500_pin = (struct rt_device_pin *)rt_device_find(RT_PIN_NAME);	
     if (w5500_pin == RT_NULL)
@@ -962,6 +963,8 @@ int rt_hw_w5500_init(void)
     /* SPI Read & Write callback function */
     reg_wizchip_spi_cbfunc(w5500_ReadByte, w5500_WriteByte); // registered read and write function
 
+    w5500_reset();	
+	
     /* WIZCHIP SOCKET Buffer initialize */
     if (ctlwizchip(CW_INIT_WIZCHIP, (void*)memsize) == -1)
     {
@@ -998,8 +1001,6 @@ int rt_hw_w5500_init(void)
         w5500_irq_pin->ops->pin_attach_irq(device, 2, PIN_IRQ_MODE_FALLING, rt_hw_w5500_irq_service, RT_NULL);  
         w5500_irq_pin->ops->pin_irq_enable(device, 2, PIN_IRQ_ENABLE, INT_EXTI3_PRIO); 
     }
-
-    w5500_reset();	
     
 	w5500_config();
 		

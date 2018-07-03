@@ -421,10 +421,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //        if ((cnt % 10) == 0)
 //        {
 //		  #if RT_USING_W5500         
-//			rt_event_send(&w5500_event, EVENT_RUN);      
+			rt_event_send(&w5500_event, EVENT_RUN);      
 //		  #endif /* RT_USING_W5500 */                  
 //        }   
-		rt_w5500_tx_tick();
+//		rt_w5500_tx_tick();
 //        if(cnt%10000 == 0)
 //        {
 //            rt_multi_telecontrl_operate(ADDR_LOCAL_RESET, 0);
