@@ -143,9 +143,8 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 						}
 						else
 						{
-							rt_kprintf("%d", srcip[3]);
-							goose_receiver_processe(W5500_UDP_RxBuf, srcip);
-                                                         
+							//rt_kprintf("%d", srcip[3]);
+							goose_receiver_processe(W5500_UDP_RxBuf, srcip);                                                        
 						}						
 					}										
 				}				
@@ -171,7 +170,7 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 						w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
 						memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
 					}													
-				}					
+				}				
                 break;
 			case SOCK_CLOSED:	
 				if ((ret = w5500_socket(socketNO, Sn_MR_UDP, 8080, 0)) != socketNO)
