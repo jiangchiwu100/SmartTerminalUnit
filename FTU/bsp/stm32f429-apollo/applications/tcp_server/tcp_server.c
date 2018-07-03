@@ -113,33 +113,36 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 	
     setSIMR(0x01);//使能S0
     setSn_IMR(socketNO, Sn_IR_RECV); //使能接收中断
+	uint8_t get_result =0;
 	
     for (;;)
     {   	 
         DiableW5500Int();	
-		
-		switch (getSn_SR(socketNO))
+		get_result = getSn_SR(socketNO);
+		EnableW5500Int();
+		switch (get_result)
 		{
 			case SOCK_UDP:
 				result = rt_event_recv(&w5500_event, EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE | EVENT_REC_IRQ_W5500, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL);
-
+					
 			    //if (result == RT_EOK)
 			    if (w5500_event.set & EVENT_REC_IRQ_W5500)						
 				{
-					w5500_event.set &= ~EVENT_REC_IRQ_W5500;	
+					w5500_event.set &= ~EVENT_REC_IRQ_W5500;						
 					
-					
-					if (getSn_IR(socketNO) & Sn_IR_RECV)
-					{
-					    setSn_IR(socketNO, Sn_IR_RECV);
-					}					
-					
-					while ((length = getSn_RX_RSR(socketNO)) > 0)
-					{				
+					while (1)
+					{		
+						DiableW5500Int();						
+						length = getSn_RX_RSR(socketNO);
+						EnableW5500Int();
+						if (length <= 0)
+						{
+							break;
+						}
                         length = length > UDP_8080_RX_BUFSIZE ? UDP_8080_RX_BUFSIZE : length;
-					
+						DiableW5500Int();
 						ret = w5500_recvfrom(socketNO, W5500_UDP_RxBuf, length, srcip, &destport);					
-						
+						EnableW5500Int();
 						if (ret <= 0)
 						{
 							break;
@@ -151,7 +154,12 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 						}						
 					}										
 				}				
-	
+
+				//if (getSn_IR(socketNO) & Sn_IR_RECV)
+				{
+					setSn_IR(socketNO, Sn_IR_RECV);
+				}
+				
 			    if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
 				{
 					goose_have_change = 1;
@@ -170,7 +178,9 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 					
 					if (W5500_UDP_TxBuf[0])
 					{
+						DiableW5500Int();
 						w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
+						EnableW5500Int();
 						memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
 					}													
 				}				
@@ -187,7 +197,7 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 				break;
 		}
 		
-		EnableW5500Int();
+		
     }
 }
 
