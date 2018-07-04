@@ -202,53 +202,6 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 }
 
 /**
-  * @brief : The thread body of udp rx for W5500.
-  * @param : none
-  * @return: none
-  * @updata: [2018-04-18][Sxr][new]
-  */  
-//void rt_w5500_udp_tx_thread_entry(void *param)
-//{
-//    rt_err_t result;
-//    int32_t ret;
-//    uint8_t socketNO = UDPSERVER2404_SOCKET1;	
-//	uint8_t goose_have_change = 0;
-//	uint8_t defautip[4] = {g_EthW5500.ip[0],g_EthW5500.ip[1],g_EthW5500.ip[2],255};	
-
-//    for (;;)
-//	{
-//    	result = rt_event_recv(&w5500_event, EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE, RT_EVENT_FLAG_OR, RT_WAITING_FOREVER, RT_NULL); 
-//	
-//		if (((w5500_event.set & EVENT_RUN) || (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)))
-//		{
-//			if (w5500_event.set & EVENT_GOOSE_HAVE_CHANGE)
-//			{
-//				goose_have_change = 1;
-//				w5500_event.set &= ~EVENT_GOOSE_HAVE_CHANGE;
-//			}
-//			
-//			if (w5500_event.set & EVENT_RUN)
-//			{
-//				w5500_event.set &= ~EVENT_RUN;
-//			}					
-//			
-////			W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
-////			
-////			if (goose_have_change)
-////			{
-////				goose_have_change = 0;
-////			}
-////			
-////			if (W5500_UDP_TxBuf[0] && udp_link == 0x55)
-////			{
-////				w5500_sendto(socketNO, W5500_UDP_TxBuf, W5500_UDP_TxLen, defautip, 8080);		
-////				memset(W5500_UDP_TxBuf, 0, UDP_8080_TX_BUFSIZE);
-////			}					
-//		}		
-//	}
-//}
-
-/**
   * @brief : Check the link state of tcp server for W5500.
   * @param : none
   * @return: none
