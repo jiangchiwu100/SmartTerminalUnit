@@ -138,7 +138,7 @@
 #define RT_USING_USART6
 
 #define RT_USART1_NAME                                                 "usart1"
-#define RT_USART2_NAME                                                 "usart2"
+//#define RT_USART2_NAME                                                 "usart2"
 #define RT_USART3_NAME                                                 "usart3"
 #define RT_UART4_NAME                                                  "uart4"
 #define RT_UART5_NAME                                                  "uart5"
@@ -150,7 +150,7 @@
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_I2C0_NAME                                                   "i2c0"
-#define RT_I2C_SD2405_NAME                                             "sd2405"
+#define RT_I2C_PCF8563_NAME                                            "pcf8563"
 
 /* Using GPIO pin framework */
 #define RT_USING_PIN
@@ -442,7 +442,7 @@
 #define INT_EXTI15_10_PRIO                                             ((0x00 << 4) | 0x01) // AD7616BUSY
 #define INT_EXTI3_PRIO                                                 ((0x00 << 4) | 0x02) // w5500 
 #define INT_ETH_PRIO                                                   ((0x00 << 4) | 0x03) // Ethernet
-#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x04) // sd2405
+#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x04) // pcf8563
 #define INT_TIM3_PRIO                                                  ((0x01 << 4) | 0x01) // frequency measurement
 #define INT_TIM6_PRIO                                                  ((0x01 << 4) | 0x00) // 1ms timer
 #define INT_TIM2_PRIO                                                  ((0x01 << 4) | 0x02) // none

@@ -25,7 +25,7 @@
 #include "stm32f4xx_ll_dma.h"
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
-static struct spi_w5500_device device_w5500; 
+//static struct spi_w5500_device device_w5500; 
 static struct rt_device_pin *w5500_pin; 
 static LL_DMA_InitTypeDef LL_DMA_InitStructure;
 static LL_DMA_InitTypeDef LL_DMA_InitStructure_Write;
@@ -101,7 +101,7 @@ void spi_dma_write(uint8_t* Addref, uint8_t* pTxBuf, uint16_t tx_len)
 {
 //	rt_sem_take(&w5500_sem, RT_WAITING_FOREVER);
 	
-	uint16_t i;
+//	uint16_t i;
 	memset(pTmpBuf1, 0, tx_len + 3);
     
 	pTmpBuf1[0] = Addref[0];
@@ -158,7 +158,7 @@ void spi_dma_read(uint8_t* Addref, uint8_t* pRxBuf, uint16_t rx_len)
 {
 //	rt_sem_take(&w5500_sem, RT_WAITING_FOREVER);
 	
-	uint16_t i;
+//	uint16_t i;
 	memset(pTmpBuf1, 0, rx_len + 3);
 	memset(pTmpBuf2, 0, rx_len + 3);
 	pTmpBuf1[0] = Addref[0];
@@ -217,16 +217,16 @@ void spi_dma_read(uint8_t* Addref, uint8_t* pRxBuf, uint16_t rx_len)
   * @return: [RT_EOK]/[RT_ERROR]
   * @updata: [2017-12-21][Sunxr][newly increased]
   */
-static rt_size_t rt_hw_w5500_read(rt_device_t dev, rt_off_t addr, void* buffer, rt_size_t size) 
-{
-    rt_spi_w5500_device_t w5500_dev;
-    
-    w5500_dev = (struct spi_w5500_device *)dev;
-    
-    rt_spi_transfer(w5500_dev->spi_device,NULL,buffer,size);
+//static rt_size_t rt_hw_w5500_read(rt_device_t dev, rt_off_t addr, void* buffer, rt_size_t size) 
+//{
+//    rt_spi_w5500_device_t w5500_dev;
+//    
+//    w5500_dev = (struct spi_w5500_device *)dev;
+//    
+//    rt_spi_transfer(w5500_dev->spi_device,NULL,buffer,size);
 
-    return(RT_EOK);	
-}
+//    return(RT_EOK);	
+//}
 
 /**
   * @brief : w5500 write data
@@ -237,16 +237,16 @@ static rt_size_t rt_hw_w5500_read(rt_device_t dev, rt_off_t addr, void* buffer, 
   * @return: [RT_EOK]/[RT_ERROR]
   * @updata: [2017-12-21][Sunxr][newly increased]
   */
-static rt_size_t rt_hw_w5500_write(rt_device_t dev, rt_off_t addr, const void* buffer, rt_size_t size) 
-{
-    rt_spi_w5500_device_t w5500_dev;
-    
-    w5500_dev = (struct spi_w5500_device *)dev;
-    
-    rt_spi_transfer(w5500_dev->spi_device,buffer,NULL,size);
+//static rt_size_t rt_hw_w5500_write(rt_device_t dev, rt_off_t addr, const void* buffer, rt_size_t size) 
+//{
+//    rt_spi_w5500_device_t w5500_dev;
+//    
+//    w5500_dev = (struct spi_w5500_device *)dev;
+//    
+//    rt_spi_transfer(w5500_dev->spi_device,buffer,NULL,size);
 
-    return(RT_EOK);		
-}
+//    return(RT_EOK);		
+//}
 
 uint8_t SPI2_SendByte(uint8_t txData)
 {
@@ -390,7 +390,7 @@ void WIZCHIP_WRITE(uint32_t AddrSel, uint8_t wb)
   */
 void WIZCHIP_READ_BUF (uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
 {
-    uint16_t i = 0;
+//    uint16_t i = 0;
     WIZCHIP_CRITICAL_ENTER();
     WIZCHIP.CS._select();
 
@@ -492,7 +492,7 @@ void WIZCHIP_READ_BUF (uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
   */
 void WIZCHIP_WRITE_BUF(uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
 {
-    uint16_t i = 0;
+//    uint16_t i = 0;
 //    uint16_t j = 0;
     WIZCHIP_CRITICAL_ENTER();
     WIZCHIP.CS._select();

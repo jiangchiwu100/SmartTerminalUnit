@@ -358,6 +358,62 @@ static void rt_hw_coil_energy_storage(void)
     }
 }
 
+void rt_do_test(void)
+{
+//	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
+	
+//	pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));
+
+//	rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_PRESET_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_PRESET_DO], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_ACTIVATE_START_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_BETTERY_DROP_OUT_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BETTERY_DROP_OUT_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_BACKEUP_DO].status = DO_CLR;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BACKEUP_DO], sizeof(struct rt_device_pin_status));	
+
+//    rt_thread_delay(1000);  
+//	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));	
+//    rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_PRESET_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_PRESET_DO], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_ACTIVATE_START_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_START_DO], sizeof(struct rt_device_pin_status));
+
+//	pin_status[INDEX_ACTIVATE_STOP_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ACTIVATE_STOP_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_BETTERY_DROP_OUT_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BETTERY_DROP_OUT_DO], sizeof(struct rt_device_pin_status));	
+
+//	pin_status[INDEX_BACKEUP_DO].status = DO_SET;			
+//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BACKEUP_DO], sizeof(struct rt_device_pin_status));
+
+//    rt_thread_delay(1000); 
+}
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
   * @brief : do operate

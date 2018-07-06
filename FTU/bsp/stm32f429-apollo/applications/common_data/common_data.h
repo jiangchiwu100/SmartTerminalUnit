@@ -33,6 +33,7 @@
 #define ON                            0x02
 #define OFF                           0x01
 
+#define DI_CS_NUM                     2
 #define THREAD_NUM                    9
 
 #define THREAD_RUN_SLAVE101           0x0001

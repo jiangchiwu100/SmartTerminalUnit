@@ -1250,13 +1250,7 @@ static void DLT634_5101_SLAVE_Link68Process(uint8_t pdrv)
   * @updata: [YYYY-MM-DD][NAME][BRIEF]
   */
 static void DLT634_5101_SLAVE_SendProcess(uint8_t pdrv)
-{   
-	if(DLT634_5101Slave_Pad[pdrv].Encrypt)
-	{
-		if(DLT634_5101_SLAVE_H_Encrypt(pdrv))
-		{return;}
-	}
-	
+{   	
     if(DLT634_5101Slave_App[pdrv].LinkFlag&0x000000ff)
     {
         DLT634_5101_SLAVE_Link10Process(pdrv);

@@ -43,7 +43,6 @@
 extern int rt_hw_led_init(void);
 extern void rt_hw_led_task(void);
 extern void rt_hw_alarm_led_operate(uint8_t act);
-extern void rt_led_fast_task();
 
 
 #endif /* END _DRV_LED_H_ */

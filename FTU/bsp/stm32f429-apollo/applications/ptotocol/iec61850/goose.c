@@ -189,11 +189,14 @@ int goose_init(void)
 	GoosePara.macSrc[4] = 22;
 	GoosePara.macSrc[5] = 22;
 
+	memset (&ReceiverInfo, 0, sizeof(struct TagReceiverInfo));
 //    PublisherInfo.haveChange = 0;
     PublisherInfo.sqNum = 1;
     PublisherInfo.stNum = 1;  
 	ReceiverInfo.sqNum = PublisherInfo.sqNum;
     PublisherInfo.dataset = (uint32_t *)&g_SelfSts[0].comstr;	
+	
+	return 0;
 }
 
 INIT_APP_EXPORT(goose_init)

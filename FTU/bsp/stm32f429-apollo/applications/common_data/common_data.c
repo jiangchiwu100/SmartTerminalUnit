@@ -147,7 +147,7 @@ double                              g_Udc2SampleBuf[ADC_SAMPLE_NUM * 2] = { 0 };
 /* PRIVATE VARIABLES --------------------------------------------------------*/
 
 static rt_device_t device_fram = RT_NULL;                             
-static rt_device_t device_sd2405 = RT_NULL;   
+static rt_device_t device_pcf8563 = RT_NULL;   
 
 																
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
@@ -1035,7 +1035,7 @@ void DBWriteSystemTime(struct CP56Time2a_t *pTime)
     g_SystemTime.second = MAKEWORD(pTime->msecondL, pTime->msecondH) / 1000;
     g_SystemTime.msecond = MAKEWORD(pTime->msecondL, pTime->msecondH) % 1000;
 
-    rt_device_write(device_sd2405, 0x00, (uint8_t *)&g_SystemTime, sizeof(struct SD2405Time));
+    rt_device_write(device_pcf8563, 0x00, (uint8_t *)&g_SystemTime, sizeof(struct SD2405Time));
 }
 
 /**
@@ -1673,10 +1673,13 @@ void rt_multi_common_data_read_config_from_fram(void)
     /* 读取遥信 */    
 	rt_multi_common_data_fram_record_read(TELESIGNAL, (uint8_t *)&g_TelesignalDB);
     
-    for (i = 0; i < DI_NUM; i++)
-    {
-        g_DiCollect.stateLast |= g_TelesignalDB[i];   	
-    }
+	for (j = 0; j < DI_CS_NUM; j++)
+	{
+		for (i = 0; i < DI_NUM; i++)
+		{
+			g_DiCollect.stateLast[j] |= g_TelesignalDB[i];   	
+		}	
+	}
 
     /* 读取SOE */
     //FM25VxxReadData(ADDR_FRAM_SOE, NULL, (uint8_t *)g_SOEDB, sizeof(g_SOEDB));
@@ -2019,9 +2022,9 @@ int rt_multi_common_data_init(void)
         rt_multi_common_data_config();
     }	
 	
-    device_sd2405 = rt_device_find(RT_I2C_SD2405_NAME);
+    device_pcf8563 = rt_device_find(RT_I2C_PCF8563_NAME);
 	
-    if (device_sd2405 == NULL)
+    if (device_pcf8563 == NULL)
     {
         THREAD_PRINTF("sd2405 is not found! \r\n"); 		
     }

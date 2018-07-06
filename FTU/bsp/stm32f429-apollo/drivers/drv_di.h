@@ -30,9 +30,9 @@
 /* STRUCT -------------------------------------------------------------------*/	
 typedef struct TagDiStr
 {  
-    rt_uint32_t counter[DI_NUM];
-    rt_uint32_t state;	
-    rt_uint32_t stateLast;	
+    rt_uint32_t counter[4][DI_NUM];
+    rt_uint32_t state[4];	
+    rt_uint32_t stateLast[4];	
     rt_uint32_t doubleCounter;
     rt_uint32_t deviceFalutCounter;
     rt_uint32_t disconnectCounter;	

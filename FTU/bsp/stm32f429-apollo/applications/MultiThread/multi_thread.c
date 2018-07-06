@@ -61,7 +61,7 @@ static rt_uint8_t *rt_thread_hmicom_stack;
 #endif /* END RT_USING_HMICOM */
 
 #if RT_USING_WATCH
-struct rt_event sd2405_event; // sd2405事件
+struct rt_event pcf8563_event; // pcf8563事件
 struct rt_semaphore watch_sem; // watch semaphore
 static struct rt_thread *rt_thread_watch;
 static rt_uint8_t *rt_thread_watch_stack;
@@ -352,7 +352,7 @@ static void rt_watch_thread_entry(void *param)
     rt_err_t result;
     rt_device_t sd2405_device;
     
-    sd2405_device = rt_device_find(RT_I2C_SD2405_NAME);
+    sd2405_device = rt_device_find(RT_I2C_PCF8563_NAME);
     
     other_protect_init();
     
@@ -360,7 +360,7 @@ static void rt_watch_thread_entry(void *param)
     
     for (;;)
     {
-        result = rt_event_recv(&sd2405_event, EVENT_RUN, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_NO, RT_NULL);              
+        result = rt_event_recv(&pcf8563_event, EVENT_RUN, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_NO, RT_NULL);              
         if (result == RT_EOK)
         {
             rt_device_read(sd2405_device, 0, RT_NULL, 0);
@@ -383,15 +383,12 @@ static void rt_watch_thread_entry(void *param)
 			
             /* 获取频率 */
 			GetFrequency();          
-            
-            /* 小白 */
-            rt_hw_handheld_remote_task(1);	
 
             /* 电池活化 */
             rt_hw_battery_activation(1);
 			
 			/* 通道监听 */
-			rt_channel_monitor_task();
+			rt_channel_monitor_task();						
         }           
     }  
 }
@@ -449,7 +446,7 @@ static void cal_thread_start(void *param)
 {    
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-
+    result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_cal,
                             CAL_THREAD_NAME, 
@@ -500,7 +497,7 @@ static void protect_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_protect,
                             PROTECT_THREAD_NAME, 
@@ -551,7 +548,7 @@ static void dp83848_2404_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(&rt_thread_dp83848,
                             DP83848_2404_THREAD_NAME, 
@@ -602,7 +599,7 @@ static void w5500_8080_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(&rt_thread_w5500_udp_rx,
                             W5500_UDP_RX_THREAD_NAME, 
@@ -669,7 +666,7 @@ static void slave101_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_slave101,
                             SLAVE101_THREAD_NAME, 
@@ -720,7 +717,7 @@ static void slave104_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_slave104,
                             SLAVE104_THREAD_NAME, 
@@ -771,7 +768,7 @@ static void watch_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_watch,
                             WATCH_THREAD_NAME, 
@@ -821,7 +818,7 @@ static void hmicom_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
-	
+	result = result;
     /* initialize thread */
     result = rt_thread_init(rt_thread_hmicom,
                             HMICOM_THREAD_NAME, 
@@ -872,6 +869,7 @@ static void ftuidle_thread_start(void *param)
 {
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
+	result = result;
 	
     /* initialize thread */
     result = rt_thread_init(rt_thread_ftuidle,
@@ -1171,7 +1169,7 @@ int rt_multi_event_init(void)
   #endif /* RT_USING_SLAVE104 */
     
   #if RT_USING_WATCH 	
-    result = rt_event_init(&sd2405_event, "sd2405", RT_IPC_FLAG_PRIO);
+    result = rt_event_init(&pcf8563_event, "pcf8563", RT_IPC_FLAG_PRIO);
     
     if (result != RT_EOK)
     {

@@ -133,10 +133,10 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4099</DriverSelection>
+            <DriverSelection>4100</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -505,11 +505,6 @@
               <FilePath>drivers\drv_spi.c</FilePath>
             </File>
             <File>
-              <FileName>drv_sd2405.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_sd2405.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_io_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\drivers\drv_io_spi.c</FilePath>
@@ -555,11 +550,6 @@
               <FilePath>.\drivers\drv_do.c</FilePath>
             </File>
             <File>
-              <FileName>drv_handheld.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_handheld.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\drivers\drv_led.c</FilePath>
@@ -575,9 +565,9 @@
               <FilePath>.\drivers\drv_wdg.c</FilePath>
             </File>
             <File>
-              <FileName>drv_sc1161y.c</FileName>
+              <FileName>drv_pcf8563.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\drivers\drv_sc1161y.c</FilePath>
+              <FilePath>.\drivers\drv_pcf8563.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1725,16 +1715,6 @@
               <FilePath>.\applications\ptotocol\iec60870\dlt634_5104slave_app.c</FilePath>
             </File>
             <File>
-              <FileName>encrypt_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\applications\ptotocol\iec60870\encrypt_app.c</FilePath>
-            </File>
-            <File>
-              <FileName>encrypt_disk.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\applications\ptotocol\iec60870\encrypt_disk.c</FilePath>
-            </File>
-            <File>
               <FileName>channel_monitor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\applications\ptotocol\iec60870\channel_monitor.c</FilePath>
@@ -1813,16 +1793,6 @@
               <FileName>JsonFileOperation.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\applications\struct2json\user\JsonFileOperation.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>md5</GroupName>
-          <Files>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\applications\md5\md5.c</FilePath>
             </File>
           </Files>
         </Group>

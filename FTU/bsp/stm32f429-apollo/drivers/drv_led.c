@@ -155,28 +155,6 @@ void rt_hw_led_task(void)
 
     s_run_counter++;
     
-    if(g_TelesignalDB[g_TelesignalAddr.switchClose] == ON)
-    {
-        pin_status[INDEX_BOTTOM_CLOSE_LED].status = GPIO_PIN_SET;
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_CLOSE_LED], sizeof(struct rt_device_pin_status));
-    }
-    else
-    {
-        pin_status[INDEX_BOTTOM_CLOSE_LED].status = GPIO_PIN_RESET;
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_CLOSE_LED], sizeof(struct rt_device_pin_status));
-    }
-    
-    if(g_TelesignalDB[g_TelesignalAddr.switchOpen] == ON)
-    {
-        pin_status[INDEX_BOTTOM_OPEN_LED].status = GPIO_PIN_SET;
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_OPEN_LED], sizeof(struct rt_device_pin_status));
-    }
-    else
-    {
-        pin_status[INDEX_BOTTOM_OPEN_LED].status = GPIO_PIN_RESET;
-        rt_device_write(rt_led_dev, 0, &pin_status[INDEX_BOTTOM_OPEN_LED], sizeof(struct rt_device_pin_status));
-    }
-    
     if (g_TelesignalDB[g_TelesignalAddr.breakingCurrent] == ON || g_TelesignalDB[g_TelesignalAddr.overloadEvent] == ON || g_TelesignalDB[g_TelesignalAddr.haveyOverload] == ON || 
         g_TelesignalDB[g_TelesignalAddr.protectionAct] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Down] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitI0Up] == ON ||
         g_TelesignalDB[g_TelesignalAddr.overLimitIaDown] == ON || g_TelesignalDB[g_TelesignalAddr.overLimitIaUp]== ON || g_TelesignalDB[g_TelesignalAddr.overLimitIbDown] == ON || 

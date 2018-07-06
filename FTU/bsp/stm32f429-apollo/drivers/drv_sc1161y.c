@@ -91,7 +91,7 @@ static rt_size_t rt_hw_sc1161y_write(rt_device_t dev, rt_off_t addr, const void*
   * @param : [none]
   * @return: [RT_ERROR] error;[RT_EOK] successful.
   */
-static int rt_hw_spi5_init(void)
+static int rt_hw_spi4_init(void)
 {
     /* register spi bus */
     {
@@ -100,15 +100,15 @@ static int rt_hw_spi5_init(void)
 
         __HAL_RCC_GPIOI_CLK_ENABLE(); // Ê¹ÄÜGPIOIÊ±ÖÓ
         
-        GPIO_InitStructure.Pin = GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
-        GPIO_InitStructure.Alternate = GPIO_AF5_SPI5; 
+        GPIO_InitStructure.Pin = GPIO_PIN_2 | GPIO_PIN_5 | GPIO_PIN_6;
+        GPIO_InitStructure.Alternate = GPIO_AF5_SPI4; 
         GPIO_InitStructure.Mode = GPIO_MODE_AF_PP; 
         GPIO_InitStructure.Pull = GPIO_PULLUP; 
         GPIO_InitStructure.Speed = GPIO_SPEED_FAST;                    
-        HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
+        HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
 
 //        result = stm32_spi_bus_register(SPI5, 0, "spi5");
-        result = stm32_spi_bus_register(SPI5, 0, RT_SPI5_BUS_NAME);
+        result = stm32_spi_bus_register(SPI4, 0, RT_SPI4_BUS_NAME);
         if (result != RT_EOK)
         {
             return(result);
@@ -121,7 +121,7 @@ static int rt_hw_spi5_init(void)
         rt_err_t result;
 
 //        result = rt_spi_bus_attach_device(&spi_device, "spi50", "spi5", NULL);
-        result = rt_spi_bus_attach_device(&spi_device, RT_SPI5_DEVICE_NAME, RT_SPI5_BUS_NAME, NULL);
+        result = rt_spi_bus_attach_device(&spi_device, RT_SPI4_DEVICE_NAME, RT_SPI4_BUS_NAME, NULL);
         if (result != RT_EOK)
         {
             return(result);
@@ -130,7 +130,7 @@ static int rt_hw_spi5_init(void)
 		
     return(RT_EOK);
 }
-INIT_BOARD_EXPORT(rt_hw_spi5_init);
+//INIT_BOARD_EXPORT(rt_hw_spi4_init);
 
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
@@ -146,7 +146,7 @@ int rt_hw_sc1161y_spi_init(void)
     rt_spi_sc1161y_device_t rtt_dev = (rt_spi_sc1161y_device_t) rt_malloc(sizeof(struct spi_sc1161y_device));
 	
     /* SPI configure */
-    rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_SPI5_DEVICE_NAME);
+    rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_SPI4_DEVICE_NAME);
 	
     if (rtt_dev->rt_spi_device == NULL)
     {
@@ -156,7 +156,7 @@ int rt_hw_sc1161y_spi_init(void)
     }
 		
     cfg.mode = RT_SPI_MODE_MASK;
-    cfg.max_hz = 0 * 1000 * 1000;
+    cfg.max_hz = 50 * 1000 * 1000;
     cfg.data_width = 8;	
     rt_spi_configure(rtt_dev->rt_spi_device, &cfg);	
 	
@@ -178,7 +178,7 @@ int rt_hw_sc1161y_spi_init(void)
 	
     return(RT_EOK);
 }
-INIT_PREV_EXPORT(rt_hw_sc1161y_spi_init)
+//INIT_PREV_EXPORT(rt_hw_sc1161y_spi_init)
 
 
 /**
@@ -314,7 +314,7 @@ int rt_hw_sc1161y_init(void)
     return(0);
 }
 
-INIT_ENV_EXPORT(rt_hw_sc1161y_init);
+//INIT_ENV_EXPORT(rt_hw_sc1161y_init);
 
 
 /* END OF FILE ---------------------------------------------------------------*/

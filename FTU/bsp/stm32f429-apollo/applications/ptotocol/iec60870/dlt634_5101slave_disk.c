@@ -72,10 +72,6 @@ uint16_t DLT634_5101_SLAVE_ReadData(uint8_t pdrv, uint8_t *pbuf, uint16_t count)
     {
         len = DLT634_5101_SLAVE_Read_drv(dev[pdrv], pbuf, count);
     }
-    else
-    {
-        len = Encrypt_Readx(pbuf, dev[pdrv]);
-    }
 	
     if((channel_monitor.MonitorFlag[0]||channel_monitor.MonitorFlag[1]) && (pdrv == DLT634_5101SLAVE_DISK0)&&(channel_monitor.ByAddr == SerialPort1)&&(len>0))
     {
@@ -103,32 +99,7 @@ uint16_t DLT634_5101_SLAVE_WriteData(uint8_t pdrv, uint8_t *pbuf, uint16_t count
     {
         DLT634_5101_SLAVE_Write_drv(dev[pdrv],pbuf,count);
     }
-    else
-    {
-        if(pbuf[0] == _DLT634_5101SLAVE_STARTCODE10)
-        {
-            Encrypt_WriteX(pbuf, count, 0x00, dev[pdrv]);
-        }
-        else if(pbuf[0] == _DLT634_5101SLAVE_STARTCODE68)
-        {                   
-            switch(pbuf[4+1+DLT634_5101Slave_Pad[pdrv].LinkAddrSize])
-            {
-                case _DLT634_5101SLAVE_C_SC_NA_1:
-                case _DLT634_5101SLAVE_C_SC_NB_1:
-                case _DLT634_5101SLAVE_C_WS_NA_1:
-                case _DLT634_5101SLAVE_F_SR_NA_1:
-                    if((pbuf[4+1+DLT634_5101Slave_Pad[pdrv].LinkAddrSize+1+1+DLT634_5101Slave_Pad[pdrv].ASDUCotSize+DLT634_5101Slave_Pad[pdrv].ASDUAddrSize+2]&0x80)||\
-                        (pbuf[4+1+DLT634_5101Slave_Pad[pdrv].LinkAddrSize+1+1+1]==_DLT634_5101SLAVE_COT_DEACT))
-                    {Encrypt_WriteX(pbuf, count, 0x82, dev[pdrv]);}
-                    else
-                    {Encrypt_WriteX(pbuf, count, 0x80, dev[pdrv]);}
-                break;
-                default:
-                    Encrypt_WriteX(pbuf, count, 0x80, dev[pdrv]);
-                break;
-            }
-        }
-    }
+
     if((channel_monitor.MonitorFlag[0]||channel_monitor.MonitorFlag[1]) && (pdrv == DLT634_5101SLAVE_DISK0)&&(channel_monitor.ByAddr == SerialPort1)&&(count>0))
     {
         MonitoringDataTransmission(pbuf, count, TransmittedData);
@@ -1329,18 +1300,6 @@ void DLT634_5101_SLAVE_R_IDLE(uint8_t pdrv, uint8_t *pbuf)//发送空闲回调�
 }
 
 /**
-  * @brief : Encrypt.
-  * @param : [pdrv]
-  * @param : [pbuf]
-  * @return: none
-  * @updata: [YYYY-MM-DD][NAME][BRIEF]
-  */
-uint8_t DLT634_5101_SLAVE_H_Encrypt(uint8_t pdrv)//判断是否有加密数据发送
-{
-	return(Encrypt_CheckSend(dev[pdrv]));
-}
-
-/**
   * @brief : other reply.
   * @param : [pdrv]
   * @param : [pbuf]
@@ -1440,7 +1399,7 @@ int DLT634_5101_SLAVE_INIT(void)
                 memset(file_array[pdrv],0,sizeof(file_array[pdrv]));
                 DLT634_5101Slave_Pad[pdrv].Port = SLAVE101_ID1;   
                 if((uint16_t)g_Parameter[UART_PORT]==0)
-                {dev[pdrv] = rt_device_find(RT_USART3_NAME);}
+                {dev[pdrv] = rt_device_find(RT_USART6_NAME);}
                 else
                 {dev[pdrv] = rt_device_find(RT_USART1_NAME);}
                 serial = (struct rt_serial_device *)(dev[pdrv]);
@@ -1451,11 +1410,7 @@ int DLT634_5101_SLAVE_INIT(void)
                 rt_device_open(dev[pdrv], RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);               
                 DLT634_5101Slave_Pad[pdrv].BalanMode = (uint8_t)g_Parameter[UART_BALANMODE];
                 DLT634_5101Slave_Pad[pdrv].Encrypt = 0;
-                if (DLT634_5101Slave_Pad[pdrv].Encrypt)
-                {
-                    if(!Encrypt_AddDevice(dev[pdrv],DLT634_5101_SLAVE_Read_drv,DLT634_5101_SLAVE_Write_drv))
-                    {DLT634_5101Slave_Pad[pdrv].Encrypt = 0;}
-                }
+
                 DLT634_5101Slave_Pad[pdrv].IEC_DIR = 0x80;
                 DLT634_5101Slave_Pad[pdrv].SourceAddr = (uint16_t)g_Parameter[UART_SOURCEADDR];
                 DLT634_5101Slave_Pad[pdrv].LinkAddrSize = (uint16_t)g_Parameter[UART_LINKADDRSIZE];//1:97,2:02

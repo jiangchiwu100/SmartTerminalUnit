@@ -27,36 +27,38 @@
 
 /* LED */
 #define BOARD_RUN_LED              56
-#define BOTTOM_OPEN_LED            85
-#define BOTTOM_CLOSE_LED           84
+
 /* DO */
-#define SWITCH_OPEN_DO             151
-#define SWITCH_CLOSE_DO            150
-#define ENERGY_STORAGE_DO          155
-#define PRESET_DO                  153
-#define ACTIVATE_START_DO          163
-#define ACTIVATE_STOP_DO           164
-#define BETTERY_DROP_OUT_DO        12
-#define BACKEUP_DO                 13
+#define SWITCH_OPEN_DO            175
+#define SWITCH_CLOSE_DO           111
+#define ENERGY_STORAGE_DO         119
+#define PRESET_DO                 117
+#define ACTIVATE_START_DO         118
+#define ACTIVATE_STOP_DO          45
+#define BETTERY_DROP_OUT_DO       122
+#define BACKEUP_DO                128
+
+#define KI_CS1          57
+#define KI_CS2          155
+#define KI_CS3          83
+#define KI_CS4          84
+
 /* DI */
-#define SWITCH_OPEN_DI             111
-#define SWITCH_CLOSE_DI            100
-#define ENERGY_STORAGE_DI          117
-#define LOW_PRESSURE_DI            118
-#define BATTERY_LOSS_ALARM_DI      119
-#define BATTERYA_CTIVATE_DI        128
-#define BETTERY_UNDERVOLTAGE_DI    129
-#define POWER_FAILURE_ALARM_DI     130
+#define DI1                        145
+#define DI2                        46
+#define DI3                        47
+#define DI4                        151
+#define DI5                        50
+#define DI6                        51
+#define DI7                        150
+#define DI8                        52
 
 //“‘œ¬”≤±‡¬Î
-#define MCU_POWER_ALARM_DI         145
-#define HANDHELD_OPEN_PRESET       173
-#define HANDHELD_OPEN_EXECUTE      174
-#define HANDHELD_CLOSE_PRESET      175
-#define HANDHELD_CLOSE_EXECUTE     176
-
+#define OPEN_CLOSE_DI              176
+#define ENERGY_STORAGE_DI          110
+#define MCU_POWER_ALARM_DI         107
 #define AD7616_RESET               88
-#define WDG_FEED                   110
+#define WDG_FEED                   130
 #define W5500_CS                   131
 #define W5500_RESET                7
 #define SC1161Y_CS                 24
@@ -66,8 +68,6 @@
 enum PIN_INDEX
 {
     INDEX_BOARD_RUN_LED = 0,
-    INDEX_BOTTOM_OPEN_LED,
-    INDEX_BOTTOM_CLOSE_LED,
 	
     INDEX_SWITCH_OPEN_DO,
     INDEX_SWITCH_CLOSE_DO,
@@ -77,21 +77,24 @@ enum PIN_INDEX
     INDEX_ACTIVATE_STOP_DO,
     INDEX_BETTERY_DROP_OUT_DO,
     INDEX_BACKEUP_DO,
+
+    INDEX_KI_CS1,
+    INDEX_KI_CS2,
+    INDEX_KI_CS3,	
+    INDEX_KI_CS4,
 	
-    INDEX_SWITCH_CLOSE_DI,
-    INDEX_SWITCH_OPEN_DI,	
+    INDEX_DI1,
+    INDEX_DI2,	
+    INDEX_DI3,
+    INDEX_DI4,
+    INDEX_DI5,
+    INDEX_DI6,
+    INDEX_DI7,	
+    INDEX_DI8,
+    INDEX_OPEN_CLOSE_DI,	
     INDEX_ENERGY_STORAGE_DI,
-    INDEX_LOW_PRESSURE_DI,
-    INDEX_POWER_FAILURE_ALARM_DI,
-    INDEX_BETTERY_UNDERVOLTAGE_DI,
-    INDEX_BATTERYA_CTIVATE_DI,	
-    INDEX_BATTERY_LOSS_ALARM_DI,
+
     INDEX_MCU_POWER_ALARM_DI,
-	
-    INDEX_HANDHELD_OPEN_PRESET,
-    INDEX_HANDHELD_OPEN_EXECUTE,
-    INDEX_HANDHELD_CLOSE_PRESET,	
-    INDEX_HANDHELD_CLOSE_EXECUTE,
     INDEX_AD7616_RESET,
     INDEX_WDG_FEED,
     INDEX_W5500_CS,
@@ -130,7 +133,7 @@ extern struct rt_device_pin_status pin_status[];
 
 /* PUBLIC FUNCTIONS ----------------------------------------------------------*/
 int rt_hw_pin_init(void);
-
+void do_test();
 
 #endif /* __DRV_GPIO_H__ */
 

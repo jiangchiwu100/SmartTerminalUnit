@@ -357,7 +357,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		rt_hw_di_check_task(1);
 		
 		/* 线圈储能操作 */ 
-		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_COIL_ENERGY_STORAGE);
+//		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_COIL_ENERGY_STORAGE);
 		
 		/* 分闸收回 */
 		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_OPEN_RECOVERY); 
@@ -569,7 +569,7 @@ void GetFrequency(void)
     }
     else
     {
-        g_TelemetryDB[g_TelemetryAddr.F2] += 0.001f;
+        g_TelemetryDB[g_TelemetryAddr.F] += 0.001f;
     }
 
     if (g_CalibrateFactor[CALIFACTOR_F2] != 0)

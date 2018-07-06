@@ -539,24 +539,24 @@ INIT_PREV_EXPORT(rt_hw_fm25vxx_init)
   * @return: [result]
   * @updata: [2017-12-21][Sunxr][newly increased]
   */
-static int rt_hw_spi4_init(void)
+static int rt_hw_spi5_init(void)
 {
     /* register spi bus */
     {
         GPIO_InitTypeDef GPIO_InitStructure;
         rt_err_t result;
 
-        __HAL_RCC_GPIOE_CLK_ENABLE();
+        __HAL_RCC_GPIOF_CLK_ENABLE();
 
-        GPIO_InitStructure.Pin = GPIO_PIN_2 | GPIO_PIN_5 | GPIO_PIN_6;
-        GPIO_InitStructure.Alternate  = GPIO_AF5_SPI4;
+        GPIO_InitStructure.Pin = GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
+        GPIO_InitStructure.Alternate  = GPIO_AF5_SPI5;
         GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStructure.Pull  = GPIO_PULLUP;
         GPIO_InitStructure.Speed = GPIO_SPEED_FAST;
-        HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
+        HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);
 
 //        result = stm32_spi_bus_register(SPI4, 0, "spi4");
-        result = stm32_spi_bus_register(SPI4, 0, RT_SPI4_BUS_NAME);
+        result = stm32_spi_bus_register(SPI5, 0, RT_SPI5_BUS_NAME);
         if (result != RT_EOK)
         {
             return(result);
@@ -577,16 +577,16 @@ static int rt_hw_spi4_init(void)
         GPIO_InitStructure.Pull  = GPIO_PULLUP;
         GPIO_InitStructure.Speed = GPIO_SPEED_FAST;
 
-        spi_cs.GPIOx = GPIOE;
-        spi_cs.GPIO_Pin = GPIO_PIN_4;
-        __HAL_RCC_GPIOE_CLK_ENABLE();
+        spi_cs.GPIOx = GPIOF;
+        spi_cs.GPIO_Pin = GPIO_PIN_6;
+        __HAL_RCC_GPIOF_CLK_ENABLE();
 
         GPIO_InitStructure.Pin = spi_cs.GPIO_Pin;
         HAL_GPIO_WritePin(spi_cs.GPIOx, spi_cs.GPIO_Pin, GPIO_PIN_SET);
         HAL_GPIO_Init(spi_cs.GPIOx, &GPIO_InitStructure);
 
 //        result = rt_spi_bus_attach_device(&spi_device, "spi40", "spi4", (void*)&spi_cs);
-        result = rt_spi_bus_attach_device(&spi_device, RT_SPI4_DEVICE_NAME, RT_SPI4_BUS_NAME, (void*)&spi_cs);
+        result = rt_spi_bus_attach_device(&spi_device, RT_SPI5_DEVICE_NAME, RT_SPI5_BUS_NAME, (void*)&spi_cs);
         if (result != RT_EOK)
         {
             return(result);
@@ -595,7 +595,7 @@ static int rt_hw_spi4_init(void)
 		
     return(RT_EOK);
 }
-INIT_BOARD_EXPORT(rt_hw_spi4_init);
+INIT_BOARD_EXPORT(rt_hw_spi5_init);
 
 /**
   * @brief : fm25vxx hardware init
@@ -610,19 +610,20 @@ int rt_hw_fm25vxx_init(void)
     rt_device_t device = RT_NULL;
 	
     /* SPI configure */
-    rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_SPI4_DEVICE_NAME);
+    rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_SPI5_DEVICE_NAME);
     
     if (rtt_dev->rt_spi_device == NULL)
     {
-        FRAM_PRINTF("spi4 bus device spi40 not found! fm25vxx init failed \r\n"); 
+        FRAM_PRINTF("spi5 bus device spi50 not found! fm25vxx init failed \r\n"); 
 		
         return RT_ERROR;
     }
+	
     cfg.mode = RT_SPI_MODE_MASK;
     cfg.max_hz = 50 * 1000 * 1000;
     cfg.data_width = 8;	
     rt_spi_configure(rtt_dev->rt_spi_device, &cfg);	
-	
+
     /* initialize lock */
     rt_mutex_init(&(rtt_dev->lock), "fram0", RT_IPC_FLAG_FIFO);	
 	
@@ -631,9 +632,9 @@ int rt_hw_fm25vxx_init(void)
     fm25vxx.flash_device.init = RT_NULL;
     fm25vxx.flash_device.open = RT_NULL;
     fm25vxx.flash_device.close = RT_NULL;
-    fm25vxx.flash_device.read = rt_fm25vxx_read;
-    fm25vxx.flash_device.write = rt_fm25vxx_write;
-    fm25vxx.flash_device.control = rt_fm25vxx_control;
+    fm25vxx.flash_device.read = rt_hw_fm25vxx_read;
+    fm25vxx.flash_device.write = rt_hw_fm25vxx_write;
+    fm25vxx.flash_device.control = rt_hw_fm25vxx_control;
 		
     /* no private */
     fm25vxx.user_data = RT_NULL;

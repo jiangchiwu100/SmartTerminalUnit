@@ -59,7 +59,7 @@
 extern struct rt_event calculate_event; 
 extern struct rt_event slave101_event; 
 extern struct rt_event slave104_event;
-extern struct rt_event sd2405_event;
+extern struct rt_event pcf8563_event;
 extern struct rt_event w5500_event; // w5500
 extern struct rt_event w5500_irq_event; // w5500
 

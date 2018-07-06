@@ -24,7 +24,7 @@ extern "C" {
 
 
 /* DEFINES -------------------------------------------------------------------*/
-#define RT_USING_IO_SPI1
+//#define RT_USING_IO_SPI1
 	
 	
 /* SPI hardware configuration */

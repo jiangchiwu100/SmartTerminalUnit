@@ -26,13 +26,13 @@
 #define IIC_PRINTF(...)   
 #endif /* DEBUG */
 
-#define IIC0_SDA_RCC_ENABLE()     __HAL_RCC_GPIOE_CLK_ENABLE()
-#define IIC0_SDA_GPIO_PORT        GPIOB
-#define IIC0_SDA_GPIO_PIN         GPIO_PIN_9
+#define IIC0_SDA_RCC_ENABLE()     __HAL_RCC_GPIOI_CLK_ENABLE()
+#define IIC0_SDA_GPIO_PORT        GPIOI
+#define IIC0_SDA_GPIO_PIN         GPIO_PIN_11
 
-#define IIC0_SCL_RCC_ENABLE()     __HAL_RCC_GPIOE_CLK_ENABLE()
-#define IIC0_SCL_GPIO_PORT        GPIOB
-#define IIC0_SCL_GPIO_PIN         GPIO_PIN_8
+#define IIC0_SCL_RCC_ENABLE()     __HAL_RCC_GPIOI_CLK_ENABLE()
+#define IIC0_SCL_GPIO_PORT        GPIOI
+#define IIC0_SCL_GPIO_PIN         GPIO_PIN_10
 
 
 #endif /* __DRV_IIC_H__ */
