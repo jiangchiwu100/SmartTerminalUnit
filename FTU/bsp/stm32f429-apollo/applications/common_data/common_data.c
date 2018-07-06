@@ -1677,7 +1677,7 @@ void rt_multi_common_data_read_config_from_fram(void)
 	{
 		for (i = 0; i < DI_NUM; i++)
 		{
-			g_DiCollect.stateLast[j] |= g_TelesignalDB[i];   	
+			g_DiCollect.stateLast[j] |= (g_TelesignalDB[i + j * 8] << i);   	
 		}	
 	}
 

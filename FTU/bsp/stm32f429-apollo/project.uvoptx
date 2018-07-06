@@ -197,18 +197,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>1038</LineNumber>
+          <LineNumber>256</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134532292</Address>
+          <Address>134786326</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\Users\91984\Desktop\鏂板缓鏂囦欢澶?鏂板缓鏂囦欢澶?FTU_Configurable\FTU\bsp\stm32f429-apollo\applications\common_data\common_data.c</Filename>
+          <Filename>D:\Users\91984\Desktop\鏂板缓鏂囦欢澶?Distributed_DTU\FTU\bsp\stm32f429-apollo\drivers\drv_di.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\template\applications/common_data/common_data.c\1038</Expression>
+          <Expression>\\template\drivers/drv_di.c\256</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>259</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134786362</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\Users\91984\Desktop\鏂板缓鏂囦欢澶?Distributed_DTU\FTU\bsp\stm32f429-apollo\drivers\drv_di.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\drivers/drv_di.c\259</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -3306,7 +3322,7 @@
 
   <Group>
     <GroupName>lkdGui</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

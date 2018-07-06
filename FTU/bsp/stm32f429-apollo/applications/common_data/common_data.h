@@ -363,10 +363,18 @@ typedef struct TagTelesignalAddr
 	switchClose,
     operatingMechanism,                             // 电容欠压(储能开入)
     lowPressure,                                    // 低气压
-    powerFaultAlarm,                                // 电源故障告警
-    batteryUnderVoltageAlarm,                       // 电池欠压告警
-    batteryActivationStatus,                        // 电池活化状态
-    batteryLossAlarm,                               // 电池失电告警
+    spareDi1,                                       // 备用1
+    spareDi2,                                       // 备用2
+    spareDi3,                                       // 备用3
+    spareDi4,                                       // 备用4
+    spareDi5,                                       // 备用5
+    spareDi6,                                       // 备用6
+    spareDi7,                                       // 备用7
+    spareDi8,                                       // 备用8
+    spareDi9,                                       // 备用9
+    spareDi10,                                      // 备用10
+    spareDi11,                                      // 备用11
+    spareDi12,                                      // 备用12		
     breakContact,                                   // 分断/联络
     recloseFAHardStrap,                             // 重合硬/FA压板
     functionHardStrap,                              // 功能投退硬压板

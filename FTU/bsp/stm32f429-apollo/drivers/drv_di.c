@@ -126,14 +126,18 @@ void rt_hw_di_check_task(rt_uint8_t clock)
 {
     rt_uint8_t i;
     static float s_shaking_time = 0;
-	
+		
+	pin_status[INDEX_KI_CS1].status = GPIO_PIN_RESET;			
+	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));	
+
     for (i = 0; i < DI_NUM; i++)
     {
         rt_device_read(rt_di_dev, 0, &pin_status[INDEX_DI1 + i], sizeof(struct rt_device_pin_status));	
     }
-	
-	pin_status[INDEX_KI_CS1].status = GPIO_PIN_RESET;			
+
+	pin_status[INDEX_KI_CS1].status = GPIO_PIN_SET;			
 	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));		
+	
     if(g_Parameter[POWERLOSS_NEGATE] == 0)
     {
         g_DiCollect.state[0] = pin_status[INDEX_DI1].status | pin_status[INDEX_DI2].status << 1 | (!pin_status[INDEX_DI3].status) << 2 | \
@@ -146,8 +150,6 @@ void rt_hw_di_check_task(rt_uint8_t clock)
                             pin_status[INDEX_DI4].status << 3 | pin_status[INDEX_DI5].status << 4 | pin_status[INDEX_DI6].status << 5 | \
                             pin_status[INDEX_DI7].status << 6 | (pin_status[INDEX_DI8].status) << 7;    
     }
-	pin_status[INDEX_KI_CS1].status = GPIO_PIN_SET;			
-	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));		
 	
     s_shaking_time = (uint32_t)g_Parameter[DI_SHAKING_TIME] / clock;
 
@@ -181,16 +183,16 @@ void rt_hw_di_check_task(rt_uint8_t clock)
                         DBWriteSOE(g_TelesignalAddr.lowPressure,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
                         break;  
                     case 4:
-                        DBWriteSOE(g_TelesignalAddr.powerFaultAlarm,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
+                        DBWriteSOE(g_TelesignalAddr.spareDi1,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
                         break;      
                     case 5:
-                        DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
+                        DBWriteSOE(g_TelesignalAddr.spareDi2,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
                         break;      
                     case 6:
-                        DBWriteSOE(g_TelesignalAddr.batteryActivationStatus,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
+                        DBWriteSOE(g_TelesignalAddr.spareDi3,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
                         break;  
                     case 7:
-                        DBWriteSOE(g_TelesignalAddr.batteryLossAlarm,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
+                        DBWriteSOE(g_TelesignalAddr.spareDi4,((g_DiCollect.state[0] >> i) & 0x01) ? OFF : ON);
                         break;                     
                 }			
 				
@@ -204,13 +206,18 @@ void rt_hw_di_check_task(rt_uint8_t clock)
 	pin_status[INDEX_KI_CS2].status = GPIO_PIN_RESET;			
 	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));		
 
-	g_DiCollect.state[1] = pin_status[INDEX_DI1].status | pin_status[INDEX_DI2].status << 1 | (!pin_status[INDEX_DI3].status) << 2 | \
-						pin_status[INDEX_DI4].status << 3 | pin_status[INDEX_DI5].status << 4 | pin_status[INDEX_DI6].status << 5 | \
-						pin_status[INDEX_DI7].status << 6 | (!pin_status[INDEX_DI8].status) << 7;
+    for (i = 0; i < DI_NUM; i++)
+    {
+        rt_device_read(rt_di_dev, 0, &pin_status[INDEX_DI1 + i], sizeof(struct rt_device_pin_status));	
+    }
 
 	pin_status[INDEX_KI_CS2].status = GPIO_PIN_SET;			
-	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));		
+	rt_device_write(rt_di_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));	
 	
+	g_DiCollect.state[1] = pin_status[INDEX_DI1].status | pin_status[INDEX_DI2].status << 1 | (pin_status[INDEX_DI3].status) << 2 | \
+						pin_status[INDEX_DI4].status << 3 | pin_status[INDEX_DI5].status << 4 | pin_status[INDEX_DI6].status << 5 | \
+						pin_status[INDEX_DI7].status << 6 | (!pin_status[INDEX_DI8].status) << 7;
+		
     s_shaking_time = (uint32_t)g_Parameter[DI_SHAKING_TIME] / clock;
 
     for (i = 0; i < DI_NUM; i++)
@@ -218,7 +225,7 @@ void rt_hw_di_check_task(rt_uint8_t clock)
         if ((g_DiCollect.state[1] & (0x01 << i)) == (g_DiCollect.stateLast[1] & (0x01 << i)))
         {
             g_DiCollect.counter[1][i] = 0;
-            g_TelesignalDB[i] = (g_DiCollect.state[1] >> i) & 0x01 ? OFF : ON;
+            g_TelesignalDB[i + 8] = (g_DiCollect.state[1] >> i) & 0x01 ? OFF : ON;
         }
         else
         {
@@ -230,30 +237,30 @@ void rt_hw_di_check_task(rt_uint8_t clock)
                 
                 switch(i)
                 {
-//                    case 0:
-//                        DBWriteSOE(g_TelesignalAddr.switchOpen,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;
-//                    case 1:
-//                        DBWriteSOE(g_TelesignalAddr.switchClose,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;   
-//                    case 2:
-//                        DBWriteSOE(g_TelesignalAddr.operatingMechanism,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;         
-//                    case 3:
-//                        DBWriteSOE(g_TelesignalAddr.lowPressure,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;  
-//                    case 4:
-//                        DBWriteSOE(g_TelesignalAddr.powerFaultAlarm,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;      
-//                    case 5:
-//                        DBWriteSOE(g_TelesignalAddr.batteryUnderVoltageAlarm,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;      
-//                    case 6:
-//                        DBWriteSOE(g_TelesignalAddr.batteryActivationStatus,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;  
-//                    case 7:
-//                        DBWriteSOE(g_TelesignalAddr.batteryLossAlarm,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
-//                        break;                     
+                    case 0:
+                        DBWriteSOE(g_TelesignalAddr.spareDi5,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;
+                    case 1:
+                        DBWriteSOE(g_TelesignalAddr.spareDi6,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;   
+                    case 2:
+                        DBWriteSOE(g_TelesignalAddr.spareDi7,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;         
+                    case 3:
+                        DBWriteSOE(g_TelesignalAddr.spareDi8,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;  
+                    case 4:
+                        DBWriteSOE(g_TelesignalAddr.spareDi9,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;      
+                    case 5:
+                        DBWriteSOE(g_TelesignalAddr.spareDi10,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;      
+                    case 6:
+                        DBWriteSOE(g_TelesignalAddr.spareDi11,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;  
+                    case 7:
+                        DBWriteSOE(g_TelesignalAddr.spareDi12,((g_DiCollect.state[1] >> i) & 0x01) ? OFF : ON);
+                        break;                     
                 }			
 				
                 g_DiCollect.stateLast[1] ^= (0x01 << i);

@@ -383,9 +383,6 @@ static void rt_watch_thread_entry(void *param)
 			
             /* 获取频率 */
 			GetFrequency();          
-
-            /* 电池活化 */
-            rt_hw_battery_activation(1);
 			
 			/* 通道监听 */
 			rt_channel_monitor_task();						
