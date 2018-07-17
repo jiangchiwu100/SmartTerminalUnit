@@ -91,7 +91,7 @@ uint16_t goose_publisher_process(uint16_t clock, struct TagGooseLink *publisher,
 		publisher->apdu.confRev = 0;
 		publisher->apdu.ndsCom = 0;
 //        publisher->apdu.data[0] = g_SelfSts[0].variableState;
-		memcpy(publisher->apdu.data, PublisherInfo.dataset, sizeof(publisher->apdu.data));
+//		memcpy(publisher->apdu.data, PublisherInfo.dataset, sizeof(publisher->apdu.data));
 
 		PublisherInfo.sqNum++;
 		

@@ -350,22 +350,13 @@ static void rt_hmicom_thread_entry(void *param)
 static void rt_watch_thread_entry(void *param)
 {  
     rt_err_t result;
-    rt_device_t sd2405_device;
-    
-    sd2405_device = rt_device_find(RT_I2C_PCF8563_NAME);
     
     other_protect_init();
     
     rt_sem_control(&watch_sem, RT_IPC_CMD_RESET, 0);
     
     for (;;)
-    {
-        result = rt_event_recv(&pcf8563_event, EVENT_RUN, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_NO, RT_NULL);              
-        if (result == RT_EOK)
-        {
-            rt_device_read(sd2405_device, 0, RT_NULL, 0);
-        }
-        
+    {        
         /* 永久等待信号量 */
         result = rt_sem_take(&watch_sem, RT_WAITING_FOREVER);  
         if (result == RT_EOK)  
@@ -385,7 +376,7 @@ static void rt_watch_thread_entry(void *param)
 			GetFrequency();          
 			
 			/* 通道监听 */
-			rt_channel_monitor_task();						
+			rt_channel_monitor_task();					
         }           
     }  
 }
@@ -1047,7 +1038,7 @@ int rt_multi_thread_start(void)
 //	{
 //	    THREAD_PRINTF("rt_thread_w5500_stack malloc failed");
 //	}	
-    w5500_8080_thread_start(RT_NULL); 
+//    w5500_8080_thread_start(RT_NULL); 
   #endif /* RT_USING_W5500 */
   
   #if RT_USING_SLAVE101 

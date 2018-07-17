@@ -15,16 +15,31 @@
 #include "board.h"
 #include "drv_rtc.h"
 #include <rtdevice.h>
-
+#include "common_data.h"
 
 #if defined(RT_USING_RTC)
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 static struct rt_device rtc;
 static RTC_HandleTypeDef RTC_Handler;  //RTC句柄
-
+static rt_device_t pcf8563;
 
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
+static void RTC_SetTimeToSys(void)
+{
+    RTC_TimeTypeDef RTC_TimeStruct;
+    RTC_DateTypeDef RTC_DateStruct;    
+	
+    HAL_RTC_GetTime(&RTC_Handler, &RTC_TimeStruct, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&RTC_Handler, &RTC_DateStruct, RTC_FORMAT_BIN);
+    g_SystemTime.second = RTC_TimeStruct.Seconds; 
+    g_SystemTime.minute = RTC_TimeStruct.Minutes; 
+    g_SystemTime.hour = RTC_TimeStruct.Hours;
+    g_SystemTime.day = RTC_DateStruct.Date;
+	g_SystemTime.week = RTC_DateStruct.WeekDay;	
+    g_SystemTime.month = RTC_DateStruct.Month; 
+    g_SystemTime.year = RTC_DateStruct.Year;	
+}	
 /**
   * @brief : get the RTC time stamp.
   * @param : None.
@@ -43,6 +58,7 @@ static time_t GetRTCTimeStamp(void)
     tm_new.tm_min  = RTC_TimeStruct.Minutes; 
     tm_new.tm_hour = RTC_TimeStruct.Hours;
     tm_new.tm_mday = RTC_DateStruct.Date;
+	tm_new.tm_wday = RTC_DateStruct.WeekDay;	
     tm_new.tm_mon  = RTC_DateStruct.Month-1; 
     tm_new.tm_year = RTC_DateStruct.Year+100;
 	
@@ -71,7 +87,7 @@ static rt_err_t SetRTCTimeStamp(time_t time_stamp)
     RTC_DateStruct.Date    = p_tm->tm_mday;
     RTC_DateStruct.Month   = p_tm->tm_mon+1 ; 
     RTC_DateStruct.Year    = p_tm->tm_year-100;
-    RTC_DateStruct.WeekDay = p_tm->tm_wday+1;
+	RTC_DateStruct.WeekDay = p_tm->tm_wday;
     HAL_RTC_SetTime(&RTC_Handler,&RTC_TimeStruct,RTC_FORMAT_BIN);
     HAL_RTC_SetDate(&RTC_Handler,&RTC_DateStruct,RTC_FORMAT_BIN);
   
@@ -126,7 +142,7 @@ static rt_err_t _rtc_control(rt_device_t dev, int cmd, void *args)
     {
         case RT_DEVICE_CTRL_RTC_GET_TIME:
             *(rt_uint32_t *)args = GetRTCTimeStamp();
-            RTC_PRINTF("RTC: get rtc_time %x\n", *(rt_uint32_t *)args());
+            RTC_PRINTF("RTC: get rtc_time %x\n", *(rt_uint32_t *)args);
             break;
 
         case RT_DEVICE_CTRL_RTC_SET_TIME:
@@ -148,8 +164,10 @@ static rt_err_t _rtc_control(rt_device_t dev, int cmd, void *args)
   * @update: [2017-12-07][Lexun][make code cleanup]
   */  
 rt_uint8_t RTC_Init(void)
-{      
-    RTC_Handler.Instance = RTC;
+{     
+    struct tm tm_pcf8563;	
+    
+	RTC_Handler.Instance = RTC;
     RTC_Handler.Init.HourFormat = RTC_HOURFORMAT_24; // RTC设置为24小时格式 
     RTC_Handler.Init.AsynchPrediv = 0X7F; // RTC异步分频系数(1~0X7F)
     RTC_Handler.Init.SynchPrediv = 0XFF; // RTC同步分频系数(0~7FFF)   
@@ -163,6 +181,17 @@ rt_uint8_t RTC_Init(void)
       
     if (HAL_RTCEx_BKUPRead(&RTC_Handler,RTC_BKP_DR0) != 0X5050) // 是否第一次配置
     { 
+        rt_device_read(pcf8563, 0, RT_NULL, 0); // 读取时钟芯片时间 g_SystemTime 
+
+		tm_pcf8563.tm_sec  = g_SystemTime.second; 
+		tm_pcf8563.tm_min  = g_SystemTime.minute; 
+		tm_pcf8563.tm_hour = g_SystemTime.hour;
+		tm_pcf8563.tm_mday = g_SystemTime.day;
+	    tm_pcf8563.tm_wday = g_SystemTime.week;			
+		tm_pcf8563.tm_mon  = g_SystemTime.month-1; 
+		tm_pcf8563.tm_year = g_SystemTime.year+100;
+		
+		SetRTCTimeStamp(mktime(&tm_pcf8563));			
 //        RTC_Set_Time(23,59,56,RTC_HOURFORMAT12_PM); // 设置时间 ,根据实际时间修改
 //        RTC_Set_Date(15,12,27,7); // 设置日期
         HAL_RTCEx_BKUPWrite(&RTC_Handler,RTC_BKP_DR0,0X5050); // 标记已经初始化过了
@@ -277,6 +306,22 @@ void RTC_WKUP_IRQHandler(void)
     HAL_RTCEx_WakeUpTimerIRQHandler(&RTC_Handler); 
 }
 
+//RTC WAKE UP中断处理
+void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
+{
+	g_SystemTime.msecond = 0;     
+		
+	if (++g_SystemTime.second > 59)
+	{
+//		g_SystemTime.second = 0;
+		RTC_SetTimeToSys();
+//		if (++g_SystemTime.minute > 59)
+//		{	
+//			RTC_SetTimeToSys();
+//			rt_device_read(pcf8563, 0, RT_NULL, 0);            
+//		}  									
+	}	
+}
 /**
   * @brief : Register RTC device.
   * @param : [device] Pointer to device descriptor.
@@ -312,14 +357,27 @@ rt_err_t rt_hw_rtc_register(rt_device_t device,	const char *name,	rt_uint32_t fl
   */  
 int rt_hw_rtc_init(void)
 {
+    pcf8563 = rt_device_find(RT_I2C_PCF8563_NAME);
+	
+    if (pcf8563 == NULL)
+    {
+        RTC_PRINTF("pcf8563 is not found! \r\n"); 		
+    }
+    else	
+    {
+        rt_device_open(pcf8563, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	  			
+    }
+	
     RTC_Init();
 	
     /* register rtc device */
     rt_hw_rtc_register(&rtc, RT_RTC_NAME, 0);
+
+    RTC_Set_WakeUp(RTC_WAKEUPCLOCK_CK_SPRE_16BITS,0); //配置WAKE UP中断,1秒钟中断一次 
 	
     return(RT_EOK);
 }
-//INIT_BOARD_EXPORT(rt_hw_rtc_init);
+INIT_APP_EXPORT(rt_hw_rtc_init);
 
 #endif /* RT_USING_RTC */
 

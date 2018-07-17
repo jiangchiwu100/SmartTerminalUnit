@@ -171,9 +171,24 @@ static rt_uint8_t rt_hw_close_recovery(void)
 {
     rt_uint8_t rlt = 0xff;
     static rt_uint32_t s_fault_counter;
-
-    if (CLOSING)
+    static rt_uint32_t s_do_check_timer;
+    
+	if (CLOSING)
     {
+		if (s_do_check_timer >= 2)
+		{
+			rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+			
+			if (pin_status[INDEX_OPEN_CLOSE_DI].status == GPIO_PIN_RESET)
+			{
+				DBWriteSOE(g_TelesignalAddr.deviceFault, ON);     		
+			}		    
+		}
+		else
+		{
+		    s_do_check_timer++;
+		}
+		
         pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;
         pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
 		
@@ -184,6 +199,7 @@ static rt_uint8_t rt_hw_close_recovery(void)
 			
             CLOSING = 0;
             s_fault_counter = 0;
+			s_do_check_timer = 0;
             DoStr.closingDelay = 0;
 			
 		    if (g_pFixedValue[CLOSING_LOOP_SWITCH])
@@ -209,7 +225,8 @@ static rt_uint8_t rt_hw_close_recovery(void)
         {
             CLOSING = 0;
             s_fault_counter = 0;
-            
+            s_do_check_timer = 0;
+			
 		    if (g_pFixedValue[CLOSING_LOOP_SWITCH])
 			{
                 rlt = CLOSE_LOOP_EXECUTE_FAIL;  
@@ -284,9 +301,25 @@ static rt_uint8_t rt_hw_open_recovery(void)
 {
     rt_uint8_t rlt = 0xFF;
     static uint32_t faultCounter;
-
+    static uint32_t do_check_timer = 0;
+	
     if (OPENING)
     {
+		if (do_check_timer >= 2)
+		{
+			rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+			
+			if (pin_status[INDEX_OPEN_CLOSE_DI].status == GPIO_PIN_RESET)
+			{
+				DBWriteSOE(g_TelesignalAddr.deviceFault, ON);     		
+			}		    
+		}
+		else
+		{
+		    do_check_timer++;
+		}
+		
+		
         pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;
         pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;	
 		
@@ -297,6 +330,7 @@ static rt_uint8_t rt_hw_open_recovery(void)
 			
             OPENING = 0;
             faultCounter = 0;
+			do_check_timer = 0;			
             DoStr.openingDelay = 0;
             rlt = OPEN_EXECUTE_SUCCESS;
         }
@@ -314,6 +348,7 @@ static rt_uint8_t rt_hw_open_recovery(void)
         {
             OPENING = 0;
             faultCounter = 0;
+			do_check_timer = 0;
             rlt = OPEN_EXECUTE_FAIL;
             DBWriteSOE(g_TelesignalAddr.deviceFault, ON);
         }
@@ -329,7 +364,7 @@ static rt_uint8_t rt_hw_open_recovery(void)
   */
 static void rt_hw_coil_energy_storage(void)
 {
-//    static uint16_t s_counter;
+    static uint16_t s_counter;
 
     if (g_TelesignalDB[g_TelesignalAddr.deviceFault] == OFF && g_TelesignalDB[g_TelesignalAddr.operatingMechanism] == OFF)// && s_counter < ENERGY_STORAGE_TIME) // 开始储能
     {
@@ -337,7 +372,8 @@ static void rt_hw_coil_energy_storage(void)
         {
             pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_SET;			
             rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));			
-            ENERGY_STORAGEING = 1;        
+            ENERGY_STORAGEING = 1; 
+            s_counter = 0;			
         }
         //s_counter++;		
     }
@@ -355,18 +391,31 @@ static void rt_hw_coil_energy_storage(void)
         pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_CLR;			
         rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));	
         ENERGY_STORAGEING = 0;
+		s_counter = 0;
     }
+	
+	if (s_counter >= 2)
+	{
+		rt_device_read(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DI], sizeof(struct rt_device_pin_status));
+		
+		if ((ENERGY_STORAGEING == 1 && pin_status[INDEX_ENERGY_STORAGE_DI].status == GPIO_PIN_SET) || (ENERGY_STORAGEING == 0 && pin_status[INDEX_ENERGY_STORAGE_DI].status == GPIO_PIN_RESET))
+		{
+			DBWriteSOE(g_TelesignalAddr.deviceFault, ON);     		
+		}	     
+	}
+	else
+	{
+	    s_counter++;
+	}
 }
 
 void rt_do_test(void)
 {
-//	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;			
-//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
+	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_CLR;			
+	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
 	
 //	pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_CLR;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));
-
-//	rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
 
 //	pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_CLR;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));
@@ -386,13 +435,16 @@ void rt_do_test(void)
 //	pin_status[INDEX_BACKEUP_DO].status = DO_CLR;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BACKEUP_DO], sizeof(struct rt_device_pin_status));	
 
-//    rt_thread_delay(1000);  
-//	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
-//	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
+    rt_thread_delay(1000);  
+	rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+	
+	pin_status[INDEX_SWITCH_OPEN_DO].status = DO_SET;			
+	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_OPEN_DO], sizeof(struct rt_device_pin_status));	
 
 //	pin_status[INDEX_SWITCH_CLOSE_DO].status = DO_SET;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_SWITCH_CLOSE_DO], sizeof(struct rt_device_pin_status));	
-//    rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
+    rt_thread_delay(1000); 
+    rt_device_read(rt_do_dev, 0, &pin_status[INDEX_OPEN_CLOSE_DI], sizeof(struct rt_device_pin_status));
 
 //	pin_status[INDEX_ENERGY_STORAGE_DO].status = DO_SET;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_ENERGY_STORAGE_DO], sizeof(struct rt_device_pin_status));
@@ -412,7 +464,6 @@ void rt_do_test(void)
 //	pin_status[INDEX_BACKEUP_DO].status = DO_SET;			
 //	rt_device_write(rt_do_dev, 0, &pin_status[INDEX_BACKEUP_DO], sizeof(struct rt_device_pin_status));
 
-//    rt_thread_delay(1000); 
 }
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**

@@ -25,7 +25,6 @@
 #define RTC_PRINTF(format,args...)
 #endif
 
-
 /* PUBLIC FUNCTION -----------------------------------------------------------*/
 int rt_hw_rtc_init(void);
 

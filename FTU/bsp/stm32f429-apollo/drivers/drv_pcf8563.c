@@ -102,9 +102,12 @@ static rt_size_t rt_hw_pcf8563_read(rt_device_t dev, rt_off_t pos, void* buffer,
   */
 static rt_size_t rt_hw_pcf8563_write(rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size) 
 {
+    struct tm tm_pcf8563;	
+    rt_device_t rtc_dev; 	
 	/* sec, min, hour, week, day, mon, year */
     rt_uint8_t calendar[8] = {0x02};
 	rt_uint8_t *time = (rt_uint8_t *)buffer;
+	time_t time_stamp;
 	
     calendar[1] = DecimalToBCD(*(time + 2));
     calendar[2] = DecimalToBCD(*(time + 3));
@@ -115,6 +118,27 @@ static rt_size_t rt_hw_pcf8563_write(rt_device_t dev, rt_off_t pos, const void* 
     calendar[7] = DecimalToBCD(*(time + 8));
 
     rt_i2c_master_send(i2c_bus_device, PCF8563_W_ADDR, RT_I2C_WR, calendar, 8);	
+	
+    rtc_dev = rt_device_find(RT_RTC_NAME);		
+	
+    if (rtc_dev == RT_NULL)
+    {
+        PCF8563_PRINTF("rtc device is not found in pcf8563 write!!!/r/n "); 
+    }
+    else
+    {
+		tm_pcf8563.tm_sec  = *(time + 2); 
+		tm_pcf8563.tm_min  = *(time + 3); 
+		tm_pcf8563.tm_hour = *(time + 4);
+		tm_pcf8563.tm_mday = *(time + 6);
+		tm_pcf8563.tm_wday = *(time + 5);	
+		tm_pcf8563.tm_mon  = *(time + 7) - 1; 
+		tm_pcf8563.tm_year = *(time + 8) + 100;
+		
+        time_stamp = mktime(&tm_pcf8563);
+	 	
+        rt_device_control(rtc_dev, RT_DEVICE_CTRL_RTC_SET_TIME, &time_stamp); 
+    }
 	
 	return RT_EOK;	
 }
@@ -171,8 +195,10 @@ static void rt_hw_pcf8563_config(void)
 {
     rt_uint8_t i;
     rt_uint8_t data[2];
-    rt_uint8_t pcf8563Data[]       = {0x00, 0x11, 0x00, 0x00, 0x00, 0x00, 0x80, 0x81, 0x40};
-    rt_uint8_t pcf8563MemoryAddr[] = {0x00, 0x01, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+    rt_uint8_t pcf8563Data[]       = {0x00, 0x00};
+    rt_uint8_t pcf8563MemoryAddr[] = {0x00, 0x01};	
+//    rt_uint8_t pcf8563Data[]       = {0x00, 0x11, 0x00, 0x00, 0x00, 0x00, 0x80, 0x81, 0x40};
+//    rt_uint8_t pcf8563MemoryAddr[] = {0x00, 0x01, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
 //    struct rt_i2c_msg msg;
 	
     for (i = 0; i < sizeof(pcf8563MemoryAddr); i++)
@@ -220,21 +246,21 @@ static rt_err_t rt_hw_pcf8563_control(rt_device_t dev, int cmd, void *args)
   * @updata: [2018-01-14][Sunxr][newly increased]
   */
 int rt_hw_pcf8563_init(void)
-{
+{    
     static rt_device_t device;
     static struct rt_device_pin *pcf8563_irq_pin;
 
-    pcf8563_irq_pin = (struct rt_device_pin *)rt_device_find(RT_PIN_NAME);
-	
-    if (pcf8563_irq_pin == RT_NULL)
-    {
-        PCF8563_PRINTF("pin device is not found!!!/r/n "); 
-    }
-    else
-    {
-        pcf8563_irq_pin->ops->pin_attach_irq(device, 129, PIN_IRQ_MODE_FALLING, rt_hw_pcf8563_irq_service, RT_NULL);  
-        pcf8563_irq_pin->ops->pin_irq_enable(device, 129, PIN_IRQ_ENABLE, INT_EXTI9_5_PRIO); 
-    }
+//    pcf8563_irq_pin = (struct rt_device_pin *)rt_device_find(RT_PIN_NAME);
+//	
+//    if (pcf8563_irq_pin == RT_NULL)
+//    {
+//        PCF8563_PRINTF("pin device is not found!!!/r/n "); 
+//    }
+//    else
+//    {
+//        pcf8563_irq_pin->ops->pin_attach_irq(device, 129, PIN_IRQ_MODE_FALLING, rt_hw_pcf8563_irq_service, RT_NULL);  
+//        pcf8563_irq_pin->ops->pin_irq_enable(device, 129, PIN_IRQ_ENABLE, INT_EXTI9_5_PRIO); 
+//    }
 	
     i2c_bus_device = (struct rt_i2c_bus_device *)rt_device_find(RT_I2C0_NAME);
 	

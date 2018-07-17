@@ -978,7 +978,7 @@ uint8_t DB_NVA_Check(void)
     {
         s_Counter = 0;
         
-        for(i = 0;i < g_TelemetryCfg_Len; i++)
+        for (i = 0;i < g_TelemetryCfg_Len; i++)
         {
             if(((TelemetryCfg[i].menuNum == SECONDRY)||(TelemetryCfg[i].menuNum == ONCE))&&(TelemetryCfg[i].pDeadzone != NULL))
             {
@@ -1796,9 +1796,9 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.ip[2] = (uint8_t)g_Parameter[NET_IP2_2];
     g_EthW5500.ip[3] = (uint8_t)g_Parameter[NET_IP2_3];
     
-    g_EthDP83848.mac[0] = 0x00;
+    g_EthDP83848.mac[0] = 0x01;
     g_EthDP83848.mac[1] = 0x80;
-    g_EthDP83848.mac[2] = 0xE1;
+    g_EthDP83848.mac[2] = 0xC2;
     g_EthDP83848.mac[3] = *(rt_uint8_t*)(UID_BASE + 4);
     g_EthDP83848.mac[4] = *(rt_uint8_t*)(UID_BASE + 2);
     g_EthDP83848.mac[5] = *(rt_uint8_t*)(UID_BASE + 0);

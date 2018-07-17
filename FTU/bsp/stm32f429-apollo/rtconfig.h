@@ -226,6 +226,7 @@
 /* RT_USING_LWIP141 is not set */
 #define RT_USING_LWIP202
 /* RT_LWIP_IGMP is not set */
+//#define RT_LWIP_IGMP
 #define RT_LWIP_ICMP
 /* RT_LWIP_SNMP is not set */
 #define RT_LWIP_DNS
@@ -442,7 +443,8 @@
 #define INT_EXTI15_10_PRIO                                             ((0x00 << 4) | 0x01) // AD7616BUSY
 #define INT_EXTI3_PRIO                                                 ((0x00 << 4) | 0x02) // w5500 
 #define INT_ETH_PRIO                                                   ((0x00 << 4) | 0x03) // Ethernet
-#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x04) // pcf8563
+#define INT_RTC_WKUP_PRIO                                              ((0x00 << 4) | 0x04) // RTC WKUP
+//#define INT_EXTI9_5_PRIO                                               ((0x00 << 4) | 0x04) // pcf8563
 #define INT_TIM3_PRIO                                                  ((0x01 << 4) | 0x01) // frequency measurement
 #define INT_TIM6_PRIO                                                  ((0x01 << 4) | 0x00) // 1ms timer
 #define INT_TIM2_PRIO                                                  ((0x01 << 4) | 0x02) // none
@@ -457,7 +459,6 @@
 #define INT_SPI_DMA_TX_PRIO                                            ((0x00 << 4) | 0x06) // none
 #define INT_SPI_DMA_RX_PRIO                                            ((0x00 << 4) | 0x00) // none
 #define INT_RTC_ALARM_PRIO                                             ((0x01 << 4) | 0x02) // RTC alarm 
-#define INT_RTC_WKUP_PRIO                                              ((0x02 << 4) | 0x02) // RTC WKUP
 #define INT_SDMMC1_PRIO                                                ((0x02 << 4) | 0x00) // SDMMC1 
 #define INT_DMA2_STREAM3_PRIO                                          ((0x03 << 4) | 0x00) // DMA2_Stream3,none
 #define INT_DMA2_STREAM6_PRIO                                          ((0x03 << 4) | 0x00) // DMA2_Stream6,none

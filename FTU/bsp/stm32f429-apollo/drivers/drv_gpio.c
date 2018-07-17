@@ -98,8 +98,8 @@ struct rt_device_pin_status pin_status[] =
     {DI7, GPIO_PIN_SET},
     {DI8, GPIO_PIN_SET},
 
-    {OPEN_CLOSE_DI, GPIO_PIN_RESET},  
-    {ENERGY_STORAGE_DI, GPIO_PIN_RESET},  	
+    {OPEN_CLOSE_DI, GPIO_PIN_SET},  
+    {ENERGY_STORAGE_DI, GPIO_PIN_SET},  	
 	{MCU_POWER_ALARM_DI, GPIO_PIN_RESET}, 
     {AD7616_RESET, GPIO_PIN_SET},
     {WDG_FEED, GPIO_PIN_SET},    

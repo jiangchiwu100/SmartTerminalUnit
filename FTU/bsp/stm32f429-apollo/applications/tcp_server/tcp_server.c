@@ -11,6 +11,8 @@
   
   
 /* INCLUDE FILES -------------------------------------------------------------*/
+#include <sys/socket.h>
+#include <dfs_select.h>
 #include "stdio.h"
 #include "tcp_server.h"
 #include "lwip/opt.h"
@@ -20,6 +22,7 @@
 #include "drv_w5500.h"
 #include "common_data.h"
 #include "lwip/sockets.h"
+
 #ifdef RT_USING_W5500
 #include ".\MultiThread\multi_thread.h"
 #include "drv_w5500_socket.h"
@@ -312,133 +315,250 @@ static inline void dp83848_tcpserver_init(void)
   * @return: none
   * @updata: [2017-12-07][Lexun][make the code cleanup]
   */  
+//void rt_dp83848_tcpserver_thread_entry(void *param)
+//{
+//    int sock;
+//    rt_uint32_t sin_size = sizeof(struct sockaddr_in); 
+//    int accept_sock; 
+//    rt_int32_t ret = 0, recv_size = 0;
+//    rt_bool_t running = RT_TRUE;
+//    rt_uint32_t timeout = 10;
+//    uint8_t buf[512];
+//    err_t err;
+
+//    struct sockaddr_in server_addr, client_addr;
+//    fd_set recvset,sentset;
+////    fd_set sentset;
+//    struct timeval tv;
+//		
+//    tv.tv_sec = 0;
+//    tv.tv_usec = 10000;
+
+//    dp83848_tcpserver_init();
+//		
+//    if ((sock = lwip_socket(AF_INET, SOCK_STREAM, 0)) == -1)
+//    {
+//        return;
+//    }
+
+//    server_addr.sin_family = AF_INET;
+//    server_addr.sin_port = htons(2404);
+//    server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
+//    rt_memset(&(server_addr.sin_zero), 8, sizeof(server_addr.sin_zero));
+
+//    if (lwip_bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
+//    {
+//        return;
+//    }
+
+//    if (lwip_listen(sock, 1) == -1)
+//    {
+//        return;
+//    }
+//		
+//    while (1)
+//    {
+//        accept_sock = lwip_accept(sock, (struct sockaddr *)&client_addr, &sin_size);
+
+//        lwip_setsockopt(accept_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
+//        running = RT_TRUE;
+//        
+//        DP83848TcpServerFlag = 0x00;
+//        DP83848TcpServerFlag |= LWIP_TCP_SERVER_LINKUP;
+//		DP83848TcpServerTxLen = 0;
+//				
+//        while (running)
+//        {
+//            FD_ZERO(&recvset);
+//            FD_SET(accept_sock, &recvset);
+////            FD_ZERO(&sentset);
+////            FD_SET(accept_sock, &sentset);
+//            
+//            ret = lwip_select(accept_sock+1, &recvset, 0, 0, &tv);
+//          
+//            if (ret < 0)
+//            {
+//                running = RT_FALSE;
+//            }
+//          
+//            if (ret == 0)
+//            {
+//                if ((DP83848TcpServerFlag & LWIP_SEND_DATA) == LWIP_SEND_DATA) 
+//                {
+//                    DP83848TcpServerFlag &= ~LWIP_SEND_DATA;
+//                    err = lwip_send(accept_sock, DP83848TcpServerTxBuf, DP83848TcpServerTxLen, 0);
+//                    DP83848TcpServerTxLen = 0;
+//                    if (err == -1) 
+//                    {
+//                        running = RT_FALSE;
+//                    }
+//                }
+//            }
+//						
+//            if (ret > 0)
+//            {
+//                if (FD_ISSET(accept_sock, &recvset))
+//                {
+//                    recv_size = lwip_recv(accept_sock, buf, 512, 0);
+//                    
+//                    if((recv_size <= 0)||(recv_size > 512))
+//                    {
+//                        running = RT_FALSE;
+//                    }
+//                    else
+//                    {
+//                        QueueWriteBlock(&DP83848TcpServerRxCB, buf, recv_size);
+//                    }
+//                }
+///*
+//                if (FD_ISSET(accept_sock, &sentset))
+//                {
+//                    if (iec104_client->ctx.time_out_flag==1||iec104_client->ctx.time_out_flag == 2)
+//                    {
+//                        running = RT_FALSE;
+//                    }
+
+//                    if (iec104_client_worker_entry(iec104_client, 0) == 0)
+//                    {
+//                        syslog(LOG_COMMUNICATE, 1, socketname, 1);
+//                        rt_kprintf("iec104 send error.\n");
+//                        running = RT_FALSE;
+//                    }
+//                }
+//*/
+//            }
+//			         
+//            if ((DP83848TcpServerFlag & LWIP_TCP_SERVER_DISCONNECT) == LWIP_TCP_SERVER_DISCONNECT)
+//            {
+//                DP83848TcpServerFlag &= ~LWIP_TCP_SERVER_DISCONNECT;
+//                running = RT_FALSE;
+//            }
+//        }
+//        lwip_close(accept_sock);
+//        DP83848TcpServerFlag &= ~LWIP_TCP_SERVER_LINKUP;
+//        rt_thread_delay(500);
+//    }
+//}
+
+#define SERV_PORT  8080
+#define BUF_SIZE   512
 void rt_dp83848_tcpserver_thread_entry(void *param)
 {
-    int sock;
-    rt_uint32_t sin_size = sizeof(struct sockaddr_in); 
-    int accept_sock; 
-    rt_int32_t ret = 0, recv_size = 0;
-    rt_bool_t running = RT_TRUE;
-    rt_uint32_t timeout = 10;
-    uint8_t buf[512];
-    err_t err;
-
-    struct sockaddr_in server_addr, client_addr;
-    fd_set recvset,sentset;
-//    fd_set sentset;
+	err_t result;
+    int sockfd;	
+    int bytes_read;	
+    int bytes_write;	
+	
+    uint8_t recv_data[BUF_SIZE];	
+    rt_int32_t ret = 0;	
+    rt_uint32_t addr_len;    
+	rt_uint32_t timeout = 10;
+	
+	fd_set recvset;
     struct timeval tv;
-		
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+	struct sockaddr_in default_addr;
+	
+	w5500_udp_init();
+	dp83848_tcpserver_init();
+	
     tv.tv_sec = 0;
-    tv.tv_usec = 10000;
+    tv.tv_usec = 1;
 
-    dp83848_tcpserver_init();
-		
-    if ((sock = lwip_socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    /* 创建一个socket, 类型是 SOCK_DGRAM, UDP类型 */
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
+        rt_kprintf("Socket error\n");
         return;
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(2404);
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
-    rt_memset(&(server_addr.sin_zero), 8, sizeof(server_addr.sin_zero));
+    setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &timeout, sizeof(timeout));	
+    
+	server_addr.sin_family = AF_INET;		/*IPv4因特网域*/
+    server_addr.sin_port = htons(SERV_PORT);    /*端口号*/
+    server_addr.sin_addr.s_addr = INADDR_ANY;   /* 本机IP*/
+    rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
 
-    if (lwip_bind(sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
+	client_addr.sin_family = AF_INET;
+	client_addr.sin_port = htons(SERV_PORT);
+	client_addr.sin_addr.s_addr = inet_addr("192.168.60.50");   
+    rt_memset(&(client_addr.sin_zero), 0, sizeof(client_addr.sin_zero));	
+
+	default_addr.sin_family = AF_INET;
+	default_addr.sin_port = htons(SERV_PORT);
+	default_addr.sin_addr.s_addr = inet_addr("192.168.60.255");   
+    rt_memset(&(default_addr.sin_zero), 0, sizeof(default_addr.sin_zero));
+							 
+    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
     {
+        rt_kprintf("Bind error\n");
         return;
     }
 
-    if (lwip_listen(sock, 1) == -1)
-    {
-        return;
-    }
-		
+//	setsockopt(sockfd, SOL_SOCKET, IP_ADD_MEMBERSHIP, &timeout, sizeof(timeout));	
+//	igmp_joingroup(server_addr.sin_addr.s_addr, default_addr.sin_addr.s_addr);
+//	igmp_joingroup(server_addr.sin_addr.s_addr, client_addr.sin_addr.s_addr);
+	
+    addr_len = sizeof(struct sockaddr);
+
     while (1)
-    {
-        accept_sock = lwip_accept(sock, (struct sockaddr *)&client_addr, &sin_size);
+    {		
+		result = rt_event_recv(&w5500_event, EVENT_RUN | EVENT_GOOSE_HAVE_CHANGE | EVENT_REC_IRQ_W5500, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, RT_NULL);
+		
+		FD_ZERO(&recvset);
+		FD_SET(sockfd, &recvset);	
+		
+		ret = select(sockfd + 1, &recvset, 0, 0, &tv);	
 
-        lwip_setsockopt(accept_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
-        running = RT_TRUE;
-        
-        DP83848TcpServerFlag = 0x00;
-        DP83848TcpServerFlag |= LWIP_TCP_SERVER_LINKUP;
-		DP83848TcpServerTxLen = 0;
+		if (ret < 0)
+		{
+            closesocket(sockfd);			
+			break;
+		}
+		else if (ret == 0)
+		{
+			W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+			
+			if (goose_have_change)
+			{
+				goose_have_change = 0;
+			}
+			
+			if (W5500_UDP_TxBuf[0])
+			{
+				bytes_write = sendto(sockfd, W5500_UDP_TxBuf, W5500_UDP_TxLen, 0, (struct sockaddr *)&default_addr, sizeof(struct sockaddr));
+				//bytes_write = sendto(sockfd, W5500_UDP_TxBuf, W5500_UDP_TxLen, 0, (struct sockaddr *)&client_addr, sizeof(struct sockaddr));
+                W5500_UDP_TxBuf[0] = 0;
+				if (bytes_write <= 0)
+				{
+					closesocket(sockfd);			
+					break;				
+				}					
+			}						
+		}
+        else if (ret > 0)
+		{
+			if (FD_ISSET(sockfd, &recvset))
+			{
+				bytes_read = recvfrom(sockfd, recv_data, BUF_SIZE - 1, 0, (struct sockaddr *)&client_addr, &addr_len);	
 				
-        while (running)
-        {
-            FD_ZERO(&recvset);
-            FD_SET(accept_sock, &recvset);
-//            FD_ZERO(&sentset);
-//            FD_SET(accept_sock, &sentset);
-            
-            ret = lwip_select(accept_sock+1, &recvset, 0, 0, &tv);
-          
-            if (ret < 0)
-            {
-                running = RT_FALSE;
-            }
-          
-            if (ret == 0)
-            {
-                if ((DP83848TcpServerFlag & LWIP_SEND_DATA) == LWIP_SEND_DATA) 
-                {
-                    DP83848TcpServerFlag &= ~LWIP_SEND_DATA;
-                    err = lwip_send(accept_sock, DP83848TcpServerTxBuf, DP83848TcpServerTxLen, 0);
-                    DP83848TcpServerTxLen = 0;
-                    if (err == -1) 
-                    {
-                        running = RT_FALSE;
-                    }
-                }
-            }
-						
-            if (ret > 0)
-            {
-                if (FD_ISSET(accept_sock, &recvset))
-                {
-                    recv_size = lwip_recv(accept_sock, buf, 512, 0);
-                    
-                    if((recv_size <= 0)||(recv_size > 512))
-                    {
-                        running = RT_FALSE;
-                    }
-                    else
-                    {
-                        QueueWriteBlock(&DP83848TcpServerRxCB, buf, recv_size);
-                    }
-                }
-/*
-                if (FD_ISSET(accept_sock, &sentset))
-                {
-                    if (iec104_client->ctx.time_out_flag==1||iec104_client->ctx.time_out_flag == 2)
-                    {
-                        running = RT_FALSE;
-                    }
-
-                    if (iec104_client_worker_entry(iec104_client, 0) == 0)
-                    {
-                        syslog(LOG_COMMUNICATE, 1, socketname, 1);
-                        rt_kprintf("iec104 send error.\n");
-                        running = RT_FALSE;
-                    }
-                }
-*/
-            }
-			         
-            if ((DP83848TcpServerFlag & LWIP_TCP_SERVER_DISCONNECT) == LWIP_TCP_SERVER_DISCONNECT)
-            {
-                DP83848TcpServerFlag &= ~LWIP_TCP_SERVER_DISCONNECT;
-                running = RT_FALSE;
-            }
-        }
-        lwip_close(accept_sock);
-        DP83848TcpServerFlag &= ~LWIP_TCP_SERVER_LINKUP;
-        rt_thread_delay(500);
+				if (bytes_read <= 0)
+				{
+					closesocket(sockfd);
+					break;				    
+				}
+				else
+				{
+					sendto(sockfd, recv_data, bytes_read, 0, (struct sockaddr *)&default_addr, sizeof(struct sockaddr));	
+				}							
+			}		
+		}			
     }
+
+    return;
 }
-
-
 /**
   * @brief : Check the link state of tcp server of DP83848.
   * @param : none
