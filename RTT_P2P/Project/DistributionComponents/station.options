@@ -1,0 +1,23 @@
+# This file defines the nanopb-specific options for the messages defined
+# in fileproto.proto.
+#
+# If you come from high-level programming background, the hardcoded
+# maximum lengths may disgust you. However, if your microcontroller only
+# has a few kB of ram to begin with, setting reasonable limits for
+# filenames is ok.
+#
+# On the other hand, using the callback interface, it is not necessary
+# to set a limit on the number of files in the response.
+
+node_property.neighbourCollect  max_count:16
+node_property.indexArea  max_count:2
+node_property.isExitArea  max_count:2
+node_property.isGather  max_count:2
+
+connect_switch.path1 max_count:16
+connect_switch.path2 max_count:16
+
+distribution_power_area.areaSwitch max_count:16
+
+StationMessage.idCollect  max_count:64
+StationMessage.power_area max_count:2

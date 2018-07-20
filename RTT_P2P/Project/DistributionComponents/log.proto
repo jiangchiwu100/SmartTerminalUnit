@@ -1,0 +1,20 @@
+// A very simple protocol definition, consisting of only
+// one message.
+//H:\CodeResourceLib\通讯框架\nanopb\nanopb-0.3.9.1-windows-x86\generator-bin
+//generator-bin/protoc --nanopb_out=. simple.proto
+//H:\CodeResourceLib\通讯框架\nanopb\nanopb-0.3.9.1-windows-x86\generator-bin/protoc --nanopb_out=. simple.proto
+
+syntax = "proto2";
+
+message ExceptionRecord {
+	optional uint32 id = 1;                //id代号
+	optional uint32 time = 2;                //id代号
+    optional string functionName = 3;   	  //函数名称    
+    optional uint32 line = 4;              //行号
+    optional uint32 code = 5;              //代号 
+}
+
+message LogRecord {
+	repeated  ExceptionRecord exception = 1;                //异常
+  
+}
