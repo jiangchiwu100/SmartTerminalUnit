@@ -72,7 +72,7 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
 * @brief ：传输信息, 此处动态内存，内部分配，内部释放
 * @param ：
 * @param ： len    元字节数组长度
-* @param ： List* switchList    待更新列表
+* @param ： ListDouble* switchList    待更新列表
 * @return： 0-正常返回
 * @update： [2018-06-26][张宇飞][BRIEF]
 */
@@ -126,7 +126,7 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
 * @brief ：传输信息, 此处动态内存，内部分配，内部释放
 * @param ：
 * @param ： len    元字节数组长度
-* @param ： List* switchList    待更新列表
+* @param ： ListDouble* switchList    待更新列表
 * @return： 0-正常返回
 * @update： [2018-06-26][张宇飞][BRIEF]
 *[2018-07-19][张宇飞][修改形参]
@@ -302,7 +302,7 @@ static __inline bool IsGatherCompleted(FaultDealHandle* handle)
 static __inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
     bool isFaultEdgeConnected = handle->switchProperty->fault.isFaultEdgeConnected;
-	List* list = &(handle->switchProperty->parent->connectPath);
+	ListDouble* list = &(handle->switchProperty->parent->connectPath);
 	uint8_t size = list_size(list);
 	uint8_t num = 0;
 	if (size == 0)
@@ -410,7 +410,7 @@ static bool IsExitRemoveSuccessPath(StationTopology* topology)
 {
 	bool state = false;
 	SwitchProperty* node;
-	List* list;
+	ListDouble* list;
 
 	for (uint8_t i = 0; i < topology->connect.count; i++)
 	{
@@ -531,7 +531,7 @@ static uint8_t TransmitData(FaultDealHandle* handle, PointUint8* packet)
 * @brief ：传输信息, 此处动态内存，内部分配，内部释放
 * @param ：RemovalHandle* handle 句柄
 * @param ： len    元字节数组长度
-* @param ： List* switchList    待更新列表
+* @param ： ListDouble* switchList    待更新列表
 * @return： 0-正常返回
 * @update： [2018-06-07][张宇飞][BRIEF]
 */

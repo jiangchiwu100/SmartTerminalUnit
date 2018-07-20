@@ -329,7 +329,7 @@ static ErrorCode AssignmentStationMessage_AreaID(StationMessage* pmessage, uint3
 */
 static ErrorCode AssignmentStationMessage_ConnectSwitch(connect_switch* pdest,const ConnectSwitch* const pcs)
 {	
-	const List* const list = pcs->path;
+	const ListDouble* const list = pcs->path;
 	pdest->count = pcs->count;
 	pdest->has_count = true;
 	pdest->transferCode = pcs->transferCode;
@@ -352,7 +352,7 @@ static ErrorCode AssignmentStationMessage_ConnectSwitch(connect_switch* pdest,co
 
 
 	//路径3
-	const List* const list2  = pcs->path + 1;
+	const ListDouble* const list2  = pcs->path + 1;
 	pdest->path2_count = list_size(list2);
 	if (pdest->path2_count > sizeof(pdest->path1) / sizeof(uint32_t))
 	{

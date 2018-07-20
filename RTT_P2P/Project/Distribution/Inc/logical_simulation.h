@@ -23,7 +23,7 @@ extern uint8_t SwitchRunStateSimulation(SimulationStation* station);
 extern ErrorCode SimulationStationServerInit(SimulationStationServer* server);
 extern ErrorCode SimulationStationServerAddMember(SimulationStationServer* server, uint32_t id, SwitchProperty** );
 extern ErrorCode UpdateBindSwitchState(SimulationStation* station);
-extern SimulationStation* FindSimulationStationById(const  List* list, uint32_t id);
+extern SimulationStation* FindSimulationStationById(const  ListDouble* list, uint32_t id);
 extern ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchControlOperate operate);
 
 #endif

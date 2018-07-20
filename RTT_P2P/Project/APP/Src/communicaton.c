@@ -14,7 +14,7 @@
 #include "parse_implement.h" 
 #include "Datagram.h"
 
-
+#include "extern_interface.h"
 
 static ProtocolAnylast LocalAnylast;
 static NodeFifo* LocalFifo;

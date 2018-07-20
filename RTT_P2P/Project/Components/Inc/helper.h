@@ -64,7 +64,7 @@
 /**
 *遍历链表开始——与下方配对使用
 */
-#define FOR_EARCH_LIST_START(list)  { ListElmt* m_foreach = list_head((list));\
+#define FOR_EARCH_LIST_START(list)  { ListElment* m_foreach = list_head((list));\
                            uint8_t size_for = list_size((list));   \
                             for (uint8_t iii = 0; iii < size_for; iii++, m_foreach = m_foreach->next)  \
                             {
@@ -76,7 +76,7 @@
 /**
 *遍历链表开始——与下方配对使用
 */
-#define FOR_EARCH_LIST_TAIL_START(list)  { ListElmt* m_foreach = list_tail((list));\
+#define FOR_EARCH_LIST_TAIL_START(list)  { ListElment* m_foreach = list_tail((list));\
                            uint8_t size_for = list_size((list));   \
                             for (uint8_t kkk = 0; kkk < size_for; kkk++, m_foreach = m_foreach->prev; )  \
                             {

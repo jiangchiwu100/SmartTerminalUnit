@@ -260,13 +260,13 @@ uint8_t  TopologyMessageInit(
  * @update: [2018-05-26[张宇飞][]
  *  [2018-05-30[张宇飞][修正如果删除项为head，则无法获取想要删除的头一项]
  */
-ListElmt* FindNodeBeforeById(const  List* topology, uint32_t id)
+ListElment* FindNodeBeforeById(const  ListDouble* topology, uint32_t id)
 {
     if(topology == NULL)
     {
         return NULL;
     }
-    ListElmt* element = list_head(topology); 
+    ListElment* element = list_head(topology); 
     if (element == NULL)
     {
         return NULL;
@@ -289,12 +289,12 @@ ListElmt* FindNodeBeforeById(const  List* topology, uint32_t id)
 
 /**
  * @brief : 由拓扑列表获取获取开关列表
- * @param ：const  List* listTopology  拓扑列表
- * @param ：List* listSwitch  开关列表
+ * @param ：const  ListDouble* listTopology  拓扑列表
+ * @param ：ListDouble* listSwitch  开关列表
  * @return: 0-正常 非0错误
  * @update: [2018-06-06][张宇飞][]
  */
-ErrorCode GetSwitchList(const  List* listTopology, List* listSwitch)
+ErrorCode GetSwitchList(const  ListDouble* listTopology, ListDouble* listSwitch)
 {
    
     
@@ -310,13 +310,13 @@ ErrorCode GetSwitchList(const  List* listTopology, List* listSwitch)
     }       
 
     uint8_t size  = list_size(listTopology);
-    ListElmt* element = list_head(listTopology); 
+    ListElment* element = list_head(listTopology); 
     for (uint8_t i = 0; i < size; i++)
     {        
         uint8_t num = GET_TOPOLOGY_ELEMENT(element)->switchNum;
         for (uint8_t k = 0; k < num; k++)
         {
-            list_ins_next(listSwitch, NULL, (GET_TOPOLOGY_ELEMENT(element)->switchCollect + k));
+            ListInsertNext(listSwitch, NULL, (GET_TOPOLOGY_ELEMENT(element)->switchCollect + k));
              
         }
         element = element->next;
@@ -327,14 +327,14 @@ ErrorCode GetSwitchList(const  List* listTopology, List* listSwitch)
 
 /**
  * @brief : 通过ID，从拓扑链表中删除指定元素，并释放内存占用
- * @param  : List* topologyList  拓扑信息链表
+ * @param  : ListDouble* topologyList  拓扑信息链表
  * @param  : uint32_t id         id
  * @update: [2018-6-01][张宇飞][创建]
  */
-void DeleteTopologyListNodeById(List* topologyList, uint32_t id)
+void DeleteTopologyListNodeById(ListDouble* topologyList, uint32_t id)
 {
     
-   ListElmt *element;
+   ListElment *element;
    
    if (topologyList == NULL)
    {
@@ -344,7 +344,7 @@ void DeleteTopologyListNodeById(List* topologyList, uint32_t id)
    TopologyMessage* tempTopology;
    if (((TopologyMessage*)(list_head(topologyList)->data))->id == id)
     {
-        list_rem_next(topologyList, NULL, (void**)&tempTopology);//移除
+        ListRemoveNext(topologyList, NULL, (void**)&tempTopology);//移除
         FreeTopologyMemory(&tempTopology);//释放
     }
     else 
@@ -353,7 +353,7 @@ void DeleteTopologyListNodeById(List* topologyList, uint32_t id)
         element = FindNodeBeforeById(topologyList, id);
         if (element)//若找到，先先删除
         {
-             list_rem_next(topologyList, element, (void**)&tempTopology);//移除
+             ListRemoveNext(topologyList, element, (void**)&tempTopology);//移除
              FreeTopologyMemory(&tempTopology);//释放                    
         }               
     } 
@@ -369,7 +369,7 @@ void DeleteTopologyListNodeById(List* topologyList, uint32_t id)
  *          [2018-06-21][张宇飞][改返回值为ErrorCode,添加形参检测]
  */
 
-ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  List* topologyList)
+ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* topologyList)
 {
     CHECK_POINT_RETURN(topologyList, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(data, NULL, ERROR_NULL_PTR);
@@ -383,13 +383,13 @@ ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  List* topologyL
     //直接插入
         if (size == 0)
         {
-            list_ins_next(topologyList, NULL, topologyMessage);            
+            ListInsertNext(topologyList, NULL, topologyMessage);            
         }
         else
         {
             
             DeleteTopologyListNodeById(topologyList, topologyMessage->id);
-            list_ins_next(topologyList, NULL, topologyMessage);//最后统一插入
+            ListInsertNext(topologyList, NULL, topologyMessage);//最后统一插入
         }
      
     }
@@ -403,12 +403,12 @@ ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  List* topologyL
 /**
 * @brief : 将拓扑节点元素增加到列表
 * @param  : TopologyMessage* topolog
-* @param  : List* topologyList
+* @param  : ListDouble* topologyList
 * @return: ErrorCode
 * @update: [2018-06-19][张宇飞][创建]
 *         
 */
-ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, List* topologyList)
+ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, ListDouble* topologyList)
 {
     CHECK_POINT_RETURN(topologyMessage, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(topologyList, NULL, ERROR_NULL_PTR);
@@ -419,13 +419,13 @@ ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, List* topology
     //直接插入
     if (size == 0)
     {
-        list_ins_next(topologyList, NULL, topologyMessage);
+        ListInsertNext(topologyList, NULL, topologyMessage);
     }
     else
     {
 
         DeleteTopologyListNodeById(topologyList, topologyMessage->id);
-        list_ins_next(topologyList, NULL, topologyMessage);//最后统一插入
+        ListInsertNext(topologyList, NULL, topologyMessage);//最后统一插入
     }
     return ERROR_OK_NULL;
 }
@@ -508,7 +508,7 @@ void FreeBFSHelper(BFSHelper** helper)
             uint8_t *data;
             for (uint8_t i = 0; i < len; i++)
             {
-                list_rem_next((*helper)->path, NULL, (void**)&data);//移除
+                ListRemoveNext((*helper)->path, NULL, (void**)&data);//移除
                 FREE(data);          
             } 
             
@@ -558,7 +558,7 @@ static ErrorCode SearchIndexByID(uint32_t* data, uint8_t len, uint32_t id, uint8
  * @return: 
  * @update: [2018-06-06][张宇飞][]
  */
-ErrorCode BreadthFirstPath(const List* switchList, const SwitchProperty* start, BFSHelper** helper)
+ErrorCode BreadthFirstPath(const ListDouble* switchList, const SwitchProperty* start, BFSHelper** helper)
 {
     uint8_t result = 0;
     if (switchList == NULL)
@@ -603,7 +603,7 @@ ErrorCode BreadthFirstPath(const List* switchList, const SwitchProperty* start, 
         FREE(edgeTo);
          return ERROR_MALLOC;
     }
-    (*helper)->path = (List*)MALLOC(sizeof(List));
+    (*helper)->path = (ListDouble*)MALLOC(sizeof(ListDouble));
     if ((*helper)->path == NULL)
     {
         FREE(*helper);
@@ -612,14 +612,14 @@ ErrorCode BreadthFirstPath(const List* switchList, const SwitchProperty* start, 
         FREE((*helper)->path);
          return ERROR_MALLOC;
     }
-    list_init((*helper)->path, NULL);
+    ListInit((*helper)->path, NULL);
     
     (*helper)->size = size;
     (*helper)->idArray = idArray;
     (*helper)->edgeTo = edgeTo;
     (*helper)->marked = marked;    
 
-    ListElmt* element = list_head(switchList); 
+    ListElment* element = list_head(switchList); 
         
     for (uint8_t i = 0; i < size; i++)
     {
@@ -687,7 +687,7 @@ ErrorCode BreadthFirstPath(const List* switchList, const SwitchProperty* start, 
  * @return: 
  * @update: [2018-06-06][张宇飞][]
  */
-ErrorCode PathTo(const List* switchList, const BFSHelper* helper, const SwitchProperty* start,  const SwitchProperty* end)  
+ErrorCode PathTo(const ListDouble* switchList, const BFSHelper* helper, const SwitchProperty* start,  const SwitchProperty* end)  
 {
     ErrorCode result;
     uint8_t s , v;
@@ -719,7 +719,7 @@ ErrorCode PathTo(const List* switchList, const BFSHelper* helper, const SwitchPr
              return ERROR_MALLOC;
         }
         *data = x;
-        list_ins_next(helper->path, NULL,  data);//添加当前开关
+        ListInsertNext(helper->path, NULL,  data);//添加当前开关
     }
     uint8_t *data =(uint8_t*)MALLOC(sizeof(uint8_t));
     if (data == NULL)
@@ -727,7 +727,7 @@ ErrorCode PathTo(const List* switchList, const BFSHelper* helper, const SwitchPr
          return ERROR_MALLOC;
     }
     *data = s;
-    list_ins_next(helper->path, NULL,  data);//添加当前开关
+    ListInsertNext(helper->path, NULL,  data);//添加当前开关
        
         
     return ERROR_OK_NULL;
@@ -745,7 +745,7 @@ ErrorCode PathTo(const List* switchList, const BFSHelper* helper, const SwitchPr
  * @return: 
  * @update: [2018-06-06][张宇飞][]
  */
-ErrorCode FindPath(const List* switchList, const SwitchProperty* start, const SwitchProperty* end, BFSHelper** helper)
+ErrorCode FindPath(const ListDouble* switchList, const SwitchProperty* start, const SwitchProperty* end, BFSHelper** helper)
 {
    ErrorCode result;
    result = BreadthFirstPath(switchList, start,   helper);
@@ -764,11 +764,12 @@ ErrorCode FindPath(const List* switchList, const SwitchProperty* start, const Sw
     return ERROR_OK_NULL;
 }
 
-
+#ifdef RTT_P2P
 //消除错误
 void _ttywrch(int ch)
 {
 }
+#endif
 
 
 

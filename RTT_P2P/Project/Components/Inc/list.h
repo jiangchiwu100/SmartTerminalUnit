@@ -24,7 +24,7 @@ https://www.cnblogs.com/idreamo/archive/2017/11/18/7855826.html
 ** Modified date:         2018.07.5 
 ** Version:                V0.02
 ** Descriptions:            修改语句错误，修改为双向链表 prev
-**
+**                    2018/7/20 改变命名避免冲突
 ** ---------------------------------------------------------------------------*/
 
 #ifndef _LIST_H_
@@ -32,12 +32,12 @@ https://www.cnblogs.com/idreamo/archive/2017/11/18/7855826.html
 
 #include <stdio.h>  
 /*Define a structure for linked list elements.*/  
-typedef struct ListElmt_  
+typedef struct ListElement  
 {  
     void *data;  
-    struct ListElmt_ *next; 
-    struct ListElmt_ *prev; 
-} ListElmt;  
+    struct ListElement *next; 
+    struct ListElement *prev; 
+} ListElment;  
   
 /*Define a structure for linked lists.*/  
 typedef struct List_  
@@ -45,15 +45,15 @@ typedef struct List_
     int size;  
     int (*match)(const void *key1,const void *key2);  
     void (*destroy)(void *data);  
-    ListElmt *head;  
-    ListElmt *tail;  
-} List;  
+    ListElment *head;  
+    ListElment *tail;  
+} ListDouble;  
   
 /*Public Interface*/  
-void list_init(List *list, void(*destroy)(void *data));  
-void list_destroy(List *list);  
-int list_ins_next(List *list, ListElmt *element, const void *data);  
-int list_rem_next(List *list, ListElmt *element, void **data);  
+void ListInit(ListDouble *list, void(*destroy)(void *data));  
+void Listdestroy(ListDouble *list);  
+int ListInsertNext(ListDouble *list, ListElment *element, const void *data);  
+int ListRemoveNext(ListDouble *list, ListElment *element, void **data);  
 
 #define list_size(list) ((list)->size)  
 #define list_head(list) ((list)->head)  

@@ -23,7 +23,7 @@
 
 
 
-static ErrorCode  AddSimulationStation(List* stationList, uint32_t id, SwitchProperty** switchProperty);
+static ErrorCode  AddSimulationStation(ListDouble* stationList, uint32_t id, SwitchProperty** switchProperty);
 static uint8_t  RemoveSimulationStation(SimulationStation** node);
 static void DestorySimulationStation(void* node);
 
@@ -187,30 +187,30 @@ uint8_t SwitchRunStateSimulation(SimulationStation* station)
 
 /**
   * @brief :仿真站初始化
-  * @param  List* stationList 模拟的站点
+  * @param  ListDouble* stationList 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
   */
-uint8_t SimulationStationInit(List* stationList)
+uint8_t SimulationStationInit(ListDouble* stationList)
 {
-    list_init(stationList, DestorySimulationStation);
+    ListInit(stationList, DestorySimulationStation);
     return 0;
     
 }
 /**
   * @brief :所有节点状态更新 
-  * @param  List* stationList 模拟的站点
+  * @param  ListDouble* stationList 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
   */
-uint8_t SwitchRunStateSimulationUpdateAll(List* stationList)
+uint8_t SwitchRunStateSimulationUpdateAll(ListDouble* stationList)
 {
     if (stationList == NULL)
     {
         return ERROR_NULL_PTR;
     }
     uint8_t size = list_size(stationList);
-    ListElmt* element = list_head(stationList);
+    ListElment* element = list_head(stationList);
     for (uint8_t i = 0; i < size; i++)
     {
         SimulationStation* station = (SimulationStation*)(element->data);
@@ -225,7 +225,7 @@ uint8_t SwitchRunStateSimulationUpdateAll(List* stationList)
  * @return: 0-未找到 ，非0 指针
  * @update:  [2018-06-08[张宇飞][]
  */
-SimulationStation* FindSimulationStationById(const  List* list, uint32_t id)
+SimulationStation* FindSimulationStationById(const  ListDouble* list, uint32_t id)
 {
     if(list == NULL)
     {
@@ -233,7 +233,7 @@ SimulationStation* FindSimulationStationById(const  List* list, uint32_t id)
     }
     
     uint8_t size = list_size(list);
-     ListElmt* element = list_head(list); 
+     ListElment* element = list_head(list); 
     for (uint8_t i = 0; i < size; i++)
     {
         if (((SimulationStation*)(element->data))->id == id)
@@ -246,7 +246,7 @@ SimulationStation* FindSimulationStationById(const  List* list, uint32_t id)
 }
 /**
   * @brief :添加模拟节点
-  * @param ： List* stationList 模拟的站点 
+  * @param ： ListDouble* stationList 模拟的站点 
   * @param ： id 
   * @param ： SwitchProperty* switchProperty 开关属性
   * @return: ErrorCode
@@ -255,7 +255,7 @@ SimulationStation* FindSimulationStationById(const  List* list, uint32_t id)
   * [2018-06-16][张宇飞][添加形参，SwitchProperty* switchProperty，返回参数 ErrorCode]
   * [2018-06-20][张宇飞][修改遗漏赋值id]
   */
-static ErrorCode  AddSimulationStation(List* stationList, uint32_t id, SwitchProperty** switchProperty)
+static ErrorCode  AddSimulationStation(ListDouble* stationList, uint32_t id, SwitchProperty** switchProperty)
 {
     CHECK_POINT_RETURN(stationList, NULL, ERROR_NULL_PTR);  
     CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
@@ -299,7 +299,7 @@ static ErrorCode  AddSimulationStation(List* stationList, uint32_t id, SwitchPro
     station->GetNowTime = SimulationGetNowTime;
     station->IsOverTime = SimulationIsOverTime;
         
-    list_ins_next(stationList, NULL, station);
+    ListInsertNext(stationList, NULL, station);
     
     return ERROR_OK_NULL;
 }

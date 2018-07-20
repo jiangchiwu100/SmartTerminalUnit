@@ -29,22 +29,22 @@ TopologyMessage*  NeighbourTopologyMessage;
 /**
 *全局节点拓扑信息链表形式保存
 */
-List GlobalTopologyList;
+ListDouble GlobalTopologyList;
 /**
 *邻居节点开关节点保存
 */
-List NeighbourSwitchList;
+ListDouble NeighbourSwitchList;
 
 /**
 *全局开关节点保存
 */
-List GlobalSwitchList;
+ListDouble GlobalSwitchList;
 
 
 /**
 *配电区域定义, 实际上一个开关最多有两个配电区域。
 */
-List PowerArea[POWER_AREA_NUM];
+ListDouble PowerArea[POWER_AREA_NUM];
 
 
 /**
@@ -63,9 +63,9 @@ TopologyMessage*  AimTopologyMessage;
 uint8_t ListDataInit(void)
 {
     
-    list_init(&GlobalTopologyList, NULL); //初始化列表合计
+    ListInit(&GlobalTopologyList, NULL); //初始化列表合计
     
-    list_init(&NeighbourSwitchList, NULL);// 初始化开关集合
+    ListInit(&NeighbourSwitchList, NULL);// 初始化开关集合
     
     return 0;
 }
@@ -157,9 +157,9 @@ void CalTest(void)
     if (NeighbourSwitchList.size !=0)
     {
         //销毁链表
-        list_destroy(&NeighbourSwitchList);
+        Listdestroy(&NeighbourSwitchList);
         //重新初始化
-        list_init(&NeighbourSwitchList, NULL);
+        ListInit(&NeighbourSwitchList, NULL);
     }
     
     //使用头作为计算节点
@@ -174,7 +174,7 @@ void CalTest(void)
     
     GetNeighboorSwitch(&NeighbourSwitchList, LocalTopologyMessage, &GlobalTopologyList, &NeighbourSwitchList);
     
-    ListElmt* element = list_head(&NeighbourSwitchList);
+    ListElment* element = list_head(&NeighbourSwitchList);
     
     for(uint8_t i = 0; i < list_size(&NeighbourSwitchList); i++)
     {
@@ -220,9 +220,9 @@ void TestPath(void)
     if (GlobalSwitchList.size !=0)
     {
         //销毁链表
-        list_destroy(&GlobalSwitchList);
+        Listdestroy(&GlobalSwitchList);
         //重新初始化
-        list_init(&GlobalSwitchList, NULL);
+        ListInit(&GlobalSwitchList, NULL);
     }
     
     
@@ -268,13 +268,13 @@ void TestPath(void)
 void TestPathAll(void)
 {
     
-    ListElmt* element = list_head(&GlobalTopologyList);
+    ListElment* element = list_head(&GlobalTopologyList);
     uint8_t size = list_size(&GlobalTopologyList);
     for (uint8_t i = 0; i < size; i++)
     {
         LocalTopologyMessage = GET_TOPOLOGY_ELEMENT(element);
         
-        ListElmt* node = list_head(&GlobalTopologyList);
+        ListElment* node = list_head(&GlobalTopologyList);
        
         for (uint8_t k = 0; k < size; k++)
         {
@@ -394,16 +394,16 @@ void RingQueueTest()
 void TestListPrevCase(void)
 {
     PrintMemoryUsed();
-    List listTest;
-    List* list = &listTest;
+    ListDouble listTest;
+    ListDouble* list = &listTest;
 
-    list_init(list, FREE);
+    ListInit(list, FREE);
 
     for (uint8_t i = 0; i < 100; i++)
     {
         uint32_t* pid = CALLOC(1, sizeof(uint32_t));
         *pid = i;
-        list_ins_next(list, NULL, pid);
+        ListInsertNext(list, NULL, pid);
     }
 
     FOR_EARCH_LIST_START(list);
@@ -419,7 +419,7 @@ void TestListPrevCase(void)
     if (i % 2)
     {
         uint32_t* data;
-        list_rem_next(list, m_foreach->prev, &data);
+        ListRemoveNext(list, m_foreach->prev, &data);
         FREE(data);
     }
     FOR_EARCH_LIST_TAIL_END();
@@ -433,7 +433,7 @@ void TestListPrevCase(void)
     if ((i + 1) % 2)
     {
         uint32_t* data;
-        list_rem_next(list, m_foreach->prev, &data);
+        ListRemoveNext(list, m_foreach->prev, &data);
         FREE(data);
     }
     FOR_EARCH_LIST_TAIL_END();
@@ -444,7 +444,7 @@ void TestListPrevCase(void)
     FOR_EARCH_LIST_TAIL_END();
     rt_kprintf("\n");
 
-    list_destroy(list);
+    Listdestroy(list);
     PrintMemoryUsed();
 
 }

@@ -949,16 +949,6 @@
               <FileType>1</FileType>
               <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_spi.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32f4xx_ll_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1827,62 +1817,62 @@
             <File>
               <FileName>distribution_connect.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
             </File>
             <File>
               <FileName>distribution_helper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
             </File>
             <File>
               <FileName>distribution_interface.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
             </File>
             <File>
               <FileName>distribution_test_case.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
             </File>
             <File>
               <FileName>distribution_transfer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
             </File>
             <File>
               <FileName>fault_deal.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
             </File>
             <File>
               <FileName>fault_insulate.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_insulate.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_insulate.c</FilePath>
             </File>
             <File>
               <FileName>fault_removal.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_removal.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_removal.c</FilePath>
             </File>
             <File>
               <FileName>fault_treatment.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_treatment.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_treatment.c</FilePath>
             </File>
             <File>
               <FileName>parse_implement.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\parse_implement.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\parse_implement.c</FilePath>
             </File>
             <File>
               <FileName>power_area.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\power_area.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\power_area.c</FilePath>
             </File>
             <File>
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1892,17 +1882,17 @@
             <File>
               <FileName>RouterDatagram.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\RouterDatagram.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\RouterDatagram.c</FilePath>
             </File>
             <File>
               <FileName>Router.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\Router.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\Router.c</FilePath>
             </File>
             <File>
               <FileName>extern_mutual.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\extern_mutual.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\extern_mutual.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1912,37 +1902,37 @@
             <File>
               <FileName>Buffer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\Buffer.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\Buffer.c</FilePath>
             </File>
             <File>
               <FileName>helper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\helper.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\helper.c</FilePath>
             </File>
             <File>
               <FileName>list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\list.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\list.c</FilePath>
             </File>
             <File>
               <FileName>RingQueue.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\RingQueue.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\RingQueue.c</FilePath>
             </File>
             <File>
               <FileName>log.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\log.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\log.c</FilePath>
             </File>
             <File>
               <FileName>log.pb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\log.pb.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\log.pb.c</FilePath>
             </File>
             <File>
               <FileName>station.pb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1952,17 +1942,17 @@
             <File>
               <FileName>station_manager.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
             </File>
             <File>
               <FileName>logical_simulation_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
             </File>
             <File>
               <FileName>logical_simulation.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2022,7 +2012,7 @@
             <File>
               <FileName>communicaton.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2971,16 +2961,6 @@
               <FileType>1</FileType>
               <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_spi.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32f4xx_ll_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -3849,62 +3829,62 @@
             <File>
               <FileName>distribution_connect.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
             </File>
             <File>
               <FileName>distribution_helper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
             </File>
             <File>
               <FileName>distribution_interface.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
             </File>
             <File>
               <FileName>distribution_test_case.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
             </File>
             <File>
               <FileName>distribution_transfer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
             </File>
             <File>
               <FileName>fault_deal.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
             </File>
             <File>
               <FileName>fault_insulate.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_insulate.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_insulate.c</FilePath>
             </File>
             <File>
               <FileName>fault_removal.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_removal.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_removal.c</FilePath>
             </File>
             <File>
               <FileName>fault_treatment.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_treatment.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\fault_treatment.c</FilePath>
             </File>
             <File>
               <FileName>parse_implement.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\parse_implement.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\parse_implement.c</FilePath>
             </File>
             <File>
               <FileName>power_area.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\power_area.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\power_area.c</FilePath>
             </File>
             <File>
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3914,17 +3894,17 @@
             <File>
               <FileName>RouterDatagram.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\RouterDatagram.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\RouterDatagram.c</FilePath>
             </File>
             <File>
               <FileName>Router.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\Router.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\Router.c</FilePath>
             </File>
             <File>
               <FileName>extern_mutual.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\extern_mutual.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\extern_mutual.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3934,37 +3914,37 @@
             <File>
               <FileName>Buffer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\Buffer.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\Buffer.c</FilePath>
             </File>
             <File>
               <FileName>helper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\helper.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\helper.c</FilePath>
             </File>
             <File>
               <FileName>list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\list.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\list.c</FilePath>
             </File>
             <File>
               <FileName>RingQueue.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Components\Src\RingQueue.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Components\Src\RingQueue.c</FilePath>
             </File>
             <File>
               <FileName>log.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\log.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\log.c</FilePath>
             </File>
             <File>
               <FileName>log.pb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\log.pb.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\log.pb.c</FilePath>
             </File>
             <File>
               <FileName>station.pb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3974,17 +3954,17 @@
             <File>
               <FileName>station_manager.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
             </File>
             <File>
               <FileName>logical_simulation_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
             </File>
             <File>
               <FileName>logical_simulation.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4044,7 +4024,7 @@
             <File>
               <FileName>communicaton.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
+              <FilePath>..\..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -15,7 +15,7 @@
 #include "list.h"
 #include "distribution_transfer.h"
 
-static ErrorCode Transfer_ControlSend(List* listcp, FaultDealHandle* handle);
+static ErrorCode Transfer_ControlSend(ListDouble* listcp, FaultDealHandle* handle);
 static ErrorCode Transfer_CapacitySend(FaultDealHandle* handle);
 /**
 * @brief :故障处理——转供电
@@ -28,7 +28,7 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 {
 	SwitchProperty* switchProperty = handle->switchProperty;
 	StationTopology* stationTopology = switchProperty->parent;
-	List* Listcp = &(stationTopology->connectPath);
+	ListDouble* Listcp = &(stationTopology->connectPath);
 	ErrorCode error;
 	if (handle->nextState != TRANSFER_MASTER)
 	{
@@ -184,7 +184,7 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 * @return: 0-正常
 * @update: [2018-07-12][张宇飞][BRIEF]
 */
-static ErrorCode Transfer_ControlSend(List* listcp, FaultDealHandle* handle)
+static ErrorCode Transfer_ControlSend(ListDouble* listcp, FaultDealHandle* handle)
 {
 	ErrorCode error;
 	ConnectPath* maxcp;
@@ -226,7 +226,7 @@ static ErrorCode Transfer_ControlSend(List* listcp, FaultDealHandle* handle)
 */
 static ErrorCode Transfer_CapacitySend( FaultDealHandle* handle)
 {
-	List* list = &(handle->switchProperty->parent->globalSwitchList);
+	ListDouble* list = &(handle->switchProperty->parent->globalSwitchList);
 	SwitchProperty* node;
 
 	FOR_EARCH_LIST_START(list);
@@ -261,7 +261,7 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 		CHECK_UNEQUAL_RETURN_LOG(len, 9, ERROR_LEN, station->id);
 		id = COMBINE_UINT32(pdata[4], pdata[3], pdata[2], pdata[1]);
 		data = COMBINE_UINT32(pdata[8], pdata[7], pdata[6], pdata[5]);
-		List* list = &(station->connectPath);
+		ListDouble* list = &(station->connectPath);
 
 		FOR_EARCH_LIST_START(list);
 

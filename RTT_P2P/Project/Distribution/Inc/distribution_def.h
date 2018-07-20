@@ -89,7 +89,7 @@ typedef struct TagBFSHelper
     uint32_t* idArray;
     uint8_t* edgeTo; //到达数组
     uint8_t* marked;
-    List* path;  //路径保存
+    ListDouble* path;  //路径保存
 }BFSHelper;
 
 /**
@@ -97,7 +97,7 @@ typedef struct TagBFSHelper
 */
 typedef struct TagDistributionPowerArea
 {
-    //List powerArea;             //配电区域列表
+    //ListDouble powerArea;             //配电区域列表
     SwitchProperty** areaSwitch; // 配电区域列表 数组形式
     uint8_t switchNum;            //开关数量
 
@@ -117,7 +117,7 @@ typedef struct TagDistributionPowerArea
 */
 typedef struct TagDistributionStation
 {
-    List powerAreaList[POWER_AREA_NUM];
+    ListDouble powerAreaList[POWER_AREA_NUM];
     DistributionPowerArea powerArea[POWER_AREA_NUM];  //配电区域相关信息
     uint8_t areaCount;                                 //配电区域个数
     bool isComplted; //是否已经实现 注意需要维护   
@@ -152,9 +152,9 @@ typedef struct TagAreaID
 */
 typedef struct TagConnectSwitch
 {
-    //List bfsPower;// 以此开关开始到电源开关的路径，全部为合位
+    //ListDouble bfsPower;// 以此开关开始到电源开关的路径，全部为合位
 	TransferCode transferCode; //转供电
-    List path[2]; //路径数组  SwitchProperty 电源开关路径 ，存储的为开关属性节点
+    ListDouble path[2]; //路径数组  SwitchProperty 电源开关路径 ，存储的为开关属性节点
     uint8_t count;// 路径数量
     bool isConnect; //是否为联络开关
 }ConnectSwitch;
@@ -183,9 +183,9 @@ typedef struct TagStationTopology
 
     TopologyMessage*  aimTopology; //目的拓扑
 
-    List globalTopologyList;   //全局拓扑列表
-    List neighbourSwitchList; //邻居开关列表        
-    List globalSwitchList;   //全局开关列表
+    ListDouble globalTopologyList;   //全局拓扑列表
+    ListDouble neighbourSwitchList; //邻居开关列表        
+    ListDouble globalSwitchList;   //全局开关列表
     bool isNeighbourComplted; //邻居是否完整 //注意需要维护
 
     DistributionStation powerArea; //配电区域信息
@@ -200,7 +200,7 @@ typedef struct TagStationTopology
     ConnectSwitch connect;//联络开关维护判别所需信息
 
     
-    List connectPath; //联络开关路径上判别,有成员则是，否则不是 ConnectPath
+    ListDouble connectPath; //联络开关路径上判别,有成员则是，否则不是 ConnectPath
 	bool isConnectPathUpdatedComplted; //更新完毕
 
     AreaID areaID;// 区域ID合集
@@ -301,8 +301,8 @@ typedef struct TagFaultDealHandle
 */
 typedef struct TagRouter
 {
-    List nodeStation; //数据节点管理列表，每个需要管理的站点 NodeFifo
-    NodeFifo* (*FindMemberById)(const  List* list, uint32_t id);
+    ListDouble nodeStation; //数据节点管理列表，每个需要管理的站点 NodeFifo
+    NodeFifo* (*FindMemberById)(const  ListDouble* list, uint32_t id);
 
 }Router;
 
@@ -406,7 +406,7 @@ typedef struct TagSimulationStation
 */
 typedef struct TagSimulationStationServer
 {
-    List SimulationStationList; //模拟开关站列表
+    ListDouble SimulationStationList; //模拟开关站列表
 
 
 }SimulationStationServer;
@@ -436,8 +436,8 @@ typedef struct TagStationPoint
 */
 typedef struct TagStationServer
 {
-    List stationPointList; // 站点列表 StationPoint
-    StationPoint* (*FindMemberById)(const  List* list, uint32_t id);  //通过ID查找成员
+    ListDouble stationPointList; // 站点列表 StationPoint
+    StationPoint* (*FindMemberById)(const  ListDouble* list, uint32_t id);  //通过ID查找成员
 
 
 }StationServer;

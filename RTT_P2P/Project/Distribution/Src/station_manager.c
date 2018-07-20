@@ -152,8 +152,8 @@ ErrorCode GetAllTopologyRunState(StationPoint* point)
 */
 void  GainMangerNeighbourMembers(StationManger* manager)
 {
-    ListElmt* element;
-    List* list;
+    ListElment* element;
+    ListDouble* list;
     uint8_t size;
     StationPoint* station;    
     if (manager == NULL)
@@ -195,7 +195,7 @@ void  GainMangerNeighbourMembers(StationManger* manager)
 */
 uint8_t StationServerInit(StationServer* server)
 {
-    list_init(&(server->stationPointList), NULL);
+    ListInit(&(server->stationPointList), NULL);
     server->FindMemberById = FindStationPointById;
     return 0;
 }
@@ -205,14 +205,14 @@ uint8_t StationServerInit(StationServer* server)
 * @return: 0-未找到 ，非0 指针
 * @update:  [2018-06-08[张宇飞][]
 */
-StationPoint* FindStationPointById(const  List* list, uint32_t id)
+StationPoint* FindStationPointById(const  ListDouble* list, uint32_t id)
 {
     if (list == NULL)
     {
         return NULL;
     }
     uint8_t size = list_size(list);
-    ListElmt* element = list_head(list);
+    ListElment* element = list_head(list);
     for (uint8_t i = 0; i < size; i++)
     {
         if (((StationPoint*)(element->data))->id == id)
@@ -241,7 +241,7 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     
     uint32_t id = topologyMessage->id;
     ErrorCode error;
-    List* list = &(server->stationPointList);
+    ListDouble* list = &(server->stationPointList);
     StationPoint* station = FindStationPointById(list, id);
     CHECK_UNEQUAL_RETURN(station, NULL, ERROR_EXIST);
   
@@ -264,13 +264,13 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     stationTopology->localTopology = topologyMessage;    
     stationTopology->localSwitch = topologyMessage->switchCollect;
 	stationTopology->localSwitch->parent = stationTopology;
-    list_init(&(stationTopology->connectPath), FREE);
+    ListInit(&(stationTopology->connectPath), FREE);
 
 
     FaultDealHandle* handle = &(station->removalHandle);
     RemovalHandleInit(handle, stationTopology->localSwitch, &(station->transferNode));
 
     *pstation = station;
-    list_ins_next(list, NULL, station);
+    ListInsertNext(list, NULL, station);
     return ERROR_OK_NULL;
 }

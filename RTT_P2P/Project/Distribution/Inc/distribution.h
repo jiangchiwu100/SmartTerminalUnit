@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     汇总相关头文件
@@ -29,7 +29,8 @@
 #include "distribution_helper.h"
 #include "extern_mutal.h"
 #include "distribution_transfer.h"
+#include "log.h"
 #include "extern_interface.h"
 
-#include "log.h"
+
 #endif

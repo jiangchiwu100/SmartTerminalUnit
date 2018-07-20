@@ -14,9 +14,9 @@
 
 
 
-static ErrorCode DistributionAreaDeal_BreakerBranch(SwitchProperty* current, List* listArea, uint8_t areaNum);
-static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, List* listArea, uint8_t areaNum);
-static ErrorCode GetIntersection(List* listNeighboorSwitch, SwitchProperty* left, SwitchProperty* right, uint8_t flag, List* listResult);
+static ErrorCode DistributionAreaDeal_BreakerBranch(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum);
+static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum);
+static ErrorCode GetIntersection(ListDouble* listNeighboorSwitch, SwitchProperty* left, SwitchProperty* right, uint8_t flag, ListDouble* listResult);
 static ErrorCode JudgeUpdatePowerAreaCompleted(SwitchProperty* switchProperty, uint8_t* updated);
 static ErrorCode ReStartUpdatePowerArea(SwitchProperty* switchProperty);
 static ErrorCode SignExitFaultMessage(SwitchProperty* switchProperty);
@@ -34,7 +34,7 @@ static bool IsExitFaultMessage(SwitchProperty* switchProperty);
  * @update: [2018-05-26][张宇飞][]
  *[2018-07-0][张宇飞][重构]
  */
-ErrorCode FindSwitchNodeByID(const List* listNeighboorSwitch, uint32_t id, SwitchProperty** find)
+ErrorCode FindSwitchNodeByID(const ListDouble* listNeighboorSwitch, uint32_t id, SwitchProperty** find)
 {
 	CHECK_POINT_RETURN_LOG(listNeighboorSwitch, NULL, ERROR_NULL_PTR, 0);
     
@@ -52,7 +52,7 @@ ErrorCode FindSwitchNodeByID(const List* listNeighboorSwitch, uint32_t id, Switc
 }
 /**
  * @brief : 根据ID，查找是否存在该节点
- * @param  : List* listNeighboorSwitch 拓扑列表 
+ * @param  : ListDouble* listNeighboorSwitch 拓扑列表 
  * @param  ：uint32_t id 要查找的ID
  * @param  ：TopologyMessage** find 拓扑信息节点
  * @return: 0-正常，非空--未找到或异常 
@@ -60,13 +60,13 @@ ErrorCode FindSwitchNodeByID(const List* listNeighboorSwitch, uint32_t id, Switc
  *[2018-07-10][张宇飞][出现几次异常，怀疑括号优先级问题]
  *[2018-07-17][张宇飞][修改错误GET_TOPOLOGY_ELEMENT 错为GET_SWITCH_ELEMENT]
  */
-ErrorCode FindTopologyNodeByID(List* listNeighboorSwitch, uint32_t id, TopologyMessage** find)
+ErrorCode FindTopologyNodeByID(ListDouble* listNeighboorSwitch, uint32_t id, TopologyMessage** find)
 {
     if (listNeighboorSwitch == 0)
     {
         return ERROR_NULL_PTR;
     }
-    ListElmt* element = list_head(listNeighboorSwitch);        
+    ListElment* element = list_head(listNeighboorSwitch);        
     do
     {
         if(GET_SWITCH_ELEMENT(element)->id == id)
@@ -88,7 +88,7 @@ ErrorCode FindTopologyNodeByID(List* listNeighboorSwitch, uint32_t id, TopologyM
  * @return: 0-正常 非0错误
  * @update: [2018-05-26][张宇飞][]
  */
-static ErrorCode GetIntersection(List* listNeighboorSwitch, SwitchProperty* left, SwitchProperty* right, uint8_t flag, List* listResult)
+static ErrorCode GetIntersection(ListDouble* listNeighboorSwitch, SwitchProperty* left, SwitchProperty* right, uint8_t flag, ListDouble* listResult)
 {
     uint8_t len = left->neighbourNum;
     uint8_t rightLen = right->neighbourNum;
@@ -114,7 +114,7 @@ static ErrorCode GetIntersection(List* listNeighboorSwitch, SwitchProperty* left
                 if((find)->tempflag == flag)
                 {
                     (find)->tempflag  = 0xff;
-                    list_ins_next(listResult, NULL, find);
+                    ListInsertNext(listResult, NULL, find);
                 }
             }
         }     
@@ -126,12 +126,12 @@ static ErrorCode GetIntersection(List* listNeighboorSwitch, SwitchProperty* left
  * @brief : 特殊化处理配电区域,断路器分支开关,增加自己的单独分支,删去配电区域内的分位开关。
  * @param :  SwitchProperty* current 当前计算开关
  * @param : 求得的配电区域
- * @param ：List* listArea 配电区域数组
+ * @param ：ListDouble* listArea 配电区域数组
  * @return: ErrorCode
  * @update: [2018-05-31][张宇飞][]
  *[2018-07-06][张宇飞][修正删除错误,在均为分位的情况下]
  */
-static ErrorCode  DistributionAreaDeal_BreakerBranch(SwitchProperty* current, List* listArea, uint8_t areaNum)
+static ErrorCode  DistributionAreaDeal_BreakerBranch(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum)
 {
     
     //此处应该为1
@@ -144,12 +144,12 @@ static ErrorCode  DistributionAreaDeal_BreakerBranch(SwitchProperty* current, Li
 
         if (GET_SWITCH_ELEMENT(m_foreach)->state == SWITCH_OPEN)
         {
-            list_rem_next(listArea, m_foreach->prev, &deleteElement);
+            ListRemoveNext(listArea, m_foreach->prev, &deleteElement);
         }
 
         FOR_EARCH_LIST_END();*/
 
-        list_ins_next( ++listArea , NULL,  current);//插入当前节点作为单独的配电区域
+        ListInsertNext( ++listArea , NULL,  current);//插入当前节点作为单独的配电区域
         
     }
     else
@@ -163,11 +163,11 @@ static ErrorCode  DistributionAreaDeal_BreakerBranch(SwitchProperty* current, Li
  * @brief : 特殊化处理配电区域,
  * @param :  SwitchProperty* current 当前计算开关
  * @param : 求得的配电区域
- * @param ：List* listArea 配电区域数组
+ * @param ：ListDouble* listArea 配电区域数组
  * @return: 0-正常 非0错误
  * @update: [2018-05-31][张宇飞][]
  */
-static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, List* listArea, uint8_t areaNum)
+static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum)
 {    
     switch(current->type)
     {
@@ -182,16 +182,16 @@ static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, List*
 /**
  * @brief : 获取配电区域,判定配电区域以开关为基础
  * @param  : TopologyMessage* local  本节点拓扑信息
- * @param  ：List* listNeighboor  邻居节点拓扑信息，元素类型 SwitchProperty
- * @param  ：List* listArea 配电区域数组
+ * @param  ：ListDouble* listNeighboor  邻居节点拓扑信息，元素类型 SwitchProperty
+ * @param  ：ListDouble* listArea 配电区域数组
  * @return: 0-正常 非0错误
  * @update: [2018-05-31][张宇飞][改变双层链表为数组链表]
  */
-ErrorCode GetPowerDistributionArea(TopologyMessage* local, List* listNeighboorSwitch, List* listArea)
+ErrorCode GetPowerDistributionArea(TopologyMessage* local, ListDouble* listNeighboorSwitch, ListDouble* listArea)
 {
     uint8_t result = 0;
     uint8_t areaNum = 0;
-    List* origion = listArea;
+    ListDouble* origion = listArea;
     if ((local == NULL) || (listNeighboorSwitch == NULL))
     {
         return ERROR_NULL_PTR ;
@@ -201,7 +201,7 @@ ErrorCode GetPowerDistributionArea(TopologyMessage* local, List* listNeighboorSw
     {
         return ERROR_PARAMTER;
     }
-    ListElmt* element = list_head(listNeighboorSwitch);        
+    ListElment* element = list_head(listNeighboorSwitch);        
     do
     {
         GET_SWITCH_ELEMENT(element)->tempflag = 0;//清空临时标志位，为处理做准备
@@ -217,9 +217,9 @@ ErrorCode GetPowerDistributionArea(TopologyMessage* local, List* listNeighboorSw
        {
            switchCollect->tempflag = 0xff;           
            
-           list_init(listArea, NULL);
-           list_ins_next(listArea, NULL, local->switchCollect);//添加当前开关
-           list_ins_next(listArea, NULL, switchCollect);//添加选择开关
+           ListInit(listArea, NULL);
+           ListInsertNext(listArea, NULL, local->switchCollect);//添加当前开关
+           ListInsertNext(listArea, NULL, switchCollect);//添加选择开关
            result = GetIntersection(listNeighboorSwitch,  local->switchCollect, switchCollect, 0, listArea);
            if ( result)
            {
@@ -242,18 +242,18 @@ ErrorCode GetPowerDistributionArea(TopologyMessage* local, List* listNeighboorSw
 
 /**
  * @brief :  销毁配电区域链表，释放占用内存 
- * @param : List* areaList 数组指针
+ * @param : ListDouble* areaList 数组指针
            注意没有单独分配动态分配空间。
  * @param :  len 数组长度
  * @return: void
  * @update: [2018-05-31][张宇飞][修改为释放数组指针]
  */
-void FreeAreaList(List* areaList, uint8_t len)
+void FreeAreaList(ListDouble* areaList, uint8_t len)
 {
     for (uint8_t i = 0; i< len ;i++)
     if (areaList+i != NULL)
     {
-       list_destroy(areaList+i);     
+       Listdestroy(areaList+i);     
     }
 }
 
@@ -261,13 +261,13 @@ void FreeAreaList(List* areaList, uint8_t len)
 /**
 * @brief : 获取邻居开关, 不进行元素检查
  * @param  : destID     目的ID
- * @param  ：List* listNeighboorSwitch 邻居节点，元素类型 SwitchProperty*
+ * @param  ：ListDouble* listNeighboorSwitch 邻居节点，元素类型 SwitchProperty*
  * @return: 0-正常 非0错误
  * @update: [2018-05-26][张宇飞][todo：完善内存释放机制]
  */
-ErrorCode GetNeighboorSwitch(List* neighbourSwitchList,  TopologyMessage* local, const  List* listNeighboor, List* listNeighboorSwitch)
+ErrorCode GetNeighboorSwitch(ListDouble* neighbourSwitchList,  TopologyMessage* local, const  ListDouble* listNeighboor, ListDouble* listNeighboorSwitch)
 {
-    ListElmt* element = list_head(listNeighboor); 
+    ListElment* element = list_head(listNeighboor); 
     
     if (element == NULL)
     {
@@ -285,7 +285,7 @@ ErrorCode GetNeighboorSwitch(List* neighbourSwitchList,  TopologyMessage* local,
         {       
             if (GET_TOPOLOGY_ELEMENT(element)->id ==  local->switchCollect->neighbourCollect[i])   
             {
-                list_ins_next(neighbourSwitchList, NULL, GET_TOPOLOGY_ELEMENT(element)->switchCollect);
+                ListInsertNext(neighbourSwitchList, NULL, GET_TOPOLOGY_ELEMENT(element)->switchCollect);
             }
             element = element->next;            
         }
@@ -455,7 +455,7 @@ static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 * @return:
 * @update: [2018-06-21][张宇飞][]
 */
-ErrorCode CheckNeighboorTopologyCompleted(SwitchProperty* curent, List* list, bool* result)
+ErrorCode CheckNeighboorTopologyCompleted(SwitchProperty* curent, ListDouble* list, bool* result)
 {
     uint8_t num;   
     uint32_t* neighboor;
@@ -505,7 +505,7 @@ ErrorCode GetNeighboorTopologyByMutual(StationPoint* point)
     CHECK_POINT_RETURN(neighboor, NULL, ERROR_NULL_PTR);
     num = switchProperty->neighbourNum;
     CHECK_EQUAL_RETURN(num, 0, ERROR_OVER_LIMIT);
-	List* topologylist = &(point->topology.globalTopologyList);
+	ListDouble* topologylist = &(point->topology.globalTopologyList);
     CHECK_EQUAL_RETURN(list_size(topologylist), 0, ERROR_OVER_LIMIT);
    
 	
@@ -686,8 +686,8 @@ ErrorCode ExtractPowerAreaFromList(SwitchProperty* switchRef, DistributionStatio
 	CHECK_POINT_RETURN(distriStation, NULL, ERROR_NULL_PTR);
 	CHECK_POINT_RETURN(switchRef, NULL, ERROR_NULL_PTR);
 	uint8_t size = 0;
-	ListElmt* element;
-	List* list;
+	ListElment* element;
+	ListDouble* list;
 	DistributionPowerArea* area;
 	area = distriStation->powerArea;
 

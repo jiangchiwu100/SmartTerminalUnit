@@ -31,6 +31,6 @@ extern uint8_t StationMangerAddMember(StationManger* manger, uint32_t id);
 extern uint8_t StationServerInit(StationServer* server);
 extern ErrorCode StationServerAddPoint(StationServer* server, 
                            TopologyMessage*  topologyMessage, StationPoint** pstation);
-extern StationPoint* FindStationPointById(const  List* list, uint32_t id);
+extern StationPoint* FindStationPointById(const  ListDouble* list, uint32_t id);
 
 #endif

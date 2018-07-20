@@ -16,10 +16,10 @@
 
 static ErrorCode SendConnectPathMessage(uint32_t id, PathConnected iseset, uint8_t hops,  DatagramTransferNode* pTransferNode);
 static bool CheckIsMeetConnectCondition(StationTopology* topology);
-static ErrorCode SendConnectPathCmd(List* path, PathConnected iseset, DatagramTransferNode* pTransferNode);
-static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, List* list, List* powerList, List* findList);
-static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, List* powerList, List* findList, List* bfsList);
-static ErrorCode ExtractSwitchPath(StationTopology* station, List* bfsList);
+static ErrorCode SendConnectPathCmd(ListDouble* path, PathConnected iseset, DatagramTransferNode* pTransferNode);
+static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList);
+static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList);
+static ErrorCode ExtractSwitchPath(StationTopology* station, ListDouble* bfsList);
 static bool CheckIsLockConnectJudge(StationTopology* topology);
 /**
 * @brief :  判别是否为联络开关，并计算其路径 
@@ -36,7 +36,7 @@ void StationCalConnectPathAndJudge(StationTopology* station)
     uint32_t id;
 	uint8_t size = 0;
     SwitchProperty* sourceSwitch = station->localSwitch;
-    List* globalList = &(station->globalSwitchList);
+    ListDouble* globalList = &(station->globalSwitchList);
     //PrintMemoryUsed();
     if (station->globalTopologyList.size != station->areaID.count)
     {
@@ -47,9 +47,9 @@ void StationCalConnectPathAndJudge(StationTopology* station)
     if (globalList->size != station->areaID.count)
     {
         //销毁链表
-        list_destroy(&(station->globalSwitchList));
+        Listdestroy(&(station->globalSwitchList));
 		//重新初始化
-		list_init(&(station->globalSwitchList), NULL);
+		ListInit(&(station->globalSwitchList), NULL);
 
 		result = GetSwitchList(&(station->globalTopologyList), globalList);
 		if (result)
@@ -75,15 +75,15 @@ void StationCalConnectPathAndJudge(StationTopology* station)
         return;
     }
     //查找电源开关数量
-    List* list = &(station->globalSwitchList);
+    ListDouble* list = &(station->globalSwitchList);
 
-    List listPower;
-    List* powerList = &listPower;
-    list_init(powerList, NULL);
+    ListDouble listPower;
+    ListDouble* powerList = &listPower;
+    ListInit(powerList, NULL);
 
-    List findList;  //去除分位开关
-    List* find = &findList;
-    list_init(find, NULL);
+    ListDouble findList;  //去除分位开关
+    ListDouble* find = &findList;
+    ListInit(find, NULL);
 
 	result = SerachPowerConditionList(sourceSwitch, list, powerList, find);
 	if (result)
@@ -92,9 +92,9 @@ void StationCalConnectPathAndJudge(StationTopology* station)
         return;
 	}
 
-    List bfsListInstance;
-    List* bfsList = &bfsListInstance;
-    list_init(bfsList, DestoryBFSHelper);
+    ListDouble bfsListInstance;
+    ListDouble* bfsList = &bfsListInstance;
+    ListInit(bfsList, DestoryBFSHelper);
     
 	result = SerachPowerPath(sourceSwitch, powerList, find, bfsList);
 	if (result)
@@ -109,10 +109,10 @@ void StationCalConnectPathAndJudge(StationTopology* station)
     //存在两条路径即认为是联络开关
     size = list_size(bfsList);
 
-	list_destroy(station->connect.path);
-	list_init(station->connect.path, NULL);
-	list_destroy(station->connect.path + 1);
-	list_init(station->connect.path + 1, NULL);
+	Listdestroy(station->connect.path);
+	ListInit(station->connect.path, NULL);
+	Listdestroy(station->connect.path + 1);
+	ListInit(station->connect.path + 1, NULL);
 	station->connect.count = 0;
 
    
@@ -136,9 +136,9 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 	}
    
 
-	list_destroy(&listPower); //没有泄露
-	list_destroy(&findList);  //没有泄露
-    list_destroy(&bfsListInstance);
+	Listdestroy(&listPower); //没有泄露
+	Listdestroy(&findList);  //没有泄露
+    Listdestroy(&bfsListInstance);
     //PrintMemoryUsed();
 }
 /**
@@ -147,22 +147,22 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责]
 */
-static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, List* list, List* powerList, List* findList)
+static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList)
 {
 	uint8_t size = list_size(list);
-	ListElmt* element = list_head(list);
+	ListElment* element = list_head(list);
 	for (uint8_t i = 0; i < size; i++)
 	{
 		SwitchProperty* sw = GET_SWITCH_ELEMENT(element);
 		//TODO: 需要添加电源开关且有压。才认为为有效的电源开关
 		if (sw->type == SWITCH_TYPE_BREAKER_POWER)
 		{
-			list_ins_next(powerList, NULL, sw);
+			ListInsertNext(powerList, NULL, sw);
 		}
 		//排除除了自己，为分位的开关
 		if (sw->state != SWITCH_OPEN || sw == sourceSwitch)
 		{
-			list_ins_next(findList, NULL, sw);
+			ListInsertNext(findList, NULL, sw);
 		}
 		element = element->next;
 	}
@@ -174,11 +174,11 @@ static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, List* li
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责]
 */
-static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, List* powerList, List* findList, List* bfsList)
+static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList)
 {
 	BFSHelper* bfs;
 	uint8_t size = list_size(powerList);
-	ListElmt* element = list_head(powerList);
+	ListElment* element = list_head(powerList);
 	ErrorCode result;
 	for (uint8_t i = 0; i < size; i++)
 	{
@@ -195,7 +195,7 @@ static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, List* powerList, 
 		}
 		else
 		{
-			list_ins_next(bfsList, NULL, bfs);
+			ListInsertNext(bfsList, NULL, bfs);
 			//PrintBFSHelperSimple(bfs);
 		}
 		element = element->next;
@@ -208,17 +208,17 @@ static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, List* powerList, 
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责, 适应多个开关查找情况]
 */
-static ErrorCode ExtractSwitchPath(StationTopology* station,   List* bfsList)
+static ErrorCode ExtractSwitchPath(StationTopology* station,   ListDouble* bfsList)
 {	
-	List* list;
+	ListDouble* list;
 	BFSHelper* bfs;
 	uint8_t size = list_size(bfsList);
 	uint8_t count = 0, index = 0;
 	uint32_t id = 0;
 	SwitchProperty* findSwitch;
 	ErrorCode result;
-	ListElmt* element = list_head(bfsList);
-	List* globalList = &(station->globalSwitchList);
+	ListElment* element = list_head(bfsList);
+	ListDouble* globalList = &(station->globalSwitchList);
 	ConnectSwitch* connect = &(station->connect);
 	connect->count = 0;
 	for (uint8_t i = 0; i < size; i++, element = element->next)
@@ -226,14 +226,14 @@ static ErrorCode ExtractSwitchPath(StationTopology* station,   List* bfsList)
 		list = connect->path + i;
 		if (list_size(list) != 0)
 		{
-			list_destroy(list);
+			Listdestroy(list);
 		}
-		list_init(list, NULL);
+		ListInit(list, NULL);
 
 		bfs = (BFSHelper*)(element->data);
 
 		count = list_size(bfs->path);
-		ListElmt* node = list_head(bfs->path);
+		ListElment* node = list_head(bfs->path);
 		if (count == 0)
 		{
 			continue;
@@ -252,7 +252,7 @@ static ErrorCode ExtractSwitchPath(StationTopology* station,   List* bfsList)
 					LogAddException(result, station->id);
 					return error;								
 				}				
-				list_ins_next(list, NULL, findSwitch);				
+				ListInsertNext(list, NULL, findSwitch);				
 			}
 			node = node->next;
 		}
@@ -273,7 +273,7 @@ ErrorCode GetAllTopologyByMutual(StationPoint* point)
     ErrorCode error;
     TopologyMessage* topology;
     
-    List* topologylist = &(point->topology.globalTopologyList);
+    ListDouble* topologylist = &(point->topology.globalTopologyList);
     AreaID* area = &(point->topology.areaID);
     for (uint8_t i = 0; i < area->count; i++)
     {
@@ -478,7 +478,7 @@ ErrorCode SearchToPowerPathAPP(StationPoint* point)
 ErrorCode SetConnectPath(uint32_t id,  PathConnected isSet, uint8_t hops, StationTopology* toplogy)
 {
     CHECK_POINT_RETURN_LOG(toplogy, NULL, ERROR_NULL_PTR, 0);
-    List* list = &(toplogy->connectPath);
+    ListDouble* list = &(toplogy->connectPath);
     
     FOR_EARCH_LIST_START(list);
     uint32_t getID = ((ConnectPath*)list_data(m_foreach))->id;
@@ -487,7 +487,7 @@ ErrorCode SetConnectPath(uint32_t id,  PathConnected isSet, uint8_t hops, Statio
         if (isSet == CANCER_PATH_CONNECT)
         {
 			ConnectPath* pid;
-            list_rem_next(list, m_foreach->prev, (void**)&pid);
+            ListRemoveNext(list, m_foreach->prev, (void**)&pid);
             SafeFree(pid);
             return ERROR_OK_NULL;
         }       
@@ -500,7 +500,7 @@ ErrorCode SetConnectPath(uint32_t id,  PathConnected isSet, uint8_t hops, Statio
         CHECK_POINT_RETURN_LOG(pid, NULL, ERROR_MALLOC, toplogy->id);
 		pid->hopsNumber = hops;
         pid->id = id;
-        list_ins_next(list, NULL, pid);
+        ListInsertNext(list, NULL, pid);
     }
 
     return ERROR_OK_NULL;
@@ -528,7 +528,7 @@ static bool CheckIsMeetConnectCondition(StationTopology* topology)
 	
     for (uint8_t i = 0; i < topology->connect.count; i++)
     {
-        List* list = topology->connect.path + i;
+        ListDouble* list = topology->connect.path + i;
         
         if (list_size(list) == 0)
         {
@@ -563,7 +563,7 @@ static bool CheckIsLockConnectJudge(StationTopology* topology)
 {
 	bool state = false;
 	SwitchProperty* node;
-	List* list;
+	ListDouble* list;
 		
 	for (uint8_t i = 0; i < topology->connect.count; i++)
 	{
@@ -590,11 +590,11 @@ static bool CheckIsLockConnectJudge(StationTopology* topology)
 
 /**
 * @brief :根据条件查找满足条件的开关，TODO:简单处理，找出最大的。需要完善的转供策略
-* @param :List* list
+* @param :ListDouble* list
 * @return:
 * @update: [2018-07-13][张宇飞][]
 */
-ErrorCode ConnectPath_MeetCondition(List* list, ConnectPath** pcp)
+ErrorCode ConnectPath_MeetCondition(ListDouble* list, ConnectPath** pcp)
 {
 	CHECK_POINT_RETURN_LOG(list, NULL, ERROR_NULL_PTR, 0);
 	CHECK_POINT_RETURN_LOG(list_size(list), 0, ERROR_OVER_LIMIT, 0);
@@ -616,7 +616,7 @@ ErrorCode ConnectPath_MeetCondition(List* list, ConnectPath** pcp)
 * @return:
 * @update: [2018-07-13][张宇飞][]
 */
-ErrorCode ConnectPath_ResetUpdateFlag(List* list)
+ErrorCode ConnectPath_ResetUpdateFlag(ListDouble* list)
 {
 	CHECK_POINT_RETURN_LOG(list, NULL, ERROR_NULL_PTR, 0);
 	CHECK_EQUAL_RETURN_LOG(list_size(list), 0, ERROR_OVER_LIMIT, 0);
@@ -632,11 +632,11 @@ ErrorCode ConnectPath_ResetUpdateFlag(List* list)
 }
 /**
 * @brief : 检测是否全部更新
-* @param : List* list
+* @param : ListDouble* list
 * @return:
 * @update: [2018-07-13][张宇飞][]
 */
-ErrorCode ConnectPath_CheckIsUpdateComplete(List* list, bool* result)
+ErrorCode ConnectPath_CheckIsUpdateComplete(ListDouble* list, bool* result)
 {
 	CHECK_POINT_RETURN_LOG(list, NULL, ERROR_NULL_PTR , 0);
 	CHECK_EQUAL_RETURN_LOG(list_size(list), 0, ERROR_OVER_LIMIT, 0);
@@ -664,7 +664,7 @@ bool CheckIsPermitTransferpower(ConnectSwitch* connect)
 {
 	bool state = false;
 	SwitchProperty* node;
-	List* list;
+	ListDouble* list;
 	
 	if (connect == NULL)
 	{
@@ -742,10 +742,10 @@ static ErrorCode SendConnectPathMessage(uint32_t id, PathConnected iseset, uint8
 * [2018-07-16][张宇飞][增加跳数，按照当前生成的路径是倒序]
 *[2018-07-19][张宇飞][修改参数]
 */
-static ErrorCode SendConnectPathCmd(List* path, PathConnected iseset, DatagramTransferNode* pTransferNode)
+static ErrorCode SendConnectPathCmd(ListDouble* path, PathConnected iseset, DatagramTransferNode* pTransferNode)
 {
 	uint8_t hops = 0, size = 0; 
-	List* list;
+	ListDouble* list;
     for (uint8_t i = 0; i < 2; i++)
     {
         list = path + i;

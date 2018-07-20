@@ -494,6 +494,11 @@
               <FileType>1</FileType>
               <FilePath>..\Distribution\Src\Router.c</FilePath>
             </File>
+            <File>
+              <FileName>RouterDatagram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Distribution\Src\RouterDatagram.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -513,6 +518,11 @@
               <FileName>station.pb.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\DistributionComponents\station.pb.c</FilePath>
+            </File>
+            <File>
+              <FileName>RingQueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Components\Src\RingQueue.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -593,6 +603,11 @@
               <FileName>CRC16.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Protocol\Src\CRC16.c</FilePath>
+            </File>
+            <File>
+              <FileName>Datagram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\Src\Datagram.c</FilePath>
             </File>
           </Files>
         </Group>

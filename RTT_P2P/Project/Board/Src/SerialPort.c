@@ -1,4 +1,4 @@
-﻿/**
+/**
 1.初始化后立刻发送一字节,之后开接收中断
 */
 
@@ -430,31 +430,31 @@ void SerialPort6Init(void)
 /**
 * @brief This function handles USART3 global interrupt.
 */
-void USART3_IRQHandler(void)
-{
-    /* USER CODE BEGIN USART3_IRQn 0 */
+//void USART3_IRQHandler(void)
+//{
+//    /* USER CODE BEGIN USART3_IRQn 0 */
 
-    /* USER CODE END USART3_IRQn 0 */
-    /* USER CODE BEGIN USART3_IRQn 1 */
+//    /* USER CODE END USART3_IRQn 0 */
+//    /* USER CODE BEGIN USART3_IRQn 1 */
 
-    /* USER CODE END USART3_IRQn 1 */
-    uint8_t tmp;
-    if(LL_USART_IsActiveFlag_RXNE(USART3))
-    {
-        tmp = LL_USART_ReceiveData8(USART3);
-        Uart3FifoHandle.Enqueue(&Uart3FifoHandle, tmp);
-    }
-}
-void USART6_IRQHandler(void)
-{
+//    /* USER CODE END USART3_IRQn 1 */
+//    uint8_t tmp;
+//    if(LL_USART_IsActiveFlag_RXNE(USART3))
+//    {
+//        tmp = LL_USART_ReceiveData8(USART3);
+//        Uart3FifoHandle.Enqueue(&Uart3FifoHandle, tmp);
+//    }
+//}
+//void USART6_IRQHandler(void)
+//{
 
-    uint8_t tmp;
-    if(LL_USART_IsActiveFlag_RXNE(USART6))
-    {
-        tmp = LL_USART_ReceiveData8(USART6);
-        Uart6FifoHandle.Enqueue(&Uart6FifoHandle, tmp);
-    }
-}
+//    uint8_t tmp;
+//    if(LL_USART_IsActiveFlag_RXNE(USART6))
+//    {
+//        tmp = LL_USART_ReceiveData8(USART6);
+//        Uart6FifoHandle.Enqueue(&Uart6FifoHandle, tmp);
+//    }
+//}
 /**
 * @brief This function handles UART4 global interrupt.
 */
@@ -474,26 +474,26 @@ void UART4_IRQHandler(void)
     }
 }
 
-void UART5_IRQHandler(void)
-{
+//void UART5_IRQHandler(void)
+//{
 
-    /* USER CODE BEGIN UART5_IRQn 0 */
+//    /* USER CODE BEGIN UART5_IRQn 0 */
 
-    /* USER CODE END UART5_IRQn 0 */
-    /* USER CODE BEGIN UART5_IRQn 1 */
+//    /* USER CODE END UART5_IRQn 0 */
+//    /* USER CODE BEGIN UART5_IRQn 1 */
 
-    /* USER CODE END UART5_IRQn 1 */
+//    /* USER CODE END UART5_IRQn 1 */
 
-    uint8_t tmp;
-    if(LL_USART_IsActiveFlag_RXNE(UART5))
-    {
-        //LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
-        tmp = LL_USART_ReceiveData8(UART5);
-        Uart5FifoHandle.Enqueue(&Uart5FifoHandle, tmp);
-        //LL_USART_TransmitData8(UART5,tmp);
+//    uint8_t tmp;
+//    if(LL_USART_IsActiveFlag_RXNE(UART5))
+//    {
+//        //LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+//        tmp = LL_USART_ReceiveData8(UART5);
+//        Uart5FifoHandle.Enqueue(&Uart5FifoHandle, tmp);
+//        //LL_USART_TransmitData8(UART5,tmp);
 
 
-    }
-    
-}
+//    }
+//    
+//}
 

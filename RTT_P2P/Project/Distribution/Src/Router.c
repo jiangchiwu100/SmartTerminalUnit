@@ -24,7 +24,7 @@ static uint8_t RouterSendData(FifoHandle* handle, PointUint8* packet);
  * @return: 0-未找到 ，非0 指针
  * @update:  [2018-06-08[张宇飞][]
  */
-NodeFifo* FindRouteNodeById(const  List* list, uint32_t id)
+NodeFifo* FindRouteNodeById(const  ListDouble* list, uint32_t id)
 {
     if(list == NULL)
     {
@@ -32,7 +32,7 @@ NodeFifo* FindRouteNodeById(const  List* list, uint32_t id)
     }
     
     uint8_t size = list_size(list);
-     ListElmt* element = list_head(list); 
+     ListElment* element = list_head(list); 
     for (uint8_t i = 0; i < size; i++)
     {
         if (((NodeFifo*)(element->data))->id == id)
@@ -53,7 +53,7 @@ NodeFifo* FindRouteNodeById(const  List* list, uint32_t id)
  */
 ErrorCode RouteInit(Router* router)
 {
-    list_init(&(router->nodeStation), DestroyNodeFifoList );
+    ListInit(&(router->nodeStation), DestroyNodeFifoList );
     router->FindMemberById = FindRouteNodeById;
     return ERROR_OK_NULL;
 }
@@ -201,7 +201,7 @@ ErrorCode  AddNodeFifo(Router* router, uint32_t id, uint16_t capacity, NodeFifo*
         {
             return (ErrorCode)result;
         }
-        result = list_ins_next(&(router->nodeStation), NULL, node);
+        result = ListInsertNext(&(router->nodeStation), NULL, node);
         if (result)
         {
             return ERROR_INSERT_LIST;
@@ -331,9 +331,9 @@ uint8_t RouterBroadcast(Router* router)
     {
         return ERROR_NULL_PTR;
     }
-    List* list = &(router->nodeStation);
+    ListDouble* list = &(router->nodeStation);
     uint8_t size = list_size(list);
-    ListElmt* element = list_head(list);
+    ListElment* element = list_head(list);
     uint8_t data;
     for (uint8_t i = 0; i < size; i++)
     {
@@ -344,7 +344,7 @@ uint8_t RouterBroadcast(Router* router)
         while (send->fifo.count > 0)
         {
              send->Dequeue(send, &data); 
-             ListElmt* elementSub = list_head(list);            
+             ListElment* elementSub = list_head(list);            
              for (uint8_t i = 0; i < size; i++)
              {
                  //跳过ID相等的部分, 送入方向 element -->>elementSub

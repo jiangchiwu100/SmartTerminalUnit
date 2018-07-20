@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
 ErrorCode RouterDatagram_NewTransferNode(uint32_t id, uint16_t capacity, DatagramTransferNode* node);
-ErrorCode RouterDatagram_TransmissionCenter(List* stationPointList);
+ErrorCode RouterDatagram_TransmissionCenter(ListDouble* stationPointList);
 
 #ifdef	__cplusplus
 }

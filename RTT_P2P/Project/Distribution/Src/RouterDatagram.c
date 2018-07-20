@@ -29,7 +29,7 @@ static ErrorCode RouterDatagram_CopyFrame(const DatagramFrame*  frame, DatagramF
 static ErrorCode RouterDatagram_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket);
 
 static void VirtualMonitorRecive(DatagramTransferNode* pTransferNode, DatagramFrame* frame);
-static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, List* stationPointList);
+static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, ListDouble* stationPointList);
 /**
 * @brief  : 数据报路由器写数据,不进行参数检测
 * @param  : 队列句柄
@@ -166,7 +166,7 @@ extern DatagramTransferNode g_VirtualNode;
 * @return: ErrorCode
 * @update: [2018-07-18][张宇飞][]
 */
-ErrorCode RouterDatagram_TransmissionCenter(List* stationPointList)
+ErrorCode RouterDatagram_TransmissionCenter(ListDouble* stationPointList)
 {
 	CHECK_POINT_RETURN_LOG(stationPointList, NULL, ERROR_NULL_PTR, 0);
 	DatagramTransferNode* transferNodeSend;
@@ -262,7 +262,7 @@ static void VirtualMonitorRecive(DatagramTransferNode* pTransferNode, DatagramFr
 * @return: ErrorCode
 * @update: [2018-07-19][张宇飞][]
 */
-static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, List* stationPointList)
+static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, ListDouble* stationPointList)
 {
 
 	DatagramTransferNode* transferNodeRecive;

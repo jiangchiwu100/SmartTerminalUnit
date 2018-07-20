@@ -84,8 +84,8 @@ static void connected_thread_entry(void* parameter)
         LogAddException(ERROR_NULL_PTR, 0);
     }
 
-    List* list = &(stationServer->stationPointList);
-    ListElmt* element;
+    ListDouble* list = &(stationServer->stationPointList);
+    ListElment* element;
     uint8_t size;
     do 
     {    		
@@ -138,14 +138,14 @@ void SimulationSwitchStationLogicalApp(StationManger* manager)
         rt_kprintf("SimulationSwitchStationLogicalApp ERROR :simulationServer = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
-    List* list = &(simulationServer->SimulationStationList);
+    ListDouble* list = &(simulationServer->SimulationStationList);
     
     
   
         //循环更新模拟开关状态
     do
     {
-        ListElmt* element = list_head(list);        
+        ListElment* element = list_head(list);        
         uint8_t size = list_size(list);
         for (uint8_t i = 0; i < size; i++)
         {
@@ -215,10 +215,10 @@ static void SimulationCommunicationServer(StationManger* manager)
         LogAddException(ERROR_NULL_PTR, 0);
     }
 
-    List* list = &(stationServer->stationPointList);
+    ListDouble* list = &(stationServer->stationPointList);
     
 
-    ListElmt* element = list_head(list);
+    ListElment* element = list_head(list);
     uint8_t size = list_size(list);
     for (uint8_t i = 0; i < size; i++)
     {
@@ -258,11 +258,11 @@ void SimulationCommunicationApp(StationManger* manager)
         LogAddException(ERROR_NULL_PTR, 0);
     }
     
-    List* list = &(stationServer->stationPointList);
+    ListDouble* list = &(stationServer->stationPointList);
     do
     {
         
-        ListElmt* element = list_head(list);
+        ListElment* element = list_head(list);
         uint8_t size = list_size(list);
         for (uint8_t i = 0; i < size; i++)
         {
@@ -290,8 +290,8 @@ void SimulationCommunicationApp(StationManger* manager)
 */
 void SimulationDistributionApp(StationManger* manager)
 {
-    ListElmt* element;
-    List* list;
+    ListElment* element;
+    ListDouble* list;
     uint8_t size;
     StationPoint* station;
     FaultDealHandle* handle;
@@ -364,8 +364,8 @@ void SimulationDistributionApp(StationManger* manager)
 */
 void  MonitorApp(StationManger* manager)
 {
-    ListElmt* element;
-    List* list;
+    ListElment* element;
+    ListDouble* list;
     uint8_t size;
     StationPoint* station;   
    

@@ -24,9 +24,9 @@ extern void PrintSwitchMessage(const SwitchProperty*  switchNode);
 extern void PrintBFSHelper(const BFSHelper* helper);
 extern void PrintBFSHelperSimple(const BFSHelper* helper);
 extern void PrintMemoryUsed(void);
-extern void PrintPowerAreaMessage(List* areaList, uint8_t len);
+extern void PrintPowerAreaMessage(ListDouble* areaList, uint8_t len);
 extern void PrintIDTipsTick(uint32_t id, uint8_t* tips);
-extern void PrintSwitchList(List* list);
+extern void PrintSwitchList(ListDouble* list);
 #ifdef	__cplusplus
 }
 #endif

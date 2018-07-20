@@ -34,8 +34,8 @@ https://www.cnblogs.com/idreamo/archive/2017/11/18/7855826.html
 
 #include "extern_interface.h"
 
-/*list_init*/  
-void list_init(List *list,void(*destroy)(void *data))  
+/*ListInit*/  
+void ListInit(ListDouble *list,void(*destroy)(void *data))  
 {  
     list->size = 0;  
     list->destroy = destroy;  
@@ -45,14 +45,14 @@ void list_init(List *list,void(*destroy)(void *data))
     return;  
 }  
   
-/*list_destroy*/  
-void list_destroy(List *list)  
+/*Listdestroy*/  
+void Listdestroy(ListDouble *list)  
 {  
     void *data;  
     /*Remove each element*/  
     while(list_size(list)>0)  
     {  
-        if(list_rem_next(list,NULL,(void **)&data)==0 && list->destroy!=NULL)  
+        if(ListRemoveNext(list,NULL,(void **)&data)==0 && list->destroy!=NULL)  
         {  
             /*Call a user-defined function to FREE dynamically allocated data.*/  
             list->destroy(data);  
@@ -62,13 +62,13 @@ void list_destroy(List *list)
     return;  
 }  
   
-/*list_ins_next*/  
-int list_ins_next(List *list, ListElmt *element, const void *data)  
+/*ListInsertNext*/  
+int ListInsertNext(ListDouble *list, ListElment *element, const void *data)  
 {  
-    ListElmt *new_element;  
+    ListElment *new_element;  
       
     /*Allocate storage for the element*/  
-	new_element = (ListElmt *)CALLOC(1, sizeof(ListElmt));
+	new_element = (ListElment *)CALLOC(1, sizeof(ListElment));
     if(new_element == NULL )
         return -1;  
     /*insert the element into the list*/  
@@ -112,10 +112,10 @@ int list_ins_next(List *list, ListElmt *element, const void *data)
     return 0;  
 }  
   
-/*list_rem_next*/  
-int list_rem_next(List *list,ListElmt *element,void **data)  
+/*ListRemoveNext*/  
+int ListRemoveNext(ListDouble *list,ListElment *element,void **data)  
 {  
-    ListElmt *old_element;  
+    ListElment *old_element;  
       
     /*Do not allow removal from an empty list. */  
     if(list_size(list) == 0)  

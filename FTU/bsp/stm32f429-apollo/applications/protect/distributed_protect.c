@@ -960,7 +960,7 @@ uint32_t steadyStateChange(uint8_t pdrv,uint8_t sta1,uint8_t sta2)
   * @return: 无
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void ListInit(uint8_t pdrv)
+void UserListInit(uint8_t pdrv)
 {
     uint16_t iS,iM,iN,iL,jL,tempS,tempM,tempN,tempLi,tempLj;
     DevStr *dev;
@@ -1093,7 +1093,7 @@ void distributInit(void)
         switch(pdrv)
         {
             case DISTRIBUT_DEV0:
-                ListInit(pdrv);  
+                UserListInit(pdrv);  
                 s_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
                 s_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];   
                 s_ComProSts[pdrv].yx.functionHardStrap.value = &g_TelesignalDB[g_TelesignalAddr.functionHardStrap];

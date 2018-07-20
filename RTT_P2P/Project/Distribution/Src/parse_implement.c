@@ -23,8 +23,8 @@
 uint8_t StationInit(StationTopology* station,  uint32_t id)
 {
     station->id = id;
-    list_init( &(station->globalTopologyList), NULL); //初始化列表列表    
-    list_init(&(station->neighbourSwitchList), NULL);// 初始化开关列表
+    ListInit( &(station->globalTopologyList), NULL); //初始化列表列表    
+    ListInit(&(station->neighbourSwitchList), NULL);// 初始化开关列表
     
     return 0;
 }
@@ -142,9 +142,9 @@ void StationCalDistributionPowerArea(StationTopology* station)
     if (station->neighbourSwitchList.size !=0)
     {
         //销毁链表
-        list_destroy(&(station->neighbourSwitchList));
+        Listdestroy(&(station->neighbourSwitchList));
         //重新初始化
-        list_init(&(station->neighbourSwitchList), NULL);
+        ListInit(&(station->neighbourSwitchList), NULL);
     }
    
     //使用头作为计算节点
@@ -161,7 +161,7 @@ void StationCalDistributionPowerArea(StationTopology* station)
     
     GetNeighboorSwitch(&(station->neighbourSwitchList), topology, &(station->globalTopologyList), &(station->neighbourSwitchList));
     
-    ListElmt* element = list_head(&(station->neighbourSwitchList));
+    ListElment* element = list_head(&(station->neighbourSwitchList));
     
    /* for(uint8_t i = 0; i < list_size(&(station->neighbourSwitchList)); i++)
     {
@@ -214,9 +214,9 @@ void StationTestPath(StationTopology* station)
     if (station->globalSwitchList.size !=0)
     {
         //销毁链表
-        list_destroy(&(station->globalSwitchList));
+        Listdestroy(&(station->globalSwitchList));
         //重新初始化
-        list_init(&(station->globalSwitchList), NULL);
+        ListInit(&(station->globalSwitchList), NULL);
     }
     
     
@@ -262,13 +262,13 @@ void StationTestPath(StationTopology* station)
 void StationTestPathAll(StationTopology* station)
 {
     
-    ListElmt* element = list_head(&(station->globalTopologyList));
+    ListElment* element = list_head(&(station->globalTopologyList));
     uint8_t size = list_size(&(station->globalTopologyList));
     for (uint8_t i = 0; i < size; i++)
     {
         station->localTopology = GET_TOPOLOGY_ELEMENT(element);
         
-        ListElmt* node = list_head(&(station->globalTopologyList));
+        ListElment* node = list_head(&(station->globalTopologyList));
        
         for (uint8_t k = 0; k < size; k++)
         {
@@ -335,7 +335,7 @@ void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger)
 	id = topologyMessage->id;
 
 	//是否已经存在此ID
-	List* list = &(manger->stationServer.stationPointList);
+	ListDouble* list = &(manger->stationServer.stationPointList);
 	station = FindStationPointById(list, id);
 	if (station != NULL)
 	{
@@ -377,18 +377,18 @@ void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* poin
     SwitchProperty* switchProperty;
     uint8_t result;
     DistributionStation* distribution;
-    List* list = &(point->topology.globalSwitchList);
+    ListDouble* list = &(point->topology.globalSwitchList);
     if (data == NULL  || point == NULL)
     {
         perror("data == NULL  || point == NULL!.\n");
         return;
     }
-    List* listaq = &(point->topology.globalTopologyList);
+    ListDouble* listaq = &(point->topology.globalTopologyList);
     //若为0，则更新开关列表
     if (list->size != listaq->size)
     {
-        list_destroy(list);//清空列表
-        list_init(list,  NULL);//重新初始化
+        Listdestroy(list);//清空列表
+        ListInit(list,  NULL);//重新初始化
         result = GetSwitchList(listaq, list);
         //开关列表更新失败
         if (result)
@@ -744,7 +744,7 @@ ErrorCode MakeRemovalMessage(const SwitchProperty* const switchProperty, ResultT
 	ConnectSwitch* connect = &(switchProperty->parent->connect);
 	uint8_t count = 0;
 	uint32_t id = 0;
-	List* list ;
+	ListDouble* list ;
 	//计算总数
 	for (uint8_t i = 0; i < connect->count; i++)
 	{
@@ -886,7 +886,7 @@ void  StationOperateSwitch(uint8_t data[], uint8_t len, SimulationStationServer*
     }
 
 
-    List* list = &(server->SimulationStationList);    
+    ListDouble* list = &(server->SimulationStationList);    
 	
     index = 1;
     for (uint8_t i = 0; i < count; i++)

@@ -21,7 +21,7 @@
 
 
 
-void PrintPowerAreaMessage(List* areaList, uint8_t len)
+void PrintPowerAreaMessage(ListDouble* areaList, uint8_t len)
 {
     if (areaList == NULL)
     {
@@ -36,7 +36,7 @@ void PrintPowerAreaMessage(List* areaList, uint8_t len)
         {
             rt_kprintf("Area: %d\n", i );
              uint8_t lenArea = list_size(areaList+i);
-             ListElmt* areaElement = list_head(areaList+i);
+             ListElment* areaElement = list_head(areaList+i);
              for (uint8_t k = 0; k < lenArea; k++)
              {
                  if (areaElement != NULL)
@@ -159,7 +159,7 @@ void PrintBFSHelper(const BFSHelper* helper)
         }
         
         rt_kprintf("helper path.\n");
-        ListElmt* element = list_head(helper->path);
+        ListElment* element = list_head(helper->path);
         for (uint8_t i = 0; i < list_size(helper->path); i++)
         {
             
@@ -196,7 +196,7 @@ void PrintBFSHelperSimple(const BFSHelper* helper)
         rt_kprintf("\n");
         
         rt_kprintf("helper path:\n");
-        ListElmt* element = list_head(helper->path);
+        ListElment* element = list_head(helper->path);
         for (uint8_t i = 0; i < list_size(helper->path); i++)
         {       
             rt_kprintf("%d,",  *(uint8_t* )(element->data));
@@ -233,10 +233,10 @@ void PrintIDTipsTick(uint32_t id, uint8_t* tips)
 
 /**
 * @brief : 打印开关链表
-* @param  : List* list
+* @param  : ListDouble* list
 * @update: [2018-07-05][张宇飞][创建]
 */
-void PrintSwitchList(List* list)
+void PrintSwitchList(ListDouble* list)
 {
 	rt_kprintf("power->");
 	FOR_EARCH_LIST_START(list);
