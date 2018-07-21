@@ -2009,6 +2009,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\SerialPort.c</FilePath>
             </File>
+            <File>
+              <FileName>w5500_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\w5500_server.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4045,6 +4050,11 @@
               <FileName>SerialPort.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\SerialPort.c</FilePath>
+            </File>
+            <File>
+              <FileName>w5500_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\w5500_server.c</FilePath>
             </File>
           </Files>
         </Group>

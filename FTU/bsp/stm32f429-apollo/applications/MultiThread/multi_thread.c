@@ -585,6 +585,8 @@ static void dp83848_2404_thread_start(void *param)
 #if RT_USING_W5500 
 static void w5500_8080_thread_start(void *param)
 {
+    
+    return; //屏蔽
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
 	result = result;

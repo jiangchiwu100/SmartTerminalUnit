@@ -18,7 +18,7 @@
 extern  void DistributionLogicalAppInit(void);
 extern  void DistributionMutalAppInit(void);
 extern  void LogicalSimulationAppInit(void);
-
+extern void  UdpServerAppInit(void);
 
 
 void DistributionAppInit(void)
@@ -46,5 +46,6 @@ void DistributionAppInit(void)
 	LogicalSimulationAppInit();
 	DistributionMutalAppInit();
 	DistributionLogicalAppInit();
+    UdpServerAppInit();
 }
 

@@ -384,7 +384,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>x?</Name>
+          <Name>圜?碙N*?﹒</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -522,7 +522,7 @@
 
   <Group>
     <GroupName>Applications</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4338,6 +4338,18 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>26</GroupNumber>
+      <FileNumber>302</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\..\RTT_P2P\Project\Board\Src\w5500_server.c</PathWithFileName>
+      <FilenameWithoutPath>w5500_server.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -4348,7 +4360,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>302</FileNumber>
+      <FileNumber>303</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4360,7 +4372,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>303</FileNumber>
+      <FileNumber>304</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4372,7 +4384,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>304</FileNumber>
+      <FileNumber>305</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4384,7 +4396,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>305</FileNumber>
+      <FileNumber>306</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4396,7 +4408,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>306</FileNumber>
+      <FileNumber>307</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

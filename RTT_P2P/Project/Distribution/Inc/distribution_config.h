@@ -22,6 +22,12 @@
 #define THREAD_DISTRIBUTION_STACK_SIZE                                        (1024)
 #define THREAD_DISTRIBUTION_TIMESLICE                                         (20)
 
+//UDPserver
+#define THREAD_UDPSERVER_NAME                                              "udpser"
+#define THREAD_UDPSERVER_PRIORITY                                          (5)
+#define THREAD_UDPSERVER_STACK_SIZE                                        (1024)
+#define THREAD_UDPSERVER_TIMESLICE                                         (20)
+
 //路由通信
 #define THREAD_MUTAL_NAME                                              "mutal"
 #define THREAD_MUTAL_PRIORITY                                          (13)
