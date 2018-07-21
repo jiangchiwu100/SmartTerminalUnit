@@ -36,7 +36,7 @@
 #include "gui_101_cmd.h"
 #include "hmi_101_disk.h"
 #include "GUIdisplay.h"
-
+#include "distribution_app.h"
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
 //static rt_uint8_t rt_thread_system_stack[INIT_THREAD_STACK_SIZE]; 
@@ -1108,6 +1108,9 @@ int rt_multi_thread_start(void)
 	}	
     ftuidle_thread_start(RT_NULL);     
   #endif /* RT_USING_FTUIDLE */
+    
+  
+    DistributionAppInit();
     return(RT_EOK);    
 }
 INIT_APP_EXPORT(rt_multi_thread_start);

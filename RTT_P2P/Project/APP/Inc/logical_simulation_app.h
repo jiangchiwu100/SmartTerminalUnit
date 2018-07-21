@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_simulation_app.h
   * @brief:     应用APP
@@ -13,11 +13,13 @@
 #include <stdint.h>
 #include "distribution_def.h"
 
-extern void SimulationDistributionApp(StationManger* manager);
-extern void SimulationSwitchStationLogicalApp(StationManger* manager);
-extern void SimulationRouterApp(StationManger* manager);
-extern void SimulationCommunicationApp(StationManger* manager);
-extern void SimulationInit(void);
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
-
+    
+    
+#ifdef	__cplusplus
+}
+#endif
 #endif

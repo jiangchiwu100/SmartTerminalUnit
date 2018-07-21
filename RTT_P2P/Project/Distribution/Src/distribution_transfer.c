@@ -53,6 +53,7 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 
 		handle->nextState = TRANSFER_MASTER;
 		handle->step = 1;
+	
 		break;
 	}
 	case 1:

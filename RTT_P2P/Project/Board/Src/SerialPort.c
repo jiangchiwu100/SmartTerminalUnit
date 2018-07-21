@@ -6,7 +6,7 @@
 
 
 
-
+#define INT_UART4_PRIO                                                 ((0x03 << 4) | 0x02) 
 
 //全局变量
 //UART6
@@ -140,11 +140,11 @@ static void MX_UART5_Init(void)
     LL_USART_Enable(UART5);
     
     //LL_USART_TransmitData8(UART5, 0x55);
-    LL_mDelay(10);
+    //LL_mDelay(10);
     LL_USART_EnableIT_RXNE(UART5);
     
      /* UART5_IRQn interrupt configuration */
-    NVIC_SetPriority(UART5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+    NVIC_SetPriority(UART5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 3, 2));
     NVIC_EnableIRQ(UART5_IRQn);
 
 }
@@ -193,7 +193,7 @@ static void MX_UART4_Init(void)
     LL_USART_EnableIT_RXNE(UART4);
 
     /* UART4 interrupt Init */
-    NVIC_SetPriority(UART4_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+    NVIC_SetPriority(UART4_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 3, 2));
     NVIC_EnableIRQ(UART4_IRQn);
 }
 
@@ -358,6 +358,18 @@ void SerialPort4Init(void)
 
 
 }
+void SerialPort5Init(void)
+{
+
+
+    Uart5BufferPack.len = UART_5_BUFFER_LEN;
+    Uart5BufferPack.pData = Uart5Buffer;
+    FifoInit(&Uart5FifoHandle, &Uart5BufferPack);
+    MX_GPIO_Init();   
+    MX_UART5_Init();
+
+
+}
 /**
   * @brief : 串口6初始化.
   * @param : [No]
@@ -458,42 +470,42 @@ void SerialPort6Init(void)
 /**
 * @brief This function handles UART4 global interrupt.
 */
-void UART4_IRQHandler(void)
-{
-    /* USER CODE BEGIN UART4_IRQn 0 */
-
-    /* USER CODE END UART4_IRQn 0 */
-    /* USER CODE BEGIN UART4_IRQn 1 */
-
-    /* USER CODE END UART4_IRQn 1 */
-    uint8_t tmp;
-    if(LL_USART_IsActiveFlag_RXNE(UART4))
-    {
-        tmp = LL_USART_ReceiveData8(UART4);
-        Uart4FifoHandle.Enqueue(&Uart4FifoHandle, tmp);
-    }
-}
-
-//void UART5_IRQHandler(void)
+//void UART4_IRQHandler(void)
 //{
+//    /* USER CODE BEGIN UART4_IRQn 0 */
 
-//    /* USER CODE BEGIN UART5_IRQn 0 */
+//    /* USER CODE END UART4_IRQn 0 */
+//    /* USER CODE BEGIN UART4_IRQn 1 */
 
-//    /* USER CODE END UART5_IRQn 0 */
-//    /* USER CODE BEGIN UART5_IRQn 1 */
-
-//    /* USER CODE END UART5_IRQn 1 */
-
+//    /* USER CODE END UART4_IRQn 1 */
 //    uint8_t tmp;
-//    if(LL_USART_IsActiveFlag_RXNE(UART5))
+//    if(LL_USART_IsActiveFlag_RXNE(UART4))
 //    {
-//        //LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
-//        tmp = LL_USART_ReceiveData8(UART5);
-//        Uart5FifoHandle.Enqueue(&Uart5FifoHandle, tmp);
-//        //LL_USART_TransmitData8(UART5,tmp);
-
-
+//        tmp = LL_USART_ReceiveData8(UART4);
+//        Uart4FifoHandle.Enqueue(&Uart4FifoHandle, tmp);
 //    }
-//    
 //}
+
+void UART5_IRQHandler(void)
+{
+
+    /* USER CODE BEGIN UART5_IRQn 0 */
+
+    /* USER CODE END UART5_IRQn 0 */
+    /* USER CODE BEGIN UART5_IRQn 1 */
+
+    /* USER CODE END UART5_IRQn 1 */
+
+    uint8_t tmp;
+    if(LL_USART_IsActiveFlag_RXNE(UART5))
+    {
+        //LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+        tmp = LL_USART_ReceiveData8(UART5);
+        Uart5FifoHandle.Enqueue(&Uart5FifoHandle, tmp);
+        //LL_USART_TransmitData8(UART5,tmp);
+
+
+    }
+    
+}
 

@@ -1,0 +1,204 @@
+/**
+  *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
+  * @file:      logical_simulation_app.c
+  * @brief:     开关逻辑仿真任务
+  * @version:   V0.0.0 
+  * @author:    Zhang Yufei
+  * @date:      2018-06-11
+  * @update:    
+  */
+#include "distribution_config.h"
+#include "logical_simulation_app.h"
+#include "distribution.h"
+#include "communicaton.h"
+
+#include "log.h"
+#include "extern_interface.h"
+
+#include "distribution_app.h"
+
+void  MonitorApp(StationManger* manager);
+
+static struct rt_thread switch_thread;//线程控制块
+
+
+static struct rt_thread monitor_thread;
+
+
+ALIGN(RT_ALIGN_SIZE)
+static rt_uint8_t rt_switch_thread_stack[THREAD_SIMSWITCH_STACK_SIZE];//线程栈
+static rt_uint8_t rt_monitor_thread_stack[1024];//线程栈
+
+
+
+static void SimulationSwitchStationLogicalApp(StationManger* manager);
+
+
+static void switch_thread_entry(void* parameter)
+{    
+	rt_kprintf("thread simulation start.\r\n");         
+    SimulationSwitchStationLogicalApp(&g_StationManger);
+}
+  
+
+
+static void monitor_thread_entry(void* parameter)
+{
+    rt_kprintf("thread monitor_thread_entry start.\r\n");
+    MonitorApp(&g_StationManger);
+}
+
+
+
+/**
+  * @brief :开关站点模拟
+  * @param  SimulationStationServer*  simulationServer
+  * @return: 0--正常
+  * @update: [2018-06-11][张宇飞][创建]
+  */
+static void SimulationSwitchStationLogicalApp(StationManger* manager)
+{    
+    if (manager == NULL)
+    {
+        rt_kprintf("SimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
+        LogAddException(ERROR_NULL_PTR, 0);
+    }
+    SimulationStationServer*  simulationServer =&( manager->simulationServer);
+    if (simulationServer == NULL)
+    {
+        rt_kprintf("SimulationSwitchStationLogicalApp ERROR :simulationServer = NULL.\n");
+        LogAddException(ERROR_NULL_PTR, 0);
+    }
+    ListDouble* list = &(simulationServer->SimulationStationList);
+    
+    
+  
+        //循环更新模拟开关状态
+    do
+    {
+        ListElment* element = list_head(list);        
+        uint8_t size = list_size(list);
+        for (uint8_t i = 0; i < size; i++)
+        {
+            SimulationStation* station = (SimulationStation*)(element->data);
+            if (station != NULL)
+            {
+                SwitchRunStateSimulation(station);
+            }
+            else
+            {
+                rt_kprintf("imulationSation* station = NULL.\n");
+                LogAddException(ERROR_NULL_PTR, 0);
+                break;
+            }
+            UpdateBindSwitchState(station); 
+            element = element->next;
+        }
+        rt_thread_delay(5);
+    }while(1);
+        
+    
+}
+
+
+
+/**
+* @brief : 状态变化更新任务
+* @param  :StationManger* manager
+* @return:
+* @update: [2018-07-13][张宇飞][]
+*/
+void  MonitorApp(StationManger* manager)
+{
+    ListElment* element;
+    ListDouble* list;
+    uint8_t size;
+    StationPoint* station;   
+   
+    if (manager == NULL)
+    {
+        rt_kprintf("MonitorApp ERROR :manager = NULL.\n");
+    }
+    StationServer* server = &(manager->stationServer);
+    if (server == NULL)
+    {
+        rt_kprintf("MonitorApp ERROR :server = NULL.\n");
+    }    
+    list = &(server->stationPointList);
+
+	uint8_t cn = 0;
+	const uint8_t total = 30;
+    do
+    {
+        element = list_head(list);
+        size = list_size(list);
+        for (uint8_t i = 0; i < size; i++)
+        {
+            station = (StationPoint*)(element->data);
+            if (station != NULL)
+            {
+                SwitchProperty* switchNode = station->topology.localSwitch;
+                if ((!station->removalHandle.isRun)  && (switchNode->isChanged || (cn == total)))
+                {
+                    switchNode->isChanged = false;
+					DatagramTransferNode* pTransferNode =&( station->transferNode);
+                    TransmitMessageExtern(switchNode, pTransferNode, STATUS_MESSAGE, 0xFFFF);
+					TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, 0xFFFF);
+					TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, 0xFFFF);
+                }               
+            }
+            else
+            {
+                rt_kprintf("StationPoint* station = NULL.\n");
+                break;
+            }
+            element = element->next;
+        }
+
+		if (cn++ > total)
+		{
+			cn = 0;
+		}
+        rt_thread_delay(10);
+    } while (1);
+
+}
+
+
+
+
+/**
+  * @brief :仿真初始化，总入口
+  * @param  void
+  * @return: void
+  * @update: [2018-07-21][张宇飞][创建]
+  */
+void LogicalSimulationAppInit(void)
+{
+
+    rt_thread_init(&switch_thread,                 //线程控制块
+		THREAD_SIMSWITCH_NAME,                       //线程名字，在shell里面可以看到
+                   switch_thread_entry,            //线程入口函数
+                   RT_NULL,                      //线程入口函数参数
+                   &rt_switch_thread_stack,     //线程栈起始地址
+		sizeof(rt_switch_thread_stack), //线程栈大小
+		THREAD_SIMSWITCH_PRIORITY,                            //线程的优先级
+		THREAD_SIMSWITCH_TIMESLICE);                          //线程时间片
+                               
+    rt_thread_startup(&switch_thread);  
+    
+
+
+    return;
+    //rt_thread_init(&monitor_thread,                 //线程控制块
+    //    "gain",                       //线程名字，在shell里面可以看到
+    //    monitor_thread_entry,            //线程入口函数
+    //    RT_NULL,                      //线程入口函数参数
+    //    &rt_monitor_thread_stack,     //线程栈起始地址
+    //    sizeof(rt_monitor_thread_stack), //线程栈大小
+    //    14,                            //线程的优先级
+    //    20);                          //线程时间片
+
+    //rt_thread_startup(&monitor_thread);
+}
+

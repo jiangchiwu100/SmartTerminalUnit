@@ -133,8 +133,8 @@
 #define RT_USING_USART1
 //#define RT_USING_USART2
 #define RT_USING_USART3
-//#define RT_USING_UART4
-#define RT_USING_UART5
+#define RT_USING_UART4
+//#define RT_USING_UART5
 #define RT_USING_USART6
 
 #define RT_USART1_NAME                                                 "usart1"

@@ -2032,7 +2032,7 @@ int rt_multi_common_data_init(void)
     return(RT_EOK);
 }
 
-INIT_COMPONENT_EXPORT(rt_multi_common_data_init)
+//INIT_COMPONENT_EXPORT(rt_multi_common_data_init)
 
 
 /* END OF FILE ---------------------------------------------------------------*/

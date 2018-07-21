@@ -10,7 +10,7 @@
 #ifndef __DISTRIBUTION_H__
 #define __DISTRIBUTION_H__
 
-
+#include "distribution_config.h"
 
 #include "buffer.h"
 #include "helper.h"

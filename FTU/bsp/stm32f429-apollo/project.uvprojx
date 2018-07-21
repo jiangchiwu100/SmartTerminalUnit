@@ -1955,11 +1955,6 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
             </File>
             <File>
-              <FileName>logical_simulation_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
-            </File>
-            <File>
               <FileName>logical_simulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
@@ -2024,12 +2019,32 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
             </File>
+            <File>
+              <FileName>distribution_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\distribution_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>logical_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\logical_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>logical_simulation_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\logical_simulation_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutal_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\mutal_app.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
     </Target>
     <Target>
-      <TargetName>FDTU_V0.01</TargetName>
+      <TargetName>STU_V0.01</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
@@ -2070,7 +2085,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-          <OutputName>FDTU</OutputName>
+          <OutputName>STU</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -2103,7 +2118,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin !L --output fdtu_v00.001.bin</UserProg1Name>
+            <UserProg1Name>fromelf --bin !L --output stu_v00.001.bin</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -2357,7 +2372,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F429xx,USE_HAL_DRIVER, USE_FULL_LL_DRIVER,RT_USING_ARM_LIBC, ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user;.\applications\ptotocol\iec61850;.\applications\md5;..\..\..\RTT_P2P\Project\Components\Inc;..\..\..\RTT_P2P\Project\Protocol\Inc;..\..\..\RTT_P2P\Project\Distribution\Inc;..\..\..\RTT_P2P\Project\DistributionComponents;..\..\..\RTT_P2P\Project\Protocol\nanopb;..\..\..\RTT_P2P\Project\Protocol\APP\Inc;..\..\..\RTT_P2P\Project\APP\Inc;..\..\..\RTT_P2P\Project\Board\Inc</IncludePath>
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user;.\applications\ptotocol\iec61850;.\applications\md5;..\..\..\RTT_P2P\Project\Components\Inc;..\..\..\RTT_P2P\Project\Protocol\Inc;..\..\..\RTT_P2P\Project\Distribution\Inc;..\..\..\RTT_P2P\Project\DistributionComponents;..\..\..\RTT_P2P\Project\Protocol\nanopb;..\..\..\RTT_P2P\Project\Protocol\APP\Inc;..\..\..\RTT_P2P\Project\APP\Inc;..\..\..\RTT_P2P\Project\Board\Inc;..\..\..\RTT_P2P\Project\APP\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3977,11 +3992,6 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\station_manager.c</FilePath>
             </File>
             <File>
-              <FileName>logical_simulation_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation_app.c</FilePath>
-            </File>
-            <File>
               <FileName>logical_simulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\logical_simulation.c</FilePath>
@@ -4045,6 +4055,26 @@
               <FileName>communicaton.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\APP\Src\communicaton.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\distribution_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>logical_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\logical_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>logical_simulation_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\logical_simulation_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutal_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\APP\Src\mutal_app.c</FilePath>
             </File>
           </Files>
         </Group>

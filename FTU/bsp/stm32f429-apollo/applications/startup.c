@@ -107,6 +107,7 @@ void rtthread_startup(void)
   * @return: None. 
   */  
 int main(void)
+
 {
     /* disable interrupt first */
     rt_hw_interrupt_disable();

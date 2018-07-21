@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      communicaton.h
   * @brief:     
@@ -16,8 +16,11 @@
 extern "C" {
 #endif
 
+extern uint8_t CommunicationServerInitSingle(void);
+extern uint8_t CommunicationServerSingle(void);
 extern uint8_t CommunicationServeice(void);
 extern void Monitor(void);
+
 #ifdef	__cplusplus
 }
 #endif
