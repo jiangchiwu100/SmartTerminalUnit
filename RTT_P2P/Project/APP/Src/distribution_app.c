@@ -12,7 +12,37 @@
 
 #include "extern_interface.h"
 
+#ifdef UDP_SEND
+extern ErrorCode ExternSend(PointUint8* pPacket);
 
+/**
+* @brief  : ，有动态分配
+* @param  : 队列句柄
+* @param  ：RingQueue* ring 环形队列
+* @param  ：PointUint8* pPacket
+* @return: ErrorCode
+* @update: [2018-07-23][张宇飞][]
+*/
+ErrorCode Udp_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket)
+{
+    
+    
+	CHECK_POINT_RETURN(node, NULL, ERROR_NULL_PTR);
+	CHECK_POINT_RETURN(pPacket, NULL, ERROR_NULL_PTR);
+
+	
+	//重新提取目的和源地址
+
+
+	ErrorCode error = ExternSend(pPacket);
+    
+    //释放内存
+	FREE(pPacket->pData);
+	return error;
+}
+
+
+#endif
 
 
 extern  void DistributionLogicalAppInit(void);
@@ -35,6 +65,8 @@ void DistributionAppInit(void)
 
 
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);
+    g_VirtualNode.Send = Udp_SendPacketNode;
+    
 	if (error)
 	{
 		perror("RouterDatagram_NewTransferNode ： 0x%x", error);

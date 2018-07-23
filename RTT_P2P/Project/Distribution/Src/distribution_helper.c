@@ -13,7 +13,6 @@
 #include "distribution_interface.h"   
 #include "topology.h" 
 #include "helper.h"
-#include <rtthread.h>
 #include "fault_removal.h"  
 #include "extern_interface.h"
 //#include "core_cm4.h"  

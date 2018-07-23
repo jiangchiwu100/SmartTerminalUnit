@@ -66,6 +66,8 @@ static ErrorCode RouterDatagram_WriteDatagram(RingQueue* ring,  DatagramFrame*  
 * @return: ErrorCode
 * @update: [2018-07-18][张宇飞][]
 */
+
+
 static ErrorCode RouterDatagram_SendPacket(RingQueue* ring, PointUint8* pPacket)
 {
 	CHECK_POINT_RETURN(ring, NULL, ERROR_NULL_PTR);
@@ -80,12 +82,17 @@ static ErrorCode RouterDatagram_SendPacket(RingQueue* ring, PointUint8* pPacket)
 	pFrame->pData = pPacket->pData;
 
 	ErrorCode error = RouterDatagram_WriteDatagram(ring, pFrame);
+    
+    
 	if (error == ERROR_VOLUM)
 	{
 		FREE(pFrame);
 	}
 	return error;
 }
+
+
+
 
 /**
 * @brief  : ，有动态分配

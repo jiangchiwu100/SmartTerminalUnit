@@ -16,6 +16,10 @@
 #ifndef DLL_MODE
 #include "rtthread.h"
 
+
+extern void udp_debug_printf(const char *fmt, ...);
+#define  rt_kprintf  udp_debug_printf 
+
 //函数替换,根据实验环境
 #define MALLOC rt_malloc
 #define FREE rt_free
@@ -50,5 +54,9 @@
 #define GetTime() (0)
 #define perror(args)  {printf("error:%s, line: %d:\n", __FUNCDNAME__, __LINE__);  printf(args);}
 #endif
+
+
+#define UDP_SEND  (1)
+
 
 #endif // ! __DISTRIBUTION_H

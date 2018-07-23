@@ -173,19 +173,19 @@ uint8_t CommunicationServerSingle(void)
             {
                 
                 //写接收用于测试
-                ring = &(g_VirtualNode.sendRing);
-                error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
-                if (error)
-                {
-                    perror("Datagram_CopyToPacket Error: 0x%x\n", error);
-                    return 0;
-                }
-                
-                error = g_VirtualNode.Send(&g_VirtualNode, &packet) ;
-                if (error)
-                {
-                    perror("g_VirtualNode.Send Error: 0x%x\n", error);
-                }
+//                ring = &(g_VirtualNode.sendRing);
+//                error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
+//                if (error)
+//                {
+//                    perror("Datagram_CopyToPacket Error: 0x%x\n", error);
+//                    return 0;
+//                }
+//                
+//                error = g_VirtualNode.Send(&g_VirtualNode, &packet) ;
+//                if (error)
+//                {
+//                    perror("g_VirtualNode.Send Error: 0x%x\n", error);
+//                }
 
             }
         }

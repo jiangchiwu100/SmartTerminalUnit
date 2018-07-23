@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      buffer.c
 * @brief:     缓冲队列
@@ -9,7 +9,7 @@
 */
 #include "buffer.h"
 #include <string.h>
-
+#include "extern_interface.h"
 
 
 /*2018/6/12 增加peek函数*/

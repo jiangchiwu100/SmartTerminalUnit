@@ -12,7 +12,7 @@
 #include "extern_mutal.h"
 #include "distribution.h"
 #include "distribution_test_case.h"
-
+#include "extern_interface.h"
 /**************************************************
 *函数名： ExecuteFunctioncode()
 *功能：  执行功能代码

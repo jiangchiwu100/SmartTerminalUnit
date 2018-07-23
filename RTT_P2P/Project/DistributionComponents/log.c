@@ -20,12 +20,12 @@
 #include <stdint.h>
 
 #include "RingQueue.h"
-#include "extern_interface.h"
+
 #include "topology.h"
 
 
 #include "distribution.h"
-
+#include "extern_interface.h"
 
 //全局日志记录
 LogHandle g_Loghandle =

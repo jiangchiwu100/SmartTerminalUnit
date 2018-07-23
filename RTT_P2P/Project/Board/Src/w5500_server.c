@@ -34,6 +34,8 @@ static uint16_t LocalPort;
 static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
 
+static bool IsMaintanceRun;
+
 /**
   * @brief :W5500用于UDP通信
   * @param  void *param
@@ -76,6 +78,7 @@ static void udpserver_thread_entry(void *param)
 	uint8_t get_result =0;
 	
     rt_kprintf("udpserver start!\n");
+    IsMaintanceRun = false;
     for (;;)
     {   	 
        
@@ -96,6 +99,7 @@ static void udpserver_thread_entry(void *param)
                         ret = w5500_recvfrom(SocketNum, UdpReciveBuffer, length, srcip, &destport);
                         if(ret > 0)
                         {
+                            
                             TypeConvertAndVirtualNodeSend(UdpReciveBuffer, length);
                         //    w5500_sendto(SocketNum, UdpReciveBuffer, length, DefautIp, LocalPort);
                         }
@@ -138,11 +142,13 @@ static void MaintaceServer(void)
     FifoHandle* handle = LocalAnylast.fifohanlde;
     
     rt_err_t  get_result = getSn_SR(SocketMaintanceNum);
+    IsMaintanceRun = true;
     switch (get_result)
     {
         case SOCK_UDP:			
             do
             {
+                IsMaintanceRun = true;
                 length = getSn_RX_RSR(SocketMaintanceNum);		
                 if (length <= 0)
                 {
@@ -163,6 +169,7 @@ static void MaintaceServer(void)
         case SOCK_CLOSED:	
             if ((ret = w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) != SocketNum)
             {
+                IsMaintanceRun = false;
                 rt_kprintf("udpserver close!\n");
             } 
             //rt_thread_delay(1);
@@ -175,6 +182,30 @@ static void MaintaceServer(void)
 
 #include "datagram.h"
 
+
+/**
+  * @brief :外部发送,不进行参数检查
+  * @param void
+  * @return: 0--正常
+  * @update: [2018-07-23][张宇飞][创建]
+*/
+ErrorCode ExternSend(PointUint8* pPacket)
+{
+    uint8_t destId[4] = {0};
+    destId[0] = 192;
+    destId[1] = 168;
+    destId[2] = pPacket->pData[FRAME_DEST_INDEX + 1];
+    destId[3] = pPacket->pData[FRAME_DEST_INDEX];
+    int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, DefautIp, RemotePort);
+    if(ret == pPacket->len)
+    {
+        return ERROR_OK_NULL;
+    }
+    else
+    {
+        return ERROR_UNKONOW;
+    }
+}
 /**
   * @brief :监控使用
   * @param void
@@ -182,7 +213,7 @@ static void MaintaceServer(void)
   * @update: [2018-07-23][张宇飞][创建]
 */
 void Monitor(void)
-{
+{    
     extern DatagramTransferNode g_VirtualNode;
 	uint8_t data;
 	RingQueue* ring = &(g_VirtualNode.reciveRing);
@@ -206,6 +237,34 @@ void Monitor(void)
 		}
 	} while (true);
     
+}
+
+/**
+* @brief :UDP任务初始化
+* @param  void
+* @return: 0--正常
+* @update: [2018-07-21][张宇飞][创建]
+*/
+void udp_debug_printf(const char *fmt, ...)
+{
+    if (!IsMaintanceRun)
+    {
+        return;
+    }
+    va_list args;
+    rt_size_t length;
+    static char rt_log_buf[RT_CONSOLEBUF_SIZE];
+
+    va_start(args, fmt);
+
+    length = rt_vsnprintf(rt_log_buf, sizeof(rt_log_buf) - 1, fmt, args);
+    if (length > RT_CONSOLEBUF_SIZE - 1)
+        length = RT_CONSOLEBUF_SIZE - 1;
+
+    w5500_sendto(SocketMaintanceNum, rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
+    
+    
+    va_end(args);
 }
 /**
 * @brief :UDP任务初始化
