@@ -8,7 +8,7 @@
   * @update:    2018/7/20 修改数据流为数据包   
   */
 
-#include "communicaton.h"
+#include "communication.h"
 #include "distribution.h"
 #include "distribution_test_case.h" 
 #include "serialport.h"
@@ -17,7 +17,7 @@
 
 #include "extern_interface.h"
 
-static ProtocolAnylast LocalAnylast;
+ProtocolAnylast LocalAnylast;
 static NodeFifo* LocalFifo;
 
 
@@ -134,6 +134,7 @@ uint8_t CommunicationServerInitSingle(void)
     
     resideLen = 0;
     lastResideLen = 0;
+    return 0;
 }
 /**
   * @brief :单次调用
@@ -199,29 +200,65 @@ uint8_t CommunicationServerSingle(void)
         
         return 0;
 }
-void Monitor(void)
+/**
+  * @brief :监控使用
+  * @param void
+  * @return: 0--正常
+  * @update: [2018-07-1][张宇飞][创建]
+*/
+//void Monitor(void)
+//{
+//	uint8_t data;
+//	RingQueue* ring = &(g_VirtualNode.reciveRing);
+//	DatagramFrame* frame;
+//	do
+//	{
+
+//		bool state = ring->Read(ring, (void**)&frame);
+//		if (state)
+//		{
+
+//			UartSend(UART5, frame->pData, frame->size);			
+//			Datagram_Destory(frame);
+//		}
+//		else
+//		{
+//			break;
+//		}
+//	} while (true);
+//    
+//}
+
+/**
+  * @brief :监控使用
+  * @param void
+  * @return: 0--正常
+  * @update: [2018-07-1][张宇飞][创建]
+*/
+ErrorCode TypeConvertAndVirtualNodeSend(uint8_t* pData, uint8_t len)
 {
-	uint8_t data;
-	RingQueue* ring = &(g_VirtualNode.reciveRing);
-	DatagramFrame* frame;
-	do
-	{
-
-		bool state = ring->Read(ring, (void**)&frame);
-		if (state)
-		{
-
-			UartSend(UART5, frame->pData, frame->size);			
-			Datagram_Destory(frame);
-		}
-		else
-		{
-			break;
-		}
-	} while (true);
+    if(pData == NULL)
+    {
+        perror("pData == NULL\n");
+        return ERROR_NULL_PTR;
+    }
+    PointUint8 packet;
+    ErrorCode error = Datagram_CopyToPacket(pData, len , &packet);
+    if (error)
+    {
+        perror("Datagram_CopyToPacket Error: 0x%x\n", error);
+        return error;
+        
+    }
     
+    error = g_VirtualNode.Send(&g_VirtualNode, &packet) ;
+    if (error)
+    {
+        perror("g_VirtualNode.Send Error: 0x%x\n", error);
+        return error;
+    }
+    return error;
 }
-
 
 
 

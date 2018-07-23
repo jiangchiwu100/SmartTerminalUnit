@@ -9,7 +9,7 @@
   */
 
 #include "distribution.h"
-#include "communicaton.h"
+#include "communication.h"
 #include "Datagram.h"
 
 #include "extern_interface.h"

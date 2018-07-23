@@ -76,8 +76,8 @@ static void W5500_SetDefaultNetInfo( wiz_NetInfo* pNetinfo)
 
     pNetinfo->ip[0] =  192;
     pNetinfo->ip[1] =  168;
-    pNetinfo->ip[2] =  60;
-    pNetinfo->ip[3] =  120;
+    pNetinfo->ip[2] =  10;
+    pNetinfo->ip[3] =  1;
     
 
 	
@@ -117,15 +117,15 @@ static void w5500_config(void)
 {
     wiz_NetInfo wiz_netinfo;
 	uint8_t tmpstr[6];
-    if (g_EthW5500.ip[0] != 0)
-    {
-    memcpy(wiz_netinfo.mac, g_EthW5500.mac, 6);
-    memcpy(wiz_netinfo.ip, g_EthW5500.ip, 4);
-    memcpy(wiz_netinfo.sn , g_EthW5500.netmask, 4);
-    memcpy(wiz_netinfo.gw , g_EthW5500.gateway, 4);
-    memcpy(wiz_netinfo.dns, g_EthW5500.dns, 4);
-    }
-    else
+//    if (g_EthW5500.ip[0] != 0)
+//    {
+//    memcpy(wiz_netinfo.mac, g_EthW5500.mac, 6);
+//    memcpy(wiz_netinfo.ip, g_EthW5500.ip, 4);
+//    memcpy(wiz_netinfo.sn , g_EthW5500.netmask, 4);
+//    memcpy(wiz_netinfo.gw , g_EthW5500.gateway, 4);
+//    memcpy(wiz_netinfo.dns, g_EthW5500.dns, 4);
+//    }
+//    else
     {
         W5500_SetDefaultNetInfo(&wiz_netinfo);
     }

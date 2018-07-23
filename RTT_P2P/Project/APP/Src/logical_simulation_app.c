@@ -10,7 +10,7 @@
 #include "distribution_config.h"
 #include "logical_simulation_app.h"
 #include "distribution.h"
-#include "communicaton.h"
+#include "communication.h"
 
 #include "log.h"
 #include "extern_interface.h"
