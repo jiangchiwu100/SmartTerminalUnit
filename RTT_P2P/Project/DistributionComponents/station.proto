@@ -112,7 +112,7 @@ message StationMessage {
 	required bool isGainComplted = 2;
 	optional node_property   node = 3;
 	optional connect_switch  connect = 4;
-	optional connect_path  con_path = 5;
+	repeated connect_path  con_path = 5;
 	repeated distribution_power_area power_area = 6;
 	optional distribution_station distribution = 7;
 	optional faultdeal_handle   fault_handle = 8;

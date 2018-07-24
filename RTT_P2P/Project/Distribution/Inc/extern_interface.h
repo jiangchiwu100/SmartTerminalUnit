@@ -17,8 +17,7 @@
 #include "rtthread.h"
 
 
-extern void udp_debug_printf(const char *fmt, ...);
-#define  rt_kprintf  udp_debug_printf 
+
 
 //函数替换,根据实验环境
 #define MALLOC rt_malloc
@@ -36,6 +35,8 @@ extern void udp_debug_printf(const char *fmt, ...);
 #ifdef MSVC
 #define perror(arg)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
 #else
+extern void udp_debug_printf(const char *fmt, ...);
+#define  rt_kprintf  udp_debug_printf 
 #define perror(arg...)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
 #endif
 

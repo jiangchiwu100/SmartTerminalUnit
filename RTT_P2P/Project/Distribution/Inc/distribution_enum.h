@@ -287,7 +287,15 @@ typedef enum TagInsulateState
 	INSULATE_BACKUP_IS_MEET = 5, //隔离区域备份状态是否满足条件
 }InsulateState;
 
-
+/**
+*日志代号
+*/
+typedef enum TagNanopbType
+{
+	LOG_EXCEPTION = 1,//异常，错误等记录
+	STATION_MESSAGE = 2,//站点信息
+	NANOPB_GET_STATION = 3, //获取站点信息
+}NanopbType;
 
 
 #endif // 

@@ -15,15 +15,7 @@
 #include <stdint.h>
 #include "log.pb.h"
 
-  /**
-  *日志代号
-  */
-typedef enum TagNanopbType
-{
-    LOG_EXCEPTION = 1,//异常，错误等记录
-    STATION_MESSAGE = 2,//站点信息
-	NANOPB_GET_STATION = 3, //获取站点信息
-}NanopbType;
+
 
 //ExceptionRecord
 typedef struct  TagLogHandle
@@ -49,11 +41,7 @@ ErrorCode PacketDecodeLogMessage(LogRecord* log, uint8_t* data, uint16_t len);
 extern LogHandle g_Loghandle;
 
 
-ErrorCode PacketEncodeStationMessage(uint32_t* pdata, uint8_t len, PointUint8* packet, uint16_t addLen, uint16_t offset);
-ErrorCode PacketDecodeStationMessage(AreaID* area, uint8_t* data, uint16_t len);
-ErrorCode TransmitEncodeStationMessage_All(StationPoint* point, uint16_t destAddress);
 
-extern ErrorCode ParseNanopb(StationPoint*, uint16_t sourceAddress, uint8_t* pdata, uint8_t len);
 #ifdef	__cplusplus
 }
 #endif
