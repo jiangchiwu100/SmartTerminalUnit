@@ -12,13 +12,13 @@
 #include "drv_w5500_socket.h"
 #include "drv_w5500.h"
 
-#include <stdbool.h>
+#include "distribution.h"
 #include "distribution_config.h"
-#include "communication.h"
-#include "distribution_def.h"
-#include "extern_interface.h"
+#include "distribution_app.h"
+
 uint8_t SocketNum = 0; //使用的W5500 Socket号
 uint8_t SocketMaintanceNum = 1; //使用的维护 Socket号
+
 
 
 static struct rt_thread udpserver_thread;
@@ -35,6 +35,9 @@ static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
 
 static bool IsMaintanceRun;
+
+
+
 
 /**
   * @brief :W5500用于UDP通信
@@ -64,13 +67,14 @@ static inline void W5500Init(void)
   * @update: [2018-07-21][张宇飞][创建]
   */
 static void udpserver_thread_entry(void *param)
-{
-    rt_err_t result;
+{  
     int32_t ret;
-    uint16_t length = 0;
-    uint8_t buf[256];
+    uint16_t length = 0;    
     uint8_t srcip[4];
+    uint8_t cn = 0;
     uint16_t destport;	
+   
+
     W5500Init();
 	
     //setSIMR(0x01);//
@@ -82,14 +86,21 @@ static void udpserver_thread_entry(void *param)
     for (;;)
     {   	 
        
-        rt_thread_delay(10);
+       
 		get_result = getSn_SR(SocketNum);
 		switch (get_result)
 		{
 			case SOCK_UDP:			
                 do
                 {
-                    length = getSn_RX_RSR(SocketNum);		
+                    if(getSn_IR(SocketNum) & Sn_IR_RECV)
+					{
+						setSn_IR(SocketNum, Sn_IR_RECV);// Sn_IR的RECV位置1
+					}
+                    
+                    length = getSn_RX_RSR(SocketNum);
+                    
+                                        
                     if (length <= 0)
                     {
                         break;
@@ -98,9 +109,8 @@ static void udpserver_thread_entry(void *param)
                     {
                         ret = w5500_recvfrom(SocketNum, UdpReciveBuffer, length, srcip, &destport);
                         if(ret > 0)
-                        {
-                            
-                            TypeConvertAndVirtualNodeSend(UdpReciveBuffer, length);
+                        {                            
+                           StationPointFrameDeal(UdpReciveBuffer, ret);
                         //    w5500_sendto(SocketNum, UdpReciveBuffer, length, DefautIp, LocalPort);
                         }
                     }    
@@ -119,8 +129,13 @@ static void udpserver_thread_entry(void *param)
 				break;
 		}
 		
-        MaintaceServer();
-        
+       
+        rt_thread_delay(4);
+        if (cn ++ > 10)
+        {
+            cn = 0;
+            MaintaceServer();
+        }
 		
     }
 }
@@ -138,9 +153,7 @@ static void MaintaceServer(void)
     uint8_t srcip[4];
     uint16_t destport;	
     int32_t ret;
-    uint16_t length = 0;
-    FifoHandle* handle = LocalAnylast.fifohanlde;
-    
+    uint16_t length = 0;    
     rt_err_t  get_result = getSn_SR(SocketMaintanceNum);
     IsMaintanceRun = true;
     switch (get_result)
@@ -149,6 +162,10 @@ static void MaintaceServer(void)
             do
             {
                 IsMaintanceRun = true;
+                if(getSn_IR(SocketMaintanceNum) & Sn_IR_RECV)
+                {
+                    setSn_IR(SocketMaintanceNum, Sn_IR_RECV);// Sn_IR的RECV位置1
+                }
                 length = getSn_RX_RSR(SocketMaintanceNum);		
                 if (length <= 0)
                 {
@@ -157,11 +174,13 @@ static void MaintaceServer(void)
                 else
                 {
                     ret = w5500_recvfrom(SocketMaintanceNum, UdpReciveBuffer, length, srcip, &destport);
-                    if(ret > 0)
+                    
+                    if(ret > 0 )
                     {
-                        for(uint16_t i = 0; i< length; i++)
-                       handle->Enqueue(handle, UdpReciveBuffer[i]);                    
+                        MantaiceFrameDeal(UdpReciveBuffer, ret);                           
+                    //    w5500_sendto(SocketNum, UdpReciveBuffer, length, DefautIp, LocalPort);
                     }
+                        
                 }    
             }while(true);
                             
@@ -196,7 +215,7 @@ ErrorCode ExternSend(PointUint8* pPacket)
     destId[1] = 168;
     destId[2] = pPacket->pData[FRAME_DEST_INDEX + 1];
     destId[3] = pPacket->pData[FRAME_DEST_INDEX];
-    int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, DefautIp, RemotePort);
+    int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
     if(ret == pPacket->len)
     {
         return ERROR_OK_NULL;
@@ -215,7 +234,6 @@ ErrorCode ExternSend(PointUint8* pPacket)
 void Monitor(void)
 {    
     extern DatagramTransferNode g_VirtualNode;
-	uint8_t data;
 	RingQueue* ring = &(g_VirtualNode.reciveRing);
 	DatagramFrame* frame;
     DefautIp[0] = 192;
@@ -261,11 +279,34 @@ void udp_debug_printf(const char *fmt, ...)
     if (length > RT_CONSOLEBUF_SIZE - 1)
         length = RT_CONSOLEBUF_SIZE - 1;
 
-    w5500_sendto(SocketMaintanceNum, rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
+    w5500_sendto(SocketMaintanceNum, (uint8_t*)rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
     
     
     va_end(args);
 }
+
+
+
+
+/**
+* @brief  : 外部发送
+* @param  : 队列句柄
+* @param  ：DatagramTransferNode* node 
+* @param  ：PointUint8* pPacket
+* @return: ErrorCode
+* @update: [2018-07-23][张宇飞][]
+*/
+ErrorCode Udp_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket)
+{       
+	CHECK_POINT_RETURN(node, NULL, ERROR_NULL_PTR);
+	CHECK_POINT_RETURN(pPacket, NULL, ERROR_NULL_PTR);
+
+	ErrorCode error = ExternSend(pPacket);    
+    //释放内存
+	FREE(pPacket->pData);
+	return error;
+}
+
 /**
 * @brief :UDP任务初始化
 * @param  void
@@ -288,3 +329,6 @@ void UdpServerAppInit(void)
 
 	
 }
+
+
+

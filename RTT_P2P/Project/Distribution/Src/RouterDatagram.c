@@ -20,16 +20,21 @@
 
 
 #include "Datagram.h"
-
+#include "distribution_config.h"
 #include "extern_interface.h"
 
 static ErrorCode RouterDatagram_WriteDatagram(RingQueue* ring,  DatagramFrame*  pPacket);
-static ErrorCode RouterDatagram_SendPacket(RingQueue* ring, PointUint8* pPacket);
+
 static ErrorCode RouterDatagram_CopyFrame(const DatagramFrame*  frame, DatagramFrame**  pNewframe);
 static ErrorCode RouterDatagram_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket);
 
 static void VirtualMonitorRecive(DatagramTransferNode* pTransferNode, DatagramFrame* frame);
 static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, ListDouble* stationPointList);
+
+
+
+
+
 /**
 * @brief  : 数据报路由器写数据,不进行参数检测
 * @param  : 队列句柄
@@ -68,7 +73,7 @@ static ErrorCode RouterDatagram_WriteDatagram(RingQueue* ring,  DatagramFrame*  
 */
 
 
-static ErrorCode RouterDatagram_SendPacket(RingQueue* ring, PointUint8* pPacket)
+ErrorCode RouterDatagram_WritePacket(RingQueue* ring, PointUint8* pPacket)
 {
 	CHECK_POINT_RETURN(ring, NULL, ERROR_NULL_PTR);
 	CHECK_POINT_RETURN(pPacket, NULL, ERROR_NULL_PTR);
@@ -102,11 +107,20 @@ static ErrorCode RouterDatagram_SendPacket(RingQueue* ring, PointUint8* pPacket)
 * @return: ErrorCode
 * @update: [2018-07-18][张宇飞][]
 */
+#if !UDP_SEND
 static ErrorCode RouterDatagram_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket)
 {
 	CHECK_POINT_RETURN(node, NULL, ERROR_NULL_PTR);
-	return RouterDatagram_SendPacket(&(node->sendRing), pPacket);
+	return RouterDatagram_WritePacket(&(node->sendRing), pPacket);
 }
+#else
+static ErrorCode RouterDatagram_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket)
+{
+    extern ErrorCode Udp_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket);
+	return Udp_SendPacketNode(node, pPacket);
+}
+
+#endif
 
 /**
 * @brief  : 新建节点
@@ -135,7 +149,7 @@ ErrorCode  RouterDatagram_NewTransferNode(uint32_t id, uint16_t capacity, Datagr
 		return ERROR_MALLOC;
 	}
 	node->id = id;
-	node->Write = RouterDatagram_SendPacket;
+	node->Write = RouterDatagram_WritePacket;
 	node->Send = RouterDatagram_SendPacketNode;
 	return ERROR_OK_NULL;
 }

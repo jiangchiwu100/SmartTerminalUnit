@@ -10,9 +10,8 @@
 
 #include "distribution.h"
 #include "distribution_app.h"
-
-
 #include "extern_interface.h"
+#include "distribution_config.h"
 
 static struct rt_thread distribution_thread;
 static struct rt_thread connected_thread;
@@ -20,7 +19,7 @@ static struct rt_thread connected_thread;
 static void DistributionLogicalApp(StationManger* manager);
 static void distribution_thread_entry(void* parameter);
 
-ALIGN(RT_ALIGN_SIZE);
+ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_distribution_thread_stack[THREAD_DISTRIBUTION_STACK_SIZE];//线程栈
 static rt_uint8_t rt_connected_thread_stack[THREAD_CONNECT_STACK_SIZE];//线程栈
 

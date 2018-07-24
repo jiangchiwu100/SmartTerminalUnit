@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
     
-
+extern void StartSinglePointNormalThread(void);
 extern  void DistributionAppInit(void);
     
 #ifdef	__cplusplus

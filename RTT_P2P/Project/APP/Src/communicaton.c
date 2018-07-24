@@ -17,12 +17,17 @@
 
 #include "extern_interface.h"
 
-ProtocolAnylast LocalAnylast;
+static ProtocolAnylast LocalAnylast;
 static NodeFifo* LocalFifo;
 
 
 
-
+/**
+*  @brief :通讯服务，用于串口数据流处理
+  * @param void
+  * @return: 0--正常
+  * @update: [2018-07-24][张宇飞][修改]
+*/
 uint8_t CommunicationServeice(void)
 {
     uint8_t result = 0, data = 0;
@@ -41,8 +46,7 @@ uint8_t CommunicationServeice(void)
     LocalAnylast.fifohanlde = &(LocalFifo->reciveHandle);
     LocalAnylast.sendFifohanlde = &(LocalFifo->sendHandle);
     
-    PointUint8 packet;
-    RingQueue* ring;
+    PointUint8 packet;   
     ErrorCode error;
     FifoHandle* handle = LocalAnylast.fifohanlde;
     uint16_t resideLen = 0;
@@ -73,7 +77,7 @@ uint8_t CommunicationServeice(void)
                 {
                     
                     //写接收用于测试
-                    ring = &(g_VirtualNode.sendRing);
+                    RingQueue* ring = &(g_VirtualNode.sendRing);
                     error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
                     if (error)
                     {
@@ -115,7 +119,7 @@ static uint16_t lastResideLen = 0;
 */
 uint8_t CommunicationServerInitSingle(void)
 {
-     uint8_t result = 0, data = 0;
+     uint8_t result = 0;
     //初始化串口5
     SerialPort5Init();
     ListDataInit();
@@ -144,8 +148,7 @@ uint8_t CommunicationServerInitSingle(void)
 */
 uint8_t CommunicationServerSingle(void)
 {
-    PointUint8 packet;
-    RingQueue* ring;
+    PointUint8 packet;   
     ErrorCode error;
     FifoHandle* handle = LocalAnylast.fifohanlde;
     uint8_t result = 0, data = 0;       
@@ -173,19 +176,19 @@ uint8_t CommunicationServerSingle(void)
             {
                 
                 //写接收用于测试
-//                ring = &(g_VirtualNode.sendRing);
-//                error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
-//                if (error)
-//                {
-//                    perror("Datagram_CopyToPacket Error: 0x%x\n", error);
-//                    return 0;
-//                }
-//                
-//                error = g_VirtualNode.Send(&g_VirtualNode, &packet) ;
-//                if (error)
-//                {
-//                    perror("g_VirtualNode.Send Error: 0x%x\n", error);
-//                }
+                RingQueue* ring = &(g_VirtualNode.sendRing);
+                error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
+                if (error)
+                {
+                    perror("Datagram_CopyToPacket Error: 0x%x\n", error);
+                    return 0;
+                }
+                
+                error = g_VirtualNode.Send(&g_VirtualNode, &packet) ;
+                if (error)
+                {
+                    perror("g_VirtualNode.Send Error: 0x%x\n", error);
+                }
 
             }
         }

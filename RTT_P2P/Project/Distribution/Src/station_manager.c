@@ -8,16 +8,137 @@
   * @update:    添加开关状态模拟
   */
 #include "station_manager.h"  
-
+#include "distribution_app.h"
 #include "distribution.h"
-
+#include "distribution_config.h"
 /**
  *站点管理器
  */
 StationManger g_StationManger;
 DatagramTransferNode g_VirtualNode;
 
+static ProtocolAnylastDatagram LocalDatagramAnylast;
+static DatagramTransferNode LocalTransferNode;
 
+
+static void MaintaceInit(void);
+   
+/**
+ * @brief : 维护初始化
+ * @param  ：void
+ * @return: void
+ * @update: [2018-07-24[张宇飞][创建]
+ */
+static void MaintaceInit(void)
+{
+    ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &LocalTransferNode);
+	if (error)
+	{
+		perror("RouterDatagram_NewTransferNode:0x%x", error);
+	}
+	error = ProtocolAnylastDatagramInit(&LocalDatagramAnylast, &LocalTransferNode, LOCAL_ADDRESS);
+	if (error)
+	{
+		perror("ProtocolAnylastDatagramInit:0x%x", error);
+	}
+}
+
+/**
+* @brief :维护帧处理
+* @param  uint8_t* pData
+* @param  uint8_t len
+* @return: void
+* @update: [2018-07-24][张宇飞][创建]
+*/
+void MantaiceFrameDeal(uint8_t* pData, uint8_t len)
+{
+    static bool firstRun = false;
+    PointUint8 packet;
+    ErrorCode error;
+    if(pData == NULL)
+    {
+        perror("pData == NULL\n");
+        return;
+    }
+    error = Datagram_CopyToPacket(pData, len , &packet);
+    if (error)
+    {
+        perror("Datagram_CopyToPacket Error: 0x%x\n", error);
+        return;
+        
+    }
+                               
+    //写缓冲
+    LocalTransferNode.Write(&(LocalTransferNode.reciveRing) , &packet);   
+     //直接处理
+    error = LocalDatagramAnylast.ProtocolAnylastDeal(&LocalDatagramAnylast);
+    if (!error)
+    {
+        if (LocalDatagramAnylast.recvRtu.completeFlag)
+        {
+            if (LocalDatagramAnylast.recvRtu.destAddress == LOCAL_ADDRESS)
+            {
+                //PrintMemoryUsed();
+                ExecuteFunctioncode(&LocalDatagramAnylast.recvRtu, &g_StationManger.simulationServer);
+                if ((!firstRun) && ( g_StationManger.pWorkPoint) )
+                {
+                    firstRun = true;
+                    StartSinglePointNormalThread();
+                }
+            }
+            else
+            {
+                perror("ExecuteFunctioncode destAddress isn't fit.\n");
+            }
+            error = Datagram_Destory(LocalDatagramAnylast.pReiveDatagram);
+            if (error)
+            {
+                perror("Datagram_Destory Error:0x%X", error);
+                return ;
+            }
+            LocalDatagramAnylast.pReiveDatagram = NULL;
+        }
+        LocalDatagramAnylast.recvRtu.completeFlag = false;
+        
+        
+				
+    }  
+}
+
+
+
+/**
+* @brief :站点帧处理
+* @param  uint8_t* pData
+* @param  uint8_t len
+* @return: void
+* @update: [2018-07-24][张宇飞][创建]
+*/
+void StationPointFrameDeal(uint8_t* pData, uint8_t len)
+{
+     PointUint8 packet;
+    if ( g_StationManger.pWorkPoint == NULL)
+    {
+        perror("g_StationManger.pWorkPoint == NULL\n");
+        return;
+    }
+    
+    RingQueue* pReciveRing = &(g_StationManger.pWorkPoint->transferNode.reciveRing);
+    DatagramTransferNode* pTransferNode = &(g_StationManger.pWorkPoint->transferNode);
+    
+    ErrorCode error = Datagram_CopyToPacket(pData, len , &packet);
+    if (error)
+    {
+        perror("Datagram_CopyToPacket Error: 0x%x\n", error);
+        return;
+        
+    }
+                               
+    //写缓冲
+    pTransferNode->Write(pReciveRing, &packet);   
+     //直接处理
+    StationCommunicationServer(g_StationManger.pWorkPoint);
+}
 
 /**
  * @brief : 站管理器初始化
@@ -25,24 +146,25 @@ DatagramTransferNode g_VirtualNode;
  * @return: 0-正常 非0错误
  * @update: [2018-06-11[张宇飞][]
  *[2018-07-19[张宇飞][删去router成员]
+ *[2018-07-24[张宇飞][添加维护帧初始化]
  */
 uint8_t  StationMangerInit(StationManger* manger)
 {
-    uint16_t result = 0;
-    ErrorCode error;
+    uint16_t result = 0;   
     //初始化路由管理器
     MEMSET(manger, 0, sizeof(StationManger));
-    
+	
     result = SimulationStationServerInit(&(manger->simulationServer));
     if (result)
     {
-        rt_kprintf("SimulationStationServerInit ERROR : %X\n", result);
+        perror("SimulationStationServerInit ERROR : %X\n", result);
     }
     result = StationServerInit(&(manger->stationServer));    
     if (result)
     {
-        rt_kprintf("StationServerInit ERROR : %X\n", result);
+        perror("StationServerInit ERROR : %X\n", result);
     }
+    MaintaceInit();
     return 0;    
 }
 
@@ -55,25 +177,25 @@ uint8_t  StationMangerInit(StationManger* manger)
  *[2018-07-19[张宇飞][删去router成员]
  */
 uint8_t StationMangerAddMember(StationManger* manger, uint32_t id)
-{
-    NodeFifo* nodefifo;
-    StationPoint* station;
+{	
+	StationPoint* station;
 	uint8_t result;
-    
-    result = StationServerAddPoint(&(manger->stationServer),   NULL,  &station);
-    if (result)
-    {
-        rt_kprintf("StationServerAddPoint ERROR : %X\n", result);
-        return result;
-    }
 
-   
-    result = SimulationStationServerAddMember(&(manger->simulationServer), id, &(station->topology.localSwitch));
-    if (result)
-    {
-        rt_kprintf("SimulationStationServerAddMember ERROR : %X\n", result);
-        return result;
-    }    
+	result = StationServerAddPoint(&(manger->stationServer), NULL, &station);
+	if (result)
+	{
+		perror("StationServerAddPoint ERROR : %X\n", result);
+		return result;
+	}
+
+
+	result = SimulationStationServerAddMember(&(manger->simulationServer), id, &(station->topology.localSwitch));
+	if (result)
+	{
+		rt_kprintf("SimulationStationServerAddMember ERROR : %X\n", result);
+		return result;
+	}
+
     return 0;
 }
 /**

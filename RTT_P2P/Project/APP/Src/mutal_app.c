@@ -15,6 +15,7 @@
 #include "extern_interface.h"
 
 #include "distribution_app.h"
+#include "distribution_config.h"
 
 static struct rt_thread router_thread;
 //static struct rt_thread comself_thread;
@@ -63,23 +64,25 @@ static void communication_thread_entry(void* parameter)
   *[2018-07-19][张宇飞][删除router，增加RouterDatagram_TransmissionCenter]
   *[2018-07-21][张宇飞][添加通讯服务任务]
 */
+
 static void MutalRouterApp(StationManger* manager)
 {
-    if (manager == NULL)
-    {
-        rt_kprintf("SimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
-        LogAddException(ERROR_NULL_PTR, 0);
-    }
+	if (manager == NULL)
+	{
+		rt_kprintf("SimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
+		LogAddException(ERROR_NULL_PTR, 0);
+	}
 	CommunicationServerInitSingle();
-    do
-    {        
+	do
+	{
 		RouterDatagram_TransmissionCenter(&(manager->stationServer.stationPointList));
-        Monitor();
-        MutalCommunicationServer(manager);
-		//CommunicationServeice();
+		Monitor();
+		MutalCommunicationServer(manager);
 		CommunicationServerSingle();
-        rt_thread_delay(3);
-    }while(1);
+		rt_thread_delay(3);
+
+
+	} while (1);
 }
 
 /**
@@ -92,13 +95,13 @@ static void MutalCommunicationServer(StationManger* manager)
 {
     if (manager == NULL)
     {
-        rt_kprintf("MutalCommunicationServer ERROR :manager = NULL.\n");
+        perror("MutalCommunicationServer ERROR :manager = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
     StationServer*   stationServer = &(manager->stationServer);
     if (stationServer == NULL)
     {
-        rt_kprintf("MutalCommunicationServer ERROR :router = NULL.\n");
+		perror("MutalCommunicationServer ERROR :router = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
 
@@ -116,7 +119,7 @@ static void MutalCommunicationServer(StationManger* manager)
         }
         else
         {
-            rt_kprintf("stationServer* station = NULL.\n");
+			perror("stationServer* station = NULL.\n");
             LogAddException(ERROR_NULL_PTR, 0);
             break;
         }
@@ -135,13 +138,13 @@ static void MutalCommunicationApp(StationManger* manager)
 {
      if (manager == NULL)
     {
-        rt_kprintf("MutalCommunicationApp ERROR :manager = NULL.\n");
+		 perror("MutalCommunicationApp ERROR :manager = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
     StationServer*   stationServer = &(manager->stationServer);
     if (stationServer == NULL)
     {
-        rt_kprintf("MutalCommunicationApp ERROR :router = NULL.\n");
+		perror("MutalCommunicationApp ERROR :router = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
     
@@ -202,3 +205,4 @@ void DistributionMutalAppInit(void)
 
 	//rt_thread_startup(&communication_thread);
 }
+

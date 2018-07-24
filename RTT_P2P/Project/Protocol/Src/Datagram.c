@@ -97,9 +97,7 @@ static ErrorCode DataProtocolAnylastDatagram(ProtocolAnylastDatagram* anylast)
 	CHECK_POINT_RETURN_LOG(anylast, NULL, ERROR_NULL_PTR, 0);
 	CHECK_POINT_RETURN_LOG(anylast->pTransferNode, NULL, ERROR_NULL_PTR, 0);
 
-	ErrorCode error;
-	uint8_t data = 0;
-	uint8_t result = 0;
+	ErrorCode error;		
 	FrameRtu* pReciveFrame = &(anylast->recvRtu);
 	RingQueue* pReciveRing = &(anylast->pTransferNode->reciveRing);
 	bool state;

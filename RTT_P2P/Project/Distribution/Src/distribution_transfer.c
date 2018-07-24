@@ -254,7 +254,7 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 	ErrorCode error = ERROR_OK_NULL;
 	uint32_t id = 0, data = 0;
 	ConnectPath* cp;
-	TransferCode code = pdata[0];
+	TransferCode code = (TransferCode)pdata[0];
 	switch (code)
 	{
 	case  TRANSFER_REMAINDER_CAP:

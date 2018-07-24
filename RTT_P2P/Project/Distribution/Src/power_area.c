@@ -17,7 +17,7 @@
 static ErrorCode DistributionAreaDeal_BreakerBranch(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum);
 static ErrorCode DistributionAreaDeal_SpecialDeal(SwitchProperty* current, ListDouble* listArea, uint8_t areaNum);
 static ErrorCode GetIntersection(ListDouble* listNeighboorSwitch, SwitchProperty* left, SwitchProperty* right, uint8_t flag, ListDouble* listResult);
-static ErrorCode JudgeUpdatePowerAreaCompleted(SwitchProperty* switchProperty, uint8_t* updated);
+static ErrorCode JudgeUpdatePowerAreaCompleted(SwitchProperty* switchProperty, bool* updated);
 static ErrorCode ReStartUpdatePowerArea(SwitchProperty* switchProperty);
 static ErrorCode SignExitFaultMessage(SwitchProperty* switchProperty);
 static ErrorCode SignRemovalMessage(SwitchProperty* switchProperty, ResultType reult);
@@ -136,19 +136,7 @@ static ErrorCode  DistributionAreaDeal_BreakerBranch(SwitchProperty* current, Li
     
     //此处应该为1
     if (areaNum == 1)
-    {
-        SwitchProperty* deleteElement;
-
-        //直接添加，不在删除分位开关
-        /*FOR_EARCH_LIST_START(listArea);
-
-        if (GET_SWITCH_ELEMENT(m_foreach)->state == SWITCH_OPEN)
-        {
-            ListRemoveNext(listArea, m_foreach->prev, &deleteElement);
-        }
-
-        FOR_EARCH_LIST_END();*/
-
+    {      
         ListInsertNext( ++listArea , NULL,  current);//插入当前节点作为单独的配电区域
         
     }
@@ -333,7 +321,7 @@ ErrorCode UpdatePowerAreaFaultState(SwitchProperty* switchProperty)
 *          [2018-06-23][张宇飞][将完成标志与收集判断统一判定]
 *          [2018-06-26][张宇飞][修改累加错误]
 */
-static ErrorCode JudgeUpdatePowerAreaCompleted(SwitchProperty* switchProperty, uint8_t* updated)
+static ErrorCode JudgeUpdatePowerAreaCompleted(SwitchProperty* switchProperty, bool* updated)
 {
     CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
     DistributionStation* distributionArea = switchProperty->distributionArea;
@@ -495,7 +483,7 @@ ErrorCode GetNeighboorTopologyByMutual(StationPoint* point)
     ErrorCode error = ERROR_OK_NULL;
     uint8_t num;    
     uint32_t* neighboor;
-    PointUint8 packet;
+  
    
     CHECK_POINT_RETURN(point, NULL, ERROR_NULL_PTR);
     
@@ -727,8 +715,8 @@ ErrorCode ExtractPowerAreaFromList(SwitchProperty* switchRef, DistributionStatio
 
 			area->isFaultArea = false;
 			area->isExitFaultMessage = false;
-			area->removalType = 0;
-			area->insulateType = 0;			
+			area->removalType = RESULT_TYPE_NULL;
+			area->insulateType = RESULT_TYPE_NULL;			
 			
 			distriStation->areaCount++;
 

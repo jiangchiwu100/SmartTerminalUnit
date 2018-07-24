@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      station_manager.h
   * @brief:     站点服务器
@@ -32,5 +32,8 @@ extern uint8_t StationServerInit(StationServer* server);
 extern ErrorCode StationServerAddPoint(StationServer* server, 
                            TopologyMessage*  topologyMessage, StationPoint** pstation);
 extern StationPoint* FindStationPointById(const  ListDouble* list, uint32_t id);
+
+extern void MantaiceFrameDeal(uint8_t* pData, uint8_t len);
+extern void StationPointFrameDeal(uint8_t* pData, uint8_t len);
 
 #endif

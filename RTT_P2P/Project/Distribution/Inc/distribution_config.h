@@ -25,7 +25,7 @@
 //UDPserver
 #define THREAD_UDPSERVER_NAME                                              "udpser"
 #define THREAD_UDPSERVER_PRIORITY                                          (5)
-#define THREAD_UDPSERVER_STACK_SIZE                                        (1024)
+#define THREAD_UDPSERVER_STACK_SIZE                                        (2048)
 #define THREAD_UDPSERVER_TIMESLICE                                         (20)
 
 //路由通信
@@ -40,6 +40,13 @@
 #define THREAD_CONNECT_PRIORITY                                          (15)
 #define THREAD_CONNECT_STACK_SIZE                                        (1024)
 #define THREAD_CONNECT_TIMESLICE                                         (20)
+
+
+
+//单个站点
+#define SINGLE_POINT  (1)
+#define UDP_SEND  (1)
+
 
 #ifdef	__cplusplus
 }

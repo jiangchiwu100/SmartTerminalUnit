@@ -32,9 +32,7 @@ static bool CheckIsLockConnectJudge(StationTopology* topology);
 */
 void StationCalConnectPathAndJudge(StationTopology* station)
 {
-    ErrorCode result = ERROR_OK_NULL;
-    uint32_t id;
-	uint8_t size = 0;
+    ErrorCode result = ERROR_OK_NULL;    	
     SwitchProperty* sourceSwitch = station->localSwitch;
     ListDouble* globalList = &(station->globalSwitchList);
     //PrintMemoryUsed();
@@ -107,7 +105,7 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 
     //至少有两条路径到开关，对于非合环路径只有两个，TODO:(对于合环或者分布式电源可能有大于3个，且可能重复)
     //存在两条路径即认为是联络开关
-    size = list_size(bfsList);
+    uint8_t size = list_size(bfsList);
 
 	Listdestroy(station->connect.path);
 	ListInit(station->connect.path, NULL);
@@ -431,8 +429,7 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
 ErrorCode SearchToPowerPathAPP(StationPoint* point)
 {
 	StationTopology* topology = &(point->topology);
-	bool *result = &(topology->areaID.isGainComplted);
-	ErrorCode error;
+	bool *result = &(topology->areaID.isGainComplted);	
 	CHECK_POINT_RETURN_LOG(point, NULL, ERROR_NULL_PTR, 0);
 	bool before = false;
 
@@ -744,7 +741,7 @@ static ErrorCode SendConnectPathMessage(uint32_t id, PathConnected iseset, uint8
 */
 static ErrorCode SendConnectPathCmd(ListDouble* path, PathConnected iseset, DatagramTransferNode* pTransferNode)
 {
-	uint8_t hops = 0, size = 0; 
+	uint8_t  size = 0; 
 	ListDouble* list;
     for (uint8_t i = 0; i < 2; i++)
     {

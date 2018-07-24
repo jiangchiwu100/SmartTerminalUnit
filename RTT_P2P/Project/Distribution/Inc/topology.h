@@ -53,7 +53,7 @@ extern ErrorCode SerializeCollectTopology(const TopologyMessage* topology, Point
 //内存释放相关
 extern void FreeTopologyMemory(TopologyMessage** topology);
 extern void FreeBFSHelper(BFSHelper** helper);
-extern void DestoryBFSHelper(BFSHelper* helper);
+extern void DestoryBFSHelper(void* pHelper);
 
 //转换相关
 extern ErrorCode GetNeighboorSwitch(ListDouble* neighbourSwitchList, TopologyMessage* local, const  ListDouble* listNeighboor, ListDouble* listNeighboorSwitch);

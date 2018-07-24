@@ -10,7 +10,7 @@
 #ifndef __DISTRIBUTION_H__
 #define __DISTRIBUTION_H__
 
-#include "distribution_config.h"
+
 
 #include "buffer.h"
 #include "helper.h"
@@ -30,6 +30,7 @@
 #include "extern_mutal.h"
 #include "distribution_transfer.h"
 #include "log.h"
+#include "datagram.h"
 #include "extern_interface.h"
 
 

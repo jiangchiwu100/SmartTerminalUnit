@@ -129,7 +129,7 @@ typedef struct TagDistributionStation
 
     ErrorCode (*StartUpdate)(SwitchProperty* switchProperty);
     ErrorCode (*UpdatePowerArea)(SwitchProperty* switchProperty);
-    ErrorCode (*JudgeUpdateCompleted)(SwitchProperty* switchProperty, uint8_t* updated);
+    ErrorCode (*JudgeUpdateCompleted)(SwitchProperty* switchProperty, bool* updated);
     ErrorCode (*JudgeIsExitFaultArea)(struct TagDistributionStation* distribution, bool iscover); //判断是否存在故障区域
 	void (*GatherCompletedAndJudgeFaultArea)(struct TagDistributionStation* distribution, SwitchProperty* switchProperty);
 	bool (*IsAlreayExitedFault)(struct TagDistributionStation* distributionArea);
@@ -448,7 +448,10 @@ typedef struct TagStationManger
 {
     StationServer stationServer; //站点服务器
     SimulationStationServer  simulationServer; //仿真开关服务
+											   
 
+	StationPoint* pWorkPoint; //工作站点
+	SimulationStation* pWorkSimulation; //工作模拟站点
    
 }StationManger;
 #endif // ! __DISTRIBUTION_H

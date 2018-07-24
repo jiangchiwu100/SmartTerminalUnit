@@ -56,7 +56,7 @@ extern void udp_debug_printf(const char *fmt, ...);
 #endif
 
 
-#define UDP_SEND  (1)
+
 
 
 #endif // ! __DISTRIBUTION_H

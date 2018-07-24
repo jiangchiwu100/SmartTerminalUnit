@@ -13,7 +13,7 @@
 #include "parse_implement.h" 
 #include "distribution.h"
 #include "log.h"
-
+#include "distribution_config.h"
 /**
  * @brief : 拓扑数据 初始化
  * @param  ：void
@@ -359,6 +359,17 @@ void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger)
     {
         rt_kprintf("SimulationStationServerAddMember ERROR : %X\n", error);
     }
+    
+#if SINGLE_POINT
+	//首次添加的站点作为工作站点
+	if (manger->pWorkPoint == NULL)
+	{
+		rt_kprintf("Single Work Station\n");
+		manger->pWorkPoint = station;
+        ListElment* element = list_head(&(manger->simulationServer.SimulationStationList));
+		manger->pWorkSimulation = (SimulationStation* )list_data(element);
+	}
+ #endif
 }
 
 /**

@@ -440,9 +440,10 @@ ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, ListDouble* to
  */
 void FreeTopologyMemory(TopologyMessage** topology)
 {
-    uint32_t total;
-    uint32_t used;
-    uint32_t maxused;
+   
+    rt_uint32_t total;
+    rt_uint32_t used;
+    rt_uint32_t maxused;
     rt_memory_info(&total, &used, &maxused);
     rt_kprintf("FreeTopologyMemory before memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
     if (*topology == NULL)
@@ -524,9 +525,11 @@ void FreeBFSHelper(BFSHelper** helper)
 * @param ：
 * @return: 0-正常 非0错误
 * @update: [2018-07-4][张宇飞][]
+*[2018-07-24][张宇飞][BFSHelper* helper 改为 void*]
 */
-void DestoryBFSHelper(BFSHelper* helper)
+void DestoryBFSHelper(void* pHelper)
 {
+    BFSHelper* helper = (BFSHelper*)pHelper;
     FreeBFSHelper(&helper);
 }
 

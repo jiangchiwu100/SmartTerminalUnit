@@ -9,7 +9,7 @@
 */
 
 
-#include "extern_mutal.h"
+
 #include "distribution.h"
 #include "distribution_test_case.h"
 #include "extern_interface.h"
@@ -104,7 +104,7 @@ uint8_t StationCommunicationServer(StationPoint* point)
 	ErrorCode error = ERROR_OK_NULL;
 	if (point == NULL)
 	{
-		rt_kprintf(" ERROR: StationPoint* point = null.\n");
+		perror(" ERROR: StationPoint* point = null.\n");
 		return ERROR_NULL_PTR;
 	}
 
