@@ -315,6 +315,8 @@ enum Frequency
 #define ADDR_FRAM_CONFIG                0x08000  // 配置起始地址   0x2000
 #define ADDR_FRAM_GRID                  0x0A000  // 网架起始地址   0x2000
 
+
+
 /* flag */                                        
 
 

@@ -26,7 +26,7 @@ extern DatagramTransferNode g_VirtualNode;
 
 extern uint8_t  StationMangerInit(StationManger* manger);
 extern uint8_t StationMangerAddMember(StationManger* manger, uint32_t id);
-
+extern ErrorCode StationManagerAddMemberByTopology(TopologyMessage*  topologyMessage, StationManger* manger);
 
 extern uint8_t StationServerInit(StationServer* server);
 extern ErrorCode StationServerAddPoint(StationServer* server, 

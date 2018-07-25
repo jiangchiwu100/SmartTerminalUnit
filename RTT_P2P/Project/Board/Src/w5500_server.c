@@ -34,7 +34,7 @@ static uint16_t LocalPort;
 static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
 
-static bool IsMaintanceRun;
+
 
 
 
@@ -82,7 +82,7 @@ static void udpserver_thread_entry(void *param)
 	uint8_t get_result =0;
 	
     rt_kprintf("udpserver start!\n");
-    IsMaintanceRun = false;
+    g_StationManger.isMaintanceRun = false;
     for (;;)
     {   	 
        
@@ -155,13 +155,13 @@ static void MaintaceServer(void)
     int32_t ret;
     uint16_t length = 0;    
     rt_err_t  get_result = getSn_SR(SocketMaintanceNum);
-    IsMaintanceRun = true;
+    g_StationManger.isMaintanceRun = true;
     switch (get_result)
     {
         case SOCK_UDP:			
             do
             {
-                IsMaintanceRun = true;
+                g_StationManger.isMaintanceRun = true;
                 if(getSn_IR(SocketMaintanceNum) & Sn_IR_RECV)
                 {
                     setSn_IR(SocketMaintanceNum, Sn_IR_RECV);// Sn_IR的RECV位置1
@@ -188,7 +188,7 @@ static void MaintaceServer(void)
         case SOCK_CLOSED:	
             if ((ret = w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) != SocketNum)
             {
-                IsMaintanceRun = false;
+                g_StationManger.isMaintanceRun = false;
                 rt_kprintf("udpserver close!\n");
             } 
             //rt_thread_delay(1);
@@ -265,7 +265,7 @@ void Monitor(void)
 */
 void udp_debug_printf(const char *fmt, ...)
 {
-    if (!IsMaintanceRun)
+    if (!g_StationManger.isMaintanceRun)
     {
         return;
     }

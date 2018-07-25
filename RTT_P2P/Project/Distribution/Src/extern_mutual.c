@@ -13,6 +13,8 @@
 #include "distribution.h"
 #include "distribution_test_case.h"
 #include "extern_interface.h"
+
+#include "database.h"
 /**************************************************
 *函数名： ExecuteFunctioncode()
 *功能：  执行功能代码
@@ -84,7 +86,26 @@ void ExecuteFunctioncode(FrameRtu* pRtu, SimulationStationServer* server)
 
             break;
         }
-        
+        case  NANOPB_TYPE:
+        {
+            //更新站点信息并重启
+            if ((NanopbType)(pRtu->pValidData[0]) == STATION_MESSAGE)
+            {
+                StationManger manger;
+                StationMangerInit(&manger);
+                ManagerAddStationByStationMessage(pRtu->pValidData, pRtu->datalen, &manger);
+                if(manger.pWorkPoint)
+                {
+                    StationMessageSave(manger.pWorkPoint);
+                }
+            }	
+            break;
+        }
+        default:
+        {
+             PrintIDTipsTick(LOCAL_ADDRESS, "Unknown Funcode.");
+            break;
+        }
 
 		}
 

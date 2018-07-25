@@ -12,7 +12,7 @@
 #include "distribution_app.h"
 #include "extern_interface.h"
 #include "distribution_config.h"
-
+#include "database.h"
 
 
 
@@ -21,21 +21,39 @@ extern  void DistributionMutalAppInit(void);
 extern  void LogicalSimulationAppInit(void);
 extern  void UdpServerAppInit(void);
 
-
+/**
+* @brief  : 分布式初始化
+* @param  : void
+* @update: [2018-07-][张宇飞][]
+*/
 void DistributionAppInit(void)
 {
 
 	LogInit(&g_Loghandle);
 	
 	StationMangerInit(&g_StationManger);
-	rt_kprintf("DATA:%s,%s, %s, %d\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
+    
+    UdpServerAppInit();
+    //等待udp初始化成功
+    while (!g_StationManger.isMaintanceRun)
+    {
+        rt_thread_delay(100);
+    }
+    
+    bool state = StationMessageRead(&g_StationManger);
+    if (state && g_StationManger.pWorkPoint)
+    {
+        g_StationManger.firstRun = true;
+        StartSinglePointNormalThread();
+    }
+	rt_kprintf("\n DATA:%s,%s, %s, %d\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
 	// TestListPrevCase();
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      
 	if (error)
 	{
 		perror("RouterDatagram_NewTransferNode:0x%x", error);
 	}
-
+    
 	// RingQueueTest();
 	LogAddException(ERROR_OK_NULL, 0);
 
@@ -46,7 +64,7 @@ void DistributionAppInit(void)
 	DistributionLogicalAppInit();
 #endif
     
-    UdpServerAppInit();
+   
 }
 
 /**

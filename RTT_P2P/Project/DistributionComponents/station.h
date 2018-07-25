@@ -23,7 +23,8 @@ extern ErrorCode PacketEncodeStationMessage(uint32_t* pdata, uint8_t len, PointU
 extern ErrorCode PacketDecodeStationMessage(AreaID* area, uint8_t* data, uint16_t len);
 extern ErrorCode TransmitEncodeStationMessage_All(StationPoint* point, uint16_t destAddress);
 extern ErrorCode ParseNanopb(StationPoint*, uint16_t sourceAddress, uint8_t* pdata, uint8_t len);
-
+extern ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointUint8* packet, uint16_t addLen, uint16_t offset);
+extern void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger);
 #ifdef	__cplusplus
 }
 #endif

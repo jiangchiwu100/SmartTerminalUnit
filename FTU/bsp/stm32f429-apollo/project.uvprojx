@@ -2019,6 +2019,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\w5500_server.c</FilePath>
             </File>
+            <File>
+              <FileName>database.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\database.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4065,6 +4070,11 @@
               <FileName>w5500_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\w5500_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>database.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\database.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -11,6 +11,9 @@
 #include "distribution_app.h"
 #include "distribution.h"
 #include "distribution_config.h"
+
+#include "database.h"
+
 /**
  *站点管理器
  */
@@ -52,7 +55,7 @@ static void MaintaceInit(void)
 */
 void MantaiceFrameDeal(uint8_t* pData, uint8_t len)
 {
-    static bool firstRun = false;
+
     PointUint8 packet;
     ErrorCode error;
     if(pData == NULL)
@@ -80,10 +83,13 @@ void MantaiceFrameDeal(uint8_t* pData, uint8_t len)
             {
                 //PrintMemoryUsed();
                 ExecuteFunctioncode(&LocalDatagramAnylast.recvRtu, &g_StationManger.simulationServer);
-                if ((!firstRun) && ( g_StationManger.pWorkPoint) )
+                if ((!g_StationManger.firstRun) && ( g_StationManger.pWorkPoint) )
                 {
-                    firstRun = true;
-                    StartSinglePointNormalThread();
+                    g_StationManger.firstRun = true;
+                    StartSinglePointNormalThread();                    
+                    StationMessageSave(g_StationManger.pWorkPoint);
+                    //TopologyMessageSave(g_StationManger.pWorkPoint->topology.localTopology);
+                    
                 }
             }
             else
@@ -377,7 +383,7 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     StationTopology* stationTopology = &(station->topology);
     stationTopology->id = id;
     stationTopology->isNeighbourComplted = false;
-    stationTopology->powerArea.isComplted = false;
+	stationTopology->powerArea.isComplted = false;
     StationInit(stationTopology, id);
     //增加首个成员
     error = AddMemberByTopology(topologyMessage, &(stationTopology->globalTopologyList));
@@ -395,4 +401,57 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     *pstation = station;
     ListInsertNext(list, NULL, station);
     return ERROR_OK_NULL;
+}
+
+
+
+
+/**
+* @brief : 站点服务器增加服务成员 通过拓扑信息
+* @param  ：TopologyMessage*  topologyMessage
+* @param  ： StationManger* manger 
+* @return: ErrorCode
+* @update: [2018-07-25[张宇飞][]
+*/
+ErrorCode StationManagerAddMemberByTopology(TopologyMessage*  topologyMessage, StationManger* manger)
+{
+
+	CHECK_POINT_RETURN_LOG(topologyMessage, NULL, ERROR_NULL_PTR, 0);
+
+	ListDouble* list = &(manger->stationServer.stationPointList);
+	uint32_t id = topologyMessage->id;
+	StationPoint*	 station = FindStationPointById(list, id);
+	if (station != NULL)
+	{
+		FreeTopologyMemory(&topologyMessage);
+		perror("Node Has Exited.\n");
+		return ERROR_EXIST;
+	}
+
+	PrintTopologyMessage(topologyMessage);
+	//增加站点
+	ErrorCode error = StationServerAddPoint(&(manger->stationServer), topologyMessage, &station);
+	if (error != ERROR_OK_NULL)
+	{
+		perror("StationServerAddPoint ERROR : 0x%X\n", error);
+		//TODO: 释放内存
+		return error;
+	}
+
+	error = SimulationStationServerAddMember(&(manger->simulationServer), id, &(station->topology.localSwitch));
+	if (error)
+	{
+		perror("SimulationStationServerAddMember ERROR : 0x%X\n", error);
+	}
+#if SINGLE_POINT
+	//首次添加的站点作为工作站点
+	if (manger->pWorkPoint == NULL)
+	{
+		rt_kprintf("Single Work Station\n");
+		manger->pWorkPoint = station;
+		ListElment* element = list_head(&(manger->simulationServer.SimulationStationList));
+		manger->pWorkSimulation = (SimulationStation*)list_data(element);
+	}
+#endif
+	return error;
 }

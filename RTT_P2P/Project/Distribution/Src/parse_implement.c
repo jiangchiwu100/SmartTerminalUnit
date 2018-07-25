@@ -161,7 +161,7 @@ void StationCalDistributionPowerArea(StationTopology* station)
     
     GetNeighboorSwitch(&(station->neighbourSwitchList), topology, &(station->globalTopologyList), &(station->neighbourSwitchList));
     
-    ListElment* element = list_head(&(station->neighbourSwitchList));
+    //ListElment* element = list_head(&(station->neighbourSwitchList));
     
    /* for(uint8_t i = 0; i < list_size(&(station->neighbourSwitchList)); i++)
     {
@@ -318,58 +318,26 @@ void StationDeleteTopologyNode(uint8_t data[], uint8_t len, StationTopology* sta
  * @update: [2018-06-12][张宇飞][]
  * [2018-06-19][张宇飞][增加站点时候，与此同时配置本站信息，将更新邻居信息与此合并。]
  *[2018-07-19][张宇飞][修补重复添加内存泄漏问题,删去router]
+ *[2018-07-25][张宇飞][提取公用部分 StationManagerAddMemberByTopology()]
  */
 void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger)
-{
-    uint32_t id;
-    StationPoint* station;
+{   
     TopologyMessage*  topologyMessage;
 
     //反序列化生成拓扑信息
     ErrorCode error = ReserializeCollectTopology(data, 0, &topologyMessage);
     if (error != ERROR_OK_NULL)
     {
-        rt_kprintf("ReserializeCollectTopology ERROR : %X\n", error);
+        perror("ReserializeCollectTopology ERROR : %X\n", error);
         return;
     }
-	id = topologyMessage->id;
 
-	//是否已经存在此ID
-	ListDouble* list = &(manger->stationServer.stationPointList);
-	station = FindStationPointById(list, id);
-	if (station != NULL)
-	{
-		FreeTopologyMemory(&topologyMessage);
-		rt_kprintf("Node Has Exited.\n");
-		return;
-	}
-
-    PrintTopologyMessage(topologyMessage);
-    //增加站点
-    error = StationServerAddPoint(&(manger->stationServer),  topologyMessage, &station);
+	error = StationManagerAddMemberByTopology(topologyMessage, manger);
     if (error != ERROR_OK_NULL)
     {
-        rt_kprintf("StationServerAddPoint ERROR : %X\n", error);
-        //TODO: 释放内存
+        perror("StationManagerAddMemberByTopology ERROR : %X\n", error);
         return;
-    }
-
-    error = SimulationStationServerAddMember(&(manger->simulationServer), id, &(station->topology.localSwitch));
-    if (error)
-    {
-        rt_kprintf("SimulationStationServerAddMember ERROR : %X\n", error);
-    }
-    
-#if SINGLE_POINT
-	//首次添加的站点作为工作站点
-	if (manger->pWorkPoint == NULL)
-	{
-		rt_kprintf("Single Work Station\n");
-		manger->pWorkPoint = station;
-        ListElment* element = list_head(&(manger->simulationServer.SimulationStationList));
-		manger->pWorkSimulation = (SimulationStation* )list_data(element);
-	}
- #endif
+    } 
 }
 
 /**

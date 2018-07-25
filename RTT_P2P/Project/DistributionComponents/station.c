@@ -21,7 +21,7 @@
 
 #include "RingQueue.h"
 
-
+#include "distribution_config.h"
 
 
 #include "distribution.h"
@@ -42,14 +42,49 @@ static ErrorCode AssignmentStationMessage_PowerArea(distribution_power_area* ppo
 	DistributionStation* pdistribution);
 static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdest,
 	const FaultDealHandle* const psrc);
+static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
+static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology);
+static ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len);
+/**
+* @brief :区域ID单独设置
+* @param ：
+* @update: [2018-07-25][张宇飞][]
+*/
+static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage)
+{
 
+	CHECK_POINT_RETURN_LOG(area, NULL, ERROR_OK_NULL, 0);
+	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_OK_NULL, 0);
 
+	
 
+	if (pMessage->idCollect_count > 0)
+	{
+		if (area->count > 0)
+		{
+			area->idCollect = REALLOC(area->idCollect, pMessage->idCollect_count * sizeof(uint32_t));
+			CHECK_POINT_RETURN_LOG(area->idCollect, NULL, ERROR_MALLOC, 0);
+		}
+		else
+		{
+			area->idCollect = MALLOC(pMessage->idCollect_count * sizeof(uint32_t));
+			CHECK_POINT_RETURN_LOG(area->idCollect, NULL, ERROR_MALLOC, 0);
+		}
+		area->count = pMessage->idCollect_count;
+		for (uint8_t i = 0; i < pMessage->idCollect_count; i++)
+		{
+			area->idCollect[i] = pMessage->idCollect[i];
+		}
+	}
+
+	return ERROR_OK_NULL;
+}
 
 /**
 * @brief :解码站点信息
 * @param ：
 * @update: [2018-06-30][张宇飞][]
+[2018-07-25][张宇飞][提取公用部分StationMessageToAreaID()]
 */
 ErrorCode PacketDecodeStationMessage(AreaID* area, uint8_t* data, uint16_t len)
 {
@@ -70,28 +105,8 @@ ErrorCode PacketDecodeStationMessage(AreaID* area, uint8_t* data, uint16_t len)
         return ERROR_ENCODE;
     }
 
-    if (message.idCollect_count > 0)
-    {
-        if (area->count > 0)
-        {
-            area->idCollect = REALLOC(area->idCollect, message.idCollect_count * sizeof(uint32_t));
-            CHECK_POINT_RETURN_LOG(area->idCollect, NULL, ERROR_MALLOC, 0);
-        }
-        else
-        {
-            area->idCollect = MALLOC(message.idCollect_count * sizeof(uint32_t));
-            CHECK_POINT_RETURN_LOG(area->idCollect, NULL, ERROR_MALLOC, 0);
-        }
-        area->count = message.idCollect_count;
-        for (uint8_t i = 0; i < message.idCollect_count; i++)
-        {
-            area->idCollect[i] = message.idCollect[i];
-        }
-    }
+	return StationMessageToAreaID(area, &message);
 
-
-    
-    return ERROR_OK_NULL;
 }
 
 /**
@@ -379,9 +394,11 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 		return ERROR_OVER_LIMIT;
 	}
 
-	MEMCPY(pdest->neighbourCollect, psrc->neighbourCollect, psrc->neighbourNum);
-
-
+    for (uint8_t k = 0; k < psrc->neighbourNum; k++)
+    {
+        pdest->neighbourCollect[k] = psrc->neighbourCollect[k];
+    }
+	
 	pdest->operateType = psrc->operateType;
 	pdest->has_operateType = true;
 	pdest->overTimeType = psrc->overTimeType;
@@ -413,6 +430,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 	pdest->isExitArea_count = count;
 	return ERROR_OK_NULL;
 }
+
 /**
 * @brief :编码站点信息,编码所有信息
 * @param ：
@@ -559,6 +577,156 @@ ErrorCode  TransmitEncodeStationMessage_All(StationPoint* point, uint16_t destAd
 	
 	return result;
 	
+}
+
+/**
+* @brief :解码所有站点信息
+* @param ：StationMessage message = StationMessage_init_zero; 初始化后的StationMessage
+* @param ：uint8_t* data
+* @param ：uint16_t len 长度
+* @update: [2018-07-25][张宇飞][]
+*/
+static ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len)
+{
+
+	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_OK_NULL, 0);
+	CHECK_POINT_RETURN_LOG(data, NULL, ERROR_OK_NULL, 0);
+
+	uint16_t nanolen = COMBINE_UINT16(data[2], data[1]);
+	if (nanolen + 2 > len)
+	{
+		return ERROR_OVER_LIMIT;
+	}
+	
+	pb_istream_t instreamLog = pb_istream_from_buffer(data + 3, nanolen);
+	bool status = pb_decode(&instreamLog, StationMessage_fields, pMessage);
+	if (!status)
+	{
+		return ERROR_ENCODE;
+	}
+
+	
+	return ERROR_OK_NULL;
+}
+
+/**
+* @brief : 根据已知信息
+* @param  sourceArray    元字节数组
+* @param  startIndex     开始索引
+* @param  topology       拓扑属性
+* @return: 0-正常返回
+* @update: [2018-07-25][张宇飞][BRIEF]
+*/
+static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology)
+{
+	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_NULL_PTR, 0);
+	
+	*topology = (TopologyMessage*)CALLOC(1, sizeof(TopologyMessage));
+
+	CHECK_POINT_RETURN_LOG(*topology, NULL, ERROR_MALLOC, 0);
+
+	CHECK_UNEQUAL_RETURN_LOG(pMessage->has_node, true, ERROR_UNFIND, 0);
+	CHECK_UNEQUAL_RETURN_LOG(pMessage->node.has_id, true, ERROR_UNFIND, 0);
+
+	node_property* pNode = &(pMessage->node);
+	(*topology)->id = pNode->id;
+	CHECK_UNEQUAL_RETURN_LOG(pNode->has_type, true, ERROR_UNFIND, 0);
+	(*topology)->type = (TopologyType)pNode->type;
+	
+
+	(*topology)->switchNum = 1; //TODO： 默认按1个 
+
+	uint8_t switchNum = (*topology)->switchNum;//开关数量
+
+
+	SwitchProperty* switchCollect = (SwitchProperty*)CALLOC(1, sizeof(SwitchProperty) * switchNum);
+
+	if (switchCollect == NULL) //简单的指针检测
+	{
+		SafeFree(*topology); //释放内存		
+		return ERROR_MALLOC;
+	}		
+
+	for (uint8_t i = 0; i < switchNum; i++)
+	{		
+		switchCollect[i].id =  pNode->id;
+		switchCollect[i].type = pNode->type;
+		CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
+		switchCollect[i].state = pNode->state;
+		
+		switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
+		switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
+		if (switchCollect[i].neighbourCollect == NULL) //简单的指针检测
+		{
+			//释放内存
+			SafeFree((*topology)->switchCollect);			
+			SafeFree(*topology);			
+			return ERROR_MALLOC;
+		}
+		
+		for (uint8_t k = 0; k < switchCollect[i].neighbourNum; k++)
+		{
+			switchCollect[i].neighbourCollect[k] = pNode->neighbourCollect[k];
+		}
+	}
+	(*topology)->switchCollect = switchCollect;
+
+
+	return ERROR_OK_NULL;
+}
+/**
+* @brief : 管理器增加站点，通过StationPoint* station
+* @param :uint8_t data[]
+* @param :uint8_t len
+* @param :StationManger* manger
+* @return: void
+* @update: [2018-07-25][张宇飞][]
+*/
+void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger)
+{
+	uint32_t id;
+	StationPoint* station;
+	TopologyMessage*  topologyMessage;
+
+
+	StationMessage message = StationMessage_init_zero;
+	//反序列化生成拓扑信息
+	ErrorCode error = PacketDecodeStationMessage_ALL(&message, data, len);
+	if (error != ERROR_OK_NULL)
+	{
+		perror("PacketDecodeStationMessage_ALL ERROR : 0x%X\n", error);
+		return;
+	}
+
+	error = ReserializeTopologyByStationMessage(&message, &topologyMessage);
+	if (error != ERROR_OK_NULL)
+	{
+		perror("ReserializeTopologyByStationMessage ERROR : 0x%X\n", error);
+		return;
+	}
+
+
+	error = StationManagerAddMemberByTopology(topologyMessage, manger);
+	if (error != ERROR_OK_NULL)
+	{      
+		perror("StationManagerAddMemberByTopology ERROR : 0x%X\n", error);
+		return;
+	}
+	StationPoint* point = manger->stationServer.FindMemberById(&(manger->stationServer.stationPointList), topologyMessage->id);
+
+	if (point != NULL)
+	{
+		error = StationMessageToAreaID(&(point->topology.areaID), &message);
+		if (error != ERROR_OK_NULL)
+		{
+			perror("StationMessageToAreaID ERROR : 0x%X\n", error);
+			return;
+		}
+	}
+	else
+	{
+		perror("FindMemberById UnFind\n");
+	}
 }
 
 /**

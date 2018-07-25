@@ -46,6 +46,7 @@ typedef enum TagErrorCode
 	EROR_INIT = 0x1B, //初始化
 	ERROR_ENCODE = 0x1C, //编码错误
 	ERROR_DECODE = 0x1D, //解码错误
+
 	ERROR_UNKONOW = 0x30,
 }ErrorCode;
 

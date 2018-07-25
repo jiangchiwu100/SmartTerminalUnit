@@ -400,7 +400,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>\杁%軚d%</Name>
+          <Name>(?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -456,6 +456,11 @@
           <count>2</count>
           <WinNumber>2</WinNumber>
           <ItemText>rt_log_buf</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>message</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -699,7 +704,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3915,7 +3920,7 @@
 
   <Group>
     <GroupName>Distribution</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4067,7 +4072,7 @@
 
   <Group>
     <GroupName>Distribution/Mutal</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4363,6 +4368,18 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>26</GroupNumber>
+      <FileNumber>304</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\..\RTT_P2P\Project\Board\Src\database.c</PathWithFileName>
+      <FilenameWithoutPath>database.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -4373,7 +4390,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>304</FileNumber>
+      <FileNumber>305</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4385,7 +4402,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>305</FileNumber>
+      <FileNumber>306</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4397,7 +4414,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>306</FileNumber>
+      <FileNumber>307</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4409,7 +4426,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>307</FileNumber>
+      <FileNumber>308</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4421,7 +4438,7 @@
     </File>
     <File>
       <GroupNumber>27</GroupNumber>
-      <FileNumber>308</FileNumber>
+      <FileNumber>309</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

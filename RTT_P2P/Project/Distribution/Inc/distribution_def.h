@@ -74,8 +74,7 @@ typedef struct TagTopologyMessage
     uint8_t          idArray[6]; //拓扑片ID号数组表示形式
     TopologyType     type;  //拓扑片类型
     uint8_t          switchNum; //开关数量
-    SwitchProperty*  switchCollect;//开关集合
-    void* other; //其它属性备用
+    SwitchProperty*  switchCollect;//开关集合    
 
 }TopologyMessage;
 
@@ -452,6 +451,7 @@ typedef struct TagStationManger
 
 	StationPoint* pWorkPoint; //工作站点
 	SimulationStation* pWorkSimulation; //工作模拟站点
-   
+    bool firstRun; //首次运行
+    bool isMaintanceRun; //维护正在运行
 }StationManger;
 #endif // ! __DISTRIBUTION_H

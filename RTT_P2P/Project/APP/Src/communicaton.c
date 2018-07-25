@@ -77,7 +77,7 @@ uint8_t CommunicationServeice(void)
                 {
                     
                     //写接收用于测试
-                    RingQueue* ring = &(g_VirtualNode.sendRing);
+                   // RingQueue* ring = &(g_VirtualNode.sendRing);
                     error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
                     if (error)
                     {
@@ -176,7 +176,7 @@ uint8_t CommunicationServerSingle(void)
             {
                 
                 //写接收用于测试
-                RingQueue* ring = &(g_VirtualNode.sendRing);
+                //RingQueue* ring = &(g_VirtualNode.sendRing);
                 error = Datagram_CopyToPacket(LocalAnylast.recvRtu.pData, LocalAnylast.recvRtu.datalen + FRAME_MIN_LEN, &packet);
                 if (error)
                 {

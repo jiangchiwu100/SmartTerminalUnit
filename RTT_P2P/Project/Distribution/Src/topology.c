@@ -563,7 +563,7 @@ static ErrorCode SearchIndexByID(uint32_t* data, uint8_t len, uint32_t id, uint8
  */
 ErrorCode BreadthFirstPath(const ListDouble* switchList, const SwitchProperty* start, BFSHelper** helper)
 {
-    uint8_t result = 0;
+    ErrorCode result = ERROR_OK_NULL;
     if (switchList == NULL)
     {
         return ERROR_NULL_PTR;
@@ -681,7 +681,7 @@ ErrorCode BreadthFirstPath(const ListDouble* switchList, const SwitchProperty* s
         }
     }
       
-    return 0;    
+    return ERROR_OK_NULL;    
         
 }
 /**

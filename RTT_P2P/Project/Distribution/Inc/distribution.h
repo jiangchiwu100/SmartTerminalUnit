@@ -32,6 +32,6 @@
 #include "log.h"
 #include "datagram.h"
 #include "extern_interface.h"
-
+#include "station.h"
 
 #endif
