@@ -32,20 +32,23 @@ void DistributionAppInit(void)
 	LogInit(&g_Loghandle);
 	
 	StationMangerInit(&g_StationManger);
-    
+    //先读取数据
+    bool state = StationMessageRead(&g_StationManger);
+
     UdpServerAppInit();
     //等待udp初始化成功
     while (!g_StationManger.isMaintanceRun)
     {
         rt_thread_delay(100);
     }
-    
-    bool state = StationMessageRead(&g_StationManger);
+     //再判断
     if (state && g_StationManger.pWorkPoint)
     {
+        PrintTopologyMessage(g_StationManger.pWorkPoint->topology.localTopology);
         g_StationManger.firstRun = true;
         StartSinglePointNormalThread();
     }
+   
 	rt_kprintf("\n DATA:%s,%s, %s, %d\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
 	// TestListPrevCase();
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      

@@ -191,7 +191,7 @@ void rt_hw_board_init(void)
 
     rt_hw_system_clock_init();
     rt_hw_usart_init();
-	
+    
 #ifdef RT_USING_CONSOLE
     rt_console_set_device(CONSOLE_DEVICE);
 #endif /* RT_USING_CONSOLE */

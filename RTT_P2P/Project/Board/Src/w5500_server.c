@@ -7,7 +7,7 @@
   * @date:      2018-07-21 w5500 udp server专用
   * @update:    
   */
-  
+ #include "stm32f429xx.h" 
 #include "w5500_server.h"
 #include "drv_w5500_socket.h"
 #include "drv_w5500.h"
@@ -15,6 +15,7 @@
 #include "distribution.h"
 #include "distribution_config.h"
 #include "distribution_app.h"
+
 
 uint8_t SocketNum = 0; //使用的W5500 Socket号
 uint8_t SocketMaintanceNum = 1; //使用的维护 Socket号
@@ -59,6 +60,83 @@ static inline void W5500Init(void)
 }
 
 
+static void W5500_SetDefaultNetInfo( wiz_NetInfo* pNetinfo)
+{
+
+    if (g_StationManger.pWorkPoint)
+    {
+        pNetinfo->ip[0] =  GET_N_BYTE( g_StationManger.pWorkPoint->id, 3);
+        pNetinfo->ip[1] =  GET_N_BYTE( g_StationManger.pWorkPoint->id, 2);
+        pNetinfo->ip[2] =  GET_N_BYTE( g_StationManger.pWorkPoint->id, 1);
+        pNetinfo->ip[3] =  GET_N_BYTE( g_StationManger.pWorkPoint->id, 0);
+    
+    }
+    else
+    {
+        pNetinfo->ip[0] =  192;
+        pNetinfo->ip[1] =  168;
+        pNetinfo->ip[2] =  10;
+        pNetinfo->ip[3] =  249; //默认IP
+    }
+    
+
+	
+    pNetinfo->mac[0] = 0x00;
+    pNetinfo->mac[1] = 0x80;
+    pNetinfo->mac[2] = 0xE1;
+    pNetinfo->mac[3] = *(rt_uint8_t*)(UID_BASE + 0);
+    pNetinfo->mac[4] = *(rt_uint8_t*)(UID_BASE + 2);
+    pNetinfo->mac[5] = *(rt_uint8_t*)(UID_BASE + 4);
+    
+
+    pNetinfo->sn[0] = 255;
+    pNetinfo->sn[1] = 255;
+    pNetinfo->sn[2] = 255;
+    pNetinfo->sn[3] = 0;
+    pNetinfo->gw[0] = 0;
+    pNetinfo->gw[1] = 0;
+    pNetinfo->gw[2] = 0;
+    pNetinfo->gw[3] = 0;
+    pNetinfo->dns[0] = 114;
+    pNetinfo->dns[1] = 114;
+    pNetinfo->dns[2] = 114;
+    pNetinfo->dns[3] = 114;
+    
+   
+
+
+}
+/**
+  * @brief  w5500 device config.
+  * @param  None.
+  * @retval None.
+  */
+void w5500_config(void)
+{
+    wiz_NetInfo wiz_netinfo;
+	uint8_t tmpstr[6];
+//    if (g_EthW5500.ip[0] != 0)
+//    {
+//    memcpy(wiz_netinfo.mac, g_EthW5500.mac, 6);
+//    memcpy(wiz_netinfo.ip, g_EthW5500.ip, 4);
+//    memcpy(wiz_netinfo.sn , g_EthW5500.netmask, 4);
+//    memcpy(wiz_netinfo.gw , g_EthW5500.gateway, 4);
+//    memcpy(wiz_netinfo.dns, g_EthW5500.dns, 4);
+//    }
+//    else
+    {
+        W5500_SetDefaultNetInfo(&wiz_netinfo);
+    }
+			
+	  // Setting default network information
+		ctlnetwork(CN_SET_NETINFO, (void*)&wiz_netinfo);
+	
+	  // Get network configuration information
+		ctlnetwork(CN_GET_NETINFO, (void*)&wiz_netinfo);
+
+		// Display Network Information
+		ctlwizchip(CW_GET_ID, (void*)tmpstr);
+}
 
 /**
   * @brief :W5500用于UDP通信
@@ -74,7 +152,9 @@ static void udpserver_thread_entry(void *param)
     uint8_t cn = 0;
     uint16_t destport;	
    
-
+   
+    rt_hw_w5500_init();
+    w5500_config();
     W5500Init();
 	
     //setSIMR(0x01);//
@@ -148,7 +228,7 @@ static void udpserver_thread_entry(void *param)
 * @update: [2018-07-23][张宇飞][创建]
 */
 static void MaintaceServer(void)
-{
+{    
     extern ProtocolAnylast LocalAnylast;
     uint8_t srcip[4];
     uint16_t destport;	
