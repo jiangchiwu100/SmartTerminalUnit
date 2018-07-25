@@ -1944,6 +1944,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
             </File>
+            <File>
+              <FileName>station.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3985,6 +3990,11 @@
               <FileName>station.pb.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
+            </File>
+            <File>
+              <FileName>station.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\station.c</FilePath>
             </File>
           </Files>
         </Group>

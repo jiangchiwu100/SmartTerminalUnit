@@ -21,7 +21,7 @@
 
 
 //用于RTU帧
-#define RECIVE_FRAME_MAX  128
+#define RECIVE_FRAME_MAX  512
 
 #define  FRAME_DATALEN_INDEX 2 //数据长度开始索引
 #define  FRAME_VALID_INDEX 11

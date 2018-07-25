@@ -417,6 +417,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 * @brief :编码站点信息,编码所有信息
 * @param ：
 * @update: [2018-07-14][张宇飞][]
+[2018-07-25][张宇飞][修正赋值长度错误]
 */
 ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointUint8* packet, uint16_t addLen, uint16_t offset)
 {
@@ -463,6 +464,7 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 			message.has_distribution = true;
 
 			error = AssignmentStationMessage_PowerArea(message.power_area, pDistribution);
+            message.power_area_count = pDistribution->areaCount;
 			if (error)
 			{
 				return error;
@@ -510,7 +512,7 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 		SafeFree(packet->pData);
 		return ERROR_ENCODE;
 	}
-	uint16_t realLen = stream.bytes_written + addLen + 4;
+	uint16_t realLen = stream.bytes_written + addLen + 3;
 	if (realLen != len)
 	{
 		REALLOC(packet->pData, realLen);//调小到实际长度
@@ -587,3 +589,4 @@ ErrorCode ParseNanopb(StationPoint* point, uint16_t sourceAddress, uint8_t* pdat
 	return error;
 
 }
+
