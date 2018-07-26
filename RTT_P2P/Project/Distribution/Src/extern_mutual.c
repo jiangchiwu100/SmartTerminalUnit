@@ -14,6 +14,7 @@
 #include "distribution_test_case.h"
 #include "extern_interface.h"
 
+#include "miscellaneous.h"
 #include "database.h"
 /**************************************************
 *函数名： ExecuteFunctioncode()
@@ -96,7 +97,13 @@ void ExecuteFunctioncode(FrameRtu* pRtu, SimulationStationServer* server)
                 ManagerAddStationByStationMessage(pRtu->pValidData, pRtu->datalen, &manger);
                 if(manger.pWorkPoint)
                 {
-                    StationMessageSave(manger.pWorkPoint);
+                    bool state = StationMessageSave(manger.pWorkPoint);
+                    if (state)
+                    {
+                        rt_kprintf("update sucess! and restart.......\n");
+                        SystemReset();
+
+                    }
                 }
             }	
             break;
@@ -319,7 +326,7 @@ void StationExecuteFunctioncode(StationPoint* point)
 			error = Transfer_ParseDeal(pRtu->pValidData, pRtu->datalen, station);
 			break;
 		}
-
+       
         default:
         {            
             PrintIDTipsTick(point->id, "Unknown Funcode.");

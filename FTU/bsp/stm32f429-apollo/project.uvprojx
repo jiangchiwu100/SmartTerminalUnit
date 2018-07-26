@@ -520,11 +520,6 @@
               <FilePath>.\drivers\drv_fm25vxx.c</FilePath>
             </File>
             <File>
-              <FileName>drv_w5500.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_w5500.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_w5500_conf.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\drivers\drv_w5500_conf.c</FilePath>
@@ -2023,6 +2018,11 @@
               <FileName>database.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\database.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_w5500.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\drv_w5500.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2572,11 +2572,6 @@
               <FilePath>.\drivers\drv_fm25vxx.c</FilePath>
             </File>
             <File>
-              <FileName>drv_w5500.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\drivers\drv_w5500.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_w5500_conf.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\drivers\drv_w5500_conf.c</FilePath>
@@ -4075,6 +4070,11 @@
               <FileName>database.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\database.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_w5500.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\drv_w5500.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -227,7 +227,7 @@ static ErrorCode AssignmentStationMessage_ConnectSwitch(connect_switch* pdest,co
 static ErrorCode AssignmentStationMessage_ConnectPath(connect_path* pdest,const ListDouble* listPath)
 {
 	uint8_t size = list_size(listPath);
-	if (size > sizeof(pdest) / sizeof(connect_path))
+	if (size > 8)//TODO:硬编码
 	{
 		perror("Over Max Len\n");
 		return ERROR_OVER_LIMIT;
