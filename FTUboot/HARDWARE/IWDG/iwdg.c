@@ -15,7 +15,7 @@ void IWDG_Init(u8 prer,u16 rlr)
     IWDG_Handler.Init.Reload=rlr;		//重装载值
     HAL_IWDG_Init(&IWDG_Handler);		//初始化IWDG  
 	
-    HAL_IWDG_Start(&IWDG_Handler);		//开启独立看门狗
+    __HAL_IWDG_START(&IWDG_Handler);		//开启独立看门狗
 }
     
 /**

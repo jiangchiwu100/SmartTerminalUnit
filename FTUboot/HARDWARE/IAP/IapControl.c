@@ -59,8 +59,7 @@ uint8_t ReadProgramState(void)
 	uint8_t tempflag;
 	FM25VxxReadData(PRO_STATE_BEGINADDR, NULL,tempreadbuff, PRO_STATE_ALLBYTE);
 	Delay_ms(50);
-	tempflag = FM25VxxReadData(PRO_STATE_BEGINADDR, NULL,\
-		tempreadbuff, PRO_STATE_ALLBYTE);
+	tempflag = FM25VxxReadData(PRO_STATE_BEGINADDR, NULL,tempreadbuff, PRO_STATE_ALLBYTE);
 	if(tempflag == TRUE){
 		pRunState.firstPower = tempreadbuff[PRO_FIRSTPOWER];
 		pRunState.mBoradState = tempreadbuff[PRO_MAINBOARD_STATE];
@@ -165,15 +164,8 @@ void IapControlInit(void)
   */
 void IapControlMain(void)
 {
-	if(pRunState.firstPower != NOFIRSTPOWER){//第一次上电
-		DebugPrintf("第一次上电\r\n");
-		IapLoadApp(MAINPRO_BEGINADDR);
-	}
-	else if(pRunState.mBoradState == MAINPRO_RUNTURE){
-		DebugPrintf("运行正常\r\n");
-		IapLoadApp(MAINPRO_BEGINADDR);
-	}
-	else if(pRunState.mBoradState == MAINPRO_UPDATA){
+    //先判断是否需要更新程序
+    if(pRunState.mBoradState == MAINPRO_UPDATA){
 		DebugPrintf("程序有更新\r\n");
 		if(UpadaProgramCheck(MAIN_SDRAM_STARTADDR + 4) == 0){
 			uint8_t tempVaule = IS_RUNOK_FLAG;
@@ -186,7 +178,16 @@ void IapControlMain(void)
 			DebugPrintf("程序有错,直接跳转\r\n");
 			IapLoadApp(MAINPRO_BEGINADDR);
 		}
+    }
+	else if(pRunState.firstPower != NOFIRSTPOWER){//第一次上电
+		DebugPrintf("第一次上电\r\n");
+		IapLoadApp(MAINPRO_BEGINADDR);
 	}
+	else if(pRunState.mBoradState == MAINPRO_RUNTURE){
+		DebugPrintf("运行正常\r\n");
+		IapLoadApp(MAINPRO_BEGINADDR);
+	}
+	
 	else{//主板回退
 		if(MainProgramBack() == 0){//保存完成
 			IapLoadApp(MAINPRO_BEGINADDR);

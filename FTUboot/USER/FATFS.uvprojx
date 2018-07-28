@@ -333,9 +333,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F429xx</Define>
+              <Define>USE_HAL_DRIVER,STM32F429xx,USE_FULL_LL_DRIVER,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\sys;..\HARDWARE\LED;..\HARDWARE\SDRAM;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\FM25Vxx;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE\IAP</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\sys;..\HARDWARE\LED;..\HARDWARE\SDRAM;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\FM25Vxx;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE\IAP;..\Module\tftp;..\Module\W5500\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -519,6 +519,31 @@
               <FileType>1</FileType>
               <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_iwdg.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_ll_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_rcc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -538,11 +563,6 @@
               <FileName>w25qxx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\W25QXX\w25qxx.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_fm25vxx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\FM25Vxx\drv_fm25vxx.c</FilePath>
             </File>
             <File>
               <FileName>sdram.c</FileName>
@@ -574,6 +594,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IAP\MainBoardBoot.c</FilePath>
             </File>
+            <File>
+              <FileName>fm25v10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\FM25Vxx\fm25v10.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -598,6 +623,46 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Module/W5500</GroupName>
+          <Files>
+            <File>
+              <FileName>device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\W5500\Src\device.c</FilePath>
+            </File>
+            <File>
+              <FileName>socket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\W5500\Src\socket.c</FilePath>
+            </File>
+            <File>
+              <FileName>ult.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\W5500\Src\ult.c</FilePath>
+            </File>
+            <File>
+              <FileName>w5500.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\W5500\Src\w5500.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>TFTP</GroupName>
+          <Files>
+            <File>
+              <FileName>tftp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\tftp\tftp.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_demo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\tftp\tftp_demo.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -8,24 +8,27 @@
 #include "uartDriver.h"
 #include "IapControl.h"
 #include "MainFlashOperate.h"
+#include "fm25v10.h"
 
+ extern void tftp_demo(void);
 int main(void)
 {
-  HAL_Init(); 
-  Stm32_Clock_Init(360,25,2,8);//设置时钟,180Mhz 
-	SystemconfigInit();
-	uartInit();
-  LED_Init();  
-	SDRAM_Init();
-	W25QXX_Init();
-	FM25VxxInit();
-	VersionInfo();
-	FatfsInit();
-	Delay_ms(500);
-    
-    
-    
-	IapControlInit();
+    HAL_Init(); 
+    Stm32_Clock_Init(360,25,2,8);//设置时钟,180Mhz 
+    SystemconfigInit();
+    uartInit();
+    LED_Init();  
+    SDRAM_Init();
+    W25QXX_Init();
+    //FM25VxxInit();
+    VersionInfo();
+    FatfsInit();
+    FRAM_Init();
+    Delay_ms(500);
+
+    tftp_demo();
+
+    IapControlInit();
 
 	while(1)
 	{

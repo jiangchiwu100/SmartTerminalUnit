@@ -57,13 +57,17 @@ enum ProgramState{
 #define  FALSE     0
 #define  TRUE      !FALSE
 #endif /* END FALSE */
-
+#include "fm25v10.h"
 
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
-void FM25VxxInit(void);
-uint8_t FM25VxxReadData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
-uint8_t FM25VxxWriteData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
+#define FM25VxxReadData(addr, flag, pBuf,  len) FramReadInduce(addr, len, pBuf)
+#define FM25VxxWriteData(addr, flag, pBuf,  len) FramWriteInduce(addr, len, pBuf)
+//void FM25VxxInit(void);
+//uint8_t FM25VxxReadData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
+//uint8_t FM25VxxWriteData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
 void FM25VxxUseKill(void);
+
+
 
 #endif
 

@@ -1879,6 +1879,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
             </File>
+            <File>
+              <FileName>distribution_monitor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2064,6 +2069,11 @@
               <FileType>1</FileType>
               <FilePath>H:\CodeResourceLib\RTOS\RT-Thread\rt-thread\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
             </File>
+            <File>
+              <FileName>readme.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\readme.txt</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -2141,7 +2151,7 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>fromelf --bin !L --output stu_v00.001.bin</UserProg1Name>
             <UserProg2Name></UserProg2Name>
@@ -3941,6 +3951,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
             </File>
+            <File>
+              <FileName>distribution_monitor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4125,6 +4140,11 @@
               <FileName>tftp.c</FileName>
               <FileType>1</FileType>
               <FilePath>H:\CodeResourceLib\RTOS\RT-Thread\rt-thread\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
+            </File>
+            <File>
+              <FileName>readme.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\readme.txt</FilePath>
             </File>
           </Files>
         </Group>

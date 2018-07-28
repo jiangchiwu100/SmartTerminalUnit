@@ -72,18 +72,20 @@ uint8_t UpdataMainProgram(void)
 	uint32_t i;
 	uint32_t fileSize,res;
 	uint8_t tempVaule = 0xFF;
-	for(i = 0; i < 3; i++){
-		if(SaveMainProgram() == 0){
-			break;
-		}
-		if(i == 2){
-			DebugPrintf("保存文件失败\r\n");
-			return 1;
-		}
-	}
+    DebugPrintf("跳过保存程序,直接更新程序\r\n");
+//	for(i = 0; i < 3; i++){
+//		if(SaveMainProgram() == 0){
+//			break;
+//		}
+//		if(i == 2){
+//			DebugPrintf("保存文件失败\r\n");
+//			return 1;
+//		}
+//	}
 	for(i = 0; i < 3; i++){
 		tempVaule = IS_ROLLBACK_FLAG;
 		FM25VxxWriteData(PRO_MAINBOARD_STATE + PRO_MAINBOARD_STATE,NULL,&tempVaule,1);
+        
 		if(EreaseProgram() == 0){
 			break;
 		}
