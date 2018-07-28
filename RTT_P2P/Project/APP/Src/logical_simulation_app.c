@@ -21,12 +21,12 @@ void  MonitorApp(StationManger* manager);
 
 
 static struct rt_thread switch_thread;//线程控制块
-static struct rt_thread monitor_thread;
+
 
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_switch_thread_stack[THREAD_SIMSWITCH_STACK_SIZE];//线程栈
-static rt_uint8_t rt_monitor_thread_stack[1024];//线程栈
+
 
 
 
@@ -134,67 +134,7 @@ static void SingleSimulationSwitchStationLogicalApp(StationManger* manager)
 
 }
 
-/**
-* @brief : 状态变化更新任务
-* @param  :StationManger* manager
-* @return:
-* @update: [2018-07-13][张宇飞][]
-*/
-void  MonitorApp(StationManger* manager)
-{
-    ListElment* element;
-    ListDouble* list;
-    uint8_t size;
-    StationPoint* station;   
-   
-    if (manager == NULL)
-    {
-        rt_kprintf("MonitorApp ERROR :manager = NULL.\n");
-    }
-    StationServer* server = &(manager->stationServer);
-    if (server == NULL)
-    {
-        rt_kprintf("MonitorApp ERROR :server = NULL.\n");
-    }    
-    list = &(server->stationPointList);
 
-	uint8_t cn = 0;
-	const uint8_t total = 30;
-    do
-    {
-        element = list_head(list);
-        size = list_size(list);
-        for (uint8_t i = 0; i < size; i++)
-        {
-            station = (StationPoint*)(element->data);
-            if (station != NULL)
-            {
-                SwitchProperty* switchNode = station->topology.localSwitch;
-                if ((!station->removalHandle.isRun)  && (switchNode->isChanged || (cn == total)))
-                {
-                    switchNode->isChanged = false;
-					DatagramTransferNode* pTransferNode =&( station->transferNode);
-                    TransmitMessageExtern(switchNode, pTransferNode, STATUS_MESSAGE, 0xFFFF);
-					TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, 0xFFFF);
-					TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, 0xFFFF);
-                }               
-            }
-            else
-            {
-                rt_kprintf("StationPoint* station = NULL.\n");
-                break;
-            }
-            element = element->next;
-        }
-
-		if (cn++ > total)
-		{
-			cn = 0;
-		}
-        rt_thread_delay(10);
-    } while (1);
-
-}
 
 
 

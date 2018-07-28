@@ -30,6 +30,8 @@ typedef struct TagFaultInformation
 
 /**
 * 开关属性
+*update:
+* [2018-07-28][张宇飞][时间属性]
 */
 typedef struct TagSwitchProperty
 {
@@ -59,6 +61,10 @@ typedef struct TagSwitchProperty
     bool            isChanged;   //是否更新 TODO：完善变换使用 ，注意同步互斥
 	
 	struct TagStationTopology* parent;
+
+	bool isValid; //是否超时
+	uint32_t updateTime; //更新时间
+
 }SwitchProperty;
 
 

@@ -15,15 +15,18 @@
 
 static struct rt_thread distribution_thread;
 static struct rt_thread connected_thread;
+static struct rt_thread monitor_thread;
+
 
 static void DistributionLogicalApp(StationManger* manager);
 static void distribution_thread_entry(void* parameter);
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_distribution_thread_stack[THREAD_DISTRIBUTION_STACK_SIZE];//线程栈
+ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_connected_thread_stack[THREAD_CONNECT_STACK_SIZE];//线程栈
-
-
+ALIGN(RT_ALIGN_SIZE)
+static rt_uint8_t rt_monitor_thread_stack[1024];//线程栈
 
 static void distribution_thread_entry(void* parameter)
 {
@@ -129,15 +132,13 @@ static void connected_thread_entry(void* parameter)
 	}
 
 	ListDouble* list = &(stationServer->stationPointList);
-	ListElment* element;
-	uint8_t size;
+
+
 	do
 	{
-		element = list_head(list);
-		size = list_size(list);
-		for (uint8_t i = 0; i < size; i++)
+		FOR_EARCH_LIST_START(list);
 		{
-			StationPoint* station = (StationPoint*)(element->data);
+			StationPoint* station = (StationPoint*)list_data(m_foreach);
 			if (station != NULL)
 			{
 				ConnectedSwitchJuadgeAPP(station);//获取所有开关
@@ -145,7 +146,8 @@ static void connected_thread_entry(void* parameter)
 				{
 					GetNeighboorRunState(station); //获取邻居
 				}
-
+				//周期性发送状态信息
+				StationSendStatusMessage(station);
 			}
 			else
 			{
@@ -153,16 +155,79 @@ static void connected_thread_entry(void* parameter)
 				LogAddException(ERROR_NULL_PTR, 0);
 				break;
 			}
-			element = element->next;
-
 
 		}
-		rt_thread_delay(1000);
+		FOR_EARCH_LIST_END();
+
+		rt_thread_delay(MONITOR_CHECK_TIME);
 	} while (1);
 
 }
 
 
+
+
+/**
+* @brief : 状态变化更新任务
+* @param  :StationManger* manager
+* @return:
+* @update: [2018-07-13][张宇飞][]
+*/
+void  MonitorApp(StationManger* manager)
+{
+	ListElment* element;
+	ListDouble* list;
+	uint8_t size;
+	StationPoint* station;
+
+	if (manager == NULL)
+	{
+		rt_kprintf("MonitorApp ERROR :manager = NULL.\n");
+	}
+	StationServer* server = &(manager->stationServer);
+	if (server == NULL)
+	{
+		rt_kprintf("MonitorApp ERROR :server = NULL.\n");
+	}
+	list = &(server->stationPointList);
+
+	uint8_t cn = 0;
+	const uint8_t total = 30;
+	do
+	{
+		element = list_head(list);
+		size = list_size(list);
+		for (uint8_t i = 0; i < size; i++)
+		{
+			station = (StationPoint*)(element->data);
+			if (station != NULL)
+			{
+				SwitchProperty* switchNode = station->topology.localSwitch;
+				if ((!station->removalHandle.isRun) && (switchNode->isChanged || (cn == total)))
+				{
+					switchNode->isChanged = false;
+					DatagramTransferNode* pTransferNode = &(station->transferNode);
+					TransmitMessageExtern(switchNode, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);
+					TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
+					TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
+				}
+			}
+			else
+			{
+				rt_kprintf("StationPoint* station = NULL.\n");
+				break;
+			}
+			element = element->next;
+		}
+
+		if (cn++ > total)
+		{
+			cn = 0;
+		}
+		rt_thread_delay(10);
+	} while (1);
+
+}
 /**
 * @brief :分布式逻辑功能引用初始化：分布式保护，联络判别
 * @param  

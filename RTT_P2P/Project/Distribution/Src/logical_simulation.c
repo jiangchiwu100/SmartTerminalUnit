@@ -17,6 +17,7 @@
 #include "logical_simulation.h"
 #include "parse_implement.h" 
 #include "extern_interface.h"
+#include "distribution_config.h"
 
 #define DELAY_MS(ms)  rt_thread_delay((ms));
 
@@ -441,9 +442,9 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 
 			//发送复归后的信息
 			DatagramTransferNode* pTransferNode = &(point->transferNode);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, 0xFFFF);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, 0xFFFF);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, 0xFFFF);
+			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);
+			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
+			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
 
             rt_kprintf("%X: CONTROL_REMOVAL_RESET.\n", station->id);
         }

@@ -18,7 +18,7 @@
 #include "station_manager.h"
 #include "topology.h"
 #include "extern_interface.h"
-
+#include "distribution_config.h"
 /******************************************
 //针对此种情况出队与入队可能发生冲突。
 //改在出队时，禁止串口接收中断。 2015/10/15
@@ -37,6 +37,7 @@
   * @update: [2018-06-12][张宇飞][创建并进行基本测试]
   * [2018-06-20][张宇飞][添加广播地址0xFFFF识别接收]
   * [2018-06-21][张宇飞][结构中增加源地址]
+  *[2018-07-28][张宇飞][修改广播地址BROADCAST_ADDRESS]
   */
 uint8_t DataProtocolAnylast(ProtocolAnylast* anylast )
 {
@@ -81,7 +82,7 @@ uint8_t DataProtocolAnylast(ProtocolAnylast* anylast )
                     (anylast->reviceFrame[1] == START_CHAR2) && 
                     (anylast->reviceFrame[4] == START_CHAR3) && 
                     (anylast->reviceFrame[5] == START_CHAR4) &&
-                     ((anylast->address) == adress || (0xFFFF == adress) || (anylast->address == 0)))
+                     ((anylast->address) == adress || (BROADCAST_ADDRESS == adress) || (anylast->address == 0)))
                 {                 
                     
                     //出队并丢弃

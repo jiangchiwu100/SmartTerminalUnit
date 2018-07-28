@@ -348,6 +348,7 @@ void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger)
 *          [2018-06-23][张宇飞][适应配电区域属性修改]
 *          [2018-06-26][张宇飞][设拓扑结构只含有一个开关，开关数与列表数不相等，则更新开关列表]
 *		   [2018-07-09][张宇飞][收集完成与否判别，将判别放到标志内还是外部，如何分工]
+*		    [2018-07-28][张宇飞][添加更新标识]
 */
 void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* point)
 {
@@ -394,7 +395,8 @@ void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* poin
             switchProperty->operateType = (OperateType)data[index++];
             switchProperty->overTimeType = (OverTimeType)data[index++];
             distribution = switchProperty->distributionArea;
-           
+			switchProperty->updateTime = GetTime();
+			switchProperty->isValid = true;
             if (distribution != NULL)
             {                
                    //distribution->UpdatePowerArea(switchProperty);                                
@@ -418,7 +420,68 @@ void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* poin
     }
 
 }
+/**
+* @brief : LOOP更新状态信息，更新配电区域相关信息,
+* @param :
+* @return: void
+* @update: [2018-07-28][张宇飞][创建]
+*/
+void  StationUpdateLoopStatusMessage(uint8_t data[], uint8_t len, StationPoint* point)
+{
+	uint32_t id;
+	uint16_t index;
+	SwitchProperty* switchProperty;
+	uint8_t result;
+	DistributionStation* distribution;
+	ListDouble* list = &(point->topology.globalSwitchList);
+	if (data == NULL || point == NULL)
+	{
+		perror("data == NULL  || point == NULL!.\n");
+		return;
+	}
+	ListDouble* listaq = &(point->topology.globalTopologyList);
+	//若为0，则更新开关列表
+	if (list->size != listaq->size)
+	{
+		Listdestroy(list);//清空列表
+		ListInit(list, NULL);//重新初始化
+		result = GetSwitchList(listaq, list);
+		//开关列表更新失败
+		if (result)
+		{
+			perror("globalTopologyList Update Failure.\n");
+			return;
+		}
+	}
 
+	//校验长度
+	if (data[0] * 8 + 1 == len)
+	{
+		for (uint16_t i = 0; i < data[0]; i++)
+		{
+			id = COMBINE_UINT32(data[4 + i * 8], data[3 + i * 8], data[2 + i * 8], data[1 + i * 8]);
+			index = 5 + i * 8;
+			result = FindSwitchNodeByID(list, id, &switchProperty);
+			if (result != ERROR_OK_NULL)
+			{
+				return;
+			}
+			switchProperty->fault.state = (FaultState)data[index++];
+			switchProperty->state = (SwitchState)data[index++];
+			switchProperty->operateType = (OperateType)data[index++];
+			switchProperty->overTimeType = (OverTimeType)data[index++];
+			switchProperty->updateTime = GetTime();
+			switchProperty->isValid = true;
+
+			
+		}
+	}
+	else
+	{
+		perror("Data length is  wrong!.\n");
+	}
+
+}
 /**
 * @brief : 接收应答信息
 * @param :
@@ -836,8 +899,24 @@ ErrorCode SendLogMessage(uint16_t source, uint16_t dest)
 
     return ERROR_OK_NULL;
 }
-
-
+/**
+* @brief : 发送状态信息，在非切除状态下发送
+* @param  ：
+* @return: void
+* @update: [2018-07-28[张宇飞][]
+*/
+void StationSendStatusMessage(StationPoint* station)
+{
+	SwitchProperty* switchNode = station->topology.localSwitch;
+	if (!station->removalHandle.isRun)
+	{
+		switchNode->isChanged = false;
+		DatagramTransferNode* pTransferNode = &(station->transferNode);
+		TransmitMessageExtern(switchNode, pTransferNode, LOOP_STATUS, BROADCAST_ADDRESS);
+		TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
+		TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
+	}
+}
 /**
 * @brief : 开关操作控制
 * @param  ：uint32_t id

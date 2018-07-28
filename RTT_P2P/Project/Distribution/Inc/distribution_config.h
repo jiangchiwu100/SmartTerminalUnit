@@ -47,6 +47,12 @@
 #define SINGLE_POINT  (1)
 #define UDP_SEND  (1)
 
+//广播地址，后两字段
+#define BROADCAST_ADDRESS 0x0AFF //根据需要修改
+
+
+#define  MONITOR_CHECK_TIME  1000// 监控发送时间
+#define  MONITOR_LIFT_TIME 5000 //数据有效时间
 
 #ifdef	__cplusplus
 }

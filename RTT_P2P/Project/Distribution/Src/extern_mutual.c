@@ -278,6 +278,11 @@ void StationExecuteFunctioncode(StationPoint* point)
             StationUpdateStatusMessage(pRtu->pValidData, pRtu->datalen, point);
             break;
         }
+		case LOOP_STATUS:
+		{
+			StationUpdateLoopStatusMessage(pRtu->pValidData, pRtu->datalen, point);
+		    break;
+		}
         case REPLY_MESSAGE:
         {
             StationReciveReplyMessage(pRtu->pValidData, pRtu->datalen, &(point->topology));

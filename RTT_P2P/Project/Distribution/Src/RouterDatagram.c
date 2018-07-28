@@ -216,7 +216,7 @@ ErrorCode RouterDatagram_TransmissionCenter(ListDouble* stationPointList)
 			//地址不相等 && （地址符合 || 目的地址为广播地址）
 			transferNodeRecive = &(((StationPoint*)list_data(m_foreach))->transferNode);
 			if ((transferNodeSend->id != transferNodeRecive->id) && 
-				((GET_UINT16(transferNodeRecive->id) == frame->destAddress) || (frame->destAddress == 0xFFFF)))
+				((GET_UINT16(transferNodeRecive->id) == frame->destAddress) || (frame->destAddress == BROADCAST_ADDRESS)))
 			{
 				//复制一份新帧
 				error = RouterDatagram_CopyFrame(frame, &newFrame);
@@ -307,7 +307,7 @@ static void VirtualMonitorSend(DatagramTransferNode* pTransferNode, ListDouble* 
 		//地址不相等 && （地址符合 || 目的地址为广播地址）
 		transferNodeRecive = &(((StationPoint*)list_data(m_foreach))->transferNode);
 		if ((pTransferNode->id != transferNodeRecive->id) &&
-			((GET_UINT16(transferNodeRecive->id) == frame->destAddress) || (frame->destAddress == 0xFFFF)))
+			((GET_UINT16(transferNodeRecive->id) == frame->destAddress) || (frame->destAddress == BROADCAST_ADDRESS)))
 		{
 			//复制一份新帧
 			error = RouterDatagram_CopyFrame(frame, &newFrame);

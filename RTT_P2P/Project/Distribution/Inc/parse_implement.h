@@ -40,7 +40,9 @@ extern ErrorCode MakeSingleReplyTopologyMessage(TopologyMessage* topology, Point
 extern ErrorCode SendLogMessage(uint16_t source, uint16_t dest);
 extern void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger);
 
+extern void  StationSendStatusMessage(StationPoint* station);
 extern void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* point);
+extern void  StationUpdateLoopStatusMessage(uint8_t data[], uint8_t len, StationPoint* point);
 extern void  StationOperateSwitch(uint8_t data[], uint8_t len, SimulationStationServer* server);
 extern void  StationSetConnectPath(uint8_t data[], uint8_t len, StationTopology* topology);
 #endif

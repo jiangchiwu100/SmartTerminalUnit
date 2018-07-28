@@ -33,5 +33,6 @@
 #include "datagram.h"
 #include "extern_interface.h"
 #include "station.h"
+#include "distribution_monitor.h"
 
 #endif

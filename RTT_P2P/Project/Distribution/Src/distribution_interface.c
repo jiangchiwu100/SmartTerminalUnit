@@ -12,7 +12,7 @@
 #include "distribution_interface.h"   
 #include "distribution.h"
 
-
+#include "distribution_config.h"
 
 static __inline bool SystemNowTime(FaultDealHandle* handle) ;
 static __inline uint32_t DiffTime(uint32_t lastTime);
@@ -75,6 +75,7 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
 * @param ： ListDouble* switchList    待更新列表
 * @return： 0-正常返回
 * @update： [2018-06-26][张宇飞][BRIEF]
+* [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
 */
 ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
 {
@@ -84,7 +85,8 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
     CHECK_POINT_RETURN(pTransferNode, NULL, ERROR_NULL_PTR);
 
     switch (code)
-    {
+	{
+	case LOOP_STATUS:
     case STATUS_MESSAGE:
     {
         result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,
@@ -516,6 +518,7 @@ static bool CloseOperate(FaultDealHandle* handle)
 * @param
 * @return: 0-正常
 * @update: [2018-06-14][张宇飞][BRIEF]
+[2018-07-28][张宇飞][修改广播地址]
 */
 static uint8_t TransmitData(FaultDealHandle* handle, PointUint8* packet)
 {
@@ -524,7 +527,7 @@ static uint8_t TransmitData(FaultDealHandle* handle, PointUint8* packet)
     CHECK_POINT_RETURN(packet->pData, NULL, ERROR_NULL_PTR);
 	
 	DatagramTransferNode* pTransferNode = handle->pTransferNode;
-    MakePacketMessage(packet, 0xFFFF, (handle->pTransferNode->id)& 0xFFFF);// FFFF广播地址
+    MakePacketMessage(packet, BROADCAST_ADDRESS, GET_UINT16( (handle->pTransferNode->id)));// FFFF广播地址
     return pTransferNode->Send(pTransferNode, packet);
 }
 /**
@@ -539,7 +542,7 @@ bool TransmitMessage(FaultDealHandle* handle, FuncionCode code)
 {
 	ErrorCode result;	 
 	
-    result = TransmitMessageExtern(handle->switchProperty, handle->pTransferNode, code, 0xFFFF);
+    result = TransmitMessageExtern(handle->switchProperty, handle->pTransferNode, code, BROADCAST_ADDRESS);
 	if (ERROR_OK_NULL == result)
 	{
         return true;

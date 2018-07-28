@@ -175,7 +175,7 @@ typedef enum TagFuncionCode
     UPDATE_NEIGHBOUR = 0x01, //更新邻居配置信息
     GET_MESSAGE = 0x02, //获取信息
     REPLY_MESSAGE = 0x03, //应答信息
-
+    LOOP_STATUS = 0x04, //周期性状态信息
 
     LOCAL_MESSAGE = 0x05, //本地信息
     AIM_MESSAGE = 0x06, //目的信息
