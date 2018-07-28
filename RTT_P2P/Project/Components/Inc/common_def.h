@@ -1,4 +1,4 @@
-#ifndef  __COMMON_DEF_H
+﻿#ifndef  __COMMON_DEF_H
 #define  __COMMON_DEF_H
 #include <stdint.h> 
 #include <stdbool.h>

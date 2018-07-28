@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File      : drv_sdram.h
  * This file is part of RT-Thread RTOS
  * COPYRIGHT (C) 2016 RT-Thread Develop Team

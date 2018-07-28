@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      parse_action.c
   * @brief:     用于解析与反解析
@@ -913,8 +913,7 @@ void StationSendStatusMessage(StationPoint* station)
 		switchNode->isChanged = false;
 		DatagramTransferNode* pTransferNode = &(station->transferNode);
 		TransmitMessageExtern(switchNode, pTransferNode, LOOP_STATUS, BROADCAST_ADDRESS);
-		TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
-		TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
+		rt_kprintf("Loop Send Status!\n");
 	}
 }
 /**

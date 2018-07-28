@@ -1,4 +1,4 @@
-/**
+﻿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     分布式相关的公共定义，避免循环引用
@@ -179,6 +179,7 @@ typedef struct TagConnectPath
 
 /**
 *  开关节点站信息
+* 添加有效监测isValidAll 所有开关列表
 */
 typedef struct TagStationTopology
 {
@@ -191,8 +192,10 @@ typedef struct TagStationTopology
     ListDouble globalTopologyList;   //全局拓扑列表
     ListDouble neighbourSwitchList; //邻居开关列表        
     ListDouble globalSwitchList;   //全局开关列表
-    bool isNeighbourComplted; //邻居是否完整 //注意需要维护
+	bool isValidAll;//globalSwitchList是否全部有效
 
+    bool isNeighbourComplted; //邻居是否完整 //注意需要维护
+	
     DistributionStation powerArea; //配电区域信息
 
 

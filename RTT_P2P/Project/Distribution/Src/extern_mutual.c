@@ -1,4 +1,4 @@
-/**
+﻿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      extern_mutal.c
 * @brief:	  用于通信外部交互

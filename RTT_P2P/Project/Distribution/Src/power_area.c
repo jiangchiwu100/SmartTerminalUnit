@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      power_area.c
   * @brief:     配电区域相关处理与计算

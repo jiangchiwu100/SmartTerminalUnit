@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_monitor.h
-* @brief:     ÓÃÓÚ·Ö²¼Ê½¼à¿ØÏà¹Ø£¬Î¬»¤³£ÓÃ×´Ì¬
+* @brief:     ç”¨äºåˆ†å¸ƒå¼ç›‘æ§ç›¸å…³ï¼Œç»´æŠ¤å¸¸ç”¨çŠ¶æ€
 * @version:   V0.0.0
 * @author:    Zhang Yufei
 * @date:      2018-07-28
@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-ErrorCode CheckMessageValid(StationPoint* station);
+ErrorCode CheckGlobalSwitchMessageValid(StationPoint* station);
 
 #ifdef	__cplusplus
 }

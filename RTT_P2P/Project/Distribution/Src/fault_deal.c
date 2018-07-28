@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) TOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      fault_deal.c
   * @brief:     故障处理，独立故障移除中的函数

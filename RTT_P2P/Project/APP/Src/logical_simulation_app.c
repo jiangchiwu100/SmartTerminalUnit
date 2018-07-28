@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_simulation_app.c
   * @brief:     开关逻辑仿真任务

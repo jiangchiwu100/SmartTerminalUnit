@@ -22,6 +22,9 @@ int main(void)
 	VersionInfo();
 	FatfsInit();
 	Delay_ms(500);
+    
+    
+    
 	IapControlInit();
 
 	while(1)

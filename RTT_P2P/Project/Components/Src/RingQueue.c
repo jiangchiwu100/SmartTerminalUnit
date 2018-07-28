@@ -1,4 +1,4 @@
-/**
+﻿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      RingQueue.c
 * @brief:     环形队列,由队列改型而来 TODO：高速无锁环形队列

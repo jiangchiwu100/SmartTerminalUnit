@@ -1,4 +1,4 @@
-/**
+﻿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     外部接口，主要针对常用，有根据情况变化的情况，如malloc，利于程序移植

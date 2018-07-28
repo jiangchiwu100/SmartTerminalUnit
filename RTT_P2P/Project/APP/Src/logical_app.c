@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_app.c
   * @brief:     分布式保护逻辑
@@ -148,6 +148,7 @@ static void connected_thread_entry(void* parameter)
 				}
 				//周期性发送状态信息
 				StationSendStatusMessage(station);
+				CheckGlobalSwitchMessageValid(station);
 			}
 			else
 			{

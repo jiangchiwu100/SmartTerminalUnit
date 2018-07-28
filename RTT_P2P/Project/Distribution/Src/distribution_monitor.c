@@ -1,7 +1,7 @@
-/**
+ï»¿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_monitor.c
-* @brief:     ÓÃÓÚ·Ö²¼Ê½¼à¿ØÏà¹Ø£¬Î¬»¤³£ÓÃ×´Ì¬
+* @brief:     ç”¨äºŽåˆ†å¸ƒå¼ç›‘æŽ§ç›¸å…³ï¼Œç»´æŠ¤å¸¸ç”¨çŠ¶æ€
 * @version:   V0.0.0
 * @author:    Zhang Yufei
 * @date:      2018-07-28
@@ -14,32 +14,50 @@
 #include "distribution_config.h"
 
 /**
-* @brief :¼ì²âÐÅÏ¢µÄÓÐÐ§ÐÔ
+* @brief :æ£€æµ‹ä¿¡æ¯çš„æœ‰æ•ˆæ€§
 * @param  StationManger* manager
-* @return: 0--Õý³£
-* @update: [2018-07-16][ÕÅÓî·É][´´½¨]
+* @return: 0--æ­£å¸¸
+* @update: [2018-07-16][å¼ å®‡é£ž][åˆ›å»º]
 */
-ErrorCode CheckMessageValid(StationPoint* station)
+ErrorCode CheckGlobalSwitchMessageValid(StationPoint* station)
 {
 	CHECK_POINT_RETURN_LOG(station, NULL, ERROR_NULL_PTR, 0);
 	ListDouble* pSwitchList = &(station->topology.globalSwitchList);
 	CHECK_POINT_RETURN_LOG(pSwitchList, NULL, ERROR_NULL_PTR, 0);
 	SwitchProperty* nodeSwitch;
+	uint8_t cnValid = 0;
+	uint8_t size = list_size(pSwitchList);
+	if (size == 0)
+	{
+		station->topology.isValidAll = false;
+		return ERROR_OK_NULL;
+	}
 	FOR_EARCH_LIST_START(pSwitchList);
 	{
 		nodeSwitch = GET_SWITCH_ELEMENT(m_foreach);
-		//¼ì²âÓÐÐ§×´Ì¬ÏÂÊ±¼äÊÇ·ñ³¬Ê±
+		//æ£€æµ‹æœ‰æ•ˆçŠ¶æ€ä¸‹æ—¶é—´æ˜¯å¦è¶…æ—¶
 		if (nodeSwitch->isValid)
 		{
 			if (SystemIsOverTime(nodeSwitch->updateTime, MONITOR_LIFT_TIME))
 			{
 				nodeSwitch->isValid = false;
 			}
+			else
+			{
+				cnValid++;
+			}
 		}
 
 	}
 	FOR_EARCH_LIST_END();
-	
-
+	if (cnValid == size)
+	{
+		station->topology.isValidAll = true;
+	}
+	else
+	{
+		station->topology.isValidAll = false;
+	}
+	return ERROR_OK_NULL;
 }
 

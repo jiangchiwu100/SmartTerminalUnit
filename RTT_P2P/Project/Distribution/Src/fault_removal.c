@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) TOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      fault_removal.c
   * @brief:     故障移除，此处主要指故障移除

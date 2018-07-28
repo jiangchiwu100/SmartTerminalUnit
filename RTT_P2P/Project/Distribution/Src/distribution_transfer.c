@@ -1,4 +1,4 @@
-/**
+﻿/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_transfer.c
 * @brief:     用于转供电的各种操作

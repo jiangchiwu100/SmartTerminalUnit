@@ -1,4 +1,4 @@
-/**
+﻿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      fault_treatment.h
   * @brief:     故障处理，故障判据，故障隔离

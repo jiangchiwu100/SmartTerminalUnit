@@ -1,4 +1,4 @@
-/**
+ï»¿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      w5500.c
   * @brief:     The driver of w5500.
@@ -386,10 +386,10 @@ void WIZCHIP_READ_BUF (uint32_t AddrSel, uint8_t* pBuf, uint16_t len)
 //	    {
 //			    pBuf[i] = WIZCHIP.IF.SPI._read_byte();
 //			}
-		IINCHIP_SpiSendData( (AddrSel & 0x00FF0000)>>16);		// Í¨¹ýSPI·¢ËÍ16Î»µØÖ·¶Î¸øMCU
+		IINCHIP_SpiSendData( (AddrSel & 0x00FF0000)>>16);		// é€šè¿‡SPIå‘é€16ä½åœ°å€æ®µç»™MCU
 		IINCHIP_SpiSendData( (AddrSel & 0x0000FF00)>> 8);		// 
-		IINCHIP_SpiSendData( (AddrSel & 0x000000F8));    		// ÉèÖÃSPIÎª¶Á²Ù×÷
-		for(i = 0; i < len; i++)                    	// ½«bufÖÐµÄÊý¾ÝÍ¨¹ýSPI·¢ËÍ¸øMCU
+		IINCHIP_SpiSendData( (AddrSel & 0x000000F8));    		// è®¾ç½®SPIä¸ºè¯»æ“ä½œ
+		for(i = 0; i < len; i++)                    	// å°†bufä¸­çš„æ•°æ®é€šè¿‡SPIå‘é€ç»™MCU
 		{
 		    pBuf[i] = IINCHIP_SpiSendData(0x00);
 		}	
