@@ -26,8 +26,16 @@ typedef struct TagFaultInformation
     FaultState state; //是否有故障 
     bool isFaultEdgeConnected;           //故障区域边缘，且为联络开关路径上
 }FaultInformation;
-
-
+/**
+* 检测时标
+*update:
+* [2018-07-30][张宇飞][创建]
+*/
+typedef struct TagCheckTimeStamp
+{
+	bool isValid; //是否超时
+	uint32_t updateTime; //更新时间
+}CheckTimeStamp;
 /**
 * 开关属性
 *update:
@@ -62,8 +70,7 @@ typedef struct TagSwitchProperty
 	
 	struct TagStationTopology* parent;
 
-	bool isValid; //是否超时
-	uint32_t updateTime; //更新时间
+	CheckTimeStamp timeStamp;
 
 }SwitchProperty;
 
@@ -171,8 +178,9 @@ typedef struct TagConnectPath
 {
 	uint32_t id; //id
 	uint32_t remainderCapacity; //剩余容量
-	uint8_t  hopsNumber; //到联络开关的跳数
+	uint8_t  hopsNumber; //到联络开关的跳数	
 	bool isUpdated; //是否更新
+	CheckTimeStamp timeStamp;
 }ConnectPath;
 
 
@@ -206,10 +214,12 @@ typedef struct TagStationTopology
     uint32_t id;  //ID 区分不同站点拓扑
 
     ConnectSwitch connect;//联络开关维护判别所需信息
-
+	
     
     ListDouble connectPath; //联络开关路径上判别,有成员则是，否则不是 ConnectPath
-	bool isConnectPathUpdatedComplted; //更新完毕
+	bool isConnectPathUpdatedComplted; //更新完毕,用于转供电
+	bool isValidConnectPath;//信息是否全部有效
+
 
     AreaID areaID;// 区域ID合集
 

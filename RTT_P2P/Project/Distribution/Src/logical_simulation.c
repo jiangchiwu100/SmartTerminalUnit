@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_simulation.c
   * @brief:     仿真处理
@@ -18,6 +18,7 @@
 #include "parse_implement.h" 
 #include "extern_interface.h"
 #include "distribution_config.h"
+#include "miscellaneous.h"
 
 #define DELAY_MS(ms)  rt_thread_delay((ms));
 
@@ -472,6 +473,13 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 	{
 		station->faultState = FAULT_INCOME_LOSS;
 		rt_kprintf("%X: set power income loss fault.\n", station->id);
+		break;
+	}
+	case  CONTROL_RESET:
+	{
+		rt_kprintf("%X: reset。。。。.\n", station->id);
+		rt_thread_delay(600);
+		SystemReset();
 		break;
 	}
     default:

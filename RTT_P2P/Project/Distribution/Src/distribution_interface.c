@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_interface.c
   * @brief:     分布式接口函数
@@ -87,6 +87,13 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
     switch (code)
 	{
 	case LOOP_STATUS:
+    {
+        result = MakeSingleLoopStatusMessage(switchProperty->id, switchProperty->fault.state,
+            switchProperty->state,
+            switchProperty->operateType, switchProperty->overTimeType,
+            &packet);
+        break;
+    }
     case STATUS_MESSAGE:
     {
         result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,

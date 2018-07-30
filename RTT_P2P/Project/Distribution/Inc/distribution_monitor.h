@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-ErrorCode CheckGlobalSwitchMessageValid(StationPoint* station);
+ErrorCode CheckMessageValid(StationPoint* station);
 
 #ifdef	__cplusplus
 }

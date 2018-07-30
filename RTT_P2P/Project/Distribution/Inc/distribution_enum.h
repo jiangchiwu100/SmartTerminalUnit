@@ -146,6 +146,7 @@ typedef enum TagSwitchControlOperate
 	CONTROL_CANCER_REJECT_ACTION = 6,
 	CONTROL_CANCER_OVERCURRENT = 7, //设置过流
 	CONTROL_POWER_INCOME_LOSS = 8, //电源进线失压
+	CONTROL_RESET = 9, //装置复位
 }SwitchControlOperate;
 
 

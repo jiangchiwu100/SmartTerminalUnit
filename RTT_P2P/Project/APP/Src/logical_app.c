@@ -148,7 +148,7 @@ static void connected_thread_entry(void* parameter)
 				}
 				//周期性发送状态信息
 				StationSendStatusMessage(station);
-				CheckGlobalSwitchMessageValid(station);
+				CheckMessageValid(station);
 			}
 			else
 			{

@@ -331,7 +331,7 @@ void StationExecuteFunctioncode(StationPoint* point)
 			error = Transfer_ParseDeal(pRtu->pValidData, pRtu->datalen, station);
 			break;
 		}
-       
+		
         default:
         {            
             PrintIDTipsTick(point->id, "Unknown Funcode.");

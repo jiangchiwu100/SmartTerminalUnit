@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_connect.c
 * @brief:     
@@ -45,20 +45,20 @@ void StationCalConnectPathAndJudge(StationTopology* station)
     if (globalList->size != station->areaID.count)
     {
         //销毁链表
-        Listdestroy(&(station->globalSwitchList));
+        Listdestroy(globalList);
 		//重新初始化
-		ListInit(&(station->globalSwitchList), NULL);
+		ListInit(globalList, NULL);
 
 		result = GetSwitchList(&(station->globalTopologyList), globalList);
 		if (result)
 		{
-			rt_kprintf("GetSwitchList Error: %d\n", result);
+			perror("GetSwitchList Error: %d\n", result);
 			LogAddException(result, station->id);
 			return;
 		}
 		if (globalList->size != station->areaID.count)
 		{
-			rt_kprintf("globalList->size != station->connect.count. %d\n", globalList->size);
+			perror("globalList->size != station->connect.count. %d\n", globalList->size);
 			LogAddException(ERROR_OVER_LIMIT, station->id);
 			return;
 		}
@@ -319,6 +319,7 @@ ErrorCode CheckAllTopologyCompleted(StationPoint* point, bool* result)
 * @param  :GetNeighboorHandle* handle
 * @return:
 * @update: [2018-07-05][张宇飞][]
+*[2018-07-30][张宇飞][发送为联络信息也改为周期性发布]
 */
 ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
 {
@@ -383,7 +384,9 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
         state = CheckIsMeetConnectCondition(topology);
         if (state)
         {
-            return ERROR_OK_NULL;
+			//周期性发送联络信息
+			error = SendConnectPathCmd(topology->connect.path, SET_PATH_CONNECT, &(point->transferNode));
+            return error;
         }   
         else //说明是由联络开关转换到非联络开关
         {
@@ -471,32 +474,47 @@ ErrorCode SearchToPowerPathAPP(StationPoint* point)
 * @update: [2018-07-06][张宇飞][]
 *[2018-07-12][张宇飞][更新联络路径信息，改uint32为ConnectPath结构体]
 *[2018-07-16][张宇飞][添加跳数信息hops]
+*[2018-07-26][张宇飞][添加时需判断是否重复,添加时标判断]
+*[2018-07-30][张宇飞][pid：修改pid未赋值错误!]
 */
 ErrorCode SetConnectPath(uint32_t id,  PathConnected isSet, uint8_t hops, StationTopology* toplogy)
 {
     CHECK_POINT_RETURN_LOG(toplogy, NULL, ERROR_NULL_PTR, 0);
     ListDouble* list = &(toplogy->connectPath);
-    
+	ConnectPath* pid;
+	uint32_t getID;
     FOR_EARCH_LIST_START(list);
-    uint32_t getID = ((ConnectPath*)list_data(m_foreach))->id;
-    if (getID == id)
-    {
-        if (isSet == CANCER_PATH_CONNECT)
-        {
-			ConnectPath* pid;
-            ListRemoveNext(list, m_foreach->prev, (void**)&pid);
-            SafeFree(pid);
-            return ERROR_OK_NULL;
-        }       
-    }
+	{
+        pid = (ConnectPath*)list_data(m_foreach);
+		getID = pid->id;
+		if (getID == id)
+		{
+			if (isSet == CANCER_PATH_CONNECT)
+			{
+
+				ListRemoveNext(list, m_foreach->prev, (void**)&pid);
+				SafeFree(pid);
+				return ERROR_OK_NULL;
+			}
+			else if (isSet == SET_PATH_CONNECT) //已经存在则不进行重复添加
+			{
+				pid->hopsNumber = hops; //更新跳数
+				pid->timeStamp.updateTime = GetTime();
+				pid->timeStamp.isValid = true;
+				return ERROR_OK_NULL;
+			}
+		}
+	}
     FOR_EARCH_LIST_END();
-    
+    //新添加
     if (isSet == SET_PATH_CONNECT)
     {
-		ConnectPath* pid = (ConnectPath*)CALLOC(1, sizeof(ConnectPath));
+		pid = (ConnectPath*)CALLOC(1, sizeof(ConnectPath));
         CHECK_POINT_RETURN_LOG(pid, NULL, ERROR_MALLOC, toplogy->id);
 		pid->hopsNumber = hops;
         pid->id = id;
+		pid->timeStamp.updateTime = GetTime();
+		pid->timeStamp.isValid = true;
         ListInsertNext(list, NULL, pid);
     }
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      parse_action.h
   * @brief:     解析执行
@@ -30,6 +30,10 @@ extern void  StationReciveInsulateMessage(uint8_t data[], uint8_t len, StationTo
 extern uint8_t MakeSingleStatusMessage(uint32_t id, FaultState state, SwitchState position,
     OperateType operateType, OverTimeType overTime,
     PointUint8* packet);
+extern uint8_t MakeSingleLoopStatusMessage(uint32_t id, FaultState state, SwitchState position,
+    OperateType operateType, OverTimeType overTime,
+    PointUint8* packet);
+
 extern ErrorCode MakeSimpleMessage(FuncionCode,  uint32_t id, uint8_t data, PointUint8* packet);
 extern ErrorCode MakeCapacityMessage(TransferCode code, uint32_t id, uint32_t data, PointUint8* packet);
 extern ErrorCode MakeRemovalMessage(const SwitchProperty* const switchProperty, ResultType type, PointUint8* packet);

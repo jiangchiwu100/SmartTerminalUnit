@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      parse_action.c
   * @brief:     用于解析与反解析
@@ -395,8 +395,8 @@ void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* poin
             switchProperty->operateType = (OperateType)data[index++];
             switchProperty->overTimeType = (OverTimeType)data[index++];
             distribution = switchProperty->distributionArea;
-			switchProperty->updateTime = GetTime();
-			switchProperty->isValid = true;
+			switchProperty->timeStamp.updateTime = GetTime();
+			switchProperty->timeStamp.isValid = true;
             if (distribution != NULL)
             {                
                    //distribution->UpdatePowerArea(switchProperty);                                
@@ -470,8 +470,8 @@ void  StationUpdateLoopStatusMessage(uint8_t data[], uint8_t len, StationPoint* 
 			switchProperty->state = (SwitchState)data[index++];
 			switchProperty->operateType = (OperateType)data[index++];
 			switchProperty->overTimeType = (OverTimeType)data[index++];
-			switchProperty->updateTime = GetTime();
-			switchProperty->isValid = true;
+			switchProperty->timeStamp.updateTime = GetTime();
+			switchProperty->timeStamp.isValid = true;
 
 			
 		}
@@ -687,6 +687,35 @@ uint8_t MakeSingleStatusMessage(uint32_t id, FaultState state, SwitchState posit
     }
     uint16_t index = FRAME_FUNCODE_INDEX;
     packet->pData[index++] = STATUS_MESSAGE;
+    packet->pData[index++] = 1;
+    packet->pData[index++] = GET_N_BYTE(id, 0);
+    packet->pData[index++] = GET_N_BYTE(id, 1);
+    packet->pData[index++] = GET_N_BYTE(id, 2);
+    packet->pData[index++] = GET_N_BYTE(id, 3);
+    packet->pData[index++] = (uint8_t)state;
+    packet->pData[index++] = (uint8_t)position;
+    packet->pData[index++] = (uint8_t)operateType;
+    packet->pData[index++] = (uint8_t)overTime;
+    return 0;
+}
+/**
+* @brief : 生成单个状态信息,头空出9字节，尾巴空出3字节，以备发送。 内部有动态内存分配
+* @param  ：uint32_t id
+* @return: 0-正常 非0错误
+* @update: [2018-06-30[张宇飞][]
+*/
+uint8_t MakeSingleLoopStatusMessage(uint32_t id, FaultState state, SwitchState position,
+    OperateType operateType, OverTimeType overTime,
+    PointUint8* packet)
+{
+    packet->len = FRAME_MIN_LEN + 9;
+    packet->pData = (uint8_t* )MALLOC(sizeof(uint8_t) * packet->len);
+    if (NULL == packet->pData)
+    {
+        return ERROR_MALLOC;
+    }
+    uint16_t index = FRAME_FUNCODE_INDEX;
+    packet->pData[index++] = LOOP_STATUS;
     packet->pData[index++] = 1;
     packet->pData[index++] = GET_N_BYTE(id, 0);
     packet->pData[index++] = GET_N_BYTE(id, 1);

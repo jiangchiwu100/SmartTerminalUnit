@@ -1,3 +1,7 @@
+2018/7/30
+1.添加复位操作
+2.修改LOOP_STATUS错误
+
 2018/7/28
 1.增加状态发送信息，LOOP_STATUS
 2.修改广播地址为BRAODCAST_ADDRESS

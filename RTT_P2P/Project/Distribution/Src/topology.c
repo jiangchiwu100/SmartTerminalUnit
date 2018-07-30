@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      topology.c
   * @brief:     文件中多次使用动态内存分配与链表，对于重新配置情况，需要注意内存释放问题，防止内存泄露。
@@ -300,12 +300,12 @@ ErrorCode GetSwitchList(const  ListDouble* listTopology, ListDouble* listSwitch)
     
     if (listTopology == NULL)
     {
-        rt_kprintf("element is NULL!\n");
+        perror("element is NULL!\n");
         return ERROR_NULL_PTR;
     }
     if (listSwitch == NULL)
     {
-        rt_kprintf("listSwitch is NULL!\n");
+        perror("listSwitch is NULL!\n");
         return ERROR_NULL_PTR;
     }       
 
