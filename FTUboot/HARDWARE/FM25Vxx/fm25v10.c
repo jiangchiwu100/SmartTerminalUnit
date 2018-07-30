@@ -87,7 +87,7 @@ uint8_t FramReadByte(uint32_t address)
  *
  *
  */
-uint8_t FramWriteInduce(uint32_t address, uint32_t number, uint8_t* p)
+uint8_t FramWriteBatch(uint32_t address, uint32_t number, uint8_t* p)
 {
 	uint8_t temH,temM,temL;
 	uint32_t i;
@@ -119,7 +119,7 @@ uint8_t FramWriteInduce(uint32_t address, uint32_t number, uint8_t* p)
  *
  *
  */
-uint8_t FramReadInduce(uint32_t address, uint32_t number, uint8_t* p)
+uint8_t FramReadBatch(uint32_t address, uint32_t number, uint8_t* p)
 {
 	uint8_t temH,temM,temL;
 	uint32_t i;

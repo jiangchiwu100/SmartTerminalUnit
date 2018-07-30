@@ -27,6 +27,21 @@ void LED_Init(void)
 	LedcountFlag = 1;
 }
 /**
+  * @Description:取反LED
+  * @param:  None
+  * @return: None
+  */
+void ToggleLed(void)
+{
+    if(HAL_GPIO_ReadPin(PORT_LED0, PIN_LED0)){
+				HAL_GPIO_WritePin(PORT_LED0,PIN_LED0,GPIO_PIN_RESET);	//PB0置0
+			}
+			else{
+				HAL_GPIO_WritePin(PORT_LED0,PIN_LED0,GPIO_PIN_SET);	//PB0置0 
+			}
+}
+
+/**
   * @Description: led运行灯翻转
   * @param:  None
   * @return: None

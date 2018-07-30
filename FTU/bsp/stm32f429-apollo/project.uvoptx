@@ -400,7 +400,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>@?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -439,6 +439,11 @@
           <count>0</count>
           <WinNumber>1</WinNumber>
           <ItemText>client_addr</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>listTopology</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -3979,6 +3984,18 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+      <PathWithFileName>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</PathWithFileName>
+      <FilenameWithoutPath>distribution_monitor.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>20</GroupNumber>
+      <FileNumber>276</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</PathWithFileName>
       <FilenameWithoutPath>fault_deal.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -3986,7 +4003,7 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>276</FileNumber>
+      <FileNumber>277</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -3998,7 +4015,7 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>277</FileNumber>
+      <FileNumber>278</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4010,7 +4027,7 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>278</FileNumber>
+      <FileNumber>279</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4022,7 +4039,7 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>279</FileNumber>
+      <FileNumber>280</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4034,7 +4051,7 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>280</FileNumber>
+      <FileNumber>281</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -4046,25 +4063,13 @@
     </File>
     <File>
       <GroupNumber>20</GroupNumber>
-      <FileNumber>281</FileNumber>
+      <FileNumber>282</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</PathWithFileName>
       <FilenameWithoutPath>topology.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>20</GroupNumber>
-      <FileNumber>282</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</PathWithFileName>
-      <FilenameWithoutPath>distribution_monitor.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -4408,7 +4413,7 @@
 
   <Group>
     <GroupName>Distribution/APP</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

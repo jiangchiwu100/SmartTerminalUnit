@@ -63,6 +63,7 @@ uint8_t EreaseProgram(void)
 			DebugPrintf("扇区%d擦除失败\r\n",FlashEraseInit.Sector);
 			return 1;
 		}
+        ToggleLed();//LED指示
   }
 	return 0;
 }
@@ -96,9 +97,15 @@ uint8_t WriteProgram(uint32_t addr,const uint8_t *pBuff,uint32_t sizeByte)
 	for(i = 0; i < tempSize; i += 4){
 		value = pBuff[i]+(pBuff[i+1]<<8)+(pBuff[i+2]<<16)+(pBuff[i+3]<<24);
 		status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD,addr + i,(uint64_t)value);
+        
 		if(status != HAL_OK){
 			return 1;
 		}
+        if (tempSize % 10 == 0)
+        {
+             ToggleLed();//LED指示
+        }
+       
 	}
 	tempSize = sizeByte - tempSize;
 	switch(tempSize){

@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F429xx,USE_FULL_LL_DRIVER,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\sys;..\HARDWARE\LED;..\HARDWARE\SDRAM;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\FM25Vxx;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE\IAP;..\Module\tftp;..\Module\W5500\Inc</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\sys;..\HARDWARE\LED;..\HARDWARE\SDRAM;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\FM25Vxx;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE\IAP;..\Module\tftp;..\Module\W5500\Inc;..\Module\Database;..\..\RTT_P2P\Project\Protocol\nanopb;..\..\RTT_P2P\Project\DistributionComponents</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -663,6 +663,36 @@
               <FileName>tftp_demo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Module\tftp\tftp_demo.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Database</GroupName>
+          <Files>
+            <File>
+              <FileName>pb_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\RTT_P2P\Project\Protocol\nanopb\pb_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>pb_decode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\RTT_P2P\Project\Protocol\nanopb\pb_decode.c</FilePath>
+            </File>
+            <File>
+              <FileName>pb_encode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\RTT_P2P\Project\Protocol\nanopb\pb_encode.c</FilePath>
+            </File>
+            <File>
+              <FileName>database.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\database\database.c</FilePath>
+            </File>
+            <File>
+              <FileName>station.pb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\RTT_P2P\Project\DistributionComponents\station.pb.c</FilePath>
             </File>
           </Files>
         </Group>

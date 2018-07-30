@@ -19,8 +19,8 @@
 void FRAM_Init(void);
 void FramWriteByte(uint32_t address, uint8_t da);
 uint8_t FramReadByte(uint32_t address);
-uint8_t FramWriteInduce(uint32_t address, uint32_t number, uint8_t* p);
-uint8_t FramReadInduce(uint32_t address, uint32_t number, uint8_t* p);
+uint8_t FramWriteBatch(uint32_t address, uint32_t number, uint8_t* p);
+uint8_t FramReadBatch(uint32_t address, uint32_t number, uint8_t* p);
 
 
 #endif

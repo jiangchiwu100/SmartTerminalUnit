@@ -13,9 +13,10 @@
 #include "drv_fm25vxx.h"
 #include "fm25v10.h"
 
+#include "database.h"
 
 #include "systemconfig.h"
-
+#include "stdbool.h"
 
 #define rt_kprintf DebugPrintf
 #define rt_memcpy memcpy
@@ -57,7 +58,11 @@ int tftp_demo(void)
 	
      w5500_spi_init();
      Reset_W5500();
-    set_default();
+    bool state = StationMessageRead();
+    if (!state)
+    {
+        set_default();
+    }
     set_network_check();
     
     
@@ -173,3 +178,20 @@ static void set_network_check(void)
         
     } while(1);
 }
+
+
+
+
+/**
+* @brief :UDP?????
+* @param  void
+* @return: 0--??
+* @update: [2018-07-21][???][??]
+*/
+void udp_debug_printf(const char *fmt, ...)
+{
+
+}
+
+
+

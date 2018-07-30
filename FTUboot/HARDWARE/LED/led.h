@@ -13,7 +13,7 @@
 void LED_Init(void);
 void LedRun(void);
 void ledUseKill(void);
-
+void ToggleLed(void);
 #endif
 
 /* END */

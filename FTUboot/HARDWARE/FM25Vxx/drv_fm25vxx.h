@@ -60,8 +60,8 @@ enum ProgramState{
 #include "fm25v10.h"
 
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
-#define FM25VxxReadData(addr, flag, pBuf,  len) FramReadInduce(addr, len, pBuf)
-#define FM25VxxWriteData(addr, flag, pBuf,  len) FramWriteInduce(addr, len, pBuf)
+#define FM25VxxReadData(addr, flag, pBuf,  len) FramReadBatch(addr, len, pBuf)
+#define FM25VxxWriteData(addr, flag, pBuf,  len) FramWriteBatch(addr, len, pBuf)
 //void FM25VxxInit(void);
 //uint8_t FM25VxxReadData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
 //uint8_t FM25VxxWriteData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);

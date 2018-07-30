@@ -1845,6 +1845,11 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
             </File>
             <File>
+              <FileName>distribution_monitor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
+            </File>
+            <File>
               <FileName>fault_deal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
@@ -1878,11 +1883,6 @@
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
-            </File>
-            <File>
-              <FileName>distribution_monitor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3917,6 +3917,11 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
             </File>
             <File>
+              <FileName>distribution_monitor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
+            </File>
+            <File>
               <FileName>fault_deal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
@@ -3950,11 +3955,6 @@
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
-            </File>
-            <File>
-              <FileName>distribution_monitor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
             </File>
           </Files>
         </Group>
