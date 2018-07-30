@@ -71,11 +71,7 @@ void ExecuteFunctioncode(FrameRtu* pRtu, SimulationStationServer* server)
 			ManagerAddStation(pRtu->pValidData, pRtu->datalen, &g_StationManger);
 			break;
 		}
-        case SWITCH_OPERATE:
-        {
-            StationOperateSwitch(pRtu->pValidData, pRtu->datalen, server);
-            break;
-        }
+       
         case GET_MESSAGE:
         {
             GainMangerNeighbourMembers(&g_StationManger);
@@ -331,7 +327,11 @@ void StationExecuteFunctioncode(StationPoint* point)
 			error = Transfer_ParseDeal(pRtu->pValidData, pRtu->datalen, station);
 			break;
 		}
-		
+		case SWITCH_OPERATE:
+		{
+			StationOperateSwitch(pRtu->pValidData, pRtu->datalen, &(g_StationManger.simulationServer));
+			break;
+		}
         default:
         {            
             PrintIDTipsTick(point->id, "Unknown Funcode.");

@@ -87,6 +87,7 @@ extern ErrorCode SetConnectPath(uint32_t id, PathConnected isSet, uint8_t hops, 
 extern ErrorCode ConnectPath_ResetUpdateFlag(ListDouble* list);
 extern ErrorCode ConnectPath_CheckIsUpdateComplete(ListDouble* list, bool* result);
 extern ErrorCode ConnectPath_MeetCondition(ListDouble* list, ConnectPath** pcp);
+extern bool CheckIsLockConnectJudge(StationTopology* topology);
 #ifdef	__cplusplus
 }
 #endif

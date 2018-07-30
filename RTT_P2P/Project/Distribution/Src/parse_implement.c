@@ -349,6 +349,7 @@ void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger)
 *          [2018-06-26][张宇飞][设拓扑结构只含有一个开关，开关数与列表数不相等，则更新开关列表]
 *		   [2018-07-09][张宇飞][收集完成与否判别，将判别放到标志内还是外部，如何分工]
 *		    [2018-07-28][张宇飞][添加更新标识]
+*[2018-07-30][张宇飞][添加联络开关判别闭锁]
 */
 void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* point)
 {
@@ -411,7 +412,13 @@ void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* poin
 						   distribution->isAlreayExitedFault = distribution->IsAlreayExitedFault(distribution);
 					   }					   
 				   }				   
-            }                       
+            }  
+			//联络开关
+			if (point->topology.connect.isConnect)
+			{
+				CheckIsLockConnectJudge(&(point->topology));
+			}
+
         }
     }
     else
@@ -942,7 +949,7 @@ void StationSendStatusMessage(StationPoint* station)
 		switchNode->isChanged = false;
 		DatagramTransferNode* pTransferNode = &(station->transferNode);
 		TransmitMessageExtern(switchNode, pTransferNode, LOOP_STATUS, BROADCAST_ADDRESS);
-		rt_kprintf("Loop Send Status!\n");
+		//rt_kprintf("Loop Send Status!\n");
 	}
 }
 /**

@@ -161,6 +161,7 @@ typedef struct TagAreaID
 }AreaID;
 /**
 *  联络开关信息
+*@update[2018-7-30][张宇飞][增加是否闭锁]
 */
 typedef struct TagConnectSwitch
 {
@@ -169,6 +170,7 @@ typedef struct TagConnectSwitch
     ListDouble path[2]; //路径数组  SwitchProperty 电源开关路径 ，存储的为开关属性节点
     uint8_t count;// 路径数量
     bool isConnect; //是否为联络开关
+	bool isLock;//是否闭锁判断
 }ConnectSwitch;
 
 /**

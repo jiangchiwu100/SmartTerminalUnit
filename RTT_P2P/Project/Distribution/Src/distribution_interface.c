@@ -685,6 +685,9 @@ static bool FaultRemovalReset(FaultDealHandle* handle)
 	switchProperty->removalType = RESULT_TYPE_NULL;
 	switchProperty->operateType = OPERATE_NULL;
 	switchProperty->overTimeType = OVER_TIME_NULL;
+
+	//联络开关复归 解锁
+	switchProperty->parent->connect.isLock = false;
     return true;
 }
 /**

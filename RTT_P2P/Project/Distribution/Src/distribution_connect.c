@@ -20,7 +20,7 @@ static ErrorCode SendConnectPathCmd(ListDouble* path, PathConnected iseset, Data
 static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList);
 static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList);
 static ErrorCode ExtractSwitchPath(StationTopology* station, ListDouble* bfsList);
-static bool CheckIsLockConnectJudge(StationTopology* topology);
+
 /**
 * @brief :  判别是否为联络开关，并计算其路径 
 * @param  ：StationTopology* station 站点
@@ -105,7 +105,7 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 
     //至少有两条路径到开关，对于非合环路径只有两个，TODO:(对于合环或者分布式电源可能有大于3个，且可能重复)
     //存在两条路径即认为是联络开关
-    uint8_t size = list_size(bfsList);
+    //uint8_t size = list_size(bfsList);
 
 	Listdestroy(station->connect.path);
 	ListInit(station->connect.path, NULL);
@@ -573,34 +573,46 @@ static bool CheckIsMeetConnectCondition(StationTopology* topology)
 * @param :StationTopology* topology
 * @return:
 * @update: [2018-07-12][张宇飞][]
+*[2018-07-30][张宇飞][增加是否闭锁条件isLock,闭锁的解锁条件是重置]
 */
-static bool CheckIsLockConnectJudge(StationTopology* topology)
+bool CheckIsLockConnectJudge(StationTopology* topology)
 {
+	if (topology == NULL)
+	{
+		return false;
+	}
 	bool state = false;
 	SwitchProperty* node;
 	ListDouble* list;
-		
-	for (uint8_t i = 0; i < topology->connect.count; i++)
-	{
-		list = topology->connect.path + i;
-		
-		FOR_EARCH_LIST_START(list);
-		node = GET_SWITCH_ELEMENT(m_foreach);
-		if (node->fault.state == FAULT_YES)
-		{
-			state = true;
-			break;
-		}
-		if (node->insulateType == RESULT_FAILURE)
-		{
-			state = true;
-			break;
-		}
-		//TODO：没有开关处于故障处理过程中
-		FOR_EARCH_LIST_END();
+	ConnectSwitch* pConnect = &(topology->connect);
 
-	}
-	return state;
+	if (!pConnect->isLock)
+	{
+		//闭锁条件
+		for (uint8_t i = 0; i < pConnect->count; i++)
+		{
+			list = pConnect->path + i;
+
+			FOR_EARCH_LIST_START(list);
+			node = GET_SWITCH_ELEMENT(m_foreach);
+			if (node->fault.state == FAULT_YES)
+			{
+				state = true;
+				break;
+			}
+			if (node->insulateType == RESULT_FAILURE)
+			{
+				state = true;
+				break;
+			}
+			//TODO：没有开关处于故障处理过程中
+			FOR_EARCH_LIST_END();
+
+		}
+		pConnect->isLock = state;
+	}	
+    
+	return pConnect->isLock;
 }
 
 /**

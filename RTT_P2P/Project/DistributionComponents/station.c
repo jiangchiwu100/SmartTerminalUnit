@@ -650,9 +650,9 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 	for (uint8_t i = 0; i < switchNum; i++)
 	{		
 		switchCollect[i].id =  pNode->id;
-		switchCollect[i].type = pNode->type;
+		switchCollect[i].type = (SwitchType)pNode->type;
 		CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
-		switchCollect[i].state = pNode->state;
+		switchCollect[i].state = (SwitchState)pNode->state;
 		
 		switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
 		switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
@@ -682,10 +682,11 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 * @return: void
 * @update: [2018-07-25][张宇飞][]
 */
+#ifndef MSVC  
 void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger)
 {
-	uint32_t id;
-	StationPoint* station;
+//	uint32_t id;
+//	StationPoint* station;
 	TopologyMessage*  topologyMessage;
 
 
@@ -728,7 +729,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationMang
 		perror("FindMemberById UnFind\n");
 	}
 }
-
+#endif
 /**
 * @brief :解析NanoPb Type
 * @param ：

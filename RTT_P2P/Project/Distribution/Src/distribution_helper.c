@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_helper.c
   * @brief:     相关测试用例
@@ -208,9 +208,9 @@ void PrintBFSHelperSimple(const BFSHelper* helper)
 
 void PrintMemoryUsed(void)
 {
-    uint32_t total;
-    uint32_t used;
-    uint32_t maxused;
+    rt_uint32_t total;
+    rt_uint32_t used;
+    rt_uint32_t maxused;
     rt_memory_info(&total, &used, &maxused);
     rt_kprintf("memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
 }
