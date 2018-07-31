@@ -34,9 +34,10 @@ static uint8_t DefautIp[4];
 static uint16_t LocalPort; 
 static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
+static struct rt_mutex udp_mutex;
 
-
-
+ #define ON_LOCK()   { result = rt_mutex_take(&udp_mutex, RT_WAITING_FOREVER);}
+ #define OFF_LOCK()  {if (result  == RT_EOK) {rt_mutex_release(&udp_mutex);}};
 
 
 
@@ -57,6 +58,14 @@ static inline void W5500Init(void)
     LocalPort = 5555;
     RemotePort = 5555;
     LocalMaintancePort = 5500;
+    rt_err_t err = rt_mutex_init (&udp_mutex, "udp_mutex", RT_IPC_FLAG_PRIO );
+    if (err != RT_EOK)
+    {
+        while(1);//TODO:此种有问题
+    }
+    //先产生资源
+   // rt_mutex_release(udp_mutex);
+    
 }
 
 
@@ -146,15 +155,18 @@ void w5500_config(void)
   */
 void EmmedNetInit(void)
 {
+    rt_err_t result;
     rt_hw_w5500_init();
     w5500_config();
     W5500Init();
      //TODO:加入初始化成功标识
+    ON_LOCK();
     if ((w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) == SocketMaintanceNum)
     {
         g_StationManger.isMaintanceRun = true;
         rt_kprintf("W5500 start init Sucess!\n");
     } 
+    OFF_LOCK();
    
 }    
 
@@ -171,7 +183,7 @@ static void udpserver_thread_entry(void *param)
     uint8_t srcip[4];
     uint8_t cn = 0;
     uint16_t destport;	
-   
+    rt_err_t result;
    
 
 	
@@ -180,24 +192,27 @@ static void udpserver_thread_entry(void *param)
 	uint8_t get_result =0;
 	
     rt_kprintf("udpserver start!\n");
-    g_StationManger.isMaintanceRun = false;
+   
     for (;;)
     {   	 
        
        
+        ON_LOCK()
 		get_result = getSn_SR(SocketNum);
+        OFF_LOCK();
 		switch (get_result)
 		{
 			case SOCK_UDP:			
                 do
                 {
+                    ON_LOCK();
                     if(getSn_IR(SocketNum) & Sn_IR_RECV)
 					{
 						setSn_IR(SocketNum, Sn_IR_RECV);// Sn_IR的RECV位置1
 					}
-                    
+                   
                     length = getSn_RX_RSR(SocketNum);
-                    
+                    OFF_LOCK();
                                         
                     if (length <= 0)
                     {
@@ -205,7 +220,9 @@ static void udpserver_thread_entry(void *param)
                     } 
                     else
                     {
+                        ON_LOCK();
                         ret = w5500_recvfrom(SocketNum, UdpReciveBuffer, length, srcip, &destport);
+                        OFF_LOCK();
                         if(ret > 0)
                         {                            
                            StationPointFrameDeal(UdpReciveBuffer, ret);
@@ -216,10 +233,12 @@ static void udpserver_thread_entry(void *param)
 								
                 break;
 			case SOCK_CLOSED:	
+                ON_LOCK();
 				if ((ret = w5500_socket(SocketNum, Sn_MR_UDP, LocalPort, 0)) != SocketNum)
 				{
 					rt_kprintf("udpserver close!\n");
 				} 
+                OFF_LOCK();
 				//rt_thread_delay(1);
 				break;
 
@@ -251,8 +270,11 @@ static void MaintaceServer(void)
     uint8_t srcip[4];
     uint16_t destport;	
     int32_t ret;
-    uint16_t length = 0;    
+    uint16_t length = 0; 
+    rt_err_t result;
+    ON_LOCK();    
     rt_err_t  get_result = getSn_SR(SocketMaintanceNum);
+    OFF_LOCK();
     g_StationManger.isMaintanceRun = true;
     switch (get_result)
     {
@@ -260,19 +282,22 @@ static void MaintaceServer(void)
             do
             {
                 g_StationManger.isMaintanceRun = true;
+                 ON_LOCK();   
                 if(getSn_IR(SocketMaintanceNum) & Sn_IR_RECV)
                 {
                     setSn_IR(SocketMaintanceNum, Sn_IR_RECV);// Sn_IR的RECV位置1
                 }
-                length = getSn_RX_RSR(SocketMaintanceNum);		
+                length = getSn_RX_RSR(SocketMaintanceNum);	
+                 OFF_LOCK();
                 if (length <= 0)
                 {
                     break;
                 } 
                 else
                 {
+                    ON_LOCK();   
                     ret = w5500_recvfrom(SocketMaintanceNum, UdpReciveBuffer, length, srcip, &destport);
-                    
+                    OFF_LOCK();
                     if(ret > 0 )
                     {
                         MantaiceFrameDeal(UdpReciveBuffer, ret);                           
@@ -284,11 +309,13 @@ static void MaintaceServer(void)
                             
             break;
         case SOCK_CLOSED:	
+            ON_LOCK();   
             if ((ret = w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) != SocketNum)
             {
                 g_StationManger.isMaintanceRun = false;
                 rt_kprintf("udpserver close!\n");
             } 
+            OFF_LOCK();
             //rt_thread_delay(1);
             break;
 
@@ -308,12 +335,15 @@ static void MaintaceServer(void)
 */
 ErrorCode ExternSend(PointUint8* pPacket)
 {
+    rt_err_t result;
     uint8_t destId[4] = {0};
     destId[0] = 192;
     destId[1] = 168;
     destId[2] = pPacket->pData[FRAME_DEST_INDEX + 1];
     destId[3] = pPacket->pData[FRAME_DEST_INDEX];
+    ON_LOCK();   
     int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
+    OFF_LOCK();
     if(ret == pPacket->len)
     {
         return ERROR_OK_NULL;
@@ -332,6 +362,7 @@ ErrorCode ExternSend(PointUint8* pPacket)
 void Monitor(void)
 {    
     extern DatagramTransferNode g_VirtualNode;
+    rt_err_t result;
 	RingQueue* ring = &(g_VirtualNode.reciveRing);
 	DatagramFrame* frame;
     DefautIp[0] = 192;
@@ -344,7 +375,9 @@ void Monitor(void)
 		bool state = ring->Read(ring, (void**)&frame);
 		if (state)
 		{
+            ON_LOCK();   
 			w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);	
+            OFF_LOCK();
 			Datagram_Destory(frame);
 		}
 		else
@@ -367,6 +400,8 @@ void udp_debug_printf(const char *fmt, ...)
     {
         return;
     }
+    rt_err_t result;
+    
     va_list args;
     rt_size_t length;
     static char rt_log_buf[RT_CONSOLEBUF_SIZE];
@@ -376,9 +411,11 @@ void udp_debug_printf(const char *fmt, ...)
     length = rt_vsnprintf(rt_log_buf, sizeof(rt_log_buf) - 1, fmt, args);
     if (length > RT_CONSOLEBUF_SIZE - 1)
         length = RT_CONSOLEBUF_SIZE - 1;
-
-    w5500_sendto(SocketMaintanceNum, (uint8_t*)rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
     
+    ON_LOCK();  
+    w5500_sendto(SocketMaintanceNum, (uint8_t*)rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
+    OFF_LOCK();
+   
     
     va_end(args);
 }

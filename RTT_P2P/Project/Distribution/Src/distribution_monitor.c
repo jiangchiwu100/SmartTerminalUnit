@@ -136,6 +136,12 @@ ErrorCode CheckMessageValid(StationPoint* station)
 		return error;
 	}
     
+	bool beforeValidAll = pTtopology->isValidAll;
+	bool beforeSystemOnlineValid = pTtopology->systemOnlineStamp.isValid;
+	bool beforeOnlineValid = pTtopology->localSwitch->onlineStamp.isValid;
+	
+
+
     error = CheckIsOnlineStatus(station);
     
     if (error)
@@ -143,6 +149,19 @@ ErrorCode CheckMessageValid(StationPoint* station)
 		perror("CheckIsOnlineStatus ERORR:0x%x\n", error);
 		return error;
 	}
+	if (beforeValidAll != pTtopology->isValidAll)
+	{
+		rt_kprintf("Switch Valid All : 0x%x\n", pTtopology->isValidAll);
+	}
+	if (beforeSystemOnlineValid != pTtopology->systemOnlineStamp.isValid)
+	{
+		rt_kprintf("SystemOnlineValid : 0x%x\n", pTtopology->systemOnlineStamp.isValid);
+	}
+	if (beforeOnlineValid != pTtopology->localSwitch->onlineStamp.isValid)
+	{
+		rt_kprintf("OnlineStamp Valid  : 0x%x\n", pTtopology->localSwitch->onlineStamp.isValid);
+	}
+
     
 	return ERROR_OK_NULL;
 }

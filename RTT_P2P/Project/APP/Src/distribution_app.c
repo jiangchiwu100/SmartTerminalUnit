@@ -50,17 +50,9 @@ void DistributionAppInit(void)
     EmmedNetInit();
     
     
+    rt_kprintf("\n\n\n DATA:%s, %s, %s, %d\n\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
+   
     UdpServerAppInit();
-   
-   
-    if ( g_StationManger.pWorkPoint)
-    {
-        PrintTopologyMessage(g_StationManger.pWorkPoint->topology.localTopology);
-        g_StationManger.firstRun = true;
-        StartSinglePointNormalThread();
-    }
-   
-	rt_kprintf("\n DATA:%s,%s, %s, %d\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
 	// TestListPrevCase();
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      
 	if (error)
@@ -71,6 +63,13 @@ void DistributionAppInit(void)
 	// RingQueueTest();
 	LogAddException(ERROR_OK_NULL, 0);
 
+    if ( g_StationManger.pWorkPoint)
+    {
+        PrintTopologyMessage(g_StationManger.pWorkPoint->topology.localTopology);
+        g_StationManger.firstRun = true;
+        StartSinglePointNormalThread();
+    }
+    
 #if !SINGLE_POINT
     
     LogicalSimulationAppInit();

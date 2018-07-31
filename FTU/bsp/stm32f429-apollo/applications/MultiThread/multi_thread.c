@@ -239,24 +239,24 @@ static void rt_protect_thread_entry(void *param)
 //            if (g_Parameter[SWITCH_TYPE] == TYPE_BREAKER_COMMON) 
             {
                 /* 断路器主保护逻辑 */ 					
-                BreakerCtrlClock();	  					    
+//                BreakerCtrlClock();	  					    
             }
 //            else
             {
                 /* 负荷开关主保护逻辑 */ 
-                LoadSwitchCtrlClock();  
+//               LoadSwitchCtrlClock();  
             }
             
-            if(g_Parameter[DISTRIBUTE_SWITCH] == SWITCH_ON)
-            {
-                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,ON);
-            }
-            else
-            {
-                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,OFF);            
-            }
+//            if(g_Parameter[DISTRIBUTE_SWITCH] == SWITCH_ON)
+//            {
+//                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,ON);
+//            }
+//            else
+//            {
+//                DBWriteSOE(g_TelesignalAddr.p2p_communication_switch,OFF);            
+//            }
 
-            distributClock();			
+//            distributClock();			
         }
     }  
 }

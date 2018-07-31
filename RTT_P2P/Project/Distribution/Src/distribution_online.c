@@ -40,6 +40,7 @@ ErrorCode CheckIsOnlineStatus(StationPoint* pPoint)
 		(pTtopology->areaID.count == 0))
 	{
 		InValidCheckStamp(pLocalSwitch->onlineStamp);
+		InValidCheckStamp(pTtopology->systemOnlineStamp);		
 		return ERROR_OK_NULL;
 	}
 
@@ -48,6 +49,7 @@ ErrorCode CheckIsOnlineStatus(StationPoint* pPoint)
 	if (!pTtopology->isValidAll)
 	{
 		InValidCheckStamp(pLocalSwitch->onlineStamp);
+		InValidCheckStamp(pTtopology->systemOnlineStamp);
 		return ERROR_OK_NULL;
 	}
 	else
@@ -80,13 +82,11 @@ ErrorCode CheckIsOnlineStatus(StationPoint* pPoint)
 	//说明所有节点均处于在线状态
 	if (cnValid == size)
 	{
-		ValidCheckStamp(pTtopology->systemOnlineStamp);
-		rt_kprintf("Online Status!\n");
+		ValidCheckStamp(pTtopology->systemOnlineStamp);		
 	}
 	else
 	{
-		InValidCheckStamp(pTtopology->systemOnlineStamp);
-		rt_kprintf("Offline Status!\n");
+		InValidCheckStamp(pTtopology->systemOnlineStamp);		
 	}
 	return ERROR_OK_NULL;
 }

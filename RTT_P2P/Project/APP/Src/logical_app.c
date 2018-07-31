@@ -39,6 +39,7 @@ static void distribution_thread_entry(void* parameter)
 * @param  StationManger* manager
 * @return: 0--正常
 * @update: [2018-06-16][张宇飞][创建]
+*[2018-07-31][张宇飞][添加置isCheckPass为false]
 */
 static void DistributionLogicalApp(StationManger* manager)
 {
@@ -50,13 +51,13 @@ static void DistributionLogicalApp(StationManger* manager)
     ErrorCode code;
     if (manager == NULL)
     {
-        rt_kprintf("DistributionLogicalApp ERROR :manager = NULL.\n");
+        perror("DistributionLogicalApp ERROR :manager = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
     StationServer* server = &(manager->stationServer);
     if (server == NULL)
     {
-        rt_kprintf("DistributionLogicalApp ERROR :server = NULL.\n");
+		perror("DistributionLogicalApp ERROR :server = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
     }
     //FaultRemovalInit()
@@ -87,14 +88,14 @@ static void DistributionLogicalApp(StationManger* manager)
 					}
                 }  
 				else
-				{
-					code = code;
+				{		
+					handle->isCheckPass = false;				
 				}
 
             }
             else
             {
-                rt_kprintf("StationPoint* station = NULL.\n");
+                perror("StationPoint* station = NULL.\n");
                 LogAddException(ERROR_NULL_PTR, 0);
                 break;
             }           
