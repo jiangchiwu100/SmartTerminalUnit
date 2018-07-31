@@ -37,6 +37,7 @@ static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology)
 		pTtopology->isValidAll = false;
 		return ERROR_OK_NULL;
 	}
+		
 	FOR_EARCH_LIST_START(pSwitchList);
 	{
 		nodeSwitch = GET_SWITCH_ELEMENT(m_foreach);
@@ -45,7 +46,7 @@ static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology)
 		{
 			if (SystemIsOverTime(nodeSwitch->timeStamp.updateTime, MONITOR_LIFT_TIME))
 			{
-				nodeSwitch->timeStamp.isValid = false;
+				InValidCheckStamp(nodeSwitch->timeStamp);
 			}
 			else
 			{
@@ -55,6 +56,7 @@ static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology)
 
 	}
 	FOR_EARCH_LIST_END();
+	
 	if (cnValid == size)
 	{
 		pTtopology->isValidAll = true;
@@ -71,6 +73,7 @@ static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology)
 * @param  StationManger* manager
 * @return: 0--正常
 * @update: [2018-07-30][张宇飞][创建]
+*[2018-07-31][张宇飞][添加超时删除，并更新isFaultEdgeConnected]
 */
 static ErrorCode CheckConnectMessageValid(StationTopology* pTtopology)
 {
@@ -84,20 +87,40 @@ static ErrorCode CheckConnectMessageValid(StationTopology* pTtopology)
 		pTtopology->isValidConnectPath = false;
 		return ERROR_OK_NULL;
 	}
+	bool isRemove = false;
+    uint8_t loops = 0;
+	do 
+	{	        
+		FOR_EARCH_LIST_START(pConnectPath);
+		{
+			pPath = (ConnectPath*)list_data(m_foreach);
+			if (SystemIsOverTime(pPath->timeStamp.updateTime, MONITOR_LIFT_TIME))
+			{
+				pPath->timeStamp.isValid = false;
+				ListRemoveNext(pConnectPath, m_foreach->prev, NULL);//移除后重新进入循环，防止删除列表错误
+				isRemove = true;
+				break;
+			}
+			else
+			{
+				isRemove = false;
+				cnValid++;
+			}
+		}
+		FOR_EARCH_LIST_END();
+		if (isRemove )
+		{
+            isRemove = false;
+			continue;
+		}
 
-	FOR_EARCH_LIST_START(pConnectPath);
+	} while (0);
+
+	if (list_size(pConnectPath) == 0)
 	{
-		pPath = (ConnectPath*)list_data(m_foreach);
-		if (SystemIsOverTime(pPath->timeStamp.updateTime, MONITOR_LIFT_TIME))
-		{
-			pPath->timeStamp.isValid = false;
-		}
-		else
-		{
-			cnValid++;
-		}
+		pTtopology->localSwitch->fault.isFaultEdgeConnected = false;//TODO:可以考虑取消此条件，含义重复，维护冗余
 	}
-	FOR_EARCH_LIST_END();
+	
 	if (cnValid == size)
 	{
 		pTtopology->isValidConnectPath = true;
