@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      w5500_udp.c
   * @brief:     
@@ -139,6 +139,26 @@ void w5500_config(void)
 }
 
 /**
+  * @brief :W5500系统初始化
+  * @param  void *param
+  * @return: void
+  * @update: [2018-07-31][张宇飞][创建]
+  */
+void EmmedNetInit(void)
+{
+    rt_hw_w5500_init();
+    w5500_config();
+    W5500Init();
+     //TODO:加入初始化成功标识
+    if ((w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) == SocketMaintanceNum)
+    {
+        g_StationManger.isMaintanceRun = true;
+        rt_kprintf("W5500 start init Sucess!\n");
+    } 
+   
+}    
+
+/**
   * @brief :W5500用于UDP通信
   * @param  void *param
   * @return: void
@@ -153,9 +173,7 @@ static void udpserver_thread_entry(void *param)
     uint16_t destport;	
    
    
-    rt_hw_w5500_init();
-    w5500_config();
-    W5500Init();
+
 	
     //setSIMR(0x01);//
     //setSn_IMR(SocketNum, Sn_IR_RECV); //

@@ -162,52 +162,14 @@ uint8_t StationCommunicationServer(StationPoint* point)
 
 	return 0;
 }
-/**
-* @brief : 协议处理器
-* @param  ：void
-* @return: 0-正常 非0错误
-* @update: [2018-06-11[张宇飞][]
-*/
-//uint8_t StationCommunicationServer(StationPoint* point)
-//{
-//    uint16_t residelen = 0, lastResideLen = 0;
-//	if (point == NULL)
-//	{
-//		rt_kprintf(" ERROR: StationPoint* point = null.\n");
-//		return ERROR_NULL_PTR;
-//	}
-//
-//	ProtocolAnylast* anylast = &(point->anylast);
-//	FrameRtu* pRtu = &(point->anylast.recvRtu);
-//	if (anylast == NULL || pRtu == NULL)
-//	{
-//		return ERROR_NULL_PTR;
-//	}
-//    do 
-//    {
-//        residelen = anylast->ProtocolAnylastDeal(anylast);
-//
-//
-//        if (pRtu->completeFlag == true)
-//        {
-//            StationExecuteFunctioncode(point);
-//        }
-//        if (lastResideLen == residelen)
-//        {
-//            break;
-//        }
-//        lastResideLen = residelen;
-//    } while (residelen > 0);
-//	
-//
-//	return 0;
-//}
+
 
 /**
 * @brief : 执行功能码
 * @param ：void
 * @return: 0-正常 非0错误
 * @update: [2018-06-11[张宇飞][]
+*[2018-07-31[张宇飞][增加ONLINE_STATUS]
 */
 void StationExecuteFunctioncode(StationPoint* point)
 {
@@ -330,6 +292,11 @@ void StationExecuteFunctioncode(StationPoint* point)
 		case SWITCH_OPERATE:
 		{
 			StationOperateSwitch(pRtu->pValidData, pRtu->datalen, &(g_StationManger.simulationServer));
+			break;
+		}
+		case ONLINE_STATUS:
+		{
+			StationUpdateOnlineStatusMessage(pRtu->pValidData, pRtu->datalen, point);
 			break;
 		}
         default:

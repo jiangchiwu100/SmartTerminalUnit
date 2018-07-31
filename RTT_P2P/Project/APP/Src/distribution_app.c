@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_app.c
   * @brief:     分布式应用总入口
@@ -13,13 +13,29 @@
 #include "extern_interface.h"
 #include "distribution_config.h"
 #include "database.h"
-
+#include "w5500_server.h"
 
 
 extern  void DistributionLogicalAppInit(void);
 extern  void DistributionMutalAppInit(void);
 extern  void LogicalSimulationAppInit(void);
 extern  void UdpServerAppInit(void);
+
+/**
+* @brief  : 分布式数据部分初始化
+* @param  : void
+* @update: [2018-07-31][张宇飞][]
+*/
+void DistributionDatabaseInit(void)
+{
+    LogInit(&g_Loghandle);
+	
+	StationMangerInit(&g_StationManger);
+    //先读取数据
+    bool state = StationMessageRead(&g_StationManger);
+     //再判断
+   
+}
 
 /**
 * @brief  : 分布式初始化
@@ -29,20 +45,15 @@ extern  void UdpServerAppInit(void);
 void DistributionAppInit(void)
 {
 
-	LogInit(&g_Loghandle);
 	
-	StationMangerInit(&g_StationManger);
-    //先读取数据
-    bool state = StationMessageRead(&g_StationManger);
-
+    DistributionDatabaseInit();
+    EmmedNetInit();
+    
+    
     UdpServerAppInit();
-    //等待udp初始化成功
-    while (!g_StationManger.isMaintanceRun)
-    {
-        rt_thread_delay(100);
-    }
-     //再判断
-    if (state && g_StationManger.pWorkPoint)
+   
+   
+    if ( g_StationManger.pWorkPoint)
     {
         PrintTopologyMessage(g_StationManger.pWorkPoint->topology.localTopology);
         g_StationManger.firstRun = true;

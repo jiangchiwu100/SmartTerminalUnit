@@ -87,6 +87,8 @@
 
 
 
+#define ValidCheckStamp(stamp) {stamp.isValid = true; stamp.updateTime = GetTime();}
+#define InValidCheckStamp(stamp) {stamp.isValid = false; }
 
 #ifdef	__cplusplus
 extern "C" {

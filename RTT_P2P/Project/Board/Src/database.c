@@ -113,7 +113,7 @@ bool FramSave(const uint8_t* pdata, uint16_t dataLen)
 bool FramRead(uint8_t* pdata, uint16_t* pDataLen)
 {
    rt_device_t deviceFram = RT_NULL; 
-     rt_device_close(deviceFram);
+   //  rt_device_close(deviceFram);
     deviceFram = rt_device_find(RT_SPI_FRAM_NAME);
     if(deviceFram == RT_NULL)
     {

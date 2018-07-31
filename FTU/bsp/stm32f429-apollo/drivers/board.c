@@ -24,6 +24,8 @@
 #include "drv_mpu.h"
 #include "common_data.h"
 
+#include "distribution_app.h"
+#include "w5500_server.h"
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
@@ -173,6 +175,7 @@ void HAL_Delay(__IO uint32_t Delay)
   * @brief : This function will initial STM32 board.
   * @param : None.
   * @return: None. 
+*@update:[2018-7-31][张宇飞][增加分布式数据与网络初始化]
   */  
 void rt_hw_board_init(void)
 {
@@ -191,6 +194,7 @@ void rt_hw_board_init(void)
 
     rt_hw_system_clock_init();
     rt_hw_usart_init();
+   
     
 #ifdef RT_USING_CONSOLE
     rt_console_set_device(CONSOLE_DEVICE);

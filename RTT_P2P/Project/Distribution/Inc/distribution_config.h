@@ -53,6 +53,7 @@
 
 #define  MONITOR_CHECK_TIME  1000// 监控发送时间
 #define  MONITOR_LIFT_TIME 5000 //数据有效时间
+#define  ONLINE_LIFT_TIME 3000 //数据有效时间
 
 #ifdef	__cplusplus
 }

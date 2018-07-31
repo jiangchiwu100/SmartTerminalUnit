@@ -34,5 +34,6 @@
 #include "extern_interface.h"
 #include "station.h"
 #include "distribution_monitor.h"
+#include "distribution_online.h"
 
 #endif

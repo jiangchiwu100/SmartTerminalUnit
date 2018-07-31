@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_simulation_app.c
   * @brief:     开关逻辑仿真任务
@@ -31,7 +31,7 @@ static rt_uint8_t rt_switch_thread_stack[THREAD_SIMSWITCH_STACK_SIZE];//线程�
 
 
 static void SimulationSwitchStationLogicalApp(StationManger* manager);
-static void SingleSimulationSwitchStationLogicalApp(StationManger* manager);
+//static void SingleSimulationSwitchStationLogicalApp(StationManger* manager);
 
 static void switch_thread_entry(void* parameter)
 {    
@@ -100,39 +100,39 @@ static void SimulationSwitchStationLogicalApp(StationManger* manager)
     
 }
 
-/**
-* @brief :单个 开关站点模拟
-* @param  SimulationStationServer*  simulationServer
-* @return: 0--正常
-* @update: [2018-07-24][张宇飞][创建]
-*/
-static void SingleSimulationSwitchStationLogicalApp(StationManger* manager)
-{
-	if (manager == NULL)
-	{
-		perror("SingleSimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
-		LogAddException(ERROR_NULL_PTR, 0);
-		return;
-	}
-	SimulationStation* station = manager->pWorkSimulation;
-	if (station == NULL)
-	{
-		perror("manager->pWorkSimulation = NULL.\n");
-		LogAddException(ERROR_NULL_PTR, 0);
-		return;
-	}
+///**
+//* @brief :单个 开关站点模拟
+//* @param  SimulationStationServer*  simulationServer
+//* @return: 0--正常
+//* @update: [2018-07-24][张宇飞][创建]
+//*/
+//static void SingleSimulationSwitchStationLogicalApp(StationManger* manager)
+//{
+//	if (manager == NULL)
+//	{
+//		perror("SingleSimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
+//		LogAddException(ERROR_NULL_PTR, 0);
+//		return;
+//	}
+//	SimulationStation* station = manager->pWorkSimulation;
+//	if (station == NULL)
+//	{
+//		perror("manager->pWorkSimulation = NULL.\n");
+//		LogAddException(ERROR_NULL_PTR, 0);
+//		return;
+//	}
 
 
-	//循环更新模拟开关状态
-	do
-	{			
-		SwitchRunStateSimulation(station);
-		UpdateBindSwitchState(station);					
-		rt_thread_delay(5);
-	} while (true);
+//	//循环更新模拟开关状态
+//	do
+//	{			
+//		SwitchRunStateSimulation(station);
+//		UpdateBindSwitchState(station);					
+//		rt_thread_delay(5);
+//	} while (true);
 
 
-}
+//}
 
 
 

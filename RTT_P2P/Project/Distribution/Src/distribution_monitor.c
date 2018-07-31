@@ -15,11 +15,11 @@
 
 
 static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology);
-static ErrorCode CheckConectMessageValid(StationTopology* pTtopology);
+static ErrorCode CheckConnectMessageValid(StationTopology* pTtopology);
 
 /**
 * @brief :检测信息的有效性
-* @param  StationManger* manager
+* @param  StationTopology* pTtopology
 * @return: 0--正常
 * @update: [2018-07-27][张宇飞][创建]
 *[2018-07-30][张宇飞][修改形参为StationTopology* pTtopology]
@@ -72,7 +72,7 @@ static ErrorCode CheckGlobalSwitchMessageValid(StationTopology* pTtopology)
 * @return: 0--正常
 * @update: [2018-07-30][张宇飞][创建]
 */
-static ErrorCode CheckConectMessageValid(StationTopology* pTtopology)
+static ErrorCode CheckConnectMessageValid(StationTopology* pTtopology)
 {
 	CHECK_POINT_RETURN_LOG(pTtopology, NULL, ERROR_NULL_PTR, 0);
 	ListDouble* pConnectPath =&( pTtopology->connectPath);
@@ -117,6 +117,7 @@ static ErrorCode CheckConectMessageValid(StationTopology* pTtopology)
 * @param  StationManger* manager
 * @return: 0--正常
 * @update: [2018-07-30][张宇飞][创建]
+*[2018-07-31][张宇飞][添加CheckIsOnlineStatus]
 */
 ErrorCode CheckMessageValid(StationPoint* station)
 {
@@ -128,11 +129,20 @@ ErrorCode CheckMessageValid(StationPoint* station)
 		perror("CheckGlobalSwitchMessageValid ERORR:0x%x\n", error);
 		return error;
 	}
-	error = CheckConectMessageValid(pTtopology);
+	error = CheckConnectMessageValid(pTtopology);
 	if (error)
 	{
-		perror("CheckConectMessageValid ERORR:0x%x\n", error);
+		perror("CheckConnectMessageValid ERORR:0x%x\n", error);
 		return error;
 	}
+    
+    error = CheckIsOnlineStatus(station);
+    
+    if (error)
+	{
+		perror("CheckIsOnlineStatus ERORR:0x%x\n", error);
+		return error;
+	}
+    
 	return ERROR_OK_NULL;
 }

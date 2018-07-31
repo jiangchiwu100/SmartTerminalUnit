@@ -40,6 +40,7 @@ typedef struct TagCheckTimeStamp
 * 开关属性
 *update:
 * [2018-07-28][张宇飞][时间属性]
+*[2018-07-31][张宇飞][添加onlineStamp]
 */
 typedef struct TagSwitchProperty
 {
@@ -70,7 +71,8 @@ typedef struct TagSwitchProperty
 	
 	struct TagStationTopology* parent;
 
-	CheckTimeStamp timeStamp;
+	CheckTimeStamp timeStamp; //有效时间戳——用于指示更新时间
+	CheckTimeStamp onlineStamp; //在线时间戳——用于指示所有在线
 
 }SwitchProperty;
 
@@ -190,6 +192,7 @@ typedef struct TagConnectPath
 /**
 *  开关节点站信息
 * 添加有效监测isValidAll 所有开关列表
+*@update [2018-7-31][张宇飞][增加systemOnlineStamp]
 */
 typedef struct TagStationTopology
 {
@@ -203,6 +206,9 @@ typedef struct TagStationTopology
     ListDouble neighbourSwitchList; //邻居开关列表        
     ListDouble globalSwitchList;   //全局开关列表
 	bool isValidAll;//globalSwitchList是否全部有效
+
+	CheckTimeStamp systemOnlineStamp;//系统在线时标
+
 
     bool isNeighbourComplted; //邻居是否完整 //注意需要维护
 	

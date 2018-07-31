@@ -76,6 +76,7 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
 * @return： 0-正常返回
 * @update： [2018-06-26][张宇飞][BRIEF]
 * [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
+*[2018-07-31][张宇飞][添加循环状态ONLINE_STATUS]
 */
 ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
 {
@@ -112,11 +113,22 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
 		result = MakeInsulateMessage(switchProperty->id, switchProperty->insulateType, &packet);
 		break;
 	}
-	case  TRANSFER_MESSAGE:
+	case ONLINE_STATUS:
 	{
+		OnlineStatus status = ONLINE_NULL;
+		if (switchProperty->onlineStamp.isValid)
+		{
+			status = ONLINE_ON;
+		}
+		else
+		{
+			status = ONLINE_OFF;
+		}
 
+		result = MakeSimpleMessage(ONLINE_STATUS, switchProperty->id, (uint8_t)status, &packet);
 		break;
 	}
+	
     default:
         return ERROR_UNKONOW;       
     }
@@ -706,10 +718,13 @@ uint8_t RemovalHandleUpdateSwitchProperty(FaultDealHandle* handle, SwitchPropert
 * @param
 * @return: bool
 * @update: [2018-06-16][张宇飞][TODO:待完善]
-* [2018-06-23][张宇飞][添加复归操作]
+* [2018-06-23][张宇飞][添加首次进入后的复归操作]
+* [2018-07-31][张宇飞][添加在线状态判别]
 */
 ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
 {
+	//是否在线
+	CHECK_EQUAL_RETURN(handle->switchProperty->parent->systemOnlineStamp.isValid, false, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->switchProperty, NULL, ERROR_NULL_PTR);    
     CHECK_POINT_RETURN(handle->switchProperty->distributionArea, NULL, ERROR_NULL_PTR);
@@ -717,6 +732,7 @@ ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
     CHECK_POINT_RETURN(handle->IsOpenPosition, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsTrigger, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsGatherCompleted, NULL, ERROR_NULL_PTR);
+	
     //首次检测通过后进行复归操作
     if (!handle->isCheckPass)
     {

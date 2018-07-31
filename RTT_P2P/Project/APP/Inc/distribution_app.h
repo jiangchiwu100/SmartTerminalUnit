@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_app.h
   * @brief:     
@@ -19,7 +19,7 @@ extern "C" {
     
 extern void StartSinglePointNormalThread(void);
 extern  void DistributionAppInit(void);
-    
+extern void DistributionDatabaseInit(void);
 #ifdef	__cplusplus
 }
 #endif

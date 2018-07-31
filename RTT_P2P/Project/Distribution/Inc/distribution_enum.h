@@ -132,7 +132,17 @@ typedef enum TagResultType
 
 }ResultType;
 
+/**
+*在线信息
+*[2018-07-31][张宇飞][创建]
+*/
+typedef enum TagOnlineStatus
+{
+	ONLINE_NULL = 0, //NULL
+	ONLINE_ON = 1, //上线
+	ONLINE_OFF = 2, //下线
 
+}OnlineStatus;
 /**
 *控制操作
 */
@@ -173,26 +183,26 @@ typedef enum TagTransferCode
 */
 typedef enum TagFuncionCode
 {
-    UPDATE_NEIGHBOUR = 0x01, //更新邻居配置信息
-    GET_MESSAGE = 0x02, //获取信息
-    REPLY_MESSAGE = 0x03, //应答信息
-    LOOP_STATUS = 0x04, //周期性状态信息
+	UPDATE_NEIGHBOUR = 0x01, //更新邻居配置信息
+	GET_MESSAGE = 0x02, //获取信息
+	REPLY_MESSAGE = 0x03, //应答信息
+	LOOP_STATUS = 0x04, //周期性状态信息
 
-    LOCAL_MESSAGE = 0x05, //本地信息
-    AIM_MESSAGE = 0x06, //目的信息
-    STATUS_MESSAGE = 0x07, //故障信息
-    REMOVAL_MESSAGE = 0x08, //切除信息
-    NANOPB_TYPE = 0x09, //NANOPB 信息
-    GET_LOG = 0x0A, //获取日志
-    CONNECTED_MESSAGE = 0x0B, //联络开关
+	LOCAL_MESSAGE = 0x05, //本地信息
+	AIM_MESSAGE = 0x06, //目的信息
+	STATUS_MESSAGE = 0x07, //故障信息
+	REMOVAL_MESSAGE = 0x08, //切除信息
+	NANOPB_TYPE = 0x09, //NANOPB 信息
+	GET_LOG = 0x0A, //获取日志
+	CONNECTED_MESSAGE = 0x0B, //联络开关
 	INSULATE_MESSAGE = 0x0C, //隔离信息
 	TRANSFER_MESSAGE = 0x0D, //转供电信息
 
-    CAL_POWER_AREA = 0x10, //计算配电区域
-    CAL_PATH = 0x11, //计算路径
-    CAL_PATH_ALL = 0x12, //计算路径
-    DELETE_ONE = 0x20, //删除指定拓扑节点   
-
+	CAL_POWER_AREA = 0x10, //计算配电区域
+	CAL_PATH = 0x11, //计算路径
+	CAL_PATH_ALL = 0x12, //计算路径
+	DELETE_ONE = 0x20, //删除指定拓扑节点   
+	ONLINE_STATUS = 0x21, //在线状态指示
     SWITCH_OPERATE = 0x30, //开关操作
 
 

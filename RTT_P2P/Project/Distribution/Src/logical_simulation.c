@@ -11,7 +11,6 @@
 #include "fault_treatment.h"   
 #include "topology.h" 
 #include "helper.h"
-#include <rtthread.h>
 #include "buffer.h"
 #include "distribution_interface.h"  
 #include "logical_simulation.h"
@@ -366,6 +365,7 @@ ErrorCode SimulationStationServerAddMember(SimulationStationServer* server, uint
 * @return: 0-正常 非0错误
 * @update: [2018-06-11[张宇飞][]
 * [2018-06-20[张宇飞][删去开关操作]
+* [2018-06-31[张宇飞][设置检测时标]
 */
 ErrorCode UpdateBindSwitchState(SimulationStation* station)
 {    
@@ -400,6 +400,9 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
         station->CloseOperate(station);
         pswitch->isClosing = false;
     }
+
+	ValidCheckStamp(pswitch->timeStamp);
+	
     return ERROR_OK_NULL;
 }
 
