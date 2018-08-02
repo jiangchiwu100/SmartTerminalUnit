@@ -1112,7 +1112,7 @@ int rt_multi_thread_start(void)
   #endif /* RT_USING_FTUIDLE */
     
   
-    DistributionAppInit();
+   // DistributionAppInit();
     return(RT_EOK);    
 }
 INIT_APP_EXPORT(rt_multi_thread_start);

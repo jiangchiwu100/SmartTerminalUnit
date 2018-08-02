@@ -17,6 +17,7 @@
 #include "lwipopts.h"
 #include "board.h"
 
+#include "ethernet_hook.h"
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 static ETH_DMADescTypeDef DMARxDscrTab[ETH_RXBUFNB];
@@ -531,7 +532,9 @@ struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
     buffer = (uint8_t *)EthHandle.RxFrameInfos.buffer;
 
     ETH_PRINTF("receive frame len : %d\n", len);
-
+    
+    EthernetInput(buffer, len);//ÖÐ¼äÀ¹½Ø
+    
     if (len > 0)
     {
         /* We allocate a pbuf chain of pbufs from the Lwip buffer pool */

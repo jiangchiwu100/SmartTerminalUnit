@@ -2039,6 +2039,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\miscellaneous.c</FilePath>
             </File>
+            <File>
+              <FileName>ethernet_hook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\ethernet_hook.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4115,6 +4120,11 @@
               <FileName>miscellaneous.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\miscellaneous.c</FilePath>
+            </File>
+            <File>
+              <FileName>ethernet_hook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\ethernet_hook.c</FilePath>
             </File>
           </Files>
         </Group>

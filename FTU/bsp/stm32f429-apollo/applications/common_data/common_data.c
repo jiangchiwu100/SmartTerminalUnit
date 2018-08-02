@@ -1786,10 +1786,14 @@ void rt_multi_common_data_para_init(void)
 //    g_EthW5500 = (struct lwip_dev)RT_ETH2_CONFIG_DEFAULT;
 	
     //不同
-    g_EthDP83848.ip[0] = (uint8_t)g_Parameter[NET_IP1_0];
-    g_EthDP83848.ip[1] = (uint8_t)g_Parameter[NET_IP1_1];
-    g_EthDP83848.ip[2] = (uint8_t)g_Parameter[NET_IP1_2];
-    g_EthDP83848.ip[3] = (uint8_t)g_Parameter[NET_IP1_3];
+//    g_EthDP83848.ip[0] = (uint8_t)g_Parameter[NET_IP1_0];
+//    g_EthDP83848.ip[1] = (uint8_t)g_Parameter[NET_IP1_1];
+//    g_EthDP83848.ip[2] = (uint8_t)g_Parameter[NET_IP1_2];
+//    g_EthDP83848.ip[3] = (uint8_t)g_Parameter[NET_IP1_3];
+    g_EthDP83848.ip[0] = 192;
+    g_EthDP83848.ip[1] = 168;
+    g_EthDP83848.ip[2] = 10;
+    g_EthDP83848.ip[3] = 200;
     
     g_EthW5500.ip[0] = (uint8_t)g_Parameter[NET_IP2_0];
     g_EthW5500.ip[1] = (uint8_t)g_Parameter[NET_IP2_1];
@@ -1815,18 +1819,24 @@ void rt_multi_common_data_para_init(void)
     g_EthDP83848.netmask[1] = 255;
     g_EthDP83848.netmask[2] = 255;
     g_EthDP83848.netmask[3] = 0;
-    g_EthDP83848.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
-    g_EthDP83848.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
-    g_EthDP83848.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
-    g_EthDP83848.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+//    g_EthDP83848.gateway[0] = (uint8_t)g_Parameter[NET_GATEWAY_0];
+//    g_EthDP83848.gateway[1] = (uint8_t)g_Parameter[NET_GATEWAY_1];
+//    g_EthDP83848.gateway[2] = (uint8_t)g_Parameter[NET_GATEWAY_2];
+//    g_EthDP83848.gateway[3] = (uint8_t)g_Parameter[NET_GATEWAY_3];
+    g_EthDP83848.gateway[0] = 192;
+    g_EthDP83848.gateway[1] = 168;
+    g_EthDP83848.gateway[2] = 10;
+    g_EthDP83848.gateway[3] = 254;
+
+
     g_EthDP83848.dns[0] = 114;
     g_EthDP83848.dns[1] = 114;
     g_EthDP83848.dns[2] = 114;
     g_EthDP83848.dns[3] = 114;
     g_EthDP83848.remoteip[0] = 192;
     g_EthDP83848.remoteip[1] = 168;
-    g_EthDP83848.remoteip[2] = 60;
-    g_EthDP83848.remoteip[3] = 115;
+    g_EthDP83848.remoteip[2] = 10;
+    g_EthDP83848.remoteip[3] = 111;
     g_EthDP83848.dhcpstatus = 0;
     
     g_EthW5500.netmask[0] = 255;
