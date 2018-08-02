@@ -221,10 +221,10 @@ void PrintMemoryUsed(void)
 * @param  : uint8_t* tips 
 * @update: [2018-06-23][张宇飞][创建]
 */
-void PrintIDTipsTick(uint32_t id, uint8_t* tips)
+void PrintIDTipsTick(uint32_t id, const char* tips)
 {
     rt_kprintf("%X,", id);
-    rt_kprintf((const char*)tips);
+    rt_kprintf(tips);
     rt_kprintf(",TICK:%6d.\n", rt_tick_get());
 
 }

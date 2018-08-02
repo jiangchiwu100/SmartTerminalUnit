@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_test_case.h
   * @brief:     辅助方法
@@ -25,7 +25,7 @@ extern void PrintBFSHelper(const BFSHelper* helper);
 extern void PrintBFSHelperSimple(const BFSHelper* helper);
 extern void PrintMemoryUsed(void);
 extern void PrintPowerAreaMessage(ListDouble* areaList, uint8_t len);
-extern void PrintIDTipsTick(uint32_t id, uint8_t* tips);
+extern void PrintIDTipsTick(uint32_t id, const char* tips);
 extern void PrintSwitchList(ListDouble* list);
 #ifdef	__cplusplus
 }

@@ -8,16 +8,14 @@
   * @update:    添加开关状态模拟
   */
   
-#include "fault_treatment.h"   
-#include "topology.h" 
-#include "helper.h"
-#include "buffer.h"
-#include "distribution_interface.h"  
-#include "logical_simulation.h"
-#include "parse_implement.h" 
+ 
+
+#include "distribution.h"
 #include "extern_interface.h"
 #include "distribution_config.h"
 #include "miscellaneous.h"
+
+
 
 #define DELAY_MS(ms)  rt_thread_delay((ms));
 
@@ -413,6 +411,7 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
 * @return: 0-正常 非0错误
 * @update: [2018-06-11[张宇飞][]
 *[2018-06-20[张宇飞][修改操作错误]
+*[2018-07-31[张宇飞][修改错误提示]
 */
 ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchControlOperate operate)
 {
@@ -422,19 +421,22 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
     case CONTROL_OPEN:
     {
         station->OpenOperate(station);
-		rt_kprintf("%X: open.\n", station->id);
+        PrintIDTipsTick(station->id, "open");
+		
         break;            
     }
     case CONTROL_CLOSE:
     {
         station->CloseOperate(station);
-		rt_kprintf("%X: close.\n", station->id);
+        PrintIDTipsTick(station->id, "close");
+		
         break;
     }
     case CONTROL_SET_OVERCURRENT:
     {
         station->faultState = FAULT_YES;
-		rt_kprintf("%X: set fault.\n", station->id);
+        PrintIDTipsTick(station->id, " set fault");
+		
         break;
     }
     case  CONTROL_REMOVAL_RESET:
@@ -449,38 +451,42 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);
 			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
 			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
-
-            rt_kprintf("%X: CONTROL_REMOVAL_RESET.\n", station->id);
+            PrintIDTipsTick(station->id, "CONTROL_REMOVAL_RESET");
+            
         }
         break;
     }
 	case CONTROL_SET_REJECT_ACTION:
 	{
 		station->isRejectAction = true;
-		rt_kprintf("%X: set reject action.\n", station->id);
+        PrintIDTipsTick(station->id, "set reject action.");
+		
 		break;
 	}
 	case CONTROL_CANCER_REJECT_ACTION:
 	{
 		station->isRejectAction = false;
-		rt_kprintf("%X: cancer reject action.\n", station->id);
+        PrintIDTipsTick(station->id, "cancer reject action.");
+		
 		break;
 	}
 	case CONTROL_CANCER_OVERCURRENT:
 	{
 		station->faultState = FAULT_NO;
-		rt_kprintf("%X: cancer fault.\n", station->id);
+        PrintIDTipsTick(station->id, "cancer fault.");		
 		break;
 	}
 	case  CONTROL_POWER_INCOME_LOSS:
 	{
 		station->faultState = FAULT_INCOME_LOSS;
-		rt_kprintf("%X: set power income loss fault.\n", station->id);
+        PrintIDTipsTick(station->id, "set power income loss fault.");	
+		
 		break;
 	}
 	case  CONTROL_RESET:
 	{
-		rt_kprintf("%X: reset。。。。.\n", station->id);
+        PrintIDTipsTick(station->id, "reset。。。。.\n");	
+		
 		rt_thread_delay(600);
 		SystemReset();
 		break;
