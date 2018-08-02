@@ -365,6 +365,7 @@ void HAL_ETH_ErrorCallback(ETH_HandleTypeDef *heth)
   */
 rt_err_t rt_stm32_eth_tx( rt_device_t dev, struct pbuf* p)
 {
+    EhernetOuputMutex_OnLock();
     rt_err_t ret = RT_ERROR;
     HAL_StatusTypeDef state;
     struct pbuf *q;
@@ -483,6 +484,98 @@ rt_err_t rt_stm32_eth_tx( rt_device_t dev, struct pbuf* p)
     }
 
     ret = ERR_OK;
+   
+error:
+  
+    /* When Transmit Underflow flag is set, clear it and issue a Transmit Poll Demand to resume transmission */
+    if ((EthHandle.Instance->DMASR & ETH_DMASR_TUS) != (uint32_t)RESET)
+    {
+        /* Clear TUS ETHERNET DMA flag */
+        EthHandle.Instance->DMASR = ETH_DMASR_TUS;
+
+        /* Resume DMA transmission*/
+        EthHandle.Instance->DMATPDR = 0;
+    }
+    EhernetOuputMutex_OffLock();    
+    return ret;
+}
+/**
+  * @brief 发送函数使用互斥量,每次发送一帧
+  * @param  [dev] the ETH_HandleTypeDef pointer.
+  * @param  [p] the ETH_HandleTypeDef pointer.
+  * @retval [RT_ERROR] error;[ERR_OK] success.
+  */
+rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
+{
+    EhernetOuputMutex_OnLock();
+    rt_err_t ret = RT_ERROR;
+    HAL_StatusTypeDef state;
+
+    uint8_t *buffer = (uint8_t *)(EthHandle.TxDesc->Buffer1Addr);
+    __IO ETH_DMADescTypeDef *DmaTxDesc;
+
+        
+    DmaTxDesc = EthHandle.TxDesc;
+
+    
+    ETH_PRINTF("EthernetOutput...\n");
+   
+    /* Check if the descriptor is owned by the ETHERNET DMA (when set) or CPU (when reset) */
+    while ((DmaTxDesc->Status & ETH_DMATXDESC_OWN) != (uint32_t)RESET)
+    {
+        rt_err_t result;
+        rt_uint32_t level;
+
+        level = rt_hw_interrupt_disable();
+        tx_is_waiting = RT_TRUE;
+        rt_hw_interrupt_enable(level);
+
+        /* it's own bit set, wait it */
+        result = rt_sem_take(&tx_wait, RT_WAITING_FOREVER);
+        if (result == RT_EOK)
+        {
+            break;
+        }
+        if (result == -RT_ERROR)
+        {
+            return -RT_ERROR;
+        }
+    }
+    
+    
+    /* Is this buffer available? If not, goto error */
+    if((DmaTxDesc->Status & ETH_DMATXDESC_OWN) != (uint32_t)RESET)
+    {
+        rt_kprintf("buffer not valid ...\n");
+        ret = ERR_USE;
+        goto error;
+    }
+    
+    ETH_PRINTF("copy one frame\n");
+    
+   if (count > ETH_TX_BUF_SIZE)
+   {
+       ret = ERR_VAL;
+       goto error;
+   }
+
+  
+
+    /* Copy the remaining bytes */
+    memcpy(buffer , pData, count);
+      
+    
+    
+
+    /* Prepare transmit descriptors to give to DMA */ 
+    ETH_PRINTF("EthernetOutput transmit frame, length: %d\n", count);
+    state = HAL_ETH_TransmitFrame(&EthHandle, count);
+    if (state != HAL_OK)
+    {
+        rt_kprintf("EthernetOutput transmit frame faild: %d\n", state);
+    }
+
+    ret = ERR_OK;
   
 error:
   
@@ -495,10 +588,9 @@ error:
         /* Resume DMA transmission*/
         EthHandle.Instance->DMATPDR = 0;
     }
-        
+    EhernetOuputMutex_OffLock();      
     return ret;
 }
-
 /**
   * @brief  ethernet device interface, reception packet.
   * @param  [dev] the ETH_HandleTypeDef pointer.
@@ -670,7 +762,7 @@ int rt_hw_eth_init(void)
     {
         ETH_PRINTF("eth_device_init faild: %d\r\n", state);
     }
-		
+	EthernetHookInit();	
     return state;
 }
 INIT_DEVICE_EXPORT(rt_hw_eth_init);

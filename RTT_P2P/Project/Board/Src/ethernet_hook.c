@@ -28,6 +28,7 @@
 #define MAX_RECIVE_COUNT 1500
 static uint8_t EthernetReciveBuffer[MAX_RECIVE_COUNT]; 
 static uint16_t EthernetReciveCount;
+
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
 * @param : uint8_t* pData 数据指针
@@ -75,12 +76,82 @@ void EthernetInput(uint8_t* pData, uint16_t len)
         rt_kprintf("%2X ", EthernetReciveBuffer[i]);
     }
     rt_kprintf("\r\n");
+    
+    pData[0] = 0xFF;
+    pData[1] = 0xFF;
+    pData[2] = 0xFF;
+    pData[3] = 0xFF;
+    pData[4] = 0xFF;
+    pData[5] = 0xFF;
+    EthernetOutput(pData, len);
 }
 
 
 
+static struct rt_mutex ethernet_mutex;
+rt_mutex_t g_ethernet_mutex;
+/**
+* @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
+* @param : uint8_t* pData 数据指针
+* @param : uint16_t len 数据长度
+* @return: void
+* @update: [2018-08-2][张宇飞][]
+*/
+void EthernetHookInit(void)
+{
+    
+    rt_err_t err = rt_mutex_init (&ethernet_mutex, "udp_mutex", RT_IPC_FLAG_PRIO );
+    if (err != RT_EOK)
+    {
+        rt_kprintf("rt_mutex_init g_ethernet_mutex err != RT_EOK");
+        g_ethernet_mutex = NULL;
+    }
+    else
+    {
+        g_ethernet_mutex = &ethernet_mutex;
+    }
+    
+    
+}
 
+/**
+* @brief : 上锁
+* @param : void
+* @return: void
+* @update: [2018-08-2][张宇飞][]
+*/
+void EhernetOuputMutex_OnLock(void)   
+{
+    if (g_ethernet_mutex) 
+    {        
+        rt_err_t result = rt_mutex_take(g_ethernet_mutex, RT_WAITING_FOREVER); 
+        if (result) 
+            rt_kprintf("error:rt_mutex_take\n");
+    }
+    else
+    {
+        rt_kprintf("error:EhernetOuputMutex_OnLock g_ethernet_mutex is null\n");
+    }
 
+}
+
+/**
+* @brief : 解锁
+* @param : void
+* @return: void
+* @update: [2018-08-2][张宇飞][]
+*/
+void EhernetOuputMutex_OffLock(void) 
+{
+    if (g_ethernet_mutex)
+    {
+        rt_mutex_release(g_ethernet_mutex);
+    }
+    else
+    {
+        rt_kprintf("error:EhernetOuputMutex_OffLock g_ethernet_mutex is null\n");
+    }
+}
 
 
 
