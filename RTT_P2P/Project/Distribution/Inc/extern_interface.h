@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     外部接口，主要针对常用，有根据情况变化的情况，如malloc，利于程序移植
@@ -35,12 +35,12 @@
 #ifdef MSVC
 #define perror(arg)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
 #else
-extern void udp_debug_printf(const char *fmt, ...);
-#define  rt_kprintf  udp_debug_printf 
+//extern void udp_debug_printf(const char *fmt, ...);
+//#define  rt_kprintf  udp_debug_printf 
 #define perror(arg...)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
 #endif
 
-#define printf(args)  rt_kprintf(args)
+#define printf(args...)  rt_kprintf(args)
 #else
 
 #include <stdlib.h>

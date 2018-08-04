@@ -10,6 +10,7 @@
       <TargetName>FTUBoot</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060422::V5.06 update 4 (build 422)::ARMCC</pArmCC>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
@@ -324,8 +325,8 @@
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
-            <v6Lang>0</v6Lang>
-            <v6LangP>0</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
             <v6Lto>0</v6Lto>
@@ -333,7 +334,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F429xx,USE_FULL_LL_DRIVER,</Define>
+              <Define>USE_HAL_DRIVER,STM32F429xx,USE_FULL_LL_DRIVER,__CNUC__</Define>
               <Undefine></Undefine>
               <IncludePath>..\CORE;..\USER;..\HALLIB\STM32F4xx_HAL_Driver\Inc;..\SYSTEM\sys;..\HARDWARE\LED;..\HARDWARE\SDRAM;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\FATFS\exfuns;..\FATFS\src;..\HARDWARE\FM25Vxx;..\HARDWARE\SDRAM;..\HARDWARE\IWDG;..\HARDWARE\IAP;..\Module\tftp;..\Module\W5500\Inc;..\Module\Database;..\..\RTT_P2P\Project\Protocol\nanopb;..\..\RTT_P2P\Project\DistributionComponents</IncludePath>
             </VariousControls>

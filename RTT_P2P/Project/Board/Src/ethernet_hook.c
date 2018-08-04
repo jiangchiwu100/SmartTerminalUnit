@@ -11,7 +11,7 @@
 #if VLAN_TAG
 
 #define TPID_INDEX 12  //0x81
-#define ETHERNET_TYPE_INDEX 14  //0x81
+#define ETHERNET_TYPE_INDEX 16  
 
 #else
 
@@ -25,9 +25,15 @@
 #define ETHERNET_TYPE_HIGHT      0xB8  //0x81
 
 
-#define MAX_RECIVE_COUNT 1500
+#define MAX_RECIVE_COUNT 1518
 static uint8_t EthernetReciveBuffer[MAX_RECIVE_COUNT]; 
 static uint16_t EthernetReciveCount;
+
+/**
+*以太网发送使用的互斥信号量
+*/
+static struct rt_mutex ethernet_mutex;
+rt_mutex_t g_ethernet_mutex;
 
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
@@ -88,8 +94,7 @@ void EthernetInput(uint8_t* pData, uint16_t len)
 
 
 
-static struct rt_mutex ethernet_mutex;
-rt_mutex_t g_ethernet_mutex;
+
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
 * @param : uint8_t* pData 数据指针

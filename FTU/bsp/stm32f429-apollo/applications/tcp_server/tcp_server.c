@@ -18,7 +18,7 @@
 #include "lwip/opt.h"
 #include "lwip/api.h"
 #include "queue.h"
-#include "goose.h"
+//#include "goose.h"
 #include "drv_w5500.h"
 #include "common_data.h"
 #include "lwip/sockets.h"
@@ -86,7 +86,7 @@ void rt_w5500_tx_tick(void)
 	    return;
 	}
 	
-	W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+	//W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
 	if (goose_have_change)
 	{
 		goose_have_change = 0;
@@ -153,7 +153,7 @@ void rt_w5500_udp_rx_thread_entry(void *param)
 						else
 						{
 							//rt_kprintf("%d", srcip[3]);
-							goose_receiver_processe(W5500_UDP_RxBuf, srcip);                                                        
+							//goose_receiver_processe(W5500_UDP_RxBuf, srcip);                                                        
 						}						
 					}										
 				}				
@@ -172,7 +172,7 @@ void rt_w5500_udp_rx_thread_entry(void *param)
                 if (w5500_event.set & EVENT_RUN)
 				{
 					w5500_event.set &= ~EVENT_RUN;
-					W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+					//W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
 					
 					if (goose_have_change)
 					{
@@ -445,6 +445,7 @@ static inline void dp83848_tcpserver_init(void)
 #define BUF_SIZE   512
 void rt_dp83848_tcpserver_thread_entry(void *param)
 {
+    return;
 	err_t result;
     int sockfd;	
     int bytes_read;	
@@ -519,7 +520,7 @@ void rt_dp83848_tcpserver_thread_entry(void *param)
 		}
 		else if (ret == 0)
 		{
-			W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
+			//W5500_UDP_TxLen = goose_publisher_process(1, (struct TagGooseLink *)W5500_UDP_TxBuf, goose_have_change);
 			
 			if (goose_have_change)
 			{

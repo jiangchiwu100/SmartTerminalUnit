@@ -37,6 +37,9 @@
 #include "hmi_101_disk.h"
 #include "GUIdisplay.h"
 #include "distribution_app.h"
+
+#include "goose_publisher_beat.h"
+
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;
 //static rt_uint8_t rt_thread_system_stack[INIT_THREAD_STACK_SIZE]; 
@@ -534,6 +537,7 @@ static void protect_thread_start(void *param)
 #if RT_USING_DP83848 
 static void dp83848_2404_thread_start(void *param)
 {
+    return;
 #ifdef RT_USING_STATIC_THREAD
     rt_err_t result = RT_EOK;
 	result = result;
@@ -1113,6 +1117,7 @@ int rt_multi_thread_start(void)
     
   
    // DistributionAppInit();
+    TestGooseBeat();
     return(RT_EOK);    
 }
 INIT_APP_EXPORT(rt_multi_thread_start);

@@ -2086,6 +2086,26 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>libiec/goose</GroupName>
+          <Files>
+            <File>
+              <FileName>goose_publisher.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_publisher.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_receiver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_receiver.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_subscriber.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_subscriber.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2268,7 +2288,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -2392,8 +2412,8 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
-            <oTime>0</oTime>
+            <Optim>4</Optim>
+            <oTime>1</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
             <Strict>0</Strict>
@@ -2417,7 +2437,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F429xx,USE_HAL_DRIVER, USE_FULL_LL_DRIVER,RT_USING_ARM_LIBC, ARM_MATH_CM4, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user;.\applications\ptotocol\iec61850;.\applications\md5;..\..\..\RTT_P2P\Project\Components\Inc;..\..\..\RTT_P2P\Project\Protocol\Inc;..\..\..\RTT_P2P\Project\Distribution\Inc;..\..\..\RTT_P2P\Project\DistributionComponents;..\..\..\RTT_P2P\Project\Protocol\nanopb;..\..\..\RTT_P2P\Project\Protocol\APP\Inc;..\..\..\RTT_P2P\Project\APP\Inc;..\..\..\RTT_P2P\Project\Board\Inc;..\..\..\RTT_P2P\Project\APP\Inc</IncludePath>
+              <IncludePath>applications;.;Libraries\STM32F4xx_HAL_Driver\Inc;Libraries\CMSIS\Device\ST\STM32F4xx\Include;Libraries\CMSIS\Include;.\drivers;..\..\include;..\..\libcpu\arm\cortex-m4;..\..\libcpu\arm\common;..\..\components\dfs\include;..\..\components\dfs\filesystems\devfs;..\..\components\dfs\filesystems\elmfat;..\..\components\dfs\filesystems\net;..\..\components\dfs\filesystems\net\socket;..\..\components\dfs\filesystems\romfs;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\include;..\..\components\drivers\spi;..\..\components\drivers\include;..\..\components\drivers\spi\sfud\inc;..\..\components\drivers\include;..\..\components\drivers\spi\misc;..\..\components\finsh;..\..\components\libc\compilers\armlibc;..\..\components\net\lwip-1.4.1\src;..\..\components\net\lwip-1.4.1\src\include;..\..\components\net\lwip-1.4.1\src\include\ipv4;..\..\components\net\lwip-1.4.1\src\arch\include;..\..\components\net\lwip-1.4.1\src\include\netif;..\..\config;..\..\components\dfs\filesystems\uffs;..\..\components\dfs\filesystems\uffs\src;..\..\components\dfs\filesystems\uffs\src\inc;.\Libraries\STM32F4xx_HAL_Driver\Src;.\applications\common_data;.\applications\ptotocol\iec60870;..\..\components\single_list;.\applications\protect;.\applications\calculator;.\applications\tcp_server;.\applications\queue;.\applications\file_operate;.\applications\wave_recording;..\..\components\mini_xml;..\..\components\malloc;.\applications\point_table_config;.\applications\lkdGui\gui;.\applications\lkdGui\protocol;.\applications\lkdGui\protocol;.\applications\struct2json\struct2json\inc;.\applications\struct2json\user;.\applications\ptotocol\iec61850;.\applications\md5;..\..\..\RTT_P2P\Project\Components\Inc;..\..\..\RTT_P2P\Project\Protocol\Inc;..\..\..\RTT_P2P\Project\Distribution\Inc;..\..\..\RTT_P2P\Project\DistributionComponents;..\..\..\RTT_P2P\Project\Protocol\nanopb;..\..\..\RTT_P2P\Project\Protocol\APP\Inc;..\..\..\RTT_P2P\Project\APP\Inc;..\..\..\RTT_P2P\Project\Board\Inc;..\..\..\RTT_P2P\Project\APP\Inc;..\..\..\LibIEC\libIEC61850\src\goose</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -4165,6 +4185,26 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>libiec/goose</GroupName>
+          <Files>
+            <File>
+              <FileName>goose_publisher.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_publisher.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_receiver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_receiver.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_subscriber.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\src\goose\goose_subscriber.c</FilePath>
             </File>
           </Files>
         </Group>
