@@ -146,21 +146,7 @@ Ethernet_setProtocolFilter(EthernetSocket ethSocket, uint16_t etherType)
 int
 Ethernet_receivePacket(EthernetSocket self, uint8_t* buffer, int bufferSize)
 {
-//    PointUint8 *pPacket = 0;
-//   ReciveInputBlock(&pPacket);
-//    
-//    if (pPacket)
-//    {
-//        memcpy(buffer, pPacket->pData, pPacket->len);
-//    }
-//     
-//    uint16_t reciveLen = pPacket->len;
-//    MX_TIM10_Init();
-//    StartTimer();
-//    rt_free(pPacket->pData);
-//    rt_free(pPacket);
-//    return reciveLen;
-    return 0;
+    return MacRawInputBlock(buffer, bufferSize);   
 }
 
 bool

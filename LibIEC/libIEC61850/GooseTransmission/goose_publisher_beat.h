@@ -26,4 +26,4 @@ typedef struct TagGooseBeat
 }GooseBeat;
 
 
-void TestGooseBeat(void);
+extern void TestGooseBeat(void);

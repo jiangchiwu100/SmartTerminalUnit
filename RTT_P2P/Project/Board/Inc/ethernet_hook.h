@@ -3,6 +3,7 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "rtdef.h"
 
 extern rt_mutex_t g_ethernet_mutex;
@@ -11,9 +12,9 @@ extern rt_mutex_t g_ethernet_mutex;
 
 
 void EthernetHookInit(void);
-void EthernetInput(uint8_t* pData, uint16_t len);
+bool EthernetInput(uint8_t* pData, uint16_t len);
 rt_err_t EthernetOutput( uint8_t* pData, uint16_t count);
-
+uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size);
 
 void EhernetOuputMutex_OnLock(void);
 void EhernetOuputMutex_OffLock(void) ;

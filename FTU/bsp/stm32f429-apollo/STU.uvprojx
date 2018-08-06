@@ -954,6 +954,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_ll_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_tim.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3975,6 +3980,11 @@
               <FileName>stm32f4xx_ll_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\HALLIB\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_tim.c</FilePath>
             </File>
           </Files>
         </Group>

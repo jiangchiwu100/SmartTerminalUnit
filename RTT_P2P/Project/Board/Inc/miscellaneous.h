@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      miscellaneous.h
   * @brief:     用于不好分类的其他项信息
@@ -13,6 +13,8 @@
 
 void SystemReset(void);
 
-
+extern void StopWatchInit(void);
+extern void StopWatchStart(void);
+extern void StopWatchStop(void);
 #endif
 

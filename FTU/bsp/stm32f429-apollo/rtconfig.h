@@ -254,16 +254,19 @@
 #define RT_LWIP_TCP_SEG_NUM                                            40
 #define RT_LWIP_TCP_SND_BUF                                            8196
 #define RT_LWIP_TCP_WND                                                8196
-#define RT_LWIP_TCPTHREAD_PRIORITY                                     10
+#define RT_LWIP_TCPTHREAD_PRIORITY                                     12
 #define RT_LWIP_SLIPIFTHREAD_PRIORITY                                  1
 #define RT_LWIP_TCPTHREAD_MBOX_SIZE                                    8
 #define RT_LWIP_TCPTHREAD_STACKSIZE                                    1024
-#define RT_LWIP_ETHTHREAD_PRIORITY                                     12
+#define RT_LWIP_ETHTHREAD_PRIORITY                                     4
 #define RT_LWIP_ETHTHREAD_STACKSIZE                                    1024
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE                                    8
 #define RT_LWIP_ETHTHREAD_TIMESLICE                                    16
 #define RT_LWIP_ETHTHREAD_RX_NAME                                      "erx"
 #define RT_LWIP_ETHTHREAD_TX_NAME                                      "etx"
+
+//以太网接收优先级
+#define RT_LWIP_ETHTHREAD_RX_PRIORITY                                     4
 
 /* RT_LWIP_REASSEMBLY_FRAG is not set */
 #define LWIP_NETIF_STATUS_CALLBACK                                     1

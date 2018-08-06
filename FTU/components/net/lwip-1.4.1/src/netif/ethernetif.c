@@ -439,7 +439,7 @@ int eth_system_device_init(void)
                             RT_NULL,
                             &eth_tx_thread_stack[0], 
                             sizeof(eth_tx_thread_stack),
-                            RT_ETHERNETIF_THREAD_PREORITY, 
+                            RT_LWIP_ETHTHREAD_PRIORITY, 
                             RT_LWIP_ETHTHREAD_TIMESLICE);
 														
     RT_ASSERT(result == RT_EOK);

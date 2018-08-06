@@ -853,7 +853,8 @@ gooseReceiverLoop(void* threadParameter)
         while (self->running) {
 
             if (GooseReceiver_tick(self) == false)
-                Thread_sleep(1);
+                ;
+               // Thread_sleep(1);
         }
 
         GooseReceiver_stopThreadless(self);

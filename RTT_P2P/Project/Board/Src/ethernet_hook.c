@@ -4,11 +4,13 @@
 #include "common_def.h"
 
 #include "string.h"
-//#include "extern_interface.h"
+
 #include "rtthread.h"
+#include "extern_interface.h"
 
+#define EXSIT_VLAN_TAG 1
 
-#if VLAN_TAG
+#if EXSIT_VLAN_TAG
 
 #define TPID_INDEX 12  //0x81
 #define ETHERNET_TYPE_INDEX 16  
@@ -35,27 +37,38 @@ static uint16_t EthernetReciveCount;
 static struct rt_mutex ethernet_mutex;
 rt_mutex_t g_ethernet_mutex;
 
+
+
+/**
+*消息邮箱
+*/
+static  rt_mailbox_t MacRawReciveMb;
+
+
+static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len);
+
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
 * @param : uint8_t* pData 数据指针
 * @param : uint16_t len 数据长度
-* @return: void
+* @return: true--发送成功
 * @update: [2018-08-2][张宇飞][]
+*[2018-08-06][张宇飞][添加邮箱发送，返回值为true]
 */
-void EthernetInput(uint8_t* pData, uint16_t len)
+bool EthernetInput(uint8_t* pData, uint16_t len)
 {
     if (pData == NULL)
     {
-        return;
+        return false;
     }
 
     
- #if VLAN_TAG   
+ #if EXSIT_VLAN_TAG   
     //检测TPID是否是0x8100
     if((pData[TPID_INDEX] != TPID_LOW) 
         || (pData[TPID_INDEX + 1] != TPID_HIGHT))
     {
-       return;
+       return  false;
     }
 #endif
     
@@ -63,33 +76,47 @@ void EthernetInput(uint8_t* pData, uint16_t len)
     if((pData[ETHERNET_TYPE_INDEX] != ETHERNET_TYPE_LOW) 
         || (pData[ETHERNET_TYPE_INDEX + 1] != ETHERNET_TYPE_HIGHT))
     {
-       return;
+       return false;
     }   
     
     if (len > MAX_RECIVE_COUNT)
     {
-        return;
+        return false;
     }
     
-    rt_memcpy(EthernetReciveBuffer, pData, len);
-    EthernetReciveCount = len;
+	PointUint8* pPacket = MakePacketMacRawMessage(pData, len);
+	if (!pPacket)
+	{
+		perror("MakePacketMacRawMessage Make failure\n");
+        return false;
+	}
     
-    //调试打印输出
-    rt_kprintf("ReciveData rxCount : %d HEX:\n", len);
-    uint16_t i;
-    for(i = 0; i < len; i++)
-    {
-        rt_kprintf("%2X ", EthernetReciveBuffer[i]);
-    }
-    rt_kprintf("\r\n");
+	rt_err_t err = rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket));
+	if (err != RT_EOK)
+	{
+		perror("rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket))\n");
+        return false;
+	}
+    return true;
     
-    pData[0] = 0xFF;
-    pData[1] = 0xFF;
-    pData[2] = 0xFF;
-    pData[3] = 0xFF;
-    pData[4] = 0xFF;
-    pData[5] = 0xFF;
-    EthernetOutput(pData, len);
+//    EthernetReciveCount = len;
+//    
+//    //调试打印输出
+//    rt_kprintf("ReciveData rxCount : %d HEX:\n", len);
+//    uint16_t i;
+//    for(i = 0; i < len; i++)
+//    {
+//        rt_kprintf("%2X ", EthernetReciveBuffer[i]);
+//    }
+//    rt_kprintf("\r\n");
+//    
+//    pData[0] = 0xFF;
+//    pData[1] = 0xFF;
+//    pData[2] = 0xFF;
+//    pData[3] = 0xFF;
+//    pData[4] = 0xFF;
+//    pData[5] = 0xFF;
+//    EthernetOutput(pData, len);
 }
 
 
@@ -101,6 +128,7 @@ void EthernetInput(uint8_t* pData, uint16_t len)
 * @param : uint16_t len 数据长度
 * @return: void
 * @update: [2018-08-2][张宇飞][]
+*[2018-08-06][张宇飞][添加接收邮箱]
 */
 void EthernetHookInit(void)
 {
@@ -117,7 +145,68 @@ void EthernetHookInit(void)
     }
     
     
+    MacRawReciveMb = rt_mb_create ("macraw", 100, RT_IPC_FLAG_FIFO);
+    
 }
+
+
+/**
+* @brief : 生成m打包信息，有动态内存分配
+* @param : uint8_t *pData 数据指针
+* @param : uint16_t len 数据长度
+* @return: PointUint8* pPacket 数据
+* @update: [2018-08-2][张宇飞][]
+*/
+static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len)
+{
+    PointUint8* pPacket = (PointUint8*)MALLOC(sizeof(PointUint8));
+    if (!pPacket)
+    {
+        return NULL;
+    }
+    pPacket->pData = (uint8_t*)MALLOC(len * sizeof(uint8_t));
+    if (!pPacket->pData)
+    {
+        FREE(pPacket);
+        return NULL;
+    }
+    MEMCPY(pPacket->pData, pData, len);
+    pPacket->len = len;
+    return pPacket;
+}
+
+/**
+* @brief :mac 阻塞输入,有内存释放
+* @param :uint8_t* pData 保存的地址
+* @param :size 缓冲尺寸
+* @return: uint16_t 实际接收尺寸
+* @update: [2018-08-03][张宇飞][]
+*[2018-08-06][张宇飞][修改形参为]
+*/
+uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size)
+{
+	PointUint8* pPacket;
+    uint16_t count;
+	rt_err_t err = rt_mb_recv(MacRawReciveMb, (rt_uint32_t*)(&pPacket), RT_WAITING_FOREVER);
+	if (err == RT_EOK)
+	{
+        count = pPacket->len;
+		if (count > size || count== 0)
+		{
+			return 0;
+		}
+
+		MEMCPY(pData, pPacket->pData, pPacket->len);
+        FREE(pPacket->pData);
+        FREE(pPacket);
+        
+		return count;		
+	}
+	return 0;
+}
+
+
+
 
 /**
 * @brief : 上锁

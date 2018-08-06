@@ -16,7 +16,7 @@
 #include "drv_eth.h"
 #include "lwipopts.h"
 #include "board.h"
-
+#include "miscellaneous.h"
 #include "ethernet_hook.h"
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
@@ -150,6 +150,7 @@ static void GPIO_Configuration(void)
   * @brief  initialize the interface.
   * @param  [dev] the device pointer.
   * @retval [RT_EOK] success.
+  *@update[2018-08-06][张宇飞][添加设置为VLAN]
   */
 static rt_err_t rt_stm32_eth_init(rt_device_t dev)
 {
@@ -170,7 +171,7 @@ static rt_err_t rt_stm32_eth_init(rt_device_t dev)
     EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_SOFTWARE;
     //EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
     EthHandle.Init.PhyAddress = DP83848_PHY_ADDRESS;
-	
+	EthHandle.TxDesc->Status |= ETH_DMATXDESC_VF;
     HAL_ETH_DeInit(&EthHandle);
 	
     /* configure ethernet peripheral (GPIOs, clocks, MAC, DMA) */
@@ -345,6 +346,9 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 		{
         ETH_PRINTF("RX err =%d\n", result );
 		}
+        
+    StopWatchInit();
+    StopWatchStart();
 }
 
 /**
@@ -500,11 +504,13 @@ error:
     return ret;
 }
 /**
-  * @brief 发送函数使用互斥量,每次发送一帧
-  * @param  [dev] the ETH_HandleTypeDef pointer.
-  * @param  [p] the ETH_HandleTypeDef pointer.
-  * @retval [RT_ERROR] error;[ERR_OK] success.
-  */
+* @brief 发送函数使用互斥量,每次发送一帧
+* @param  uint8_t* pData 数据指针
+* @param  uint16_t count 数据长度
+* @retutn [RT_ERROR] error;[ERR_OK] success.
+* @update[2018-08-03][张宇飞][创建]
+* @update[2018-08-06][张宇飞][添加VLAN标识]
+*/
 rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
 {
     EhernetOuputMutex_OnLock();
@@ -550,6 +556,9 @@ rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
         ret = ERR_USE;
         goto error;
     }
+    //这是一个VLAN
+    //DmaTxDesc->Status |= ETH_DMATXDESC_VF;
+    
     
     ETH_PRINTF("copy one frame\n");
     
@@ -595,6 +604,7 @@ error:
   * @brief  ethernet device interface, reception packet.
   * @param  [dev] the ETH_HandleTypeDef pointer.
   * @retval return the reception packet.
+*@update[2018-08-96][张宇飞][对于截取成功的，则跳过转到普通帧处理]
   */
 struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
 {
@@ -625,66 +635,70 @@ struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
 
     ETH_PRINTF("receive frame len : %d\n", len);
     
-    EthernetInput(buffer, len);//中间拦截
-    
-    if (len > 0)
-    {
-        /* We allocate a pbuf chain of pbufs from the Lwip buffer pool */
-        p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
-    }
-
-#ifdef ETH_RX_DUMP
-    {
-        rt_uint32_t i;
-        rt_uint8_t *ptr = buffer;
-
-        ETH_PRINTF("rx_dump, len:%d\r\n", p->tot_len);
-        for (i = 0; i < len; i++)
+    //截取输入
+    bool resultState = EthernetInput(buffer, len);//中间拦截
+    if (!resultState)
+    {    
+        if (len > 0)
         {
-            ETH_PRINTF("%02x ", *ptr);
-            ptr++;
-
-            if (((i + 1) % 8) == 0)
-            {
-                ETH_PRINTF("  ");
-            }
-            if (((i + 1) % 16) == 0)
-            {
-                ETH_PRINTF("\r\n");
-            }
+            /* We allocate a pbuf chain of pbufs from the Lwip buffer pool */
+            p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
         }
-        ETH_PRINTF("\r\ndump done!\r\n");
-    }
-#endif
-    
-    if (p != NULL)
-    {
-        dmarxdesc = EthHandle.RxFrameInfos.FSRxDesc;
-        bufferoffset = 0;
-        for(q = p; q != NULL; q = q->next)
+
+    #ifdef ETH_RX_DUMP
         {
-            byteslefttocopy = q->len;
-            payloadoffset = 0;
+            rt_uint32_t i;
+            rt_uint8_t *ptr = buffer;
 
-            /* Check if the length of bytes to copy in current pbuf is bigger than Rx buffer size*/
-            while( (byteslefttocopy + bufferoffset) > ETH_RX_BUF_SIZE )
+            ETH_PRINTF("rx_dump, len:%d\r\n", p->tot_len);
+            for (i = 0; i < len; i++)
             {
-                /* Copy data to pbuf */
-                memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), (ETH_RX_BUF_SIZE - bufferoffset));
+                ETH_PRINTF("%02x ", *ptr);
+                ptr++;
 
-                /* Point to next descriptor */
-                dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
-                buffer = (uint8_t *)(dmarxdesc->Buffer1Addr);
-
-                byteslefttocopy = byteslefttocopy - (ETH_RX_BUF_SIZE - bufferoffset);
-                payloadoffset = payloadoffset + (ETH_RX_BUF_SIZE - bufferoffset);
-                bufferoffset = 0;
+                if (((i + 1) % 8) == 0)
+                {
+                    ETH_PRINTF("  ");
+                }
+                if (((i + 1) % 16) == 0)
+                {
+                    ETH_PRINTF("\r\n");
+                }
             }
-            /* Copy remaining data in pbuf */
-            memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), byteslefttocopy);
-            bufferoffset = bufferoffset + byteslefttocopy;
+            ETH_PRINTF("\r\ndump done!\r\n");
         }
-    }  
+    #endif
+        
+        if (p != NULL)
+        {
+            dmarxdesc = EthHandle.RxFrameInfos.FSRxDesc;
+            bufferoffset = 0;
+            for(q = p; q != NULL; q = q->next)
+            {
+                byteslefttocopy = q->len;
+                payloadoffset = 0;
+
+                /* Check if the length of bytes to copy in current pbuf is bigger than Rx buffer size*/
+                while( (byteslefttocopy + bufferoffset) > ETH_RX_BUF_SIZE )
+                {
+                    /* Copy data to pbuf */
+                    memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), (ETH_RX_BUF_SIZE - bufferoffset));
+
+                    /* Point to next descriptor */
+                    dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
+                    buffer = (uint8_t *)(dmarxdesc->Buffer1Addr);
+
+                    byteslefttocopy = byteslefttocopy - (ETH_RX_BUF_SIZE - bufferoffset);
+                    payloadoffset = payloadoffset + (ETH_RX_BUF_SIZE - bufferoffset);
+                    bufferoffset = 0;
+                }
+                /* Copy remaining data in pbuf */
+                memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), byteslefttocopy);
+                bufferoffset = bufferoffset + byteslefttocopy;
+            }
+        }  
+    
+    }
   
     /* Release descriptors to DMA */
     /* Point to first descriptor */

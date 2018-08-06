@@ -127,18 +127,19 @@ void TestGooseBeat(void)
 	Beat.Execute = publisher_test;
     GooseBeatInit("goose1", &Beat);
     rt_thread_delay(1000);
-    Beat.Execute(&Beat);
-    rt_timer_start(&Beat.timer);
+   // Beat.Execute(&Beat);
+  //  rt_timer_start(&Beat.timer);
     
-    
-    do
-    {
-        rt_thread_delay(5000);
-        rt_timer_stop(&Beat.timer);
-        Beat.next = 0;
-         Beat.Execute(&Beat);
-         rt_timer_start(&Beat.timer);
-    }while(1);
+    //¿ªÊ¼¶©ÔÄ
+    subscriber_main();
+//    do
+//    {
+//        rt_thread_delay(5000);
+//        rt_timer_stop(&Beat.timer);
+//        Beat.next = 0;
+//        Beat.Execute(&Beat);
+//        rt_timer_start(&Beat.timer);
+//    }while(1);
     
 }
 
