@@ -258,7 +258,7 @@
 #define RT_LWIP_SLIPIFTHREAD_PRIORITY                                  1
 #define RT_LWIP_TCPTHREAD_MBOX_SIZE                                    8
 #define RT_LWIP_TCPTHREAD_STACKSIZE                                    1024
-#define RT_LWIP_ETHTHREAD_PRIORITY                                     4
+#define RT_LWIP_ETHTHREAD_PRIORITY                                     10
 #define RT_LWIP_ETHTHREAD_STACKSIZE                                    1024
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE                                    8
 #define RT_LWIP_ETHTHREAD_TIMESLICE                                    16
