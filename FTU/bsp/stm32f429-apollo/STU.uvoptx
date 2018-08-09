@@ -326,56 +326,7 @@
           <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F429IGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>368</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134747316</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\..\..\LibIEC\libIEC61850\src\mms\iso_server\iso_server.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STU\../../../LibIEC/libIEC61850/src/mms/iso_server/iso_server.c\368</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>461</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134747408</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\..\..\LibIEC\libIEC61850\src\mms\iso_server\iso_server.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STU\../../../LibIEC/libIEC61850/src/mms/iso_server/iso_server.c\461</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>186</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134656122</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\..\..\RTT_P2P\Project\libiec_hal\socket\dtu_rtt\socket_rtt.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STU\../../../RTT_P2P/Project/libiec_hal/socket/dtu_rtt/socket_rtt.c\186</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -401,6 +352,11 @@
         </Ww>
         <Ww>
           <count>3</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>self</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
           <WinNumber>2</WinNumber>
           <ItemText>self</ItemText>
         </Ww>
@@ -454,7 +410,7 @@
 
   <Group>
     <GroupName>Applications</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

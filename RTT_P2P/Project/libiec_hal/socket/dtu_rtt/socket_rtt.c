@@ -79,11 +79,12 @@ Handleset_waitReady(HandleSet self, unsigned int timeoutMs)
 
        timeout.tv_sec = timeoutMs / 1000;
        timeout.tv_usec = (timeoutMs % 1000) * 1000;
-       result = select(self->maxHandle + 1, &self->handles, NULL, NULL, &timeout);
+       result = lwip_select(self->maxHandle + 1, &self->handles, NULL, NULL, &timeout);
    } else {
        result = -1;
    }
 
+   
    return result;
 }
 
@@ -103,14 +104,20 @@ Handleset_destroy(HandleSet self)
 static void
 setSocketNonBlocking(Socket self)
 {
-    unsigned long mode = 1;
-//    if (ioctlsocket(self->fd, FIONBIO, &mode) != 0) {
-//        if (DEBUG_SOCKET)
-//            perror("WIN32_SOCKET: failed to set socket non-blocking!\n");
-//    }
+    unsigned long mode = 1;    
+    if (lwip_ioctl(self->fd, FIONBIO, &mode) != 0) {
+        if (DEBUG_SOCKET)
+            perror("LWIP_SOCKET: failed to set socket non-blocking!\n");
+    }
     
-    //int tcpNoDelay = 1;
-    //setsockopt(self->fd, IPPROTO_TCP, TCP_NODELAY,(const char*)&tcpNoDelay, sizeof(int));
+    int tcpNoDelay = 1;
+     int error = lwip_setsockopt(self->fd, IPPROTO_TCP, TCP_NODELAY,(const char*)&tcpNoDelay, sizeof(int));
+    if (error != 0)
+    {
+        if (DEBUG_SOCKET)
+            perror("setsockopt: IPPROTO_TCP, TCP_NODELAY! %d\n", self->fd);
+    }
+    
 }
 
 static bool
@@ -122,29 +129,26 @@ prepareServerAddress(const char* address, int port, struct sockaddr_in* sockaddr
     return true;
 }
 
-//static bool wsaStartUp()
-//{
-//	
-//		return true;
-//}
 
-//static void wsaShutdown()
-//{
-//	
-//}
 
 ServerSocket
 TcpServerSocket_create(const char* address, int port)
 {
     ServerSocket serverSocket = (ServerSocket) GLOBAL_MALLOC(sizeof(struct sServerSocket));
 
-    if ((serverSocket->fd = lwip_socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if (!serverSocket)
+    {
+       perror("serverSocket GLOBAL_MALLOC\n");
+        return NULL; 
+    }
+    if ((serverSocket->fd = lwip_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
     {
         perror("lwip_socket\n");
         return NULL;
     }
-//   int optionReuseAddr = 1;
-//	setsockopt(serverSocket->fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optionReuseAddr, sizeof(int));
+    
+    int optionReuseAddr = 1;
+	setsockopt(serverSocket->fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optionReuseAddr, sizeof(int));
     
     serverSocket->server_addr.sin_family = AF_INET;
     serverSocket->server_addr.sin_port = htons(port);
@@ -153,6 +157,7 @@ TcpServerSocket_create(const char* address, int port)
     if (lwip_bind(serverSocket->fd, (struct sockaddr *) (&(serverSocket->server_addr)), sizeof(struct sockaddr))== -1)
     {
         perror("Unable to bind\n");
+        GLOBAL_FREEMEM(serverSocket);
         return NULL;
     }
     
@@ -187,8 +192,7 @@ ServerSocket_accept(ServerSocket self)
 		conSocket->fd = fd;
 
 	    setSocketNonBlocking(conSocket);
-       
-        
+               
         MEMCPY(&(conSocket->fromAddr), &fromAddr, sizeof(struct sockaddr));
        
 	}
@@ -208,6 +212,10 @@ ServerSocket_destroy(ServerSocket self)
 	lwip_close(self->fd);
     socketCount--;
     GLOBAL_FREEMEM(self);
+    if (DEBUG_SOCKET)
+    {
+        rt_kprintf("ServerSocket_destroy\n");
+    }
 }
 
 Socket
@@ -233,7 +241,7 @@ Socket_connect(Socket self, const char* address, int port)
 {
 	
      perror("Unimplement\n");
-        return true;
+     return false;
 }
 
 char*
@@ -251,21 +259,23 @@ Socket_getPeerAddress(Socket self)
 int
 Socket_read(Socket self, uint8_t* buf, int size)
 {
-
-
-    
-    //lwip_recvfrom
-    rt_kprintf("Recive:\n");
+    if (DEBUG_SOCKET)
+    {
+        rt_kprintf("Recive:\n");
+    }
     int bytes_received = lwip_recv(self->fd, buf, size, 0);
     
     if (bytes_received <=0 )
     {
-      //  bytes_received = -1;
-        perror("bytes_received <=0\n");
+        bytes_received = 0;
+        //perror("bytes_received <=0\n");
     }
-    for (int i = 0; i< bytes_received; i++)
+    if (DEBUG_SOCKET)
     {
-        rt_kprintf("%X ", buf[i]);
+        for (int i = 0; i< bytes_received; i++)
+        {
+            rt_kprintf("%X ", buf[i]);
+        }
     }
     return bytes_received;
     
@@ -274,25 +284,34 @@ Socket_read(Socket self, uint8_t* buf, int size)
 int
 Socket_write(Socket self, uint8_t* buf, int size)
 {
-    
-//    perror("Unimplement\n");
-     rt_kprintf("Send:\n");
-    int err = lwip_send(self->fd, buf, size, 0);
-    if (err < 0)
+
+    if (DEBUG_SOCKET)
+    {
+        rt_kprintf("Send:\n");
+    }
+    int bytes_sent = lwip_send(self->fd, buf, size, 0);
+    if (bytes_sent < 0)
     {
         perror("lwip_send <=0\n");
     }
     
-    
-    for (int i = 0; i< err; i++)
+    if (DEBUG_SOCKET)
     {
-        rt_kprintf("%X ", buf[i]);
+        for (int i = 0; i< bytes_sent; i++)
+        {
+            rt_kprintf("%X ", buf[i]);
+        }
     }
-	return err;
+	return bytes_sent;
 }
 
 void
 Socket_destroy(Socket self)
 {
-	 perror("Unimplement\n");
+	 if (self->fd != INVALID_SOCKET)
+     {
+         lwip_close(self->fd);
+     }
+     socketCount--;
+     GLOBAL_FREEMEM(self);
 }

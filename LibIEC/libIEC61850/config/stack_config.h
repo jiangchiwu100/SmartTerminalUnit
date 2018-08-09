@@ -16,14 +16,14 @@
 /* #undef CONFIG_SYSTEM_HAS_CLOCK_GETTIME */
 
 /* include asserts if set to 1 */
-#define DEBUG 1
+#define DEBUG 0
 
 /* print debugging information with printf if set to 1 */
-#define DEBUG_SOCKET 1
-#define DEBUG_COTP 1
-#define DEBUG_ISO_SERVER 1
+#define DEBUG_SOCKET 0
+#define DEBUG_COTP 0
+#define DEBUG_ISO_SERVER 0
 #define DEBUG_ISO_CLIENT 0
-#define DEBUG_IED_SERVER 1
+#define DEBUG_IED_SERVER 0
 #define DEBUG_IED_CLIENT 0
 #define DEBUG_MMS_CLIENT 0
 #define DEBUG_MMS_SERVER 0
