@@ -355,6 +355,7 @@ createGoosePayload(GoosePublisher self, LinkedList dataSetValues, uint8_t* buffe
 int
 GoosePublisher_publish(GoosePublisher self, LinkedList dataSet)
 {
+
     uint8_t* buffer = self->buffer + self->payloadStart;
 
     size_t maxPayloadSize = GOOSE_MAX_MESSAGE_SIZE - self->payloadStart;
@@ -378,7 +379,6 @@ GoosePublisher_publish(GoosePublisher self, LinkedList dataSet)
     if (DEBUG_GOOSE_PUBLISHER)
         printf("GOOSE_PUBLISHER: send GOOSE message\n");
 
-    
     Ethernet_sendPacket(self->ethernetSocket, self->buffer, self->payloadStart + payloadLength);
 
     return 0;

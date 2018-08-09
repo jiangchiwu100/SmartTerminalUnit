@@ -132,9 +132,11 @@ Ethernet_destroySocket(EthernetSocket ethSocket)
 void
 Ethernet_sendPacket(EthernetSocket ethSocket, uint8_t* buffer, int packetSize)
 {
-   
+       //  StopWatchInit();
+      //  StopWatchStart();  
     EthernetOutput(buffer, packetSize);
    //MacRawOutput(buffer, packetSize);
+  //  StopWatchStop();
 }
 
 void

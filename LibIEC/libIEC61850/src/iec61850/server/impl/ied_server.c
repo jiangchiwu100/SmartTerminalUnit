@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  ied_server.c
  *
  *  Copyright 2013-2018 Michael Zillgith

@@ -107,6 +107,8 @@ uint8_t publisher_test(GooseBeat* beat)
 }
 
 static GooseBeat Beat;
+
+extern int server61850_test(void) ;
 /**
 * @brief  : goose ²âÊÔ
 * @param  : void
@@ -131,7 +133,8 @@ void TestGooseBeat(void)
   //  rt_timer_start(&Beat.timer);
     
     //¿ªÊ¼¶©ÔÄ
-    subscriber_main();
+    //subscriber_main();
+    server61850_test();
 //    do
 //    {
 //        rt_thread_delay(5000);

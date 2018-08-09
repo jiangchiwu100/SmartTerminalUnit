@@ -1,4 +1,4 @@
-ï»¿
+
 
 #include <stdbool.h>
 
@@ -8,20 +8,65 @@
 #include "hal_socket.h"
 #include "stack_config.h"
 
+#include <sys/socket.h>
+#include <dfs_select.h>
+
+
+#include "lwip/opt.h"
+#include "lwip/api.h"
+#include "extern_interface.h"
+
+#define INVALID_SOCKET (~0)
+
+
+struct sSocket {
+	int fd;
+	uint32_t connectTimeout;
+    
+    
+    struct sockaddr fromAddr;   
+};
+struct sServerSocket {
+
+    int fd;
+    int backLog;
+    
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+};
+
+struct sHandleSet {
+   fd_set handles;
+   int  maxHandle;
+    
+};
+
+
+static int socketCount = 0;
 
 
 HandleSet
 Handleset_new(void)
 {
-   HandleSet result ;
    
-   return result;
+   HandleSet result = (HandleSet) GLOBAL_MALLOC(sizeof(struct sHandleSet));
+
+   if (result != NULL) {
+       FD_ZERO(&result->handles);
+      result->maxHandle = INVALID_SOCKET;
+   }
+   return result;  
 }
 
 void
 Handleset_addSocket(HandleSet self, const Socket sock)
 {
-  
+   if (self != NULL && sock != NULL && sock->fd != INVALID_SOCKET) {
+       FD_SET(sock->fd, &self->handles);
+
+       if ((sock->fd > self->maxHandle) || (self->maxHandle == INVALID_SOCKET))
+           self->maxHandle = sock->fd;
+   }
 }
 
 int
@@ -29,7 +74,15 @@ Handleset_waitReady(HandleSet self, unsigned int timeoutMs)
 {
    int result;
 
-  
+   if (self != NULL && self->maxHandle >= 0) {
+       struct timeval timeout;
+
+       timeout.tv_sec = timeoutMs / 1000;
+       timeout.tv_usec = (timeoutMs % 1000) * 1000;
+       result = select(self->maxHandle + 1, &self->handles, NULL, NULL, &timeout);
+   } else {
+       result = -1;
+   }
 
    return result;
 }
@@ -37,11 +90,9 @@ Handleset_waitReady(HandleSet self, unsigned int timeoutMs)
 void
 Handleset_destroy(HandleSet self)
 {
-  ;
+  GLOBAL_FREEMEM(self);
 }
 
-static bool wsaStartupCalled = false;
-static int socketCount = 0;
 
 //static void
 //activateKeepAlive(SOCKET s)
@@ -52,7 +103,14 @@ static int socketCount = 0;
 static void
 setSocketNonBlocking(Socket self)
 {
-   
+    unsigned long mode = 1;
+//    if (ioctlsocket(self->fd, FIONBIO, &mode) != 0) {
+//        if (DEBUG_SOCKET)
+//            perror("WIN32_SOCKET: failed to set socket non-blocking!\n");
+//    }
+    
+    //int tcpNoDelay = 1;
+    //setsockopt(self->fd, IPPROTO_TCP, TCP_NODELAY,(const char*)&tcpNoDelay, sizeof(int));
 }
 
 static bool
@@ -60,41 +118,80 @@ prepareServerAddress(const char* address, int port, struct sockaddr_in* sockaddr
 {
 
 	
-
+    perror("Unimplement\n");
     return true;
 }
 
-static bool wsaStartUp()
-{
-	
-		return true;
-}
+//static bool wsaStartUp()
+//{
+//	
+//		return true;
+//}
 
-static void wsaShutdown()
-{
-	
-}
+//static void wsaShutdown()
+//{
+//	
+//}
 
 ServerSocket
 TcpServerSocket_create(const char* address, int port)
 {
-	
-	return NULL;
+    ServerSocket serverSocket = (ServerSocket) GLOBAL_MALLOC(sizeof(struct sServerSocket));
+
+    if ((serverSocket->fd = lwip_socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    {
+        perror("lwip_socket\n");
+        return NULL;
+    }
+//   int optionReuseAddr = 1;
+//	setsockopt(serverSocket->fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optionReuseAddr, sizeof(int));
+    
+    serverSocket->server_addr.sin_family = AF_INET;
+    serverSocket->server_addr.sin_port = htons(port);
+    serverSocket->server_addr.sin_addr.s_addr = htonl(INADDR_ANY); 
+    rt_memset(&(serverSocket->server_addr.sin_zero), 8, sizeof(serverSocket->server_addr.sin_zero));
+    if (lwip_bind(serverSocket->fd, (struct sockaddr *) (&(serverSocket->server_addr)), sizeof(struct sockaddr))== -1)
+    {
+        perror("Unable to bind\n");
+        return NULL;
+    }
+    
+    serverSocket->backLog = 10;
+    setSocketNonBlocking((Socket) serverSocket);
+    
+    socketCount++;
+	return serverSocket;
 }
 
 void
 ServerSocket_listen(ServerSocket self)
 {
-	
+	if (lwip_listen(self->fd, self->backLog) == -1)
+    {
+        perror("Listen error\n");
+    }
 }
 
 Socket
 ServerSocket_accept(ServerSocket self)
 {
-	
+	int fd;
+    uint32_t sin_size = sizeof(struct sockaddr_in);
 	Socket conSocket = NULL;
+    struct sockaddr fromAddr;
+    
+	fd = lwip_accept(self->fd, &fromAddr, &sin_size);
 
-	
+	if (fd >= 0) {
+		conSocket = TcpSocket_create();
+		conSocket->fd = fd;
+
+	    setSocketNonBlocking(conSocket);
+       
+        
+        MEMCPY(&(conSocket->fromAddr), &fromAddr, sizeof(struct sockaddr));
+       
+	}
 
 	return conSocket;
 }
@@ -102,64 +199,100 @@ ServerSocket_accept(ServerSocket self)
 void
 ServerSocket_setBacklog(ServerSocket self, int backlog)
 {
-	
+	self->backLog = backlog;
 }
 
 void
 ServerSocket_destroy(ServerSocket self)
 {
-	
+	lwip_close(self->fd);
+    socketCount--;
+    GLOBAL_FREEMEM(self);
 }
 
 Socket
 TcpSocket_create()
 {
-	Socket self ;
+	Socket self = (Socket) GLOBAL_MALLOC(sizeof(struct sSocket));
+
+	self->fd = INVALID_SOCKET;
+	self->connectTimeout = 5000;
+
+	socketCount++;
 
 	return self;
 }
-
 void
 Socket_setConnectTimeout(Socket self, uint32_t timeoutInMs)
 {
-    
+    self->connectTimeout = timeoutInMs;
 }
 
 bool
 Socket_connect(Socket self, const char* address, int port)
 {
 	
+     perror("Unimplement\n");
         return true;
 }
 
 char*
 Socket_getPeerAddress(Socket self)
 {
-	
-
-	char* clientConnection;
-
+    //Àý×Ó--- "192.168.10.1:12345"
+	char* clientConnection = (char*)GLOBAL_MALLOC(sizeof(char) *  25);
+    char* pData = self->fromAddr.sa_data;
+    sprintf(clientConnection, "%d.%d.%d.%d:%d", pData[2], pData[3], pData[4], pData[5], pData[0]*256+ pData[1]);  
+    //rt_kprintf(clientConnection);
+    //rt_kprintf("\r\n");
 	return clientConnection;
 }
 
 int
 Socket_read(Socket self, uint8_t* buf, int size)
 {
- 
-    return -1;
+
+
+    
+    //lwip_recvfrom
+    rt_kprintf("Recive:\n");
+    int bytes_received = lwip_recv(self->fd, buf, size, 0);
+    
+    if (bytes_received <=0 )
+    {
+      //  bytes_received = -1;
+        perror("bytes_received <=0\n");
+    }
+    for (int i = 0; i< bytes_received; i++)
+    {
+        rt_kprintf("%X ", buf[i]);
+    }
+    return bytes_received;
     
 }
 
 int
 Socket_write(Socket self, uint8_t* buf, int size)
 {
-   
-
-	return -1;
+    
+//    perror("Unimplement\n");
+     rt_kprintf("Send:\n");
+    int err = lwip_send(self->fd, buf, size, 0);
+    if (err < 0)
+    {
+        perror("lwip_send <=0\n");
+    }
+    
+    
+    for (int i = 0; i< err; i++)
+    {
+        rt_kprintf("%X ", buf[i]);
+    }
+	return err;
 }
 
 void
 Socket_destroy(Socket self)
 {
-	
+	 perror("Unimplement\n");
 }

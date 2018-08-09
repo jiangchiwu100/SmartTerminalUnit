@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  mms_mapping.c
  *
  *  Copyright 2013-2017 Michael Zillgith
@@ -2775,10 +2775,11 @@ MmsMapping_triggerGooseObservers(MmsMapping* self, MmsValue* value)
 
         if (MmsGooseControlBlock_isEnabled(gcb)) {
             DataSet* dataSet = MmsGooseControlBlock_getDataSet(gcb);
-
-            if (DataSet_isMemberValue(dataSet, value, NULL)) {
-                MmsGooseControlBlock_observedObjectChanged(gcb);
+         
+            if (DataSet_isMemberValue(dataSet, value, NULL)) {       
+                MmsGooseControlBlock_observedObjectChanged(gcb);                    
             }
+            
         }
     }
 }

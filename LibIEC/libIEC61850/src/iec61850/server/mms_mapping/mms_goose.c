@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  mms_goose.c
  *
  *  Copyright 2013, 2014 Michael Zillgith
@@ -335,8 +335,9 @@ MmsGooseControlBlock_observedObjectChanged(MmsGooseControlBlock self)
 {
 #if (CONFIG_MMS_THREADLESS_STACK != 1)
     Semaphore_wait(self->publisherMutex);
-#endif
+#endif  
 
+    
     uint64_t currentTime = GoosePublisher_increaseStNum(self->publisher);
 
     self->retransmissionsLeft = CONFIG_GOOSE_EVENT_RETRANSMISSION_COUNT;
@@ -351,12 +352,13 @@ MmsGooseControlBlock_observedObjectChanged(MmsGooseControlBlock self)
 
         GoosePublisher_setTimeAllowedToLive(self->publisher, self->maxTime * 3);
     }
-
+   
     GoosePublisher_publish(self->publisher, self->dataSetValues);
-
+  
 #if (CONFIG_MMS_THREADLESS_STACK != 1)
     Semaphore_post(self->publisherMutex);
 #endif
+     
 }
 
 static MmsVariableSpecification*

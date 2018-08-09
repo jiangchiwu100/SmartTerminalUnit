@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  thread_win32.c
  *
  *  Copyright 2013, 2014 Michael Zillgith
@@ -26,7 +26,7 @@
 #include "hal_thread.h"
 
 
-#include "rtthread.h"
+#include "extern_interface.h"
 
 struct sThread {
 	ThreadExecutionFunction function;
@@ -39,7 +39,7 @@ struct sThread {
 Thread
 Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy)
 {
-    
+    static int count = 0;
 	Thread thread =(Thread) GLOBAL_MALLOC(sizeof(struct sThread));
     thread->parameter = parameter;
 	thread->parameter = parameter;
@@ -51,7 +51,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 								function,
 								parameter,
 	                            2048,
-	                            2,
+	                            3,
 	                            20);
 
 	if (thread->handle == NULL)
@@ -61,6 +61,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 	}
 	else
 	{
+        rt_kprintf("Thread_create  Taske NUM:%d\r\n", ++count);
 		return thread;
 	}
 
@@ -86,30 +87,52 @@ Thread_sleep(int millies)
 {
 	rt_thread_delay(millies);
 }
-
+static int mux_count = 0;
 Semaphore
 Semaphore_create(int initialValue)
 {
     
-
-    return NULL;
+    static char name[5] = "mux0";
+    if (mux_count++ > 30)
+    {
+        perror("mux_count > 30) \n");
+        return NULL;
+    }
+    rt_kprintf("Semaphore_create Count: %d\n", mux_count);
+    name[3] ++;//支持10个名称
+    
+    
+    rt_mutex_t sem = rt_mutex_create(name,  RT_IPC_FLAG_PRIO);
+    return (void*)sem;
 }
 
 /* Wait until semaphore value is greater than zero. Then decrease the semaphore value. */
 void
 Semaphore_wait(Semaphore self)
 {
-   
+    rt_mutex_t sem = (rt_mutex_t)self;
+    rt_err_t err =  rt_mutex_take (sem, RT_WAITING_FOREVER);
+    if (err != RT_EOK)
+    {
+        perror("rt_sem_take(sem, RT_WAITING_FOREVER)\n");
+    }
 }
 
 void
 Semaphore_post(Semaphore self)
 {
-   
+    rt_mutex_t sem = (rt_mutex_t)self;
+    rt_err_t err = rt_mutex_release(sem);
+    if (err != RT_EOK)
+    {
+        perror("rt_sem_release(sem)\n");
+    }
 }
 
 void
 Semaphore_destroy(Semaphore self)
 {
-    
+    rt_mutex_t sem = (rt_mutex_t)self;
+    rt_mutex_delete (sem);
+    mux_count--;
 }

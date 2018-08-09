@@ -3031,6 +3031,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>libiec/ServerAPP</GroupName>
+          <Files>
+            <File>
+              <FileName>server_example_goose.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</FilePath>
+            </File>
+            <File>
+              <FileName>static_model.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\static_model.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -6055,6 +6070,21 @@
               <FileName>goose_publisher_beat.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\LibIEC\libIEC61850\GooseTransmission\goose_publisher_beat.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>libiec/ServerAPP</GroupName>
+          <Files>
+            <File>
+              <FileName>server_example_goose.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</FilePath>
+            </File>
+            <File>
+              <FileName>static_model.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\static_model.c</FilePath>
             </File>
           </Files>
         </Group>
