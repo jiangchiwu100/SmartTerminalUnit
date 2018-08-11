@@ -27,8 +27,8 @@
   * @return: [QUEUE_OK] sucess.
   * @return: [QUEUE_ERR] error.
   * @updata: [2017-12-06][Lexun][make code cleanup]
-  */  
-QUEUE_U8 QueueCreate(void *BufPCB, void *Buf, QUEUE_U32 SizeOfBuf, QUEUE_U8 (* ReadEmpty)(), QUEUE_U8 (* WriteFull)())
+  */ 
+QUEUE_U8 QueueCreate(void *BufPCB, void *Buf, QUEUE_U32 SizeOfBuf, QUEUE_U8 (* ReadEmpty)(), QUEUE_U8 (* WriteFull)(void*, QUEUE_U8, QUEUE_U8))
 {
     DataQueue *Queue;
 

@@ -48,7 +48,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 	thread->autodestroy = autodestroy;
 
 	thread->handle = rt_thread_create("googse",
-								function,
+								(void (*)(void *))function,
 								parameter,
 	                            2048,
 	                            3,
