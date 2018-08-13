@@ -194,7 +194,10 @@ ServerSocket_accept(ServerSocket self)
 	    setSocketNonBlocking(conSocket);
                
         MEMCPY(&(conSocket->fromAddr), &fromAddr, sizeof(struct sockaddr));
-       
+        if (DEBUG_SOCKET)
+        {
+            rt_kprintf("Accept new!\n");
+        }
 	}
 
 	return conSocket;
@@ -270,13 +273,13 @@ Socket_read(Socket self, uint8_t* buf, int size)
         bytes_received = 0;
         //perror("bytes_received <=0\n");
     }
-    if (DEBUG_SOCKET)
-    {
-        for (int i = 0; i< bytes_received; i++)
-        {
-            rt_kprintf("%X ", buf[i]);
-        }
-    }
+//    if (DEBUG_SOCKET)
+//    {
+//        for (int i = 0; i< bytes_received; i++)
+//        {
+//            rt_kprintf("%X ", buf[i]);
+//        }
+//    }
     return bytes_received;
     
 }
@@ -289,18 +292,23 @@ Socket_write(Socket self, uint8_t* buf, int size)
     {
         rt_kprintf("Send:\n");
     }
-    int bytes_sent = lwip_send(self->fd, buf, size, 0);
+    int bytes_sent = lwip_send_ex(self->fd, buf, size, 0);
     if (bytes_sent < 0)
     {
-        perror("lwip_send <=0\n");
+        if (bytes_sent == ERR_WOULDBLOCK)
+        {
+            bytes_sent = 0;
+        }
+        perror("lwip_send <0, size: %d\n", size);
     }
     
     if (DEBUG_SOCKET)
     {
-        for (int i = 0; i< bytes_sent; i++)
-        {
-            rt_kprintf("%X ", buf[i]);
-        }
+        rt_kprintf("send size: %d\n", size);
+//        for (int i = 0; i< bytes_sent; i++)
+//        {
+//            rt_kprintf("%X ", buf[i]);
+//        }
     }
 	return bytes_sent;
 }
@@ -315,3 +323,5 @@ Socket_destroy(Socket self)
      socketCount--;
      GLOBAL_FREEMEM(self);
 }
+
+

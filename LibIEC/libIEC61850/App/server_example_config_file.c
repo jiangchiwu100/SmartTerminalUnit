@@ -105,8 +105,8 @@ int config_flie_test(void)
 	bool flag = false;
 	while (running) {
 
-        StopWatchInit();
-        StopWatchStart();
+        //StopWatchInit();
+        //StopWatchStart();
 	    if (ggio_ind1_stvalue != NULL) {
 			
             IedServer_lockDataModel(iedServer);            
@@ -126,7 +126,7 @@ int config_flie_test(void)
 
             IedServer_unlockDataModel(iedServer);
 	    }
-        StopWatchStop();
+       // StopWatchStop();
 	    val += 0.1f;
 
 		Thread_sleep(1000);
