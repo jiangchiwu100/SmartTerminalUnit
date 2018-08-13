@@ -2724,6 +2724,12 @@
             <name>$PROJ_DIR$\..\..\components\finsh\finsh_vm.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\components\finsh\msh.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\components\finsh\msh_file.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\components\finsh\shell.c</name>
         </file>
         <file>
@@ -3374,6 +3380,12 @@
     </group>
     <group>
         <name>libiec/ServerAPP</name>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\iec61850_app.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\server_example_config_file.c</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</name>
         </file>

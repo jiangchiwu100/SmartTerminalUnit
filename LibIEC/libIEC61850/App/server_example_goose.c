@@ -99,8 +99,8 @@ int server61850_test(void)
 	uint32_t cn = 0;
 	while (running) {
 
-        StopWatchInit();
-        StopWatchStart();
+       // StopWatchInit();
+       // StopWatchStart();
 	    IedServer_lockDataModel(iedServer);
         
 		//IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_LD0_GGIO1_Ind3_stVal, true);
@@ -179,7 +179,7 @@ int server61850_test(void)
         
 	    IedServer_unlockDataModel(iedServer);
         
-        StopWatchStop();
+       // StopWatchStop();
 	    anIn1 += 1;
 		cn++;
 		Thread_sleep(500);

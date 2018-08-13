@@ -1117,7 +1117,8 @@ int rt_multi_thread_start(void)
     
   
    // DistributionAppInit();
-    TestGooseBeat();
+   // TestGooseBeat();
+    IEC61850AppInit();
     return(RT_EOK);    
 }
 INIT_APP_EXPORT(rt_multi_thread_start);

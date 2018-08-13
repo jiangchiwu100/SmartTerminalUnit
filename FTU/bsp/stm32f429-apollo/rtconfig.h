@@ -86,9 +86,11 @@
 #define FINSH_USING_SYMTAB
 #define FINSH_USING_DESCRIPTION
 #define FINSH_THREAD_PRIORITY                                          20
-#define FINSH_THREAD_STACK_SIZE                                        2048
+#define FINSH_THREAD_STACK_SIZE                                        4096
 #define FINSH_CMD_SIZE                                                 80
 //#define FINSH_USING_MSH
+//#define FINSH_USING_MSH_ONLY
+
 #define FINSH_USING_AUTH
 #define FINSH_DEFAULT_PASSWORD                                         "sojo"
 
