@@ -31,7 +31,7 @@ static void iec61850_thread_entry(void* parameter)
 {    
 	rt_kprintf("thread iec61850App start.\r\n");
     rt_thread_delay(1000);
-	config_flie_test();
+	Iec61850Server();
     //TestGooseBeat();
 }
   

@@ -3560,7 +3560,16 @@
             <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\iec61850_app.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\server_example_config_file.c</name>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\ied_data_ref.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\ied_data_ref.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\ied_data_ref_init.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\server_datamapping.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</name>
