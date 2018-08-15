@@ -20,6 +20,7 @@
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
+#include "miscellaneous.h"
 
 #define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\test_goose.cfg"
@@ -286,12 +287,14 @@ void SetRemote_PTOC1(bool str, bool op)
 {
 	MmsValue_setBitStringFromInteger(IED_PROT_PTOC1_Str_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_PTOC1_Str_t->mmsValue, Hal_getTimeInMs());
-	MmsValue_setBoolean(IED_PROT_PTOC1_Str_general->mmsValue, str);
+	//MmsValue_setBoolean(IED_PROT_PTOC1_Str_general->mmsValue, str);
 	MmsValue_setInt16(IED_PROT_PTOC1_Str_dirGeneral->mmsValue, (uint32_t)0); //forward
 
 	MmsValue_setBitStringFromInteger(IED_PROT_PTOC1_Op_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_PTOC1_Op_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_PTOC1_Op_general, op);
+	MmsValue_setBoolean(IED_PROT_PTOC1_Op_general->mmsValue, op);
+    
+    IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_PTOC1_Str_general, str);
 
 }
 /**
@@ -322,7 +325,7 @@ void SetRemote_SCPI1(bool a,bool b, bool c,  bool neut)
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_phsB->mmsValue, b);
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_phsC->mmsValue, c);
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_general->mmsValue, a && b && c);
-	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_neut->mmsValue, neut);
+	//MmsValue_setBoolean(IED_PROT_SCPI1_Abc_neut->mmsValue, neut);
 
 
 	//方向性
@@ -341,7 +344,9 @@ void SetRemote_SCPI1(bool a,bool b, bool c,  bool neut)
 
 
 	MmsValue_setInt16(IED_PROT_SCPI1_DirPrs_dirNeut->mmsValue , (uint32_t)0);//unknown|forward
-	IedServer_updateBooleanAttributeValue(CurrentIedServer,IED_PROT_SCPI1_DirPrs_neut, neut);
+	MmsValue_setBoolean(IED_PROT_SCPI1_DirPrs_neut->mmsValue, neut);
+    
+    IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_SCPI1_Abc_neut, neut);
 }
 /**
   * @brief :设置电压指示
@@ -465,7 +470,7 @@ int Iec61850Server(void)
 	}
 
 	
-
+    subscriber_example();
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(CurrentIedServer);
 
@@ -493,6 +498,8 @@ int Iec61850Server(void)
 		(cn++ > 10) ? (cn = -10) : (cn++);
 
 		//统一更新
+      //  StopWatchInit();
+      //  StopWatchStart();
 		IedServer_lockDataModel(CurrentIedServer);
 
 
@@ -531,7 +538,7 @@ int Iec61850Server(void)
 
 
 		IedServer_unlockDataModel(CurrentIedServer);
-
+        //StopWatchStop();
 		Thread_sleep(5000);
 
 

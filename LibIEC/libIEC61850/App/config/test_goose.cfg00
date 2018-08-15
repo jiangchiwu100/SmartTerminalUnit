@@ -36,7 +36,7 @@ DE(GGIO1$ST$Ind7$stVal);
 DE(GGIO1$ST$Ind8$stVal);
 }
 GC(gcbRemote remote RmoteSignal 1 0 2 3000 ){
-PA(4 1 4096 ffffffffffff);
+PA(4 1 4096 010ccd010001);
 }
 }
 LN(LPHD1){
@@ -262,7 +262,7 @@ DE(MMXU1$MX$PhV);
 DE(MMXU1$MX$A);
 }
 GC(gcbMeasureValues analog MeasureValues 1 0 1000 3000 ){
-PA(4 1 4097 ffffffffffff);
+PA(4 1 4097 010ccd010001);
 }
 }
 LN(LPHD1){
@@ -1180,10 +1180,10 @@ DE(AFSI1$ST$FltIsoInd$stVal);
 DE(AFSI1$ST$FltIsoStr$stVal);
 }
 GC(gcbDistriIndicate indicate DistriIndicate 1 0 2 3000 ){
-PA(4 1 4099 ffffffffffff);
+PA(4 1 4099 010ccd010003);
 }
 GC(gcbDistriDeal deal DistriDeal 1 0 2 3000 ){
-PA(4 1 4100 ffffffffffff);
+PA(4 1 4100 010ccd010003);
 }
 }
 LN(LPHD1){

@@ -19,7 +19,7 @@
 void
 gooseListener(GooseSubscriber subscriber, void* parameter)
 {
-    StopWatchStop();
+    
     return;
     printf("GOOSE event:\n");
     printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
@@ -40,7 +40,7 @@ gooseListener(GooseSubscriber subscriber, void* parameter)
 }
 
 int
-subscriber_main(void)
+subscriber_example(void)
 {
     GooseReceiver receiver = GooseReceiver_create();
 
@@ -49,13 +49,28 @@ subscriber_main(void)
 	GooseReceiver_setInterfaceId(receiver, "eth0");
    
 
-    GooseSubscriber subscriber = GooseSubscriber_create("simpleIOGenericIO/LLN0$GO$gcbAnalogValues", NULL);
+    GooseSubscriber subscriberRemote = GooseSubscriber_create("STU1LD0/LLN0$GO$gcbRemote", NULL);
+	GooseSubscriber_setAppId(subscriberRemote, 0x1000);
 
-    GooseSubscriber_setAppId(subscriber, 1000);
+	GooseSubscriber subscriberMeasure = GooseSubscriber_create("STU1MEAS/LLN0$GO$gcbMeasureValues", NULL);
+	GooseSubscriber_setAppId(subscriberMeasure, 0x1001);
+	
+	GooseSubscriber subscriberIndicate = GooseSubscriber_create("STU1PROT/LLN0$GO$gcbDistriIndicate", NULL);
+	GooseSubscriber_setAppId(subscriberIndicate, 0x1003);
+	
+	GooseSubscriber subscriberDeal = GooseSubscriber_create("STU1PROT/LLN0$GO$gcbDistriDeal", NULL);
+	GooseSubscriber_setAppId(subscriberDeal, 0x1004);
 
-    GooseSubscriber_setListener(subscriber, gooseListener, NULL);
+    GooseSubscriber_setListener(subscriberRemote, gooseListener, NULL);
+	GooseSubscriber_setListener(subscriberMeasure, gooseListener, NULL);
+	GooseSubscriber_setListener(subscriberIndicate, gooseListener, NULL);
+	GooseSubscriber_setListener(subscriberDeal, gooseListener, NULL);
+	
 
-    GooseReceiver_addSubscriber(receiver, subscriber);
+    GooseReceiver_addSubscriber(receiver, subscriberRemote);
+	GooseReceiver_addSubscriber(receiver, subscriberMeasure);
+	GooseReceiver_addSubscriber(receiver, subscriberIndicate);
+	GooseReceiver_addSubscriber(receiver, subscriberDeal);
 
     GooseReceiver_start(receiver);
 

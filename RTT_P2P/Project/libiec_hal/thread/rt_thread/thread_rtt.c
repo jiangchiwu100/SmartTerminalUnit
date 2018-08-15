@@ -39,6 +39,7 @@ struct sThread {
 Thread
 Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy)
 {
+    static int priority = 3;
     static int count = 0;
 	Thread thread =(Thread) GLOBAL_MALLOC(sizeof(struct sThread));
     thread->parameter = parameter;
@@ -51,7 +52,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 								(void (*)(void *))function,
 								parameter,
 	                            2048,
-	                            3,
+	                            priority++,
 	                            20);
 
 	if (thread->handle == NULL)
@@ -61,7 +62,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 	}
 	else
 	{
-        rt_kprintf("Thread_create  Taske NUM:%d\r\n", ++count);
+        rt_kprintf("Thread_create  Taske NUM:%d, priority: %d\r\n", ++count, priority);
 		return thread;
 	}
 

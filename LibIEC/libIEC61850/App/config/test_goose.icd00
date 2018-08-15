@@ -11,7 +11,7 @@
            <Address>
                 <P type="VLAN-ID">1</P>
                 <P type="VLAN-PRIORITY">4</P>
-                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="MAC-Address">01-0c-cd-01-00-01</P>
                 <P type="APPID">1000</P>
            </Address>
 	    </GSE>
@@ -19,7 +19,7 @@
            <Address>
                 <P type="VLAN-ID">1</P>
                 <P type="VLAN-PRIORITY">4</P>
-                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="MAC-Address">01-0c-cd-01-00-01</P>
                 <P type="APPID">1001</P>
            </Address>
 	    </GSE>
@@ -27,7 +27,7 @@
            <Address>
                 <P type="VLAN-ID">1</P>
                 <P type="VLAN-PRIORITY">4</P>
-                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="MAC-Address">01-0c-cd-01-00-03</P>
                 <P type="APPID">1003</P>
            </Address>
 	    </GSE>
@@ -35,7 +35,7 @@
            <Address>
                 <P type="VLAN-ID">1</P>
                 <P type="VLAN-PRIORITY">4</P>
-                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="MAC-Address">01-0c-cd-01-00-03</P>
                 <P type="APPID">1004</P>
            </Address>
 	    </GSE>
@@ -451,7 +451,7 @@
 	  <DO name="MinOpTmms" type="CN_ING_SP" />
 	  <DO name="MaxOpTmms" type="CN_ING_SP" />	  
 	  <DO name="RsDlTmms" type="CN_ING_SP" />
-	  
+	  <DO name="DirMod" type="CN_ING_SP" />
     </LNodeType>
 	<!-- 以下逻辑节点时扩展逻辑节点，来源于基于IEC61850的配网智能分布式终端互操作实施规范-征求意见稿(修改版) -->
 	
