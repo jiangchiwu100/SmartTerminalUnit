@@ -94,7 +94,7 @@ bool EthernetInput(uint8_t* pData, uint16_t len)
 	rt_err_t err = rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket));
 	if (err != RT_EOK)
 	{
-		perror("rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket))\n");
+		perror("rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket)), error: %d.\n", err);
         return false;
 	}
     return true;

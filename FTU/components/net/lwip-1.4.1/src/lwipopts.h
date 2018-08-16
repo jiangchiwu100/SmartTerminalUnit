@@ -2,6 +2,7 @@
 #define __LWIPOPTS_H__
 
 #include <rtconfig.h>
+#include "lwipconfig.h"
 
 #define ERRNO                       1
 

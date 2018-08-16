@@ -470,7 +470,7 @@ int Iec61850Server(void)
 	}
 
 	
-    subscriber_example();
+   
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(CurrentIedServer);
 

@@ -504,13 +504,14 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 		uint32_t timeAllowedToLive)
 {
 
+    return true;
 	//序列号错误设置为无效状态
 	 if (matchingSubscriber->stNum == stNum) {
 		if (matchingSubscriber->sqNum >= sqNum) {
 
 			matchingSubscriber->stateValid = false;
-			printf("goCBRef: %s, sqNum Loss Error Sequence, last:%d , current: %d!\n" ,
-                   matchingSubscriber->goCBRef, matchingSubscriber->sqNum, sqNum);
+			printf("\n\nAppID: 0x%x sqNum Loss Error Sequence, last:%d , current: %d!\n\n" ,
+                   matchingSubscriber->appId, matchingSubscriber->sqNum, sqNum);
             //return false;
             printf("Restart Recive!!!!!!!!\n");
 			return true;
@@ -520,22 +521,27 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 
 			if ((matchingSubscriber->sqNum + 1) != sqNum){
 				 //if (DEBUG_GOOSE_SUBSCRIBER)
-					 printf("goCBRef: %s, SqNum Loss, last:%d , current: %d!\n",  
-                            matchingSubscriber->goCBRef,  matchingSubscriber->sqNum, sqNum);
+					 printf("AppID: 0x%x, SqNum Loss, last:%d , current: %d!\n",  
+                            matchingSubscriber->appId,  matchingSubscriber->sqNum, sqNum);
 			}
 			//更新状态
 			 matchingSubscriber->stateValid = true;
 			 matchingSubscriber->stNum = stNum;
 			 matchingSubscriber->sqNum = sqNum;
 			 matchingSubscriber->invalidityTime = Hal_getTimeInMs() + timeAllowedToLive;
+             
+//             printf("AppID: 0x%x, jump, st:%d , sq: %d!\n",  
+//                            matchingSubscriber->appId,  stNum,  sqNum);
+             StopWatchStop();
+               
 			 return false;
 		}
 	}
 	else if (matchingSubscriber->stNum < stNum) {//新数据
 		 if ((matchingSubscriber->stNum + 1) != stNum){
 			 //if (DEBUG_GOOSE_SUBSCRIBER)
-			  printf("goCBRef: %s, stNum Loss, last:%d , current: %d!\n",
-                     matchingSubscriber->goCBRef, matchingSubscriber->stNum, stNum);
+			  printf("\n\nAppID: 0x%x, stNum Loss, last:%d , current: %d!\n",
+                     matchingSubscriber->appId, matchingSubscriber->stNum, stNum);
 			  return true;
 		 }
 	 }
@@ -543,13 +549,13 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 	{
 		matchingSubscriber->stateValid = false;
 		//if (DEBUG_GOOSE_SUBSCRIBER)
-		printf("goCBRef: %s, stNum Loss Error Sequence, last:%d , current: %d!\n" ,
-               matchingSubscriber->goCBRef,  matchingSubscriber->stNum, stNum);
+		printf("\n\nAppID: 0x%x, stNum Loss Error Sequence, last:%d , current: %d!\n" ,
+               matchingSubscriber->appId,  matchingSubscriber->stNum, stNum);
 		//return false;
         printf("Restart Recive!!!!!!!!\n");
 	    return true;
 	}
-
+    
 	 return true;
 
 }

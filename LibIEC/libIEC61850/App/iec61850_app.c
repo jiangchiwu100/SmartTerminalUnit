@@ -31,7 +31,8 @@ static void iec61850_thread_entry(void* parameter)
 {    
 	rt_kprintf("thread iec61850App start.\r\n");
     rt_thread_delay(1000);
-	Iec61850Server();
+    subscriber_example();
+	//Iec61850Server();
     //TestGooseBeat();
 }
   
@@ -71,7 +72,7 @@ void IEC61850AppInit(void)
                    RT_NULL,                      
                    &rt_iec61850_thread_stack,     
 		sizeof(rt_iec61850_thread_stack), 
-		4,                            
+		14,                            
 		20);                          
                                
     rt_thread_startup(&iec61850_thread);  

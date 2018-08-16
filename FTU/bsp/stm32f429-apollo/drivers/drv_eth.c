@@ -347,8 +347,8 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
         ETH_PRINTF("RX err =%d\n", result );
 		}
         
-//    StopWatchInit();
-//    StopWatchStart();
+    StopWatchInit();
+    StopWatchStart();
 }
 
 /**
