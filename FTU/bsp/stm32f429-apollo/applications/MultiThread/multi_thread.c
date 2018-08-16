@@ -409,7 +409,9 @@ static void rt_ftuidle_thread_entry(void *param)
         {   
             s_run_state = 1;			
             rt_multi_common_data_fram_update_state_write(RUN_NOMAL); // 运行正常，写FRAM
-        }        
+        }   
+        rt_thread_delay(10);
+        FtuIdleHook();
     }    
 }
 #endif /* RT_USING_FTUIDLE */

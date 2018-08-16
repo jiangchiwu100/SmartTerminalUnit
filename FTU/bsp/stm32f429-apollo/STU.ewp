@@ -3492,6 +3492,9 @@
             <name>$PROJ_DIR$\..\..\components\net\lwip-1.4.1\src\core\ipv4\ip_frag.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\lwipconfig.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\components\net\lwip-1.4.1\src\core\mem_lwip.c</name>
         </file>
         <file>

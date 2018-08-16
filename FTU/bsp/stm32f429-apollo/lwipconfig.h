@@ -5,7 +5,7 @@
 /* light weight TCP/IP stack */
 #define RT_USING_LWIP
 /* RT_USING_LWIP141 is not set */
-#define RT_USING_LWIP202
+#define RT_USING_LWIP141
 /* RT_LWIP_IGMP is not set */
 //#define RT_LWIP_IGMP
 #define RT_LWIP_ICMP
@@ -59,4 +59,11 @@
 #define LWIP_SO_SNDTIMEO                                               1
 #define LWIP_SO_RCVBUF                                                 1
 
+#define CHECKSUM_GEN_ICMP 0
+#define CHECKSUM_GEN_IP 0
+#define CHECKSUM_GEN_UDP 0
+#define CHECKSUM_GEN_TCP 0
+#define CHECKSUM_CHECK_IP 0
+#define CHECKSUM_CHECK_UDP 0
+#define CHECKSUM_CHECK_TCP 0
 #endif /* __LWIPOPTS_H__ */

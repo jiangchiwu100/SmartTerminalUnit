@@ -15,17 +15,18 @@
 #include "extern_interface.h"
 #include "miscellaneous.h"
 
+#include "RingQueue.h"
 /**
-* @brief :∏˘æ›StNum∫ÕSqNumΩ¯––”––ß–‘‘§¥¶¿Ì£¨∂‘”⁄–¬ ˝æ›”Ë“‘∏¸–¬£¨–ƒÃ¯”Ë“‘»∑»œ
+* @brief :Ê†πÊçÆStNumÂíåSqNumËøõË°åÊúâÊïàÊÄßÈ¢ÑÂ§ÑÁêÜÔºåÂØπ‰∫éÊñ∞Êï∞ÊçÆ‰∫à‰ª•Êõ¥Êñ∞ÔºåÂøÉË∑≥‰∫à‰ª•Á°ÆËÆ§
 * @param void
-* @return: true--ºÃ–¯œ¬√Ê¥¶¿Ì£¨false--≤ª‘ŸΩ¯––¥¶¿Ì 
-* @update: [2018-08-03][’≈”Ó∑…][¥¥Ω®]
+* @return: true--ÁªßÁª≠‰∏ãÈù¢Â§ÑÁêÜÔºåfalse--‰∏çÂÜçËøõË°åÂ§ÑÁêÜ
+* @update: [2018-08-03][Âº†ÂÆáÈ£û][ÂàõÂª∫]
 */
 static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t lastSq, uint32_t stNum, uint32_t sqNum )
 {
 
    
-	//–Ú¡–∫≈¥ÌŒÛ…Ë÷√Œ™Œﬁ–ß◊¥Ã¨
+	//Â∫èÂàóÂè∑ÈîôËØØËÆæÁΩÆ‰∏∫Êó†ÊïàÁä∂ÊÄÅ
 	 if (lastSt == stNum) {
 		if (lastSq >= sqNum) {
 
@@ -44,7 +45,7 @@ static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t las
 					 printf("AppID: 0x%x, SqNum Loss, last:%d , current: %d!\n",  
                             appId,  lastSq, sqNum);
 			}
-			//∏¸–¬◊¥Ã¨
+			//Êõ¥Êñ∞Áä∂ÊÄÅ
 			 
 			 lastSt = stNum;
 			 lastSq = sqNum;
@@ -57,7 +58,7 @@ static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t las
 			 return false;
 		}
 	}
-	else if (lastSt < stNum) {//–¬ ˝æ›
+	else if (lastSt < stNum) {//Êñ∞Êï∞ÊçÆ
 		 if ((lastSt + 1) != stNum){
 			 //if (DEBUG_GOOSE_SUBSCRIBER)
 			  printf("\n\nAppID: 0x%x, stNum Loss, last:%d , current: %d!\n",
@@ -75,67 +76,170 @@ static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t las
         printf("Restart Recive!!!!!!!!\n");
 	    return true;
 	}
-     printf("AppID: 0x%x, vlaid, st:%d , sq: %d!\n",  
+     printf("AppID: 0x%x, valid, st:%d , sq: %d!\n",  
                            appId,  stNum,  sqNum);
 	 return true;
 
 }
-uint32_t TestData[1000][3] = {0};
 
-uint32_t LastSqNum = 0;
-uint32_t LastStNum = 0;
-uint32_t SqNum = 0;
-uint32_t StNum = 0;
-uint16_t NumIndex = 0;
+typedef struct TagGooseCheck
+{
+	uint32_t (*testData)[3];
+	uint32_t lastSqNum;
+	uint32_t lastStNum;
+	uint32_t sqNum;
+	uint32_t stNum ;
+	uint16_t index;
+    
+    uint32_t appId;
+}GooseCheck;
+typedef struct TagSequenceInformation
+{	
+    uint32_t stNum;
+	uint32_t sqNum;
+    uint32_t time;
+}SequenceInformation;
+
+#define GOOSE_CHECK_COUNT   10
+
+GooseCheck GooseCheck1000;
+GooseCheck GooseCheck1001;
+GooseCheck GooseCheck1003;
+GooseCheck GooseCheck1004;
+
+static SequenceInformation*  SequenceInformation_create()
+{
+    SequenceInformation* inf = (SequenceInformation* )rt_calloc(sizeof(SequenceInformation), 1);
+    if (! inf)
+    {
+    	perror(" (SequenceInformation* )rt_calloc(sizeof(SequenceInformation), 1)\n");
+    	return NULL;
+    }
+    return inf;
+}
+static void  SequenceInformation_destory(SequenceInformation* pInfo)
+{
+    if (pInfo)
+    {
+        rt_free(pInfo);
+    }
+}
+
+
+RingQueue GooseCheckRing;
+RingQueue Ring1000;
+RingQueue Ring1001;
+RingQueue Ring1003;
+RingQueue Ring1004;
+
+
+
+
+static void GooseCheck_init(GooseCheck* check,uint32_t appId)
+{
+    check->testData = (uint32_t (*)[3])rt_calloc(sizeof(uint32_t), 1000*3);
+    
+    if (!check->testData)
+    {
+    	perror(" (uint32_t *)rt_calloc(sizeof(uint32_t), 1000*3)\n");
+    	return;
+    }
+
+
+	check->lastSqNum = 0;
+	check->lastSqNum = 0;
+	check->index = 0;
+	check->sqNum = 0;
+	check->stNum = 0;
+    check->appId = appId;
+}
+
 void
 gooseListener(GooseSubscriber subscriber, void* parameter)
 {
-    
-    TestData[NumIndex][2] = StopWatchStop();
-   // rt_kprintf("index: %d\n ", NumIndex);
-    TestData[NumIndex][0] = GooseSubscriber_getStNum(subscriber);
-    TestData[NumIndex][1] =  GooseSubscriber_getSqNum(subscriber);
-    NumIndex++;
-    if (NumIndex == 1000)
+   
+    SequenceInformation* pInfo = SequenceInformation_create();
+    if (pInfo)
     {
-        LastStNum = StNum = TestData[0][0];
-        LastSqNum = SqNum = TestData[0][1];        
-        for (uint16_t  i= 0 ; i < 1000; i++)
-        {
-            StNum = TestData[i][0];
-            SqNum = TestData[i][1];  
-            reciveValidPredealTest(0x1001, LastStNum, LastSqNum, StNum,  SqNum);
-            rt_kprintf("Time: %d\n ", TestData[i][2]);
-            LastStNum = StNum;
-            LastSqNum = SqNum;  
-        }
-        NumIndex = 0;
-        
+        RingQueue* ring = (RingQueue*)parameter;
+        pInfo->stNum = GooseSubscriber_getStNum(subscriber);
+        pInfo->sqNum = GooseSubscriber_getSqNum(subscriber);
+        pInfo->time = StopWatchStop();
+        ring->Write(ring, pInfo);
     }
-        
-    return;
-    reciveValidPredealTest(0x1001, LastStNum, LastSqNum, GooseSubscriber_getStNum(subscriber), GooseSubscriber_getSqNum(subscriber));
-    LastStNum = GooseSubscriber_getStNum(subscriber);
-    LastSqNum =  GooseSubscriber_getSqNum(subscriber);
-     return;
-    printf("GOOSE event:\n");
-    printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
-            GooseSubscriber_getSqNum(subscriber));
     
-    printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
-  
-    uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
-
-    printf("  timestamp: %u.%u\n", (uint32_t) (timestamp / 1000), (uint32_t) (timestamp % 1000));
-
-    MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
-
-    char buffer[1024];
-
-    MmsValue_printToBuffer(values, buffer, 1024);
-
-    printf("%s\n", buffer);
+    
 }
+//void
+//gooseListener(GooseSubscriber subscriber, void* parameter)
+//{
+//	GooseCheck* check = (GooseCheck*)parameter;
+//    
+//    check->testData[check->index][2] = StopWatchStop();
+//   // rt_kprintf("index: %d\n ", index);
+//    check->testData[check->index][0] = GooseSubscriber_getStNum(subscriber);
+//    check->testData[check->index][1] =  GooseSubscriber_getSqNum(subscriber);
+//    check->index++;
+//    if (check->index == 1000)
+//    {
+//        
+//        check->lastStNum = check->stNum = check->testData[0][0];
+//        check->lastSqNum = check->sqNum = check->testData[0][1];
+//        for (uint16_t  i= 0 ; i < 1000; i++)
+//        {
+//            check->stNum = check->testData[i][0];
+//            check->sqNum = check->testData[i][1];
+//            reciveValidPredealTest(check->appId, check->lastStNum, check->lastSqNum, check->stNum,   check->sqNum);
+//            //rt_kprintf("Time: %d\n ", check->testData[i][2]);
+//            check->lastStNum = check->stNum;
+//            check->lastSqNum =  check->sqNum;
+//        }
+//        check->index = 0;
+//        
+//    }        
+//}
+
+
+static void CheckSequence(RingQueue* pRing, uint32_t appId,  uint32_t* lastStNum, uint32_t* lastSqNum)
+{
+    //ÊØè500‰∏ÄÁªÑËæìÂá∫
+    if (pRing->count > 1000)
+    {
+        for(uint16_t i = 0; i< 1000; i++)
+        {
+            SequenceInformation* pInfo;
+            pRing->Read(pRing, (void**)(&pInfo));
+            
+            reciveValidPredealTest(appId, *lastStNum, *lastSqNum, pInfo->stNum,   pInfo->sqNum);
+            *lastStNum =  pInfo->stNum;
+            *lastSqNum = pInfo->sqNum;
+            SequenceInformation_destory(pInfo);
+        }
+    }
+    
+}
+
+void FtuIdleHook(void)
+{
+    static uint32_t lastSq1000 = 0;
+    static uint32_t lastSt1000 = 0;
+    static uint32_t lastSq1001 = 0;
+    static uint32_t lastSt1001 = 0;
+    static uint32_t lastSq1003 = 0;
+    static uint32_t lastSt1003 = 0;
+    static uint32_t lastSq1004 = 0;
+    static uint32_t lastSt1004 = 0;   
+    
+    CheckSequence(&Ring1000,0x1000, &lastSt1000, &lastSq1000);
+    CheckSequence(&Ring1001,0x1001, &lastSt1001, &lastSq1001);
+    CheckSequence(&Ring1003,0x1003, &lastSt1003, &lastSq1003);
+    CheckSequence(&Ring1004,0x1004, &lastSt1004, &lastSq1004);
+    
+    
+    
+}
+
+ 
 
 int
 subscriber_example(void)
@@ -146,6 +250,8 @@ subscriber_example(void)
 	printf("Using interface eth0\n");
 	GooseReceiver_setInterfaceId(receiver, "eth0");
    
+
+
 
     GooseSubscriber subscriberRemote = GooseSubscriber_create("STU1LD0/LLN0$GO$gcbRemote", NULL);
 	GooseSubscriber_setAppId(subscriberRemote, 0x1000);
@@ -159,10 +265,19 @@ subscriber_example(void)
 	GooseSubscriber subscriberDeal = GooseSubscriber_create("STU1PROT/LLN0$GO$gcbDistriDeal", NULL);
 	GooseSubscriber_setAppId(subscriberDeal, 0x1004);
 
-    GooseSubscriber_setListener(subscriberRemote, gooseListener, NULL);
-	GooseSubscriber_setListener(subscriberMeasure, gooseListener, NULL);
-	GooseSubscriber_setListener(subscriberIndicate, gooseListener, NULL);
-	GooseSubscriber_setListener(subscriberDeal, gooseListener, NULL);
+    
+//	GooseCheck_init(&GooseCheck1000, 0x1000);
+//	GooseCheck_init(&GooseCheck1001, 0x1001);
+//	GooseCheck_init(&GooseCheck1003, 0x1003);
+//	GooseCheck_init(&GooseCheck1004, 0x1004);
+    RingQueueInit(&Ring1000, 10000);
+    RingQueueInit(&Ring1001, 10000);
+    RingQueueInit(&Ring1003, 10000);
+    RingQueueInit(&Ring1004, 10000);
+    GooseSubscriber_setListener(subscriberRemote, gooseListener, &Ring1000);
+	GooseSubscriber_setListener(subscriberMeasure, gooseListener, &Ring1001);
+	GooseSubscriber_setListener(subscriberIndicate, gooseListener, &Ring1003);
+	GooseSubscriber_setListener(subscriberDeal, gooseListener, &Ring1004);
 	
 
     GooseReceiver_addSubscriber(receiver, subscriberRemote);

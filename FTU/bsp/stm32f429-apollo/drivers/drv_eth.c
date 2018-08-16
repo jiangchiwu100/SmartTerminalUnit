@@ -168,8 +168,8 @@ static rt_err_t rt_stm32_eth_init(rt_device_t dev)
     EthHandle.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
     EthHandle.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
     EthHandle.Init.RxMode = ETH_RXINTERRUPT_MODE;
-    EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_SOFTWARE;
-    //EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
+   // EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_SOFTWARE;
+    EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
     EthHandle.Init.PhyAddress = DP83848_PHY_ADDRESS;
 	EthHandle.TxDesc->Status |= ETH_DMATXDESC_VF;
     HAL_ETH_DeInit(&EthHandle);

@@ -129,6 +129,7 @@ bool EthernetInput(uint8_t* pData, uint16_t len)
 * @return: void
 * @update: [2018-08-2][张宇飞][]
 *[2018-08-06][张宇飞][添加接收邮箱]
+*[2018-08-16][张宇飞][修改邮箱容量100->500]
 */
 void EthernetHookInit(void)
 {
@@ -145,7 +146,7 @@ void EthernetHookInit(void)
     }
     
     
-    MacRawReciveMb = rt_mb_create ("macraw", 100, RT_IPC_FLAG_FIFO);
+    MacRawReciveMb = rt_mb_create ("macraw", 500, RT_IPC_FLAG_FIFO);
     
 }
 
