@@ -1039,6 +1039,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\src\timer.c</FilePath>
             </File>
+            <File>
+              <FileName>rtdef.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\include\rtdef.h</FilePath>
+            </File>
+            <File>
+              <FileName>rtthread.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\include\rtthread.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3035,9 +3045,29 @@
           <GroupName>libiec/ServerAPP</GroupName>
           <Files>
             <File>
+              <FileName>iec61850_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\iec61850_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>ied_data_ref.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\ied_data_ref.c</FilePath>
+            </File>
+            <File>
+              <FileName>ied_data_ref_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\ied_data_ref_init.c</FilePath>
+            </File>
+            <File>
               <FileName>server_example_goose.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</FilePath>
+            </File>
+            <File>
+              <FileName>server_datamapping.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\server_datamapping.c</FilePath>
             </File>
             <File>
               <FileName>static_model.c</FileName>
@@ -4081,6 +4111,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\src\timer.c</FilePath>
             </File>
+            <File>
+              <FileName>rtdef.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\include\rtdef.h</FilePath>
+            </File>
+            <File>
+              <FileName>rtthread.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\include\rtthread.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6077,9 +6117,29 @@
           <GroupName>libiec/ServerAPP</GroupName>
           <Files>
             <File>
+              <FileName>iec61850_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\iec61850_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>ied_data_ref.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\ied_data_ref.c</FilePath>
+            </File>
+            <File>
+              <FileName>ied_data_ref_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\ied_data_ref_init.c</FilePath>
+            </File>
+            <File>
               <FileName>server_example_goose.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\LibIEC\libIEC61850\App\server_example_goose.c</FilePath>
+            </File>
+            <File>
+              <FileName>server_datamapping.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\server_datamapping.c</FilePath>
             </File>
             <File>
               <FileName>static_model.c</FileName>

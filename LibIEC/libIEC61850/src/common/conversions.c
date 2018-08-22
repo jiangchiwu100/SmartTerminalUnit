@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  conversions.c
  *
  *  Copyright 2013 Michael Zillgith
@@ -102,7 +102,7 @@ struct tm* gmtime_r(const time_t* timep, struct tm* result)
 
 
 
-#if defined(__ICCARM__)
+#if defined(__ICCARM__) || defined(__CC_ARM) 
 time_t
 timegm(struct tm* tm_time)
 {

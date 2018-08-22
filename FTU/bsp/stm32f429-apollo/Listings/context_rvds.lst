@@ -339,12 +339,13 @@ ARM Macro Assembler    Page 6
               E000ED04 
               E000ED20 
               E000ED08 
-Command Line: --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=interwork -
--depend=.\objects\context_rvds.d -o.\objects\context_rvds.o -I.\RTE\_STU_V0.01 
--I"D:\Program Files (x86)\keil523\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CM
-SIS\Device\ST\STM32F4xx\Include" -I"D:\Program Files (x86)\keil523\ARM\CMSIS\In
-clude" --predefine="__UVISION_VERSION SETA 523" --predefine="STM32F429xx SETA 1
-" --list=.\listings\context_rvds.lst ..\..\libcpu\arm\cortex-m4\context_rvds.S
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\context_rvds.d -o.\objects\context_rvds.o -I.\RTE\_ST
+U_V0.01 -I"D:\Program Files (x86)\keil523\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Dr
+ivers\CMSIS\Device\ST\STM32F4xx\Include" -I"D:\Program Files (x86)\keil523\ARM\
+CMSIS\Include" --predefine="__UVISION_VERSION SETA 523" --predefine="STM32F429x
+x SETA 1" --list=.\listings\context_rvds.lst ..\..\libcpu\arm\cortex-m4\context
+_rvds.S
 
 
 

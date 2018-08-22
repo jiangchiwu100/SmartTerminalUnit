@@ -923,13 +923,13 @@ ARM Macro Assembler    Page 15
               00000800 
               00000800 
               00000000 
-Command Line: --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=interwork -
--depend=.\objects\startup_stm32f429xx.d -o.\objects\startup_stm32f429xx.o -I.\R
-TE\_STU_V0.01 -I"D:\Program Files (x86)\keil523\ARM\PACK\Keil\STM32F4xx_DFP\2.1
-3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include" -I"D:\Program Files (x86)\keil52
-3\ARM\CMSIS\Include" --predefine="__UVISION_VERSION SETA 523" --predefine="STM3
-2F429xx SETA 1" --list=.\listings\startup_stm32f429xx.lst Libraries\CMSIS\Devic
-e\ST\STM32F4xx\Source\Templates\arm\startup_stm32f429xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\startup_stm32f429xx.d -o.\objects\startup_stm32f429xx
+.o -I.\RTE\_STU_V0.01 -I"D:\Program Files (x86)\keil523\ARM\PACK\Keil\STM32F4xx
+_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include" -I"D:\Program Files (x86
+)\keil523\ARM\CMSIS\Include" --predefine="__UVISION_VERSION SETA 523" --predefi
+ne="STM32F429xx SETA 1" --list=.\listings\startup_stm32f429xx.lst Libraries\CMS
+IS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f429xx.s
 
 
 
