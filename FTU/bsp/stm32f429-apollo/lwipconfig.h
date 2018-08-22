@@ -41,7 +41,7 @@
 #define RT_LWIP_TCPTHREAD_STACKSIZE                                    1024
 #define RT_LWIP_ETHTHREAD_PRIORITY                                     2//10
 #define RT_LWIP_ETHTHREAD_STACKSIZE                                    1024
-#define RT_LWIP_ETHTHREAD_MBOX_SIZE                                    8
+#define RT_LWIP_ETHTHREAD_MBOX_SIZE                                    32
 #define RT_LWIP_ETHTHREAD_TIMESLICE                                    16
 #define RT_LWIP_ETHTHREAD_RX_NAME                                      "erx"
 #define RT_LWIP_ETHTHREAD_TX_NAME                                      "etx"

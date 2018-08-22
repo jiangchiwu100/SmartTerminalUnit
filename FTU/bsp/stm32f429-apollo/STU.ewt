@@ -2780,9 +2780,6 @@
             <name>$PROJ_DIR$\..\..\components\dfs\filesystems\romfs\dfs_romfs.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\dfs_uffs.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\components\dfs\filesystems\elmfat\ff.c</name>
         </file>
         <file>
@@ -2799,69 +2796,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\components\dfs\src\select.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_badblock.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_blockinfo.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_buf.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_crc.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_debug.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_device.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_ecc.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_fd.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_find.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_flash.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_fs.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_init.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_mem.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_mtb.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\uffs_nandif.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_pool.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_public.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\uffs_rtthread.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_tree.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_utils.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\components\dfs\filesystems\uffs\src\uffs\uffs_version.c</name>
         </file>
     </group>
     <group>

@@ -133,7 +133,26 @@ RingQueue Ring1003;
 RingQueue Ring1004;
 
 
+void
+gooseParese(GooseSubscriber subscriber, void* parameter)
+{
+    printf("GOOSE event:\n");
+    printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
+            GooseSubscriber_getSqNum(subscriber));
+    printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
 
+    uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
+
+    printf("  timestamp: %u.%u\n", (uint32_t) (timestamp / 1000), (uint32_t) (timestamp % 1000));
+
+    MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
+
+    char buffer[1024];
+
+    MmsValue_printToBuffer(values, buffer, 1024);
+
+    printf("%s\n", buffer);
+}
 
 static void GooseCheck_init(GooseCheck* check,uint32_t appId)
 {
@@ -167,9 +186,10 @@ gooseListener(GooseSubscriber subscriber, void* parameter)
         pInfo->time = StopWatchStop();
         ring->Write(ring, pInfo);
     }
-    
+    gooseParese(subscriber, NULL);
     
 }
+
 //void
 //gooseListener(GooseSubscriber subscriber, void* parameter)
 //{
