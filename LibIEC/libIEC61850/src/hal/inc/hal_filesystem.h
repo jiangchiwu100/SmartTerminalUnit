@@ -39,7 +39,7 @@ extern "C" {
  * @{
  */
 
-typedef void* FileHandle;
+typedef struct sFileHandle* FileHandle;
 typedef struct sDirectoryHandle* DirectoryHandle;
 
 #ifndef CONFIG_SYSTEM_FILE_SEPARATOR

@@ -55,7 +55,7 @@ controlHandlerForBinaryOutput(void* parameter, MmsValue* value)
 int server61850_test(void) 
 {
 
-    
+    rt_kprintf("server61850_test DATE: %s", __DATE__);
 	iedServer = IedServer_create(&iedModel);
 //	
 //		if (argc > 1) 
@@ -99,8 +99,8 @@ int server61850_test(void)
 	uint32_t cn = 0;
 	while (running) {
 
-        StopWatchInit();
-        StopWatchStart();
+       // StopWatchInit();
+       // StopWatchStart();
 	    IedServer_lockDataModel(iedServer);
         
 		//IedServer_updateBooleanAttributeValue(iedServer, IEDMODEL_LD0_GGIO1_Ind3_stVal, true);
@@ -113,7 +113,7 @@ int server61850_test(void)
 	    //IedServer_updateFloatAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_PhV_phsA_cVal_mag_f, anIn1);
 	
 		//IedServer_updateUTCTimeAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_Hz_mag, );
-		//更新频率相关
+		//鏇存柊棰戠巼鐩稿叧
 		//MmsValue_setFloat(IEDMODEL_MEAS_MMXU1_Hz_mag_f->mmsValue , 50.01 + 0.001*cn);
 		MmsValue_setBitStringFromInteger(IEDMODEL_MEAS_MMXU1_Hz_q->mmsValue, (uint32_t)QUALITY_VALIDITY_GOOD);
 	    MmsValue_setUtcTimeMs(IEDMODEL_MEAS_MMXU1_Hz_t->mmsValue, Hal_getTimeInMs());
@@ -126,7 +126,7 @@ int server61850_test(void)
 		//IedServer_updateFloatAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_Hz_mag_f, 50.01 + 0.001*cn);
 		//IedServer_updateQuality(iedServer, IEDMODEL_MEAS_MMXU1_Hz_q, QUALITY_VALIDITY_GOOD);
 		//IedServer_updateUTCTimeAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_Hz_t, Hal_getTimeInMs());
-		////三相 电压
+		////涓夌浉 鐢靛帇
 		//IedServer_updateFloatAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_PhV_phsA_cVal_mag_f, 100 + 1*cn);
 		//IedServer_updateQuality(iedServer, IEDMODEL_MEAS_MMXU1_PhV_phsA_q, QUALITY_VALIDITY_GOOD);
 		//IedServer_updateUTCTimeAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_PhV_phsA_t, Hal_getTimeInMs());
@@ -150,7 +150,7 @@ int server61850_test(void)
 		MmsValue_setBitStringFromInteger(IEDMODEL_MEAS_MMXU1_PhV_phsC_q->mmsValue, (uint32_t)QUALITY_VALIDITY_GOOD);
 		MmsValue_setUtcTimeMs(IEDMODEL_MEAS_MMXU1_PhV_phsC_t->mmsValue, Hal_getTimeInMs());
 		MmsValue_setFloat(IEDMODEL_MEAS_MMXU1_PhV_phsC_cVal_mag_f->mmsValue, 130 + 1 * cn);
-		////三相 电流
+		////涓夌浉 鐢垫祦
 		//IedServer_updateFloatAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_A_phsA_cVal_mag_f, 1100 + 10 * cn);
 		//IedServer_updateQuality(iedServer, IEDMODEL_MEAS_MMXU1_A_phsA_q, QUALITY_VALIDITY_GOOD);
 		//IedServer_updateUTCTimeAttributeValue(iedServer, IEDMODEL_MEAS_MMXU1_A_phsA_t, Hal_getTimeInMs());
@@ -178,7 +178,8 @@ int server61850_test(void)
         
         
 	    IedServer_unlockDataModel(iedServer);
-        StopWatchStop();
+        
+       // StopWatchStop();
 	    anIn1 += 1;
 		cn++;
 		Thread_sleep(500);

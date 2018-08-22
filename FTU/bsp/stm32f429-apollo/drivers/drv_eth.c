@@ -150,7 +150,7 @@ static void GPIO_Configuration(void)
   * @brief  initialize the interface.
   * @param  [dev] the device pointer.
   * @retval [RT_EOK] success.
-  *@update[2018-08-06][ÕÅÓî·É][Ìí¼ÓÉèÖÃÎªVLAN]
+  *@update[2018-08-06][ï¿½ï¿½ï¿½ï¿½ï¿½][ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªVLAN]
   */
 static rt_err_t rt_stm32_eth_init(rt_device_t dev)
 {
@@ -168,8 +168,8 @@ static rt_err_t rt_stm32_eth_init(rt_device_t dev)
     EthHandle.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
     EthHandle.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
     EthHandle.Init.RxMode = ETH_RXINTERRUPT_MODE;
-    EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_SOFTWARE;
-    //EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
+   // EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_SOFTWARE;
+    EthHandle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
     EthHandle.Init.PhyAddress = DP83848_PHY_ADDRESS;
 	EthHandle.TxDesc->Status |= ETH_DMATXDESC_VF;
     HAL_ETH_DeInit(&EthHandle);
@@ -344,11 +344,11 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
     result = eth_device_ready(&(stm32_eth_device.parent));
     if (result != RT_EOK)
 		{
-        ETH_PRINTF("RX err =%d\n", result );
+        rt_kprintf("HAL_ETH_RxCpltCallback RX err =%d\n", result );
 		}
         
-//    StopWatchInit();
-//    StopWatchStart();
+    StopWatchInit();
+    StopWatchStart();
 }
 
 /**
@@ -504,12 +504,12 @@ error:
     return ret;
 }
 /**
-* @brief ·¢ËÍº¯ÊýÊ¹ÓÃ»¥³âÁ¿,Ã¿´Î·¢ËÍÒ»Ö¡
-* @param  uint8_t* pData Êý¾ÝÖ¸Õë
-* @param  uint16_t count Êý¾Ý³¤¶È
+* @brief ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½Ê¹ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½,Ã¿ï¿½Î·ï¿½ï¿½ï¿½Ò»Ö¡
+* @param  uint8_t* pData ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+* @param  uint16_t count ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
 * @retutn [RT_ERROR] error;[ERR_OK] success.
-* @update[2018-08-03][ÕÅÓî·É][´´½¨]
-* @update[2018-08-06][ÕÅÓî·É][Ìí¼ÓVLAN±êÊ¶]
+* @update[2018-08-03][ï¿½ï¿½ï¿½ï¿½ï¿½][ï¿½ï¿½ï¿½ï¿½]
+* @update[2018-08-06][ï¿½ï¿½ï¿½ï¿½ï¿½][ï¿½ï¿½ï¿½VLANï¿½ï¿½Ê¶]
 */
 rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
 {
@@ -556,7 +556,7 @@ rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
         ret = ERR_USE;
         goto error;
     }
-    //ÕâÊÇÒ»¸öVLAN
+    //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½VLAN
     //DmaTxDesc->Status |= ETH_DMATXDESC_VF;
     
     
@@ -604,7 +604,7 @@ error:
   * @brief  ethernet device interface, reception packet.
   * @param  [dev] the ETH_HandleTypeDef pointer.
   * @retval return the reception packet.
-*@update[2018-08-96][ÕÅÓî·É][¶ÔÓÚ½ØÈ¡³É¹¦µÄ£¬ÔòÌø¹ý×ªµ½ÆÕÍ¨Ö¡´¦Àí]
+*@update[2018-08-96][ï¿½ï¿½ï¿½ï¿½ï¿½][ï¿½ï¿½ï¿½Ú½ï¿½È¡ï¿½É¹ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½Í¨Ö¡ï¿½ï¿½ï¿½ï¿½]
   */
 struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
 {
@@ -635,8 +635,8 @@ struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
 
     ETH_PRINTF("receive frame len : %d\n", len);
     
-    //½ØÈ¡ÊäÈë
-    bool resultState = EthernetInput(buffer, len);//ÖÐ¼äÀ¹½Ø
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
+    bool resultState = EthernetInput(buffer, len);//ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½
     if (!resultState)
     {    
         if (len > 0)

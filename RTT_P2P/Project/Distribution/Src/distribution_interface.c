@@ -14,29 +14,29 @@
 
 #include "distribution_config.h"
 
-static __inline bool SystemNowTime(FaultDealHandle* handle) ;
-static __inline uint32_t DiffTime(uint32_t lastTime);
-static __inline bool IsOverTime(FaultDealHandle* handle);
-static __inline bool IsOpenPosition(FaultDealHandle* handle);
-static __inline bool IsFault(FaultDealHandle* handle);
-static __inline bool IsTrigger(FaultDealHandle* handle);
-static __inline bool IsOpenPosition(FaultDealHandle* handle);
-static __inline bool IsClosePosition(FaultDealHandle* handle);
-static __inline bool IsGatherCompleted(FaultDealHandle* handle);
-static __inline bool IsFaultEdgeConnected(FaultDealHandle* handle);
-static __inline bool IsFaultArea(FaultDealHandle* handle);
-static __inline bool IsRejectArea(FaultDealHandle* handle);
-static __inline bool IsRejectInsulate(FaultDealHandle* handle);
-static __inline bool IsPermitOpen(FaultDealHandle* handle);
+static inline bool SystemNowTime(FaultDealHandle* handle) ;
+static inline uint32_t DiffTime(uint32_t lastTime);
+static inline bool IsOverTime(FaultDealHandle* handle);
+static inline bool IsOpenPosition(FaultDealHandle* handle);
+static inline bool IsFault(FaultDealHandle* handle);
+static inline bool IsTrigger(FaultDealHandle* handle);
+static inline bool IsOpenPosition(FaultDealHandle* handle);
+static inline bool IsClosePosition(FaultDealHandle* handle);
+static inline bool IsGatherCompleted(FaultDealHandle* handle);
+static inline bool IsFaultEdgeConnected(FaultDealHandle* handle);
+static inline bool IsFaultArea(FaultDealHandle* handle);
+static inline bool IsRejectArea(FaultDealHandle* handle);
+static inline bool IsRejectInsulate(FaultDealHandle* handle);
+static inline bool IsPermitOpen(FaultDealHandle* handle);
 static bool OpenOperate(FaultDealHandle* handle);
 static bool CloseOperate(FaultDealHandle* handle);
 static uint8_t TransmitData(FaultDealHandle* handle, PointUint8* packet);
 static bool TransmitMessage(FaultDealHandle* handle, FuncionCode code);
 static bool FaultRemovalReset(FaultDealHandle* handle);
-static __inline bool IsRemovalSuccessInsulate(FaultDealHandle* handle);
-static __inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle);
-static __inline bool IsRemovalSuccessBackup(FaultDealHandle* handle);
-static __inline bool IsPowerIncomeLossFault(FaultDealHandle* handle);
+static inline bool IsRemovalSuccessInsulate(FaultDealHandle* handle);
+static inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle);
+static inline bool IsRemovalSuccessBackup(FaultDealHandle* handle);
+static inline bool IsPowerIncomeLossFault(FaultDealHandle* handle);
 
 static bool IsExitRemoveSuccessPath(StationTopology* topology);
 /**
@@ -191,7 +191,7 @@ ErrorCode TransmitTransferMessageExtern(DatagramTransferNode* pTransferNode, Tra
   * @return: 0-正常返回
   * @update: [2018-06-05][张宇飞][BRIEF]
   */
-static __inline bool SystemNowTime(FaultDealHandle* handle)
+static inline bool SystemNowTime(FaultDealHandle* handle)
 {
 	handle->startTime =  rt_tick_get();
     return NULL;
@@ -202,7 +202,7 @@ static __inline bool SystemNowTime(FaultDealHandle* handle)
   * @return: 时间差值
   * @update: [2018-06-05][张宇飞][BRIEF]
   */
-static __inline uint32_t DiffTime(uint32_t lastTime)
+static inline uint32_t DiffTime(uint32_t lastTime)
 {
     uint32_t currentTime = rt_tick_get();
     if (currentTime >= lastTime)
@@ -222,7 +222,7 @@ static __inline uint32_t DiffTime(uint32_t lastTime)
   * @return: 0-正常返回
   * @update: [2018-06-05][张宇飞][BRIEF]
   */
-static __inline bool IsOverTime(FaultDealHandle* handle)
+static inline bool IsOverTime(FaultDealHandle* handle)
 {
     return SystemIsOverTime(handle->startTime, handle->limitTime);
 }
@@ -235,7 +235,7 @@ static __inline bool IsOverTime(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-06-16][张宇飞][BRIEF]
 */
-static __inline bool IsFault(FaultDealHandle* handle)
+static inline bool IsFault(FaultDealHandle* handle)
 {
     if (handle->switchProperty->fault.state == FAULT_YES)
     {
@@ -250,7 +250,7 @@ static __inline bool IsFault(FaultDealHandle* handle)
 * @update: [2018-06-16][张宇飞][BRIEF]
 *[2018-07-09][张宇飞][错误分析]
 */
-static __inline bool IsOpenPosition(FaultDealHandle* handle)
+static inline bool IsOpenPosition(FaultDealHandle* handle)
 {
     if (handle->switchProperty->state == SWITCH_OPEN)
     {
@@ -265,7 +265,7 @@ static __inline bool IsOpenPosition(FaultDealHandle* handle)
 * @update: [2018-06-16][张宇飞][BRIEF]
 *[2018-07-09][张宇飞][错误分析]
 */
-static __inline bool IsClosePosition(FaultDealHandle* handle)
+static inline bool IsClosePosition(FaultDealHandle* handle)
 {
 	if (handle->switchProperty->state == SWITCH_CLOSE)
 	{
@@ -279,7 +279,7 @@ static __inline bool IsClosePosition(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-06-16][张宇飞][BRIEF]
 */
-static __inline bool IsTrigger(FaultDealHandle* handle)
+static inline bool IsTrigger(FaultDealHandle* handle)
 {
     DistributionStation* distributionArea = handle->switchProperty->distributionArea;
     DistributionPowerArea* area = distributionArea->powerArea;
@@ -301,7 +301,7 @@ static __inline bool IsTrigger(FaultDealHandle* handle)
 * @update: [2018-06-15][张宇飞][BRIEF]
 *[2018-07-09][张宇飞][修正地址复制错误,收集且计算完成]
 */
-static __inline bool IsGatherCompleted(FaultDealHandle* handle)
+static inline bool IsGatherCompleted(FaultDealHandle* handle)
 {
 	DistributionStation* distributionArea = handle->switchProperty->distributionArea;
    
@@ -320,7 +320,7 @@ static __inline bool IsGatherCompleted(FaultDealHandle* handle)
 * @update: [2018-06-14][张宇飞][BRIEF]
 [2018-07-16][张宇飞][增加跳数条件不全为1]
 */
-static __inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
+static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
     bool isFaultEdgeConnected = handle->switchProperty->fault.isFaultEdgeConnected;
 	ListDouble* list = &(handle->switchProperty->parent->connectPath);
@@ -356,7 +356,7 @@ static __inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域
 * @update: [2018-06-13][张宇飞][BRIEF]
 *          [2018-06-23][张宇飞][适应双配电区域]
 */
-static __inline bool IsFaultArea(FaultDealHandle* handle)
+static inline bool IsFaultArea(FaultDealHandle* handle)
 {
     DistributionStation* distributionArea = handle->switchProperty->distributionArea;
    	
@@ -379,7 +379,7 @@ static __inline bool IsFaultArea(FaultDealHandle* handle)
 *[2018-07-09][张宇飞][修改判别错误]
 *[2018-07-11][张宇飞][修改累加，取消配电区域判断，改为直接判断拒分]         
 */
-static __inline bool IsRejectArea(FaultDealHandle* handle)
+static inline bool IsRejectArea(FaultDealHandle* handle)
 {
 	DistributionStation* distributionArea = handle->switchProperty->distributionArea;
 	DistributionPowerArea* area = distributionArea->powerArea;
@@ -405,7 +405,7 @@ static __inline bool IsRejectArea(FaultDealHandle* handle)
 * @update: [2018-07-07][张宇飞][BRIEF]
 *
 */
-static __inline bool IsRemovalSuccessInsulate(FaultDealHandle* handle)
+static inline bool IsRemovalSuccessInsulate(FaultDealHandle* handle)
 {
 	DistributionStation* distributionArea = handle->switchProperty->distributionArea;
 	DistributionPowerArea* area = distributionArea->powerArea;
@@ -455,7 +455,7 @@ static bool IsExitRemoveSuccessPath(StationTopology* topology)
 * @update: [2018-07-16][张宇飞][BRIEF]
 *
 */
-static __inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle)
+static inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle)
 {
 	//SwitchProperty* switchProperty = handle->switchProperty;
 	
@@ -470,7 +470,7 @@ static __inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle)
 * @update: [2018-07-08][张宇飞][BRIEF]
 *
 */
-static __inline bool IsRemovalSuccessBackup(FaultDealHandle* handle)
+static inline bool IsRemovalSuccessBackup(FaultDealHandle* handle)
 {
 	DistributionStation* distributionArea = handle->switchProperty->distributionArea;
 	DistributionPowerArea* area = distributionArea->powerArea;
@@ -492,7 +492,7 @@ static __inline bool IsRemovalSuccessBackup(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-06-16][张宇飞][BRIEF]
 */
-static __inline bool IsPermitOpen(FaultDealHandle* handle)
+static inline bool IsPermitOpen(FaultDealHandle* handle)
 {
 	//return handle->switchProperty->isPermitOpen;
     return true;
@@ -503,7 +503,7 @@ static __inline bool IsPermitOpen(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-07-11][张宇飞][BRIEF]
 */
-static __inline bool IsRejectInsulate(FaultDealHandle* handle)
+static inline bool IsRejectInsulate(FaultDealHandle* handle)
 {
 	SwitchProperty* switchProperty = handle->switchProperty;
 	//位于联络开关路径上，存在切除失败信息  list_size(&(switchProperty->parent->connectPath)) > 0
@@ -593,7 +593,7 @@ static bool IsPermitInTransferPowerMode(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-07-12][张宇飞][BRIEF]
 */
-static __inline bool IsPowerIncomeLossFault(FaultDealHandle* handle)
+static inline bool IsPowerIncomeLossFault(FaultDealHandle* handle)
 {
 	return (handle->switchProperty->type == SWITCH_TYPE_BREAKER_POWER) 
 		&& (handle->switchProperty->fault.state == FAULT_INCOME_LOSS);

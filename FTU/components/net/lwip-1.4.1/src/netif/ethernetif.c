@@ -415,7 +415,7 @@ int eth_system_device_init(void)
                             RT_NULL,
                             &eth_rx_thread_stack[0], 
                             sizeof(eth_rx_thread_stack),
-                            RT_ETHERNETIF_THREAD_PREORITY, 
+                            RT_LWIP_ETHTHREAD_RX_PRIORITY, 
                             RT_LWIP_ETHTHREAD_TIMESLICE);
 														
     RT_ASSERT(result == RT_EOK);
@@ -435,11 +435,11 @@ int eth_system_device_init(void)
 
     result = rt_thread_init(&eth_tx_thread, 
                             RT_LWIP_ETHTHREAD_TX_NAME, 
-                            eth_tx_thread_entry, 
+                            eth_tx_thread_entry , 
                             RT_NULL,
                             &eth_tx_thread_stack[0], 
                             sizeof(eth_tx_thread_stack),
-                            RT_LWIP_ETHTHREAD_PRIORITY, 
+                            RT_LWIP_ETHTHREAD_TX_PRIORITY, 
                             RT_LWIP_ETHTHREAD_TIMESLICE);
 														
     RT_ASSERT(result == RT_EOK);

@@ -34,7 +34,7 @@ static void DestorySimulationStation(void* node);
   * @return: 0-正常返回
   * @update: [2018-06-05][张宇飞][BRIEF]
   */
-static __inline uint8_t SimulationGetNowTime(SimulationStation* handle)
+static inline uint8_t SimulationGetNowTime(SimulationStation* handle)
 {
 	handle->startTime =  rt_tick_get();
     return NULL;
@@ -46,7 +46,7 @@ static __inline uint8_t SimulationGetNowTime(SimulationStation* handle)
   * @return: 0-正常返回
   * @update: [2018-06-05][张宇飞][BRIEF]
   */
-static __inline uint8_t SimulationIsOverTime(SimulationStation* handle)
+static inline uint8_t SimulationIsOverTime(SimulationStation* handle)
 {
     return SystemIsOverTime(handle->startTime, handle->limitTime);
 }
@@ -61,7 +61,7 @@ static __inline uint8_t SimulationIsOverTime(SimulationStation* handle)
   * @update: [2018-06-09][张宇飞][创建]
   *[2018-07-11][张宇飞][添加拒动判断]
   */
-static __inline void SimulationOpenOperate(SimulationStation* station)
+static inline void SimulationOpenOperate(SimulationStation* station)
 {
     if ((RUN_STATE_CLOSE_POSITION_STORED == station->runState)
 		&& (!station->isRejectAction))
@@ -78,7 +78,7 @@ static __inline void SimulationOpenOperate(SimulationStation* station)
   * @update: [2018-06-09][张宇飞][创建]
   *[2018-07-11][张宇飞][添加拒动判断]
   */
-static __inline void SimulationCloseOperate(SimulationStation* station)
+static inline void SimulationCloseOperate(SimulationStation* station)
 {
     if (RUN_STATE_OPEN_POSITION_STORED == station->runState && (!station->isRejectAction))
     {

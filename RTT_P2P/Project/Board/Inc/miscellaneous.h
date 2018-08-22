@@ -10,11 +10,12 @@
 #ifndef __MISCELLANEOUS_H
 #define __MISCELLANEOUS_H
 
+#include <stdint.h>
 
 void SystemReset(void);
 
 extern void StopWatchInit(void);
 extern void StopWatchStart(void);
-extern void StopWatchStop(void);
+extern uint32_t StopWatchStop(void);
 #endif
 

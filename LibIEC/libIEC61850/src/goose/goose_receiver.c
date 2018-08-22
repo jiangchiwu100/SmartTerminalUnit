@@ -495,43 +495,53 @@ parseAllDataUnknownValue(GooseSubscriber self, uint8_t* buffer, int allDataLengt
 
 
 /**
-* @brief :æ ¹æ®StNumå’ŒSqNumè¿›è¡Œæœ‰æ•ˆæ€§é¢„å¤„ç†ï¼Œå¯¹äºæ–°æ•°æ®äºˆä»¥æ›´æ–°ï¼Œå¿ƒè·³äºˆä»¥ç¡®è®¤
+* @brief :¸ù¾İStNumºÍSqNum½øĞĞÓĞĞ§ĞÔÔ¤´¦Àí£¬¶ÔÓÚĞÂÊı¾İÓèÒÔ¸üĞÂ£¬ĞÄÌøÓèÒÔÈ·ÈÏ
 * @param void
-* @return: true--ç»§ç»­ä¸‹é¢å¤„ç†ï¼Œfalse--ä¸å†è¿›è¡Œå¤„ç†
-* @update: [2018-08-03][å¼ å®‡é£][åˆ›å»º]
+* @return: true--¼ÌĞøÏÂÃæ´¦Àí£¬false--²»ÔÙ½øĞĞ´¦Àí 
+* @update: [2018-08-03][ÕÅÓî·É][´´½¨]
 */
 static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNum, uint32_t sqNum ,
 		uint32_t timeAllowedToLive)
 {
 
-	//åºåˆ—å·é”™è¯¯è®¾ç½®ä¸ºæ— æ•ˆçŠ¶æ€
+    return true;
+	//ĞòÁĞºÅ´íÎóÉèÖÃÎªÎŞĞ§×´Ì¬
 	 if (matchingSubscriber->stNum == stNum) {
 		if (matchingSubscriber->sqNum >= sqNum) {
 
 			matchingSubscriber->stateValid = false;
-			printf("sqNum Loss Error Sequence!\n");
-
-			return false;
+			printf("\n\nAppID: 0x%x sqNum Loss Error Sequence, last:%d , current: %d!\n\n" ,
+                   matchingSubscriber->appId, matchingSubscriber->sqNum, sqNum);
+            //return false;
+            printf("Restart Recive!!!!!!!!\n");
+			return true;
 		}
 		else
 		{
 
 			if ((matchingSubscriber->sqNum + 1) != sqNum){
 				 //if (DEBUG_GOOSE_SUBSCRIBER)
-					 printf("SqNum Loss!\n");
+					 printf("AppID: 0x%x, SqNum Loss, last:%d , current: %d!\n",  
+                            matchingSubscriber->appId,  matchingSubscriber->sqNum, sqNum);
 			}
-			//æ›´æ–°çŠ¶æ€
+			//¸üĞÂ×´Ì¬
 			 matchingSubscriber->stateValid = true;
 			 matchingSubscriber->stNum = stNum;
 			 matchingSubscriber->sqNum = sqNum;
 			 matchingSubscriber->invalidityTime = Hal_getTimeInMs() + timeAllowedToLive;
+             
+//             printf("AppID: 0x%x, jump, st:%d , sq: %d!\n",  
+//                            matchingSubscriber->appId,  stNum,  sqNum);
+             StopWatchStop();
+               
 			 return false;
 		}
 	}
-	else if (matchingSubscriber->stNum < stNum) {//æ–°æ•°æ®
+	else if (matchingSubscriber->stNum < stNum) {//ĞÂÊı¾İ
 		 if ((matchingSubscriber->stNum + 1) != stNum){
 			 //if (DEBUG_GOOSE_SUBSCRIBER)
-			  printf("stNum Loss!\n");
+			  printf("\n\nAppID: 0x%x, stNum Loss, last:%d , current: %d!\n",
+                     matchingSubscriber->appId, matchingSubscriber->stNum, stNum);
 			  return true;
 		 }
 	 }
@@ -539,21 +549,24 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 	{
 		matchingSubscriber->stateValid = false;
 		//if (DEBUG_GOOSE_SUBSCRIBER)
-		printf("stNum Loss Error Sequence!\n");
-		return false;
+		printf("\n\nAppID: 0x%x, stNum Loss Error Sequence, last:%d , current: %d!\n" ,
+               matchingSubscriber->appId,  matchingSubscriber->stNum, stNum);
+		//return false;
+        printf("Restart Recive!!!!!!!!\n");
+	    return true;
 	}
-
+    
 	 return true;
 
 }
 
 
 /**
-* @brief :è§£ægooseæŠ¥æ–‡
+* @brief :½âÎögoose±¨ÎÄ
 * @param void
-* @return: 0--æ­£å¸¸
-* @update: [2018-08-03][å¼ å®‡é£][å¼€å§‹åŸºäºå¼€æºåº“è¿›è¡Œä¿®æ”¹]
-* [2018-08-03][å¼ å®‡é£][]
+* @return: 0--Õı³£
+* @update: [2018-08-03][ÕÅÓî·É][¿ªÊ¼»ùÓÚ¿ªÔ´¿â½øĞĞĞŞ¸Ä]
+* [2018-08-03][ÕÅÓî·É][]
 */
 static int
 parseGoosePayload(GooseReceiver self, uint8_t* buffer, int apduLength)

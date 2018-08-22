@@ -175,7 +175,7 @@ void HAL_Delay(__IO uint32_t Delay)
   * @brief : This function will initial STM32 board.
   * @param : None.
   * @return: None. 
-*@update:[2018-7-31][张宇飞][增加分布式数据与网络初始化]
+*@update:[2018-7-31][寮犲畤椋瀅[澧炲姞鍒嗗竷寮忔暟鎹笌缃戠粶鍒濆鍖朷
   */  
 void rt_hw_board_init(void)
 {

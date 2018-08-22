@@ -793,8 +793,11 @@ lwip_send(int s, const void *data, size_t size, int flags)
   written = 0;
   err = netconn_write_partly(sock->conn, data, size, write_flags, &written);
 
+ 
   LWIP_DEBUGF(SOCKETS_DEBUG, ("lwip_send(%d) err=%d written=%"SZT_F"\n", s, err, written));
   sock_set_errno(sock, err_to_errno(err));
+  
+ 
   return (err == ERR_OK ? (int)written : -1);
 }
 
@@ -2383,4 +2386,43 @@ lwip_fcntl(int s, int cmd, int val)
   return ret;
 }
 
+//用于自定义返回错误码，而非-1
+int
+lwip_send_ex(int s, const void *data, size_t size, int flags)
+{
+  struct lwip_sock *sock;
+  err_t err;
+  u8_t write_flags;
+  size_t written;
+
+  LWIP_DEBUGF(SOCKETS_DEBUG, ("lwip_send(%d, data=%p, size=%"SZT_F", flags=0x%x)\n",
+                              s, data, size, flags));
+
+  sock = get_socket(s);
+  if (!sock) {
+    return -1;
+  }
+
+  if (sock->conn->type != NETCONN_TCP) {
+#if (LWIP_UDP || LWIP_RAW)
+    return lwip_sendto(s, data, size, flags, NULL, 0);
+#else /* (LWIP_UDP || LWIP_RAW) */
+    sock_set_errno(sock, err_to_errno(ERR_ARG));
+    return -1;
+#endif /* (LWIP_UDP || LWIP_RAW) */
+  }
+
+  write_flags = NETCONN_COPY |
+    ((flags & MSG_MORE)     ? NETCONN_MORE      : 0) |
+    ((flags & MSG_DONTWAIT) ? NETCONN_DONTBLOCK : 0);
+  written = 0;
+  err = netconn_write_partly(sock->conn, data, size, write_flags, &written);
+
+ 
+  LWIP_DEBUGF(SOCKETS_DEBUG, ("lwip_send(%d) err=%d written=%"SZT_F"\n", s, err, written));
+  sock_set_errno(sock, err_to_errno(err));
+  
+ 
+  return (err == ERR_OK ? (int)written : err);
+}
 #endif /* LWIP_SOCKET */

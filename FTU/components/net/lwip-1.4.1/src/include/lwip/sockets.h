@@ -341,7 +341,7 @@ int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptse
                 struct timeval *timeout);
 int lwip_ioctl(int s, long cmd, void *argp);
 int lwip_fcntl(int s, int cmd, int val);
-
+int lwip_send_ex(int s, const void *data, size_t size, int flags);//自定义返回错误码而非-1 
 #if LWIP_COMPAT_SOCKETS
 #define accept(a,b,c)         lwip_accept(a,b,c)
 #define bind(a,b,c)           lwip_bind(a,b,c)

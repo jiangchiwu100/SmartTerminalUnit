@@ -1,3 +1,8 @@
+2018/8/16
+1.改tcp软件校验位硬件校验
+2.删去uffs
+3.#define RT_LWIP_ETHTHREAD_MBOX_SIZE      32
+
 2018/8/4
 1.添加LIBIEC
 2.改文件系统头文件名称integer.h-->ff_integer.h

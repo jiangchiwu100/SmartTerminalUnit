@@ -630,7 +630,7 @@ static const struct dfs_file_ops dfs_uffs_fops =
     dfs_uffs_write,
     dfs_uffs_flush,
     dfs_uffs_seek,
-    dfs_uffs_getdents,
+    (int (*)(struct dfs_fd *, struct dirent *, uint32_t))dfs_uffs_getdents,
 };
 
 static const struct dfs_filesystem_ops dfs_uffs_ops =

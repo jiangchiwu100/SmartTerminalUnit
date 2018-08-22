@@ -97,7 +97,8 @@ static inline bool RingQueueWrite(RingQueue* ring,  void*  indata)
     
     if (ring->count >= ring->capacity)//超出时候，更新head，保证最新更新
     {
-        ring->head = ring->tail;       
+        ring->head = ring->tail; 
+        rt_kprintf("Over Range\n");
     }
     return true;
 }

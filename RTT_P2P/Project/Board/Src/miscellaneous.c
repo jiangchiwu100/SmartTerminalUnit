@@ -10,8 +10,9 @@
 
 #include "miscellaneous.h"
 
- #include "stm32f429xx.h" 
+#include "stm32f429xx.h" 
 #include "ll_driver.h"
+#include <stdbool.h>
 /**
 * @brief :系统复位
 * @param ： void
@@ -28,16 +29,21 @@ void SystemReset(void )
 
 
 static uint32_t TimeCn;
-
+static bool StopWatchRun = false;
 /**
 * @brief :秒表初始化，
 * @param ：void
 * @return: void
 * @update: [2018-08-06][张宇飞][使用Timer10]
+*[2018-08-16][张宇飞][添加秒表运行状态，只有在停止时，才能开始新的即时。]
 */
 void StopWatchInit(void)
 {
 
+    if (StopWatchRun)
+    {
+        return;
+    }
   LL_TIM_InitTypeDef TIM_InitStruct;
 
   /* Peripheral clock enable */
@@ -59,11 +65,11 @@ void StopWatchInit(void)
 * @update: [2018-08-06][张宇飞][]
 */
 void StopWatchStart(void)
-{
+{    
     TimeCn = 0;
     LL_TIM_SetCounter(TIM10, 0);
     LL_TIM_EnableCounter(TIM10);
-    
+    StopWatchRun = true;
 }
 /**
 * @brief :秒表停止
@@ -71,11 +77,12 @@ void StopWatchStart(void)
 * @return: void
 * @update: [2018-08-06][张宇飞][]
 */
-void StopWatchStop(void)
+uint32_t StopWatchStop(void)
 {
     TimeCn = LL_TIM_GetCounter(TIM10);
     LL_TIM_DisableCounter(TIM10);
     
-    rt_kprintf("\nduty time: %d\r\n", TimeCn);
-   
+    //rt_kprintf("\nduty time: %d\r\n", TimeCn);
+    StopWatchRun = false;
+    return TimeCn;
 }

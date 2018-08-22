@@ -102,7 +102,7 @@ struct tm* gmtime_r(const time_t* timep, struct tm* result)
 
 
 
-#if defined(__CC_ARM)
+#if defined(__ICCARM__)
 time_t
 timegm(struct tm* tm_time)
 {

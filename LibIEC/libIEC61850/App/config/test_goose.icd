@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL">
+  <Header id="" nameStructure="IEDName">
+  </Header>
+  <Communication>
+    <SubNetwork name="subnet_goose" type="8-MMS">      
+      <BitRate unit="b/s">100</BitRate>
+      <ConnectedAP iedName="STU1" apName="G1"> 
+	    <Text>Station bus</Text>		 
+        <GSE ldInst="LD0" cbName="gcbRemote" des="遥信">
+           <Address>
+                <P type="VLAN-ID">1</P>
+                <P type="VLAN-PRIORITY">4</P>
+                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="APPID">1000</P>
+           </Address>
+	    </GSE>
+        <GSE ldInst="MEAS" cbName="gcbMeasureValues" des="电压电流等测量值">
+           <Address>
+                <P type="VLAN-ID">1</P>
+                <P type="VLAN-PRIORITY">4</P>
+                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="APPID">1001</P>
+           </Address>
+	    </GSE>
+		<GSE ldInst="PROT" cbName="gcbDistriIndicate" des="分布式指示">
+           <Address>
+                <P type="VLAN-ID">1</P>
+                <P type="VLAN-PRIORITY">4</P>
+                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="APPID">1003</P>
+           </Address>
+	    </GSE>
+        <GSE ldInst="PROT" cbName="gcbDistriDeal" des="分布式处理">
+           <Address>
+                <P type="VLAN-ID">1</P>
+                <P type="VLAN-PRIORITY">4</P>
+                <P type="MAC-Address">FF-FF-FF-FF-FF-FF</P>
+                <P type="APPID">1004</P>
+           </Address>
+	    </GSE>
+      </ConnectedAP>
+    </SubNetwork>
+  </Communication>
+  <IED name="STU1">
+    <Services>
+      <DynAssociation />
+      <GetDirectory />
+      <GetDataObjectDefinition />
+      <GetDataSetValue />
+      <DataSetDirectory />
+      <ReadWrite />
+      <GetCBValues />
+      <ConfLNs fixPrefix="true" fixLnInst="true" />
+      <GOOSE max="5" />
+      <GSSE max="5" />
+      <FileHandling />
+      <GSEDir />
+      <TimerActivatedControl />  
+    </Services>
+    <AccessPoint name="G1">
+      <Server>
+        <Authentication />
+		<LDevice inst="LD0">
+          <LN0 lnClass="LLN0" lnType="LLN01" inst="">
+          	<DataSet name="RmoteSignal" desc="遥信数据集">
+              <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind1" daName="stVal" />
+              <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind2" daName="stVal" />
+              <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind3" daName="stVal" />
+              <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind4" daName="stVal" />
+			  <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind5" daName="stVal" />
+			  <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind6" daName="stVal" />
+			  <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind7" daName="stVal" />
+			  <FCDA ldInst="LD0" lnClass="GGIO" fc="ST" lnInst="1" doName="Ind8" daName="stVal" />
+			 
+            </DataSet>                         			
+           <GSEControl appID="remote" name="gcbRemote" type="GOOSE" datSet="RmoteSignal" confRev="1" minTime="2" maxTime="3000" /> 
+          
+            <DOI name="Mod">
+              <DAI name="ctlModel" sAddr="106">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnClass="LPHD" lnType="LPHD1" inst="1" prefix="" />
+          <LN lnClass="GGIO" lnType="GGIO1" inst="1" prefix="">
+				<DOI name="Mod">
+				  <DAI name="ctlModel">
+					<Val>status-only</Val>
+				  </DAI>
+				</DOI>   
+				<DOI name="Ind1" >
+				  <DAI name="stVal" sAddr="1101"/>             
+				  <DAI name="q" sAddr="1102"/>            
+				  <DAI name="t" sAddr="1103"/>                           
+				  <DAI name="subEna" sAddr="1104"/>                            
+				  <DAI name="subVal" sAddr="1105"/>                
+				  <DAI name="subQ" sAddr="1106"/>                
+				  <DAI name="subID" sAddr="1107"/>                
+				  <DAI name="dU" sAddr="1108"/>               
+				</DOI> 
+				<DOI name="Ind2" >
+				  <DAI name="stVal" sAddr="1201"/>             
+				  <DAI name="q" sAddr="1202"/>            
+				  <DAI name="t" sAddr="1203"/>                           
+				  <DAI name="subEna" sAddr="1204"/>                            
+				  <DAI name="subVal" sAddr="1205"/>                
+				  <DAI name="subQ" sAddr="1206"/>                
+				  <DAI name="subID" sAddr="1207"/>                
+				  <DAI name="dU" sAddr="1208"/>               
+				</DOI> 
+				<DOI name="Ind3" >
+				  <DAI name="stVal" sAddr="1301"/>             
+				  <DAI name="q" sAddr="1302"/>            
+				  <DAI name="t" sAddr="1303"/>                           
+				  <DAI name="subEna" sAddr="1304"/>                            
+				  <DAI name="subVal" sAddr="1305"/>                
+				  <DAI name="subQ" sAddr="1306"/>                
+				  <DAI name="subID" sAddr="1307"/>                
+				  <DAI name="dU" sAddr="1308"/>               
+				</DOI>
+				<DOI name="Ind4" >
+				  <DAI name="stVal" sAddr="1401"/>             
+				  <DAI name="q" sAddr="1402"/>            
+				  <DAI name="t" sAddr="1403"/>                           
+				  <DAI name="subEna" sAddr="1404"/>                            
+				  <DAI name="subVal" sAddr="1405"/>                
+				  <DAI name="subQ" sAddr="1406"/>                
+				  <DAI name="subID" sAddr="1407"/>                
+				  <DAI name="dU" sAddr="1408"/>               
+				</DOI> 
+				<DOI name="Ind5" >
+				  <DAI name="stVal" sAddr="1501"/>             
+				  <DAI name="q" sAddr="1502"/>            
+				  <DAI name="t" sAddr="1503"/>                           
+				  <DAI name="subEna" sAddr="1504"/>                            
+				  <DAI name="subVal" sAddr="1505"/>                
+				  <DAI name="subQ" sAddr="1506"/>                
+				  <DAI name="subID" sAddr="1507"/>                
+				  <DAI name="dU" sAddr="1508"/>               
+				</DOI> 
+				<DOI name="Ind6" >
+				  <DAI name="stVal" sAddr="1601"/>             
+				  <DAI name="q" sAddr="1602"/>            
+				  <DAI name="t" sAddr="1603"/>                           
+				  <DAI name="subEna" sAddr="1604"/>                            
+				  <DAI name="subVal" sAddr="1605"/>                
+				  <DAI name="subQ" sAddr="1606"/>                
+				  <DAI name="subID" sAddr="1607"/>                
+				  <DAI name="dU" sAddr="1608"/>               
+				</DOI> 
+				<DOI name="Ind7" >
+				  <DAI name="stVal" sAddr="1701"/>             
+				  <DAI name="q" sAddr="1702"/>            
+				  <DAI name="t" sAddr="1703"/>                           
+				  <DAI name="subEna" sAddr="1704"/>                            
+				  <DAI name="subVal" sAddr="1705"/>                
+				  <DAI name="subQ" sAddr="1706"/>                
+				  <DAI name="subID" sAddr="1707"/>                
+				  <DAI name="dU" sAddr="1708"/>               
+				</DOI> 
+				<DOI name="Ind8" >
+				  <DAI name="stVal" sAddr="1801"/>             
+				  <DAI name="q" sAddr="1802"/>            
+				  <DAI name="t" sAddr="1803"/>                           
+				  <DAI name="subEna" sAddr="1804"/>                            
+				  <DAI name="subVal" sAddr="1805"/>                
+				  <DAI name="subQ" sAddr="1806"/>                
+				  <DAI name="subID" sAddr="1807"/>                
+				  <DAI name="dU" sAddr="1808"/>               
+				</DOI> 
+          </LN>
+        
+		  <LN lnClass="LGOS" lnType="LGOS1" inst="1" prefix="" >
+		    <DOI name="GoCBRef">
+              <DAI name="setSrcRef"  sAddr="2101">				   
+					<Val>STU2LD0/LLN0$GO$gcbRemote</Val>				           
+              </DAI>
+			  <DAI name="setSrcCB" sAddr="2102">			 				   
+					<Val>STU2LD0/LLN0$RmoteSignal</Val>				         
+              </DAI>                
+           
+            </DOI>   
+		  </LN>
+		  <LN lnClass="LGOS" lnType="LGOS1" inst="2" prefix="" >
+		    <DOI name="GoCBRef" >
+              <DAI name="setSrcRef" sAddr="2201">					
+					<Val >STU2LD0/LLN0$GO$gcbMeasureValues</Val>				   
+              </DAI>
+			  <DAI name="setSrcCB" sAddr="2202">							
+					<Val>STU2LD0/LLN0$MeasureValues</Val>				  	                 
+              </DAI>
+            </DOI>   
+		  </LN>
+		</LDevice>
+      
+        <LDevice inst="MEAS">
+          <LN0 lnClass="LLN0" lnType="LLN01" inst=""> 
+			 <DataSet name="MeasureValues" desc="测量值">			  
+			  <!-- 视在功率 -->
+			  <FCDA ldInst="MEAS" lnClass="MMXU" fc="MX" lnInst="1" doName="TotVA"  desc="功率"/>		
+			  <FCDA ldInst="MEAS" lnClass="MMXU" fc="MX" lnInst="1" doName="PhV" />
+              <FCDA ldInst="MEAS" lnClass="MMXU" fc="MX" lnInst="1" doName="A" />			  
+            </DataSet>
+			 <GSEControl appID="analog" name="gcbMeasureValues" type="GOOSE" datSet="MeasureValues" confRev="1" minTime="1000" maxTime="3000"/> 
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnClass="LPHD" lnType="LPHD1" inst="1" prefix="" />
+          <LN lnClass="MMXU" lnType="MMXU1" inst="1" prefix="">
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+			</DOI> 
+			<DOI name="TotVA">
+              <DAI name="mag" sAddr="11101"/>
+			  <DAI name="q" sAddr="11102"/>
+			  <DAI name="t" sAddr="11103"/>
+			  <DAI name="subEna" sAddr="11104"/>
+			  <DAI name="subMag" sAddr="11105"/>
+			  <DAI name="subQ" sAddr="11106"/>
+			  <DAI name="subID" sAddr="11107"/>
+			  <DAI name="units" sAddr="11108"/>
+			  <DAI name="db" sAddr="11109"/>
+			  <DAI name="zeroDb" sAddr="11110"/>
+			  <DAI name="sVC" sAddr="11111"/>
+			  <DAI name="rangeC" sAddr="11112"/>
+			  <DAI name="smpRate" sAddr="11113"/>
+			  <DAI name="dU" sAddr="11114"/>
+			</DOI> 
+			<DOI name="Hz">
+              <DAI name="mag" sAddr="11201"/>
+			  <DAI name="q" sAddr="11202"/>
+			  <DAI name="t" sAddr="11203"/>
+			  <DAI name="subEna" sAddr="11204"/>
+			  <DAI name="subMag" sAddr="11205"/>
+			  <DAI name="subQ" sAddr="11206"/>
+			  <DAI name="subID" sAddr="11207"/>
+			  <DAI name="units" sAddr="11208"/>
+			  <DAI name="db" sAddr="11209"/>
+			  <DAI name="zeroDb" sAddr="11210"/>
+			  <DAI name="sVC" sAddr="11211"/>
+			  <DAI name="rangeC" sAddr="11212"/>
+			  <DAI name="smpRate" sAddr="11213"/>
+			  <DAI name="dU" sAddr="11214"/>
+			</DOI> 
+            <DOI name="PhV">
+              <DOI name="phsA" >
+				  <DAI name="cVal" sAddr="11301"/>
+				  <DAI name="q" sAddr="11302"/>
+				  <DAI name="t" sAddr="11303"/>
+				  <DAI name="subEna" sAddr="11304"/>
+				  <DAI name="subCVal" sAddr="11305"/>
+				  <DAI name="subQ" sAddr="11306"/>
+				  <DAI name="subID" sAddr="11307"/>
+				  <DAI name="units" sAddr="11308"/>
+				  <DAI name="db" sAddr="11309"/>
+				  <DAI name="zeroDb" sAddr="11310"/>
+				  <DAI name="rangeC" sAddr="11311"/>
+				  <DAI name="magSVC" sAddr="11312"/>
+				  <DAI name="angSVC" sAddr="11313"/>
+				  <DAI name="angRef" sAddr="11314"/>
+				  <DAI name="smpRate" sAddr="11315"/>
+				  <DAI name="dU" sAddr="11316"/>
+			  </DOI>
+			  <DAI name="angRef" sAddr="11801"/>
+			  <DAI name="dU" sAddr="11802"/>
+			</DOI> 
+            <DOI name="A">
+              
+			</DOI>         
+          </LN>
+        </LDevice>
+		
+		<LDevice inst="CTRL">
+          <LN0 lnClass="LLN0" lnType="LLN01" inst="">          	
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnClass="LPHD" lnType="LPHD1" inst="1" prefix="" />
+		  <LN lnClass="CSWI" lnType="CSWI1" inst="1" prefix="">
+                      
+          </LN>
+          <LN lnClass="XCBR" lnType="XCBR1" inst="1" prefix="">
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>            
+          </LN>
+		  
+		  
+        </LDevice>
+		
+		<LDevice inst="PROT">
+          <LN0 lnClass="LLN0" lnType="LLN01" inst="">    
+			<DataSet name="DistriIndicate" desc="分布式指示信息">	  		
+			  <FCDA ldInst="CTRL" lnClass="XCBR" fc="ST" lnInst="1" doName="Pos" daName="stVal" />			
+			  <FCDA ldInst="PROT" lnClass="PTOC" fc="ST" lnInst="1" doName="Str" daName="general"   desc="是否过流保护"/> 
+			  <FCDA ldInst="PROT" lnClass="SCPI" fc="ST" lnInst="1" doName="Abc"   desc="电流指示"/> 
+			  <FCDA ldInst="PROT" lnClass="SVPI" fc="ST" lnInst="1" doName="Abc"   desc="电压指示"/>   			  
+			  <FCDA ldInst="PROT" lnClass="SFPI" fc="ST" lnInst="1" doName="FltInd"   desc="故障指示"/>   			  
+            </DataSet> 
+			<DataSet name="DistriDeal" desc="分布式处理过程信息">	  			  			  
+			  <FCDA ldInst="PROT" lnClass="AFSL" fc="ST" lnInst="1" doName="FltLocInd" daName="general"   desc="故障定位结果"/> 
+			  <FCDA ldInst="PROT" lnClass="AFSL" fc="ST" lnInst="1" doName="FltLocStr"  daName="stVal"  desc="故障定位是否正在进行"/> 
+			  <FCDA ldInst="PROT" lnClass="AFSI" fc="ST" lnInst="1" doName="FltIsoInd"  daName="stVal"  desc="故障隔离结果"/>   			  
+			  <FCDA ldInst="PROT" lnClass="AFSI" fc="ST" lnInst="1" doName="FltIsoStr"  daName="stVal"  desc="故障隔离是否正在进行"/>   			  
+            </DataSet> 
+		   <GSEControl appID="indicate" name="gcbDistriIndicate" type="GOOSE" datSet="DistriIndicate" confRev="1" minTime="2" maxTime="3000" /> 
+           <GSEControl appID="deal" name="gcbDistriDeal" type="GOOSE" datSet="DistriDeal" confRev="1" minTime="2" maxTime="3000"/> 
+		   
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnClass="LPHD" lnType="LPHD1" inst="1" prefix="" />
+          <LN lnClass="PTOC" lnType="PTOC1" inst="1" prefix="">
+            <DOI name="Mod">
+              <DAI name="ctlModel">
+                <Val>status-only</Val>
+              </DAI>
+            </DOI>            
+          </LN>
+		  <LN lnClass="SCPI" lnType="SCPI1" inst="1" prefix="">                   
+          </LN>
+		  <LN lnClass="SVPI" lnType="SVPI1" inst="1" prefix="">                   
+          </LN>
+		  <LN lnClass="SFPI" lnType="SFPI1" inst="1" prefix="">                   
+          </LN>
+		  <LN lnClass="AFSL" lnType="AFSL1" inst="1" prefix="">                   
+          </LN>
+		  <LN lnClass="AFSI" lnType="AFSI1" inst="1" prefix="">                   
+          </LN>
+		  <LN lnClass="ASRC" lnType="ASRC1" inst="1" prefix="">                   
+          </LN>
+        </LDevice>     
+
+	 </Server>
+    </AccessPoint>
+  </IED>
+  <DataTypeTemplates>
+    <LNodeType id="LLN01" lnClass="LLN0">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL_LN0" />
+    </LNodeType>
+    <LNodeType id="LPHD1" lnClass="LPHD">
+      <DO name="PhyNam" type="CN_DPL" />
+      <DO name="PhyHealth" type="CN_INS_Health" />
+      <DO name="Proxy" type="CN_SPS" />
+    </LNodeType>
+    <LNodeType id="GGIO1" lnClass="GGIO">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL" />
+      <DO name="Ind1" type="CN_SPS" />
+      <DO name="Ind2" type="CN_SPS" />
+      <DO name="Ind3" type="CN_SPS" />
+      <DO name="Ind4" type="CN_SPS" />
+	  <DO name="Ind5" type="CN_SPS" />
+	  <DO name="Ind6" type="CN_SPS" />
+	  <DO name="Ind7" type="CN_SPS" />
+	  <DO name="Ind8" type="CN_SPS" />	  
+    </LNodeType>
+	<LNodeType id="LGOS1" lnClass="LGOS" desc="goose订阅">
+      <DO name="St" type="CN_SPS" />
+      <DO name="LastStNum" type="CN_INS" />
+      <DO name="GoCBRef" type="SJ_ORG" />	  
+    </LNodeType>
+	<LNodeType id="MMXU1" lnClass="MMXU" desc="测量量">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="TotVA" type="CN_MV" />
+      <DO name="Hz" type="CN_MV" />
+      <DO name="PhV" type="CN_WYE" />
+      <DO name="A" type="CN_WYE" />	  
+    </LNodeType>
+	<LNodeType id="XCBR1" lnClass="XCBR" desc="断路器">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL" />
+      <DO name="LocKey" type="CN_SPS" />
+	  <DO name="Loc" type="CN_SPS" />
+	  <DO name="Opcnt" type="CN_INS_Beh" />
+	  <DO name="Pos" type="CN_DPC" /> 
+	  <DO name="BlkOpn" type="CN_SPC" />
+	  <DO name="BlkCls" type="CN_SPC" />
+	  <DO name="CBOpCap" type="CN_INS_Beh" />	 
+    </LNodeType>
+	
+	<LNodeType id="XSWI1" lnClass="XSWI" desc="负荷开关">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL" />
+      <DO name="LocKey" type="CN_SPS" />
+	  <DO name="Loc" type="CN_SPS" />
+	  <DO name="Opcnt" type="CN_INS_Beh" />
+	  <!-- <DO name="SwTyp" type="CN_ENS_1_Beh" />    -->
+	  <DO name="Pos" type="CN_DPC" /> 
+	  <DO name="BlkOpn" type="CN_SPC" />
+	  <DO name="BlkCls" type="CN_SPC" />	  
+    </LNodeType>
+ 	<LNodeType id="CSWI1" lnClass="CSWI" desc="开关控制">
+      <DO name="LocKey" type="CN_SPS" />
+	  <DO name="Loc" type="CN_SPS" />	  
+	  <DO name="OpOpn" type="CN_ACT" />	 
+	  <DO name="SelOpn" type="CN_SPS" />
+	  <DO name="OpCls" type="CN_ACT" />
+	  <DO name="SelCls" type="CN_SPS" />	 	  
+	  <DO name="Pos" type="CN_DPC" /> 
+    </LNodeType>
+	<LNodeType id="PTOC1" lnClass="PTOC" desc="过流保护">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL" />	 
+	  <DO name="Str" type="CN_ACD" />
+	  <DO name="Op" type="CN_ACT" />  	  
+	  <DO name="StrVal" type="CN_ASG_SP" />
+	  <DO name="TmMult" type="CN_ASG_SP" />
+	  <DO name="MinOpTmms" type="CN_ING_SP" />
+	  <DO name="MaxOpTmms" type="CN_ING_SP" />	  
+	  <DO name="RsDlTmms" type="CN_ING_SP" />
+	  <DO name="DirMod" type="CN_ING_SP" />
+    </LNodeType>
+	<LNodeType id="PTUV1" lnClass="PTUV" desc="欠压保护">
+      <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="Health" type="CN_INS_Health" />
+      <DO name="NamPlt" type="CN_LPL" />	 
+	  <DO name="Str" type="CN_ACD" />
+	  <DO name="Op" type="CN_ACT" />  	  
+	  <DO name="StrVal" type="CN_ASG_SP" />
+	  <DO name="TmMult" type="CN_ASG_SP" />
+	  <DO name="MinOpTmms" type="CN_ING_SP" />
+	  <DO name="MaxOpTmms" type="CN_ING_SP" />	  
+	  <DO name="RsDlTmms" type="CN_ING_SP" />
+	  
+    </LNodeType>
+	<!-- 以下逻辑节点时扩展逻辑节点，来源于基于IEC61850的配网智能分布式终端互操作实施规范-征求意见稿(修改版) -->
+	
+	<LNodeType id="SVPI1" lnClass="SVPI" desc="电压指示">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  
+	  <DO name="Abc" type="CN_ACT_3P" />
+	  <DO name="Prs" type="CN_ACT_3P" />  	  
+	  <DO name="Blk" type="CN_SPS" />
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<LNodeType id="SCPI1" lnClass="SCPI" desc="电流指示">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  
+	  <DO name="Abc" type="CN_ACT_3P" />
+	  <DO name="DirPrs" type="CN_ACD_3P" />  	  
+	  <DO name="Blk" type="CN_SPS" />
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<LNodeType id="SFPI1" lnClass="SFPI" desc="故障指示">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  	  
+	  <DO name="FltInd" type="CN_ACD_3P" />  	  
+	  <DO name="Blk" type="CN_SPS" />
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<LNodeType id="AFSL1" lnClass="AFSL" desc="故障自动定位">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  	  
+	  <DO name="FltLocInd" type="CN_ACT" />  	  
+	  <DO name="FltLocStr" type="CN_SPS" />
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<LNodeType id="AFSI1" lnClass="AFSI" desc="故障自动隔离">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  	  
+	  <DO name="FltIsoInd" type="CN_SPS" />  	  
+	  <DO name="FltIsoStr" type="CN_SPS" />
+	  <DO name="LocKey" type="CN_SPS" />
+	  <DO name="Loc" type="CN_SPS" />	  
+	  <DO name="Blk" type="CN_SPS" />	
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<LNodeType id="ASRC1" lnClass="ASRC" desc="故障自动恢复">
+	  <DO name="Mod" type="CN_INC_Mod" />
+      <DO name="Beh" type="CN_INS_Beh" />
+      <DO name="NamPlt" type="CN_LPL" />
+	  <DO name="Health" type="CN_INS_Health" />	  	  
+	  <!-- <DO name="SvcRstoEnd" type="SJ_ENS" />  	 	  -->
+	  <DO name="LocKey" type="CN_SPS" />
+	  <DO name="Loc" type="CN_SPS" />	  
+	  <DO name="Blk" type="CN_SPS" />	
+	  <DO name="ClcExp" type="CN_SPS" />
+	  <DO name="Mir" type="CN_SPS" />
+    </LNodeType>
+	<!-- 自定义sj -->
+	<DOType id="SJ_ORG" cdc="ORG">
+		<DA name="setSrcRef" bType="VisString129" dchg="true" fc="SP"/>
+		<DA name="setTstRef" bType="VisString129"  dchg="true" fc="SP"/>
+		<DA name="setSrcCB" bType="VisString129" dchg="true" fc="SP"/>
+		<DA name="setTstCB" bType="VisString129"  dchg="true" fc="SP"/>
+		
+		<DA name="intAddr" bType="VisString255" qchg="true" fc="SP"/>
+		<DA name="tstEna" bType="BOOLEAN" fc="SP"/>
+		
+	</DOType>
+	
+	<!-- 以下全部来自 GDW1396 -->
+	<DOType id="CN_ACD" cdc="ACD">
+		<DA name="general" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirGeneral" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	<DOType id="CN_ACD_3P" cdc="ACD">
+		<DA name="general" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirGeneral" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="phsA" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirPhsA" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="phsB" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirPhsB" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="phsC" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirPhsC" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="neut" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="dirNeut" bType="Enum" type="dir" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	<DOType id="CN_ACT" cdc="ACT">
+		<DA name="general" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	<DOType id="CN_ACT_3P" cdc="ACT">
+		<DA name="general" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="phsA" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="phsB" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="phsC" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="neut" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	<DOType id="CN_ING_SP" cdc="ING">
+		<DA name="setVal" bType="INT32" fc="SP"/>
+		<DA name="minVal" bType="INT32" fc="CF"/>
+		<DA name="maxVal" bType="INT32" fc="CF"/>
+		<DA name="stepSize" bType="INT32U" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	<DOType id="CN_ASG_SP" cdc="ASG">
+		<DA name="setMag" bType="Struct" type="CN_AnalogueValue" fc="SP"/>
+		<DA name="units" bType="Struct" type="CN_units" fc="CF"/>
+		<DA name="sVC" bType="Struct" type="CN_ScaledValueConfig" fc="CF"/>
+		<DA name="minVal" bType="Struct" type="CN_AnalogueValue" fc="CF"/>
+		<DA name="maxVal" bType="Struct" type="CN_AnalogueValue" fc="CF"/>
+		<DA name="stepSize" bType="Struct" type="CN_AnalogueValue" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	
+	<DOType id="CN_DPC" cdc="DPC">
+		<DA name="SBOw" bType="Struct" type="CN_SBOw_Oper_SDPC" fc="CO"/>
+		<DA name="Oper" bType="Struct" type="CN_SBOw_Oper_SDPC" fc="CO"/>
+		<DA name="Cancel" bType="Struct" type="CN_Cancel_SDPC" fc="CO"/>
+		<DA name="stVal" bType="Dbpos" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subVal" bType="Dbpos" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="pulseConfig" bType="Struct" type="CN_PulseConfig" fc="CF"/>
+		<DA name="ctlModel" bType="Enum" type="ctlModel" fc="CF"/>
+		<DA name="sboTimeout" bType="INT32U" fc="CF"/>
+		<DA name="sboClass" bType="Enum" type="sboClass" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	
+	<DOType id="CN_INC_Mod" cdc="INC">
+		<DA name="stVal" bType="Enum" type="Mod" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="ctlModel" bType="Enum" type="ctlModel" fc="CF"/>
+	</DOType>
+	
+	<DOType id="CN_INS" cdc="INS">
+		<DA name="stVal" bType="INT32" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subVal" bType="INT32" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+    <DOType id="CN_INS_Beh" cdc="INS">
+      <DA name="stVal" bType="Enum" type="Beh" dchg="true"  fc="ST" />
+      <DA name="q" bType="Quality" qchg="true" fc="ST" />
+      <DA name="t" bType="Timestamp" fc="ST" />
+    </DOType>
+	<DOType id="CN_INS_Health" cdc="INS">
+      <DA name="stVal" bType="Enum" type="Health" dchg="true"  fc="ST" />
+      <DA name="q" bType="Quality" qchg="true" fc="ST" />
+      <DA name="t" bType="Timestamp" fc="ST" />
+    </DOType>
+	
+    <DOType id="CN_LPL_LN0" cdc="LPL">
+      <DA name="vendor" bType="VisString255" fc="DC" />
+      <DA name="swRev" bType="VisString255" fc="DC" />
+      <DA name="d" bType="VisString255" fc="DC" />
+	  <DA name="dU" bType="VisString255" fc="DC" />
+      <DA name="configRev" bType="VisString255" fc="DC" />
+      <DA name="ldNs" bType="VisString255" fc="EX" >
+		<Val>IEC 61850-7-4:2003</Val>
+	  </DA>
+    </DOType>
+	<DOType id="CN_LPL" cdc="LPL">
+      <DA name="vendor" bType="VisString255" fc="DC" />
+      <DA name="swRev" bType="VisString255" fc="DC" />
+      <DA name="d" bType="VisString255" fc="DC" />
+	  <DA name="dU" bType="VisString255" fc="DC" />
+     
+    </DOType>
+	<DOType id="CN_DPL" cdc="DPL">
+		<DA name="vendor" bType="VisString255" fc="DC"/>
+		<DA name="hwRev" bType="VisString255" fc="DC"/>
+		<DA name="swRev" bType="VisString255" fc="DC"/>
+		<DA name="serNum" bType="VisString255" fc="DC"/>
+		<DA name="model" bType="VisString255" fc="DC"/>
+		<DA name="location" bType="VisString255" fc="DC"/>
+		<DA name="mRID" bType="VisString255" fc="DC"/>
+	</DOType>
+	
+	<DOType id="CN_SPS" cdc="SPS">
+		<DA name="stVal" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subVal" bType="BOOLEAN" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+    </DOType>
+	
+    
+    <DOType id="CN_LPL" cdc="LPL">
+      <DA name="vendor" bType="VisString255" fc="DC" />
+      <DA name="swRev" bType="VisString255" fc="DC" />
+      <DA name="d" bType="VisString255" fc="DC" />
+    </DOType>   
+    
+	<DOType id="CN_MV" cdc="MV">
+		<DA name="mag" bType="Struct" type="CN_AnalogueValue" dchg="true"
+		fc="MX"/>
+		<DA name="q" bType="Quality" qchg="true" fc="MX"/>
+		<DA name="t" bType="Timestamp" fc="MX"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subMag" bType="Struct" type="CN_AnalogueValue" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="units" bType="Struct" type="CN_units" fc="CF"/>
+		<DA name="db" bType="INT32U" fc="CF"/>
+		<DA name="zeroDb" bType="INT32U" fc="CF"/>
+		<DA name="sVC" bType="Struct" type="CN_ScaledValueConfig" fc="CF"/>
+		<DA name="rangeC" bType="Struct" type="CN_RangeConfig" fc="CF"/>
+		<DA name="smpRate" bType="INT32U" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+
+	
+	<DOType id="CN_WYE" cdc="WYE">
+		<SDO name="phsA" type="CN_CMV"/>
+		<SDO name="phsB" type="CN_CMV"/>
+		<SDO name="phsC" type="CN_CMV"/>
+		<DA name="angRef" bType="Enum" type="angid" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+
+    <DOType id="CN_CMV" cdc="CMV">
+		<DA name="cVal" bType="Struct" type="CN_Vector" dchg="true" fc="MX"/>
+		<DA name="q" bType="Quality" qchg="true" fc="MX"/>
+		<DA name="t" bType="Timestamp" fc="MX"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subCVal" bType="Struct" type="CN_Vector" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="units" bType="Struct" type="CN_units" fc="CF"/>
+		<DA name="db" bType="INT32U" fc="CF"/>
+		<DA name="zeroDb" bType="INT32U" fc="CF"/>
+		<DA name="rangeC" bType="Struct" type="CN_RangeConfig" fc="CF"/>
+		<DA name="magSVC" bType="Struct" type="CN_ScaledValueConfig" fc="CF"/>
+		<DA name="angSVC" bType="Struct" type="CN_ScaledValueConfig" fc="CF"/>
+		<DA name="angRef" bType="Enum" type="angidCMV" fc="CF"/>
+		<DA name="smpRate" bType="INT32U" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>
+	
+
+  
+	<DOType id="CN_SPC" cdc="SPC">
+		<DA name="SBOw" bType="Struct" type="CN_SBOw_Oper_SDPC" fc="CO"/>
+		<DA name="Oper" bType="Struct" type="CN_SBOw_Oper_SDPC" fc="CO"/>
+		<DA name="Cancel" bType="Struct" type="CN_Cancel_SDPC" fc="CO"/>
+		<DA name="stVal" bType="BOOLEAN" dchg="true" fc="ST"/>
+		<DA name="q" bType="Quality" qchg="true" fc="ST"/>
+		<DA name="t" bType="Timestamp" fc="ST"/>
+		<DA name="subEna" bType="BOOLEAN" fc="SV"/>
+		<DA name="subVal" bType="BOOLEAN" fc="SV"/>
+		<DA name="subQ" bType="Quality" fc="SV"/>
+		<DA name="subID" bType="VisString64" fc="SV"/>
+		<DA name="pulseConfig" bType="Struct" type="CN_PulseConfig" fc="CF"/>
+		<DA name="ctlModel" bType="Enum" type="ctlModel" fc="CF"/>
+		<DA name="sboTimeout" bType="INT32U" fc="CF"/>
+		<DA name="sboClass" bType="Enum" type="sboClass" fc="CF"/>
+		<DA name="dU" bType="Unicode255" fc="DC"/>
+	</DOType>   
+	
+	<!-- 以下自定义 -->
+	<!-- 对象引用 -->
+	<DAType id="SJ_ObjectReference">
+		<BDA name="value" bType="VisString129"/>
+	</DAType>
+	<!-- 以下为GWD1396 -->
+	<DAType id="CN_AnalogueValue">
+		<BDA name="f" bType="FLOAT32"/>
+	</DAType>
+	<DAType id="CN_AnalogueValue_I">
+		<BDA name="i" bType="INT32"/>
+	</DAType>
+	<DAType id="CN_RangeConfig">
+		<BDA name="hhLim" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="hLim" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="lLim" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="llLim" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="min" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="max" bType="Struct" type="CN_AnalogueValue"/>
+	</DAType>
+	<DAType id="CN_Vector">
+		<BDA name="mag" bType="Struct" type="CN_AnalogueValue"/>
+		<BDA name="ang" bType="Struct" type="CN_AnalogueValue"/>
+	</DAType>
+	<DAType id="CN_SBOw_Oper_SDPC">
+		<BDA name="ctlVal" bType="BOOLEAN"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+		<BDA name="Check" bType="Check"/>
+	</DAType>
+	<DAType id="CN_Cancel_SDPC">
+		<BDA name="ctlVal" bType="BOOLEAN"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+	</DAType>
+	<DAType id="CN_SBOw_Oper_INC">
+		<BDA name="ctlVal" bType="INT32"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+		<BDA name="Check" bType="Check"/>
+	</DAType>
+	<DAType id="CN_Cancel_INC">
+		<BDA name="ctlVal" bType="INT32"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+	</DAType>
+	<DAType id="CN_SBOw_Oper_BSC">
+		<BDA name="ctlVal" bType="Tcmd"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+		<BDA name="Check" bType="Check"/>
+	</DAType>
+	<DAType id="CN_Cancel_BSC">
+		<BDA name="ctlVal" bType="Tcmd"/>
+		<BDA name="origin" bType="Struct" type="CN_Originator"/>
+		<BDA name="ctlNum" bType="INT8U"/>
+		<BDA name="T" bType="Timestamp"/>
+		<BDA name="Test" bType="BOOLEAN"/>
+	</DAType>
+	<DAType id="CN_Originator">
+		<BDA name="orCat" bType="Enum" type="orCategory"/>
+		<BDA name="orIdent" bType="Octet64"/>
+	</DAType>
+	<DAType id="CN_ValWithTrans">
+		<BDA name="posVal" bType="INT8"/>
+	</DAType>
+	<DAType id="CN_ScaledValueConfig">
+		<BDA name="scaleFactor" bType="FLOAT32"/>
+		<BDA name="offset" bType="FLOAT32"/>
+	</DAType>
+	<DAType id="CN_PulseConfig">
+		<BDA name="cmdQual" bType="Enum" type="PulseConfigCmdQual"/>
+		<BDA name="onDur" bType="INT32U"/>
+		<BDA name="offDur" bType="INT32U"/>
+		<BDA name="numPls" bType="INT32U"/>
+	</DAType>
+	<DAType id="CN_units">
+		<BDA bType="Enum" name="SIUnit" type="SIUnit"/>
+		<BDA bType="Enum" name="multiplier" type="multiplier"/>
+	</DAType>
+ 
+ <!-- 定义枚举 主要来自860.74， 继电保护模型，按字母顺序排列 -->
+	<EnumType id="angid">
+      <EnumVal ord="0">Va</EnumVal>
+      <EnumVal ord="1">Vb</EnumVal>     
+	  <EnumVal ord="2">Vc</EnumVal>
+      <EnumVal ord="3">Aa</EnumVal>
+      <EnumVal ord="4">Ab</EnumVal>     
+	  <EnumVal ord="5">Ac</EnumVal> 
+	  <EnumVal ord="6">Vab</EnumVal>
+      <EnumVal ord="7">Vbc</EnumVal>     
+	  <EnumVal ord="8">Vca</EnumVal>	  
+      <EnumVal ord="9">Vother</EnumVal>
+      <EnumVal ord="10">Aother</EnumVal>     	    	 
+    </EnumType>
+	<EnumType id="angidCMV">
+       <EnumVal ord="0">V</EnumVal>
+      <EnumVal ord="1">A</EnumVal>     
+	  <EnumVal ord="2">other</EnumVal>  	     
+    </EnumType>
+	<EnumType id="Beh">
+      <EnumVal ord="0">on</EnumVal>
+      <EnumVal ord="1">on-blocked</EnumVal>   
+	  <EnumVal ord="2">test</EnumVal>
+      <EnumVal ord="3">test/blocked</EnumVal>   
+	  <EnumVal ord="4">off</EnumVal>   
+    </EnumType>
+    <EnumType id="ctlModel">
+      <EnumVal ord="0">status-only</EnumVal>
+      <EnumVal ord="1">direct-with-normal-security</EnumVal>
+      <EnumVal ord="2">sbo-with-normal-security</EnumVal>
+      <EnumVal ord="3">direct-with-enhanced-security</EnumVal>
+      <EnumVal ord="4">sbo-with-enhanced-security</EnumVal>
+    </EnumType>
+	<EnumType id="dir">
+      <EnumVal ord="0">unknown</EnumVal>
+      <EnumVal ord="1">forward</EnumVal>      
+	  <EnumVal ord="2">backward</EnumVal>
+      <EnumVal ord="3">both</EnumVal>        
+    </EnumType>
+	<EnumType id="Health">
+      <EnumVal ord="0">Ok</EnumVal>
+      <EnumVal ord="1">Warning</EnumVal>      
+	  <EnumVal ord="1">Alarm</EnumVal>  
+    </EnumType>
+	<EnumType id="multiplier">
+      <EnumVal ord="-24">Yocto</EnumVal>
+      <EnumVal ord="-21">Zepto</EnumVal>
+      <EnumVal ord="-18">Atto</EnumVal>
+      <EnumVal ord="-15">Femto</EnumVal>
+      <EnumVal ord="-12">Pico</EnumVal>
+      <EnumVal ord="-9">Nano</EnumVal>
+      <EnumVal ord="-6">Micro</EnumVal>
+      <EnumVal ord="-3">Milli</EnumVal>
+      <EnumVal ord="-2">Centi</EnumVal>
+      <EnumVal ord="-1">Deci</EnumVal>
+      <EnumVal ord="0">zeroNoValue</EnumVal>
+      <EnumVal ord="1">Deca</EnumVal>
+      <EnumVal ord="2">Hecto</EnumVal>
+      <EnumVal ord="3">Kilo</EnumVal>
+      <EnumVal ord="6">Mega</EnumVal>
+      <EnumVal ord="9">Giga</EnumVal>
+      <EnumVal ord="12">Tera</EnumVal>
+      <EnumVal ord="15">Petra</EnumVal>
+      <EnumVal ord="18">Exa</EnumVal>
+      <EnumVal ord="21">Zetta</EnumVal>
+      <EnumVal ord="24">Yotta</EnumVal>
+    </EnumType>
+	<EnumType id="Mod">
+      <EnumVal ord="0">on</EnumVal>
+      <EnumVal ord="1">on-blocked</EnumVal>   
+	  <EnumVal ord="2">test</EnumVal>
+      <EnumVal ord="3">test/blocked</EnumVal>   
+	  <EnumVal ord="4">off</EnumVal>      
+    </EnumType>
+    <EnumType id="orCategory">
+      <EnumVal ord="0">not-supported</EnumVal>
+      <EnumVal ord="1">bay-control</EnumVal>
+      <EnumVal ord="2">station-control</EnumVal>
+      <EnumVal ord="3">remote-control</EnumVal>
+      <EnumVal ord="4">automatic-bay</EnumVal>
+      <EnumVal ord="5">automatic-station</EnumVal>
+      <EnumVal ord="6">automatic-remote</EnumVal>
+      <EnumVal ord="7">maintenance</EnumVal>
+      <EnumVal ord="8">process</EnumVal>
+    </EnumType>
+	<EnumType id="PulseConfigCmdQual">
+      <EnumVal ord="0">pulse</EnumVal>
+      <EnumVal ord="1">persistent</EnumVal>      
+    </EnumType>
+	<EnumType id="sboClass">
+      <EnumVal ord="0">operate-once</EnumVal>
+      <EnumVal ord="1">operate-many</EnumVal>
+    </EnumType>
+
+	 <EnumType id="SIUnit">
+      <EnumVal ord="1">
+      </EnumVal>
+      <EnumVal ord="10">rad</EnumVal>
+      <EnumVal ord="11">sr</EnumVal>
+      <EnumVal ord="2">m</EnumVal>
+      <EnumVal ord="21">Gy</EnumVal>
+      <EnumVal ord="22">q</EnumVal>
+      <EnumVal ord="23">Ã‚Â°C</EnumVal>
+      <EnumVal ord="24">Sv</EnumVal>
+      <EnumVal ord="25">F</EnumVal>
+      <EnumVal ord="26">C</EnumVal>
+      <EnumVal ord="27">S</EnumVal>
+      <EnumVal ord="28">H</EnumVal>
+      <EnumVal ord="29">V</EnumVal>
+      <EnumVal ord="3">kg</EnumVal>
+      <EnumVal ord="30">ohm</EnumVal>
+      <EnumVal ord="31">J</EnumVal>
+      <EnumVal ord="32">N</EnumVal>
+      <EnumVal ord="33">Hz</EnumVal>
+      <EnumVal ord="34">Ix</EnumVal>
+      <EnumVal ord="35">Lm</EnumVal>
+      <EnumVal ord="36">Wb</EnumVal>
+      <EnumVal ord="37">T</EnumVal>
+      <EnumVal ord="38">W</EnumVal>
+      <EnumVal ord="39">Pa</EnumVal>
+      <EnumVal ord="4">s</EnumVal>
+      <EnumVal ord="41">mÃ‚Â²</EnumVal>
+      <EnumVal ord="42">mÃ‚Â³</EnumVal>
+      <EnumVal ord="43">m/s</EnumVal>
+      <EnumVal ord="44">m/sÃ‚Â²</EnumVal>
+      <EnumVal ord="45">mÃ‚Â³/s</EnumVal>
+      <EnumVal ord="46">m/mÃ‚Â³</EnumVal>
+      <EnumVal ord="47">M</EnumVal>
+      <EnumVal ord="48">kg/mÃ‚Â³</EnumVal>
+      <EnumVal ord="49">mÃ‚Â²/s</EnumVal>
+      <EnumVal ord="5">A</EnumVal>
+      <EnumVal ord="50">W/m K</EnumVal>
+      <EnumVal ord="51">J/K</EnumVal>
+      <EnumVal ord="52">ppm</EnumVal>
+      <EnumVal ord="53">1/s</EnumVal>
+      <EnumVal ord="54">rad/s</EnumVal>
+      <EnumVal ord="6">K</EnumVal>
+      <EnumVal ord="61">VA</EnumVal>
+      <EnumVal ord="62">Watts</EnumVal>
+      <EnumVal ord="63">VAr</EnumVal>
+      <EnumVal ord="64">theta</EnumVal>
+      <EnumVal ord="65">cos(theta)</EnumVal>
+      <EnumVal ord="66">Vs</EnumVal>
+      <EnumVal ord="67">VÃ‚Â²</EnumVal>
+      <EnumVal ord="68">As</EnumVal>
+      <EnumVal ord="69">AÃ‚Â²</EnumVal>
+      <EnumVal ord="7">mol</EnumVal>
+      <EnumVal ord="70">AÃ‚Â²t</EnumVal>
+      <EnumVal ord="71">VAh</EnumVal>
+      <EnumVal ord="72">Wh</EnumVal>
+      <EnumVal ord="73">VArh</EnumVal>
+      <EnumVal ord="74">V/Hz</EnumVal>
+      <EnumVal ord="8">cd</EnumVal>
+      <EnumVal ord="9">deg</EnumVal>
+    </EnumType>
+    
+	
+
+	<!--   新标准74附录 -->
+	
+	
+
+	
+	
+	
+	
+	
+	
+  </DataTypeTemplates>
+</SCL>

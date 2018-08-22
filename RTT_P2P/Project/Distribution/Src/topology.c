@@ -636,7 +636,7 @@ ErrorCode BreadthFirstPath(const ListDouble* switchList, const SwitchProperty* s
 #ifdef  MSVC  //  MSVC
 	uint8_t queueBuffer[32];//TODO:注意MDK此处为size
 #else
-	uint8_t queueBuffer[size];//TODO:注意MDK此处为size
+	uint8_t queueBuffer[32];//TODO:注意MDK此处为size
 #endif
 
     

@@ -2213,7 +2213,7 @@ iedModel_LD0_GGIO1_Mod_ctlModel.mmsValue = MmsValue_newIntegerFromInt32(0);
 
 iedModel_LD0_GGIO1_Ind1_stVal.mmsValue = MmsValue_newBoolean(true);
 
-iedModel_LD0_GGIO1_Ind2_stVal.mmsValue = MmsValue_newBoolean(false);
+iedModel_LD0_GGIO1_Ind2_stVal.mmsValue = MmsValue_newBoolean(false) ; 
 
 iedModel_LD0_GGIO1_Ind3_stVal.mmsValue = MmsValue_newBoolean(true);
 
