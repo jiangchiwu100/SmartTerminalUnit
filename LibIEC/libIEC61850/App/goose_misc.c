@@ -16,6 +16,36 @@
 #include "iec61850_server.h"
 
 #include "ied_data_ref.h"
+
+
+const char LocalDataSetRef[][24] = {
+	{ "GOINGGIO17.Ind1.stVal"},
+	{ "GOINGGIO17.Ind2.stVal" },
+	{ "GOINGGIO17.Ind3.stVal" },
+	{ "GOINGGIO17.Ind4.stVal" },
+	{ "GOINGGIO17.Ind5.stVal" },
+	{ "GOINGGIO17.Ind6.stVal" },
+	{ "GOINGGIO17.Ind7.stVal" },
+	{ "GOINGGIO17.Ind8.stVal" },
+	{ "GOINGGIO17.Ind9.stVal" },
+	{ "GOINGGIO17.Ind10.stVal" },
+	{ "GOINGGIO17.Ind11.stVal" },
+	{ "GOINGGIO17.Ind12.stVal" },
+	{ "GOINGGIO17.Ind13.stVal" },
+	{ "GOINGGIO17.Ind14.stVal" },
+	{ "GOINGGIO17.Ind15.stVal" },
+	{ "GOINGGIO17.Ind16.stVal" },
+	{ "GOINGGIO17.Alm1.stVal" },
+	{ "GOINGGIO17.Alm2.stVal" },
+	{ "GOINGGIO17.Alm3.stVal" },
+	{ "GOINGGIO17.Alm4.stVal" },
+	{ "GOINGGIO17.Alm5.stVal" },
+	{ "GOINGGIO17.Alm6.stVal" },
+	{ "GOINGGIO17.Alm7.stVal" },
+	{ "GOINGGIO17.Alm8.stVal" },
+
+};
+
 const char  Ref1[][24] = {
 	{ "GOINGGIO1.Ind1.stVal" },
 	{ "GOINGGIO1.Ind2.stVal" },
@@ -127,8 +157,34 @@ const char Ref4[][24] = {
 
 
 
+/**
+* @brief :更新本地订阅信息
+* @param : const MmsValue* self
+* @param : DeviceIndicate* deviceIndicat 设备指示
+* @return: void
+* @update: [2018-08-23][张宇飞][创建]
+*/
+void UpdateLocalPulicRef(ServerModelManager* manager)
+{
+	uint8_t count = sizeof(LocalDataSetRef)/sizeof(LocalDataSetRef[0]);
+	manager->localPulicDataset = DeviceIndicate_crate(count);
+	if (!manager->localPulicDataset)
+	{
+		perror("!manager->localPulicDataset\n");
+		return;
+	}
+	DataAttribute** dac = manager->localPulicDataset->daCollect;
+	for (uint8_t  i = 0;  i< count; i++)
+	{
+		dac[i] = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, LocalDataSetRef[0]);
+		if (!dac[i])
+		{
+			perror(" LocalDataSetRef[0] Unfind.\n");
+		}
+	}
 
 
+}
 
 
 

@@ -14,6 +14,39 @@
 #include "distribution_config.h"
 #include "coordinator.h"
 #include "status_update.h"
+#include "extern_interface.h"
+
+static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
+static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di);
+/**
+* @brief : 通过goose订阅更新订阅
+* @param : SwitchProperty* sw
+* @param : DeviceIndicate* di
+* @return: void
+* @update:[2018-08-23][张宇飞][创建]
+*/
+void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
+{
+	StationPoint* pPoint = g_StationManger->pWorkPoint;
+	if(!pPoint || !di)
+	{
+		perror("!pPoint || !di\n");
+		return;
+	}
+
+	SwitchProperty* sw;
+	ErrorCode code = FindSwitchNodeByID(pPoint->topology->globalSwitchList, di->id, *sw);
+	if(code == ERROR_OK_NULL)
+	{
+		DataArributeToLocalProperty(sw, di);
+	}
+	else
+	{
+		perror("Unfind Switch\n");
+		return;
+	}
+}
+
 
 /**
 * @brief : 同goose发布开关属性
@@ -22,8 +55,9 @@
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 */
-void SwitchPropertyGoosePublish(void)
+void GoosePublishSwitchStatus(void)
 {
+	//针对单独绑定
 	perror("Unimplenment\n");
 }
 
@@ -35,7 +69,7 @@ void SwitchPropertyGoosePublish(void)
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 */
-void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
+static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 {
 	if (!sw || !di)
 	{
@@ -90,7 +124,7 @@ void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 */
-void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di)
+static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di)
 {
 	if (!sw || !di)
 	{

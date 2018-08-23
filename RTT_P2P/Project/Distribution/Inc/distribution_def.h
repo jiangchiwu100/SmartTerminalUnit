@@ -455,6 +455,8 @@ typedef struct TagStationPoint
     
 	DatagramTransferNode transferNode;//
 	ProtocolAnylastDatagram  anylast;
+
+	void* server61850; //61850对应服务
 }StationPoint;
 
 /**

@@ -23,7 +23,7 @@
 
 
 
-
+#include "station_manager.h"
 #include "Coordinator_def.h"
 
 char* LPHD1_NEIGHBOURCOUNT_N = "LPHD1.NeighbourCountN.stVal";
@@ -31,7 +31,17 @@ char* LPHD1_NEIGHBOURCOUNT_M = "LPHD1.NeighbourCountM.stVal";
 
 #define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
-IedServer CurrentIedServer;
+
+
+/**
+ * 61850服务管理
+ */
+ServerModelManager g_ServerModelManager;
+
+
+
+
+
 
 
 
@@ -93,6 +103,11 @@ int Iec61850Server(void)
 	
 
 	CurrentIedServer = IedServer_create(model);
+	if (g_StationManger->pWorkPoint)
+	{
+
+	}
+
 	IedServer_start(CurrentIedServer, tcpPort);
 
 	if (!IedServer_isRunning(CurrentIedServer)) {
@@ -184,6 +199,56 @@ int Iec61850Server(void)
 	
 
 
+}
+
+void
+gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
+{
+	DeviceIndicate* di = (DeviceIndicate*)parameter;
+	if (!di)
+	{
+		return;
+	}
+	printf("GOOSE event:\n");
+	printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
+		GooseSubscriber_getSqNum(subscriber));
+	printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
+
+	uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
+
+	printf("  timestamp: %u.%u\n", (uint32_t)(timestamp / 1000), (uint32_t)(timestamp % 1000));
+
+	MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
+
+
+	MmsDatasetToDataAtrributeSet(values, di);
+}
+
+/**
+* @brief : 生成订阅gooses实例
+* @param :
+* @param :
+* @return: DatasetSubscriber* 分配 好的空间
+* @update: [2018-08-22][张宇飞][创建]
+*/
+void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscriber daSb)
+{
+	printf("Using interface eth0\n");
+	GooseReceiver_setInterfaceId(receiver, "eth0");
+	GooseSubscriber subscriber;
+	for (uint8_t i = 0; i < daSb->count; i++)
+	{
+		subscriber = GooseSubscriber_create(daSb->indicateCollect[i]->goCbRef, NULL);
+		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i]->appId);
+		GooseSubscriber_setListener(subscriber, gooseListenerRemote, daSb->indicateCollect[i]);
+	}
+
+	GooseReceiver_start(receiver);
+
+	// GooseReceiver_stop(receiver);
+
+	//GooseReceiver_destroy(receiver);
+	//return 0;
 }
 
 

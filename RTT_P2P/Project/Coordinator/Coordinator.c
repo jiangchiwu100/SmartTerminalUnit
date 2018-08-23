@@ -22,10 +22,10 @@
 * @brief :初始化数据指示空闿
 * @param : uint8_t neighbourCount 邻居数量
 * @param : uint8_t daCount 数据集数釿
-* @return: NeighborCollect* 分配 好的空间
+* @return: DatasetSubscriber* 分配 好的空间
 * @update: [2018-08-22][张宇飞][创建]
 */
-bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
+bool DeviceIndicate_init(DeviceIndicate* ic , uint16_t daCount)
 {
 	if (!ic || daCount==0)
 	{
@@ -33,7 +33,7 @@ bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
 	}
 	ic->count = daCount;
 	ic->daCollect = (DataAttribute**)GLOBAL_CALLOC(sizeof(DataAttribute*), daCount);
-	ic->indexTrans = (uint8_t*)GLOBAL_CALLOC(sizeof(uint8_t), daCount);//转换索引数组
+	ic->indexTrans = (uint16_t*)GLOBAL_CALLOC(sizeof(uint8_t), daCount);//转换索引数组
 	if ((!ic->daCollect)
 		|| (!ic->indexTrans))
 	{
@@ -52,7 +52,7 @@ bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
 * @return: 指针
 * @update: [2018-08-23][张宇飞][创建]
 */
-DeviceIndicate* DeviceIndicate_crate(uint8_t daCount)
+DeviceIndicate* DeviceIndicate_crate(uint16_t daCount)
 {
 	DeviceIndicate* ic = (DeviceIndicate*)GLOBAL_CALLOC(sizeof(DeviceIndicate), 1);
 	if (!ic)
@@ -74,11 +74,11 @@ DeviceIndicate* DeviceIndicate_crate(uint8_t daCount)
 * @brief :创建邻居合集
 * @param : uint8_t neighbourCount 邻居数量
 * @param : uint8_t daCount 数据集数釿
-* @return: NeighborCollect* 分配 好的空间
+* @return: DatasetSubscriber* 分配 好的空间
 * @update: [2018-08-21][张宇飞][创建]
 *[2018-08-22][张宇飞][引入中间变量]
 */
-bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref, uint8_t* index, uint8_t daCount)
+bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref, uint16_t* index, uint16_t daCount)
 {
 
 	if ((!di) || (!ld) || (!ref) || (!daCount))
@@ -87,7 +87,7 @@ bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref,
 		return false;
 	}
 	DataAttribute* da;
-	for(uint8_t i = 0; i < daCount; i++ )
+	for(uint16_t i = 0; i < daCount; i++ )
 	{
 		da =  (DataAttribute*)ModelNode_getChild((ModelNode*)ld, ref[i]);
 		if(!da)
@@ -102,31 +102,31 @@ bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref,
 }
 /**
 * @brief :创建邻居合集
-* @param : uint8_t neighbourCount 邻居数量
-* @param : uint8_t daCount 数据集数釿
-* @return: NeighborCollect* 分配 好的空间
+* @param : uint8_t count 订阅集合数量
+* @param : uint8_t daCount 每个集合订阅的数量
+* @return: DatasetSubscriber* 分配 好的空间
 * @update: [2018-08-21][张宇飞][创建]
 *[2018-08-22][张宇飞][引入中间变量]
 */
-NeighborCollect* NeighborCollect_create(uint8_t neighbourCount, uint8_t daCount)
+DatasetSubscriber* DatasetSubscriber_create(uint8_t count, uint16_t* daCount)
 {
-	NeighborCollect* nc = (NeighborCollect*)GLOBAL_CALLOC(sizeof(NeighborCollect), 1);
+	DatasetSubscriber* nc = (DatasetSubscriber*)GLOBAL_CALLOC(sizeof(DatasetSubscriber), 1);
 	if (!nc)
 	{
 		return NULL;
 	}
-	nc->count = neighbourCount;
+	nc->count = count;
 
-	nc->indicateCollect = (DeviceIndicate*)GLOBAL_CALLOC(sizeof(DeviceIndicate), neighbourCount);
+	nc->indicateCollect = (DeviceIndicate*)GLOBAL_CALLOC(sizeof(DeviceIndicate), count);
 	if (!nc->indicateCollect)
 	{
 		return NULL;
 	}
 	DeviceIndicate* ic;
-	for (uint8_t i = 0; i< neighbourCount; i++)
+	for (uint16_t i = 0; i< count; i++)
 	{
 		ic = &(nc->indicateCollect[i]);
-		bool result = DeviceIndicate_init(ic, daCount);
+		bool result = DeviceIndicate_init(ic, daCount[i]);
 		if (!result)
 		{
 			return NULL;
@@ -135,9 +135,6 @@ NeighborCollect* NeighborCollect_create(uint8_t neighbourCount, uint8_t daCount)
 
 	return nc;
 }
-
-
-
 
 
 /**
@@ -172,7 +169,9 @@ void MmsDatasetToDataAtrributeSet(const MmsValue* self, DeviceIndicate* deviceIn
 				//da->mmsValue = MmsValue_clone(value);
 				//MmsValue_delete(value);
 				MmsValue_setBoolean(da->mmsValue, MmsValue_getBoolean(value));
-				MmsValue_printToBuffer(da->mmsValue, buffer, 1024);
+
+
+				//MmsValue_printToBuffer(da->mmsValue, buffer, 1024);
 				//printf(Ref2[i]);
 				//printf(":%s\n", buffer);
 			}
@@ -181,61 +180,12 @@ void MmsDatasetToDataAtrributeSet(const MmsValue* self, DeviceIndicate* deviceIn
 				printf("type error!\n");
 			}
 		}
+		//更新对应数据
+		GooseSubscriberUpdateSwitchStatus(deviceIndicate);
 		break;
 	}
 	}
 
-}
-
-void
-gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
-{
-	DeviceIndicate* di = (DeviceIndicate*)parameter;
-	if (!di)
-	{
-		return;
-	}
-	printf("GOOSE event:\n");
-	printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
-		GooseSubscriber_getSqNum(subscriber));
-	printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
-
-	uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
-
-	printf("  timestamp: %u.%u\n", (uint32_t)(timestamp / 1000), (uint32_t)(timestamp % 1000));
-
-	MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
-
-
-	MmsDatasetToDataAtrributeSet(values, di);
-}
-
-/**
-* @brief : 生成订阅gooses实例
-* @param :
-* @param :
-* @return: NeighborCollect* 分配 好的空间
-* @update: [2018-08-22][张宇飞][创建]
-*/
-void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, char** goCbRef,
-	uint16_t* appId, DeviceIndicate** deviceIndicate, uint8_t count)
-{
-	printf("Using interface eth0\n");
-	GooseReceiver_setInterfaceId(receiver, "eth0");
-	GooseSubscriber subscriber;
-	for (uint8_t i = 0; i < count; i++)
-	{
-		subscriber = GooseSubscriber_create(goCbRef[i], NULL);
-		GooseSubscriber_setAppId(subscriber, appId[i]);
-		GooseSubscriber_setListener(subscriber, gooseListenerRemote, deviceIndicate[i]);
-	}
-
-	GooseReceiver_start(receiver);
-
-	// GooseReceiver_stop(receiver);
-
-	//GooseReceiver_destroy(receiver);
-	//return 0;
 }
 
 

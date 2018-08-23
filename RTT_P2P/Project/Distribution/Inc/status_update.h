@@ -14,7 +14,9 @@
 #include "distribution_def.h"
 #include "coordinator_def.h"
 
-void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
-void LocalPropertyToDataArribute(const SwitchProperty* const sw, DeviceIndicate* di);
-void SwitchPropertyGoosePublish(void);
+extern void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
+extern void LocalPropertyToDataArribute(const SwitchProperty* const sw, DeviceIndicate* di);
+extern void SwitchPropertyGoosePublish(void);
+
+extern void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di);
 #endif

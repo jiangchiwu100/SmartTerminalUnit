@@ -1,7 +1,7 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      Coordinator_def.h
-* @brief:     ¶¨ÒåÎÄ¼ş
+* @brief:     å®šä¹‰æ–‡ä»¶
 * @version:   V0.0.0
 * @author:    Zhang Yufei
 * @date:      2018-08-22
@@ -14,36 +14,51 @@
 #include "iec61850_model.h"
 typedef struct TagDeviceIndicate
 {
-	uint8_t count;
-	DataAttribute** daCollect;//Êı¾İÊôĞÔºÏ¼¯
-	uint8_t* indexTrans;//Êı¾İ¼¯¶ÔÓ¦µÄË÷Òı
+	uint16_t count;
+	DataAttribute** daCollect;//æ•°æ®å±æ€§åˆé›†
+	uint16_t* indexTrans;//æ•°æ®é›†å¯¹åº”çš„ç´¢å¼•
+	uint32_t id;//
+	uint16_t appId;
+	char* goCbRef;
 }DeviceIndicate;
 
 
-
-typedef struct TagNeighborCollect
+/**
+ * æ•°æ®è®¢é˜…ç»“æ„
+ */
+typedef struct TagDatasetSubscriber
 {
 	uint8_t count;
-	DeviceIndicate* indicateCollect;//Ö¸Ê¾ÊôĞÔ¼¯
-}NeighborCollect;
+	DeviceIndicate* indicateCollect;//æŒ‡ç¤ºå±æ€§é›†å…³è”åˆ°æ•°æ®é›†
+
+}DatasetSubscriber;
+
+typedef struct TagServerModelManager{
+
+	IedModel* model;// æ¨¡å‹
+	GooseReceiver receiver; //è®¢é˜…è€…
+	DatasetSubscriber* dsSubscriber; //æ•°æ®é›†è®¢é˜…ä¿¡æ¯
+	DeviceIndicate* localPulicDataset;  //æœ¬åœ°å‘å¸ƒ
+	IedServer server; //æœåŠ¡
+}ServerModelManager;
 
 typedef enum TagDeviceStatusCode
 {
-  DEVICE_IED_FAULT      =     0,  //ÊÇ·ñÎª¹ÊÕÏ
-  DEVICE_IED_FAULT_FORWARE =     1,   //ÊÇ·ñÕıÏò¹ÊÕÏ
-  DEVICE_IED_FAULT_REVERSE =     2,  //ÊÇ·ñÎª·´Ïò¹ÊÕÏ
-  DEVICE_IED_COMMUNICATION_CORRECT = 3,//ÊÇ·ñÍ¨Ñ¶Õı³£
-  DEVICE_IED_BILATERAL_VOLTAGE = 4,//ÊÇ·ñÎªË«²àÓĞÑ¹
-  DEVICE_IED_ONSESIDE_VOLTAGE=     5,//ÊÇ·ñÊÇµ¥²àÓĞÑ¹
-  DEVICE_IED_DISTRIBUTION_EXIT = 6,//·Ö²¼Ê½ÊÇ·ñÍ¶Èë
-  DEVICE_IED_SWITCH_POS 			= 7,//¿ª¹ØÎ»ÖÃ
-  DEVICE_IED_REMOVE_SUCESS = 8,//ÇĞ³ı³É¹¦
-  DEVICE_IED_INSULATE_SUCESS = 9,//¸ôÀë³É¹¦
-  DEVICE_IED_ACTION =      10,//¶¯×÷
+  DEVICE_IED_FAULT      =     0,  //æ˜¯å¦ä¸ºæ•…éšœ
+  DEVICE_IED_FAULT_FORWARE =     1,   //æ˜¯å¦æ­£å‘æ•…éšœ
+  DEVICE_IED_FAULT_REVERSE =     2,  //æ˜¯å¦ä¸ºåå‘æ•…éšœ
+  DEVICE_IED_COMMUNICATION_CORRECT = 3,//æ˜¯å¦é€šè®¯æ­£å¸¸
+  DEVICE_IED_BILATERAL_VOLTAGE = 4,//æ˜¯å¦ä¸ºåŒä¾§æœ‰å‹
+  DEVICE_IED_ONSESIDE_VOLTAGE=     5,//æ˜¯å¦æ˜¯å•ä¾§æœ‰å‹
+  DEVICE_IED_DISTRIBUTION_EXIT = 6,//åˆ†å¸ƒå¼æ˜¯å¦æŠ•å…¥
+  DEVICE_IED_SWITCH_POS 			= 7,//å¼€å…³ä½ç½®
+  DEVICE_IED_REMOVE_SUCESS = 8,//åˆ‡é™¤æˆåŠŸ
+  DEVICE_IED_INSULATE_SUCESS = 9,//éš”ç¦»æˆåŠŸ
+  DEVICE_IED_ACTION =      10,//åŠ¨ä½œ
 
-  DEVICE_IED_ALM1 =   16,//ÊÇ·ñÊÇ¸æ¾¯1
-  DEVICE_IED_ALM2=     17,//ÊÇ·ñÊÇ¸æ¾¯2
-  DEVICE_IED_ALM3 =     18,//ÊÇ·ñÊÇ¸æ¾¯3
+  DEVICE_IED_ALM1 =   16,//æ˜¯å¦æ˜¯å‘Šè­¦1
+  DEVICE_IED_ALM2=     17,//æ˜¯å¦æ˜¯å‘Šè­¦2
+  DEVICE_IED_ALM3 =     18,//æ˜¯å¦æ˜¯å‘Šè­¦3
 }DeviceStatusCode;
 
 #endif
