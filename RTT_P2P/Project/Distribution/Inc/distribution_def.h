@@ -74,6 +74,7 @@ typedef struct TagSwitchProperty
 	CheckTimeStamp timeStamp; //有效时间戳——用于指示更新时间
 	CheckTimeStamp onlineStamp; //在线时间戳——用于指示所有在线
 
+	void* pDeviceIndicate; // 绑定的设备指示
 }SwitchProperty;
 
 
@@ -264,7 +265,6 @@ typedef struct TagDatagramTransferNode
 typedef struct TagFaultDealHandle
 {
     SwitchProperty* switchProperty; //开关属性
-
     FaultDealJudgeState state; //当前处理状态
     FaultDealJudgeState lastState; //上一个状态
     FaultDealJudgeState nextState; //下一个状态

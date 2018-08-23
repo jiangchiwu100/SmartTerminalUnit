@@ -7,7 +7,7 @@
   * @date:      2018-08-14
   * @update:
   */
-
+#include "goose_receiver.h"
 #include "iec61850_server.h"
 #include "hal_thread.h"
 #include <stdlib.h>
@@ -20,10 +20,9 @@
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
-#include "miscellaneous.h"
 
-#define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
-//#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\test_goose.cfg"
+//#define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
+#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 IedServer CurrentIedServer;
 /**
   * @brief :创建IED Mode从配置文件
@@ -287,14 +286,12 @@ void SetRemote_PTOC1(bool str, bool op)
 {
 	MmsValue_setBitStringFromInteger(IED_PROT_PTOC1_Str_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_PTOC1_Str_t->mmsValue, Hal_getTimeInMs());
-	//MmsValue_setBoolean(IED_PROT_PTOC1_Str_general->mmsValue, str);
+	MmsValue_setBoolean(IED_PROT_PTOC1_Str_general->mmsValue, str);
 	MmsValue_setInt16(IED_PROT_PTOC1_Str_dirGeneral->mmsValue, (uint32_t)0); //forward
 
 	MmsValue_setBitStringFromInteger(IED_PROT_PTOC1_Op_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_PTOC1_Op_t->mmsValue, Hal_getTimeInMs());
-	MmsValue_setBoolean(IED_PROT_PTOC1_Op_general->mmsValue, op);
-    
-    IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_PTOC1_Str_general, str);
+	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_PTOC1_Op_general, op);
 
 }
 /**
@@ -325,7 +322,7 @@ void SetRemote_SCPI1(bool a,bool b, bool c,  bool neut)
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_phsB->mmsValue, b);
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_phsC->mmsValue, c);
 	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_general->mmsValue, a && b && c);
-	//MmsValue_setBoolean(IED_PROT_SCPI1_Abc_neut->mmsValue, neut);
+	MmsValue_setBoolean(IED_PROT_SCPI1_Abc_neut->mmsValue, neut);
 
 
 	//方向性
@@ -344,9 +341,7 @@ void SetRemote_SCPI1(bool a,bool b, bool c,  bool neut)
 
 
 	MmsValue_setInt16(IED_PROT_SCPI1_DirPrs_dirNeut->mmsValue , (uint32_t)0);//unknown|forward
-	MmsValue_setBoolean(IED_PROT_SCPI1_DirPrs_neut->mmsValue, neut);
-    
-    IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_SCPI1_Abc_neut, neut);
+	IedServer_updateBooleanAttributeValue(CurrentIedServer,IED_PROT_SCPI1_DirPrs_neut, neut);
 }
 /**
   * @brief :设置电压指示
@@ -440,6 +435,41 @@ void SetRemote_ASRC1(void)
 
 
 }
+
+
+
+
+char* LPHD1_NEIGHBOURCOUNT_N = "LPHD1.NeighbourCountN.stVal";
+char* LPHD1_NEIGHBOURCOUNT_M = "LPHD1.NeighbourCountM.stVal";
+
+
+
+
+
+extern  char Ref1[][24];
+void GetNeighbourCount(void)
+{
+	DataAttribute* da = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, LPHD1_NEIGHBOURCOUNT_N);
+	uint16_t countN = MmsValue_toInt32(da->mmsValue);
+	 da = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, LPHD1_NEIGHBOURCOUNT_M);
+	uint16_t countM = MmsValue_toInt32(da->mmsValue);
+	
+	
+	NeighborCollect* nc =   NeighborCollect_create(3, 24);
+
+	for (uint8_t i = 0; i < 6; i++)
+	{
+		for (uint8_t k = 0; k < 24; k++)
+		{
+			nc->indicateCollect[i].daCollect[k] = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, Ref1[k]);
+		}
+		
+	}
+
+
+}
+
+
 /**
   * @brief :iec61850App
   * @param  Svoid
@@ -457,8 +487,21 @@ int Iec61850Server(void)
         printf("CreateIedModeFromConfig is null\n");
         return -1;
     }
-
+	GooseReceiver receiver;
     LogicalDeviceDataRefInit(model);
+	receiver = GooseReceiver_create();
+	//GooseSubscriberInstance(receiver);
+
+	char buffer[1024];
+	/*MmsValue* values = IED_LD0_LGOS1_GoCBRef_setSrcRef->mmsValue;
+	MmsValue_printToBuffer(values, buffer, 1024);
+	puts(buffer);
+	 values = IED_LD0_LGOS2_GoCBRef_setSrcRef->mmsValue;
+	MmsValue_printToBuffer(values, buffer, 1024);
+	puts(buffer);*/
+
+	
+	
 
 	CurrentIedServer = IedServer_create(model);
 	IedServer_start(CurrentIedServer, tcpPort);
@@ -469,12 +512,12 @@ int Iec61850Server(void)
 		return -1;
 	}
 
-	
-   
+	DataSet* dsGoose = IedModel_lookupDataSet(model, "STU1LD0/LLN0$dsGoose");
+
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(CurrentIedServer);
 
-
+	GetNeighbourCount();
 	int32_t cn = 0;
 	float i = 100;
 	float v = 1000;
@@ -498,19 +541,17 @@ int Iec61850Server(void)
 		(cn++ > 10) ? (cn = -10) : (cn++);
 
 		//统一更新
-      //  StopWatchInit();
-      //  StopWatchStart();
 		IedServer_lockDataModel(CurrentIedServer);
 
 
 		SetMeasure_TotaVA(va);
-		SetMeasure_Hz(f);
+		/*SetMeasure_Hz(f);
 		SetMeasure_PhV_A(v,  angle);
 		SetMeasure_PhV_B(v,  angle);
 		SetMeasure_PhV_C(v,  angle);
 		SetMeasure_A_A(i,  angle);
 		SetMeasure_A_B(i,  angle);
-		SetMeasure_A_C(i,  angle);
+		SetMeasure_A_C(i,  angle);*/
 
 		SetRemote_Ind1(state);
 		SetRemote_Ind2(!state);
@@ -521,15 +562,14 @@ int Iec61850Server(void)
 		SetRemote_Ind7(state);
 		SetRemote_Ind8(!state);
 
-		SetRemote_XCBR_Pos(DBPOS_ON);
+		/*SetRemote_XCBR_Pos(DBPOS_ON);
 
 		SetRemote_PTOC1(state, !state);
 		SetRemote_SCPI1(state, !state, state, !state);
 		SetRemote_SVPI1(state, !state, state, !state);
 		SetRemote_SFPI1(state, !state, state, !state);
-        
 		SetRemote_AFSL1(state, !state);
-		SetRemote_AFSI1(state, !state);
+		SetRemote_AFSI1(state, !state);*/
 
 
 		//以此触发
@@ -538,7 +578,7 @@ int Iec61850Server(void)
 
 
 		IedServer_unlockDataModel(CurrentIedServer);
-        //StopWatchStop();
+
 		Thread_sleep(5000);
 
 
