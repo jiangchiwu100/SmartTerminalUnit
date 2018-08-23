@@ -1,7 +1,7 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      Coordinator.c
-* @brief:     Ð­µ÷Æ÷ÎÄ¼þ£¬±¾ÎÄ¼þÖ÷ÒªÓÃÓÚ²¹³ä·Ö²¼Ê½µÄ¼¯ÖÐ¿ØÖÆÐÔ
+* @brief:     åè°ƒå™¨æ–‡ä»¶ï¼Œæœ¬æ–‡ä»¶ä¸»è¦ç”¨äºŽè¡¥å……åˆ†å¸ƒå¼çš„é›†ä¸­æŽ§åˆ¶æ€¿
 * @version:   V0.0.0
 * @author:    Zhang Yufei
 * @date:      2018-08-22
@@ -11,19 +11,19 @@
 #include "common_def.h"
 #include "distribution_def.h"
 #include "iec61850_model.h"
-#include "Coordinator_def.h"
+#include "goose_subscriber.h"
 
 #include "lib_memory.h"
 #include "Coordinator.h"
-
-
+#include "goose_receiver.h"
+#include "iec61850_server.h"
 
 /**
-* @brief :³õÊ¼»¯Êý¾ÝÖ¸Ê¾¿Õ¼ä
-* @param : uint8_t neighbourCount ÁÚ¾ÓÊýÁ¿
-* @param : uint8_t daCount Êý¾Ý¼¯ÊýÁ¿
-* @return: NeighborCollect* ·ÖÅä ºÃµÄ¿Õ¼ä
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
+* @brief :åˆå§‹åŒ–æ•°æ®æŒ‡ç¤ºç©ºé—¿
+* @param : uint8_t neighbourCount é‚»å±…æ•°é‡
+* @param : uint8_t daCount æ•°æ®é›†æ•°é‡¿
+* @return: NeighborCollect* åˆ†é… å¥½çš„ç©ºé—´
+* @update: [2018-08-22][å¼ å®‡é£ž][åˆ›å»º]
 */
 bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
 {
@@ -33,7 +33,7 @@ bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
 	}
 	ic->count = daCount;
 	ic->daCollect = (DataAttribute**)GLOBAL_CALLOC(sizeof(DataAttribute*), daCount);
-	ic->indexTrans = (uint8_t*)GLOBAL_CALLOC(sizeof(uint8_t), daCount);//×ª»»Ë÷ÒýÊý×é
+	ic->indexTrans = (uint8_t*)GLOBAL_CALLOC(sizeof(uint8_t), daCount);//è½¬æ¢ç´¢å¼•æ•°ç»„
 	if ((!ic->daCollect)
 		|| (!ic->indexTrans))
 	{
@@ -47,10 +47,10 @@ bool DeviceIndicate_init(DeviceIndicate* ic , uint8_t daCount)
 }
 
 /**
-* @brief : ´´½¨Éè±¸Ö¸Ê¾£¬·ÖÅäÄÚ´æ¿Õ¼ä
-* @param : DeviceIndicate*  self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ö¸Õë
-* @update: [2018-08-23][ÕÅÓî·É][´´½¨]
+* @brief : åˆ›å»ºè®¾å¤‡æŒ‡ç¤ºï¼Œåˆ†é…å†…å­˜ç©ºé—¿
+* @param : DeviceIndicate*  self å¼€å…³å±žæ€§æŒ‡é’¿
+* @return: æŒ‡é’ˆ
+* @update: [2018-08-23][å¼ å®‡é£ž][åˆ›å»º]
 */
 DeviceIndicate* DeviceIndicate_crate(uint8_t daCount)
 {
@@ -59,7 +59,7 @@ DeviceIndicate* DeviceIndicate_crate(uint8_t daCount)
 	{
 		return NULL;
 	}
-	bool result = sDeviceIndicate_init(ic , daCount);
+	bool result = DeviceIndicate_init(ic , daCount);
 	if (result)
 	{
 		return ic;
@@ -71,12 +71,12 @@ DeviceIndicate* DeviceIndicate_crate(uint8_t daCount)
 }
 
 /**
-* @brief :´´½¨ÁÚ¾ÓºÏ¼¯
-* @param : uint8_t neighbourCount ÁÚ¾ÓÊýÁ¿
-* @param : uint8_t daCount Êý¾Ý¼¯ÊýÁ¿
-* @return: NeighborCollect* ·ÖÅä ºÃµÄ¿Õ¼ä
-* @update: [2018-08-21][ÕÅÓî·É][´´½¨]
-*[2018-08-22][ÕÅÓî·É][ÒýÈëÖÐ¼ä±äÁ¿]
+* @brief :åˆ›å»ºé‚»å±…åˆé›†
+* @param : uint8_t neighbourCount é‚»å±…æ•°é‡
+* @param : uint8_t daCount æ•°æ®é›†æ•°é‡¿
+* @return: NeighborCollect* åˆ†é… å¥½çš„ç©ºé—´
+* @update: [2018-08-21][å¼ å®‡é£ž][åˆ›å»º]
+*[2018-08-22][å¼ å®‡é£ž][å¼•å…¥ä¸­é—´å˜é‡]
 */
 bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref, uint8_t* index, uint8_t daCount)
 {
@@ -101,12 +101,12 @@ bool DeviceIndicate_initValue(DeviceIndicate* di, LogicalDevice* ld, char** ref,
 	return true;
 }
 /**
-* @brief :´´½¨ÁÚ¾ÓºÏ¼¯
-* @param : uint8_t neighbourCount ÁÚ¾ÓÊýÁ¿
-* @param : uint8_t daCount Êý¾Ý¼¯ÊýÁ¿
-* @return: NeighborCollect* ·ÖÅä ºÃµÄ¿Õ¼ä
-* @update: [2018-08-21][ÕÅÓî·É][´´½¨]
-*[2018-08-22][ÕÅÓî·É][ÒýÈëÖÐ¼ä±äÁ¿]
+* @brief :åˆ›å»ºé‚»å±…åˆé›†
+* @param : uint8_t neighbourCount é‚»å±…æ•°é‡
+* @param : uint8_t daCount æ•°æ®é›†æ•°é‡¿
+* @return: NeighborCollect* åˆ†é… å¥½çš„ç©ºé—´
+* @update: [2018-08-21][å¼ å®‡é£ž][åˆ›å»º]
+*[2018-08-22][å¼ å®‡é£ž][å¼•å…¥ä¸­é—´å˜é‡]
 */
 NeighborCollect* NeighborCollect_create(uint8_t neighbourCount, uint8_t daCount)
 {
@@ -141,11 +141,11 @@ NeighborCollect* NeighborCollect_create(uint8_t neighbourCount, uint8_t daCount)
 
 
 /**
-* @brief :MMSÊý¾Ý¼¯×ª»»ÎªÖ¸¶¨µÄÊôÐÔ¼¯
+* @brief :MMSæ•°æ®é›†è½¬æ¢ä¸ºæŒ‡å®šçš„å±žæ€§é›†
 * @param : const MmsValue* self
-* @param : DeviceIndicate* deviceIndicat Éè±¸Ö¸Ê¾
+* @param : DeviceIndicate* deviceIndicat è®¾å¤‡æŒ‡ç¤º
 * @return: void
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
+* @update: [2018-08-22][å¼ å®‡é£ž][åˆ›å»º]
 */
 void MmsDatasetToDataAtrributeSet(const MmsValue* self, DeviceIndicate* deviceIndicate)
 {
@@ -211,11 +211,11 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 }
 
 /**
-* @brief : Éú³É¶©ÔÄgoosesÊµÀý
+* @brief : ç”Ÿæˆè®¢é˜…gooseså®žä¾‹
 * @param :
 * @param :
-* @return: NeighborCollect* ·ÖÅä ºÃµÄ¿Õ¼ä
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
+* @return: NeighborCollect* åˆ†é… å¥½çš„ç©ºé—´
+* @update: [2018-08-22][å¼ å®‡é£ž][åˆ›å»º]
 */
 void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, char** goCbRef,
 	uint16_t* appId, DeviceIndicate** deviceIndicate, uint8_t count)
@@ -242,97 +242,24 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, char** goCbRef,
 
 
 /**
-* @brief : »ñÈ¡Éè±¸×´Ì¬
-* @param : DeviceIndicate*  self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: ÊÇ·ñÓÐ¹ÊÕÏ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
+* @brief : èŽ·å–è®¾å¤‡çŠ¶æ€
+* @param : DeviceIndicate*  self å¼€å…³å±žæ€§æŒ‡é’¿
+* @return: æ˜¯å¦æœ‰æ•…éšœ
+* @update: [2018-08-22][å¼ å®‡é£ž][åˆ›å»º]
 */
 bool DeviceIndicate_getBooleanStatus(DeviceIndicate* self, DeviceStatusCode code)
 {
 	return MmsValue_getBoolean(self->daCollect[self->indexTrans[code]]->mmsValue);
 }
-
-
 /**
-* @brief : »ñÈ¡¿ª¹Ø¹ÊÕÏÐÅÏ¢
-* @param : DeviceIndicate*  self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: ÊÇ·ñÓÐ¹ÊÕÏ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
+* @brief : è®¾ç½®è®¾å¤‡çŠ¶æ€
+* @param : DeviceIndicate*  self å¼€å…³å±žæ€§æŒ‡é’¿
+* @return: æ˜¯å¦æœ‰æ•…éšœ
+* @update: [2018-08-23][å¼ å®‡é£ž][åˆ›å»º]
 */
-bool DeviceIndicate_isFaultMessage(DeviceIndicate* self)
+void DeviceIndicate_setBooleanStatus(DeviceIndicate* self, DeviceStatusCode code, bool state)
 {
-
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[0]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate*  self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_isForwardFault(DeviceIndicate* self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[1]]->mmsValue);
+	 MmsValue_setBoolean(self->daCollect[self->indexTrans[code]]->mmsValue, state);
 }
 
 
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_isReverseFault(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[2]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_isCommunicationFault(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[4]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_isBilateralVoltage(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[5]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool SwitchProperty_isOneSideVoltage(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[6]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_isDistributionExit(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[7]]->mmsValue);
-}
-/**
-* @brief : ÊÇ·ñÎªÇ°Ïò¹ÊÕÏ
-* @param : DeviceIndicate* self ¿ª¹ØÊôÐÔÖ¸Õë
-* @return: Ë«µãÐÅÏ¢´ýÍêÉÆ
-* @update: [2018-08-22][ÕÅÓî·É][´´½¨]
-*/
-bool DeviceIndicate_getSwitchPos(DeviceIndicate*  self)
-{
-	return MmsValue_getBoolean(self->daCollect[self->indexTrans[8]]->mmsValue);
-}

@@ -1,5 +1,5 @@
 #include "ied_data_ref.h"
-
+#include "extern_interface.h"
 /**
   * @brief :初始化模型
   * @param  void

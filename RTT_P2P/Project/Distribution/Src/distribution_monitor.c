@@ -88,7 +88,7 @@ static ErrorCode CheckConnectMessageValid(StationTopology* pTtopology)
 		return ERROR_OK_NULL;
 	}
 	bool isRemove = false;
-    uint8_t loops = 0;
+//    uint8_t loops = 0;
 	do 
 	{	        
 		FOR_EARCH_LIST_START(pConnectPath);

@@ -12,9 +12,133 @@
 #include "distribution.h"
 #include "log.h"
 #include "distribution_config.h"
+#include "coordinator.h"
+#include "status_update.h"
+
+/**
+* @brief : 同goose发布开关属性
+* @param : SwitchProperty* sw
+* @param : DeviceIndicate* di
+* @return: void
+* @update:[2018-08-23][张宇飞][创建]
+*/
+void SwitchPropertyGoosePublish(void)
+{
+	perror("Unimplenment\n");
+}
 
 
+/**
+* @brief : 由数据集信息更新本属性信息
+* @param : SwitchProperty* sw
+* @param : DeviceIndicate* di
+* @return: void
+* @update:[2018-08-23][张宇飞][创建]
+*/
+void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
+{
+	if (!sw || !di)
+	{
+		perror("!sw || !di\n");
+		return;
+	}
+	//更新故障信息 TODO 故障信息不完整
+	if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_FAULT))
+	{
+		sw->fault.state = FAULT_YES;
+	}
+	else
+	{
+		sw->fault.state = FAULT_NO;
+	}
+	//更新开关状态 TODO: 双点信息
+	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_SWITCH_POS))
+	{
+		sw->state = SWITCH_CLOSE;
+	}
+	else
+	{
+		sw->state = SWITCH_OPEN;
+	}
 
+	//切除信息
+	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_REMOVE_SUCESS))
+	{
+		sw->removalType = RESULT_SUCCESS;
+
+	}
+	else
+	{
+		sw->removalType = RESULT_FAILURE;
+	}
+	//隔离信息
+	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS))
+	{
+		sw->insulateType = RESULT_SUCCESS;
+
+	}
+	else
+	{
+		sw->insulateType = RESULT_FAILURE;
+	}
+}
+
+/**
+* @brief : 由数据集信息更新本属性信息
+* @param : SwitchProperty* sw
+* @param : DeviceIndicate* di
+* @return: void
+* @update:[2018-08-23][张宇飞][创建]
+*/
+void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di)
+{
+	if (!sw || !di)
+	{
+		perror("!sw || !di\n");
+		return;
+	}
+	//更新故障信息 TODO 故障信息不完整
+
+	if (sw->fault.state == FAULT_YES)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_FAULT, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_FAULT, false);
+	}
+
+	//更新开关状态 TODO: 双点信息
+	if (sw->state == SWITCH_CLOSE)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_SWITCH_POS, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_SWITCH_POS, false);
+	}
+
+
+	//切除信息
+	if (sw->removalType == RESULT_SUCCESS)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_SUCESS, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_SUCESS, false);
+	}
+	//隔离信息
+	if (sw->insulateType == RESULT_SUCCESS)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, false);
+	}
+
+}
 
 /**
 * @brief : 更新状态信息，更新配电区域相关信息,
@@ -41,6 +165,13 @@ void  Station_updateFaultStatus(uint32_t id, StationPoint* point)
     }
 
 	result = FindSwitchNodeByID(list, id, &switchProperty);
+
+	if (result != ERROR_OK_NULL)
+	{
+		perror("Unfind id\n");
+		return;
+	}
+
 	distribution = switchProperty->distributionArea;
 	if (distribution != NULL)
 	{
@@ -69,9 +200,6 @@ void  Station_updateFaultStatus(uint32_t id, StationPoint* point)
 */
 void  Station_updateRemovalStatus(uint32_t id, StationTopology* station)
 {
-
-	uint16_t index = 0;
-	uint32_t id, id1, id2,id3, id4;
 	ResultType type;
 	ErrorCode error;
 	SwitchProperty* find;

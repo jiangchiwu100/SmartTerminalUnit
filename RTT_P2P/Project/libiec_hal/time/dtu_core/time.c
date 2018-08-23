@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  time.c
  *
  *  Copyright 2013, 2014 Michael Zillgith

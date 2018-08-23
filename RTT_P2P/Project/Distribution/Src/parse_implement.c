@@ -23,7 +23,7 @@
 uint8_t StationInit(StationTopology* station,  uint32_t id)
 {
     station->id = id;
-    ListInit( &(station->globalTopologyList), NULL); //初始化列表列表    
+    ListInit( &(station->globalTopologyList), NULL); //初始化列表列表
     ListInit(&(station->neighbourSwitchList), NULL);// 初始化开关列表
     
     return 0;
@@ -618,7 +618,7 @@ void  StationReciveRemovalMessage(uint8_t data[], uint8_t len, StationTopology* 
 	}
 	index = 1;
 
-	//后面实际上没有使用	
+	//后面实际上没有使用
 	for (uint8_t i = 0 ; i < count; i++)
 	{
 		id1 = data[index++];
@@ -1036,4 +1036,82 @@ void StationSetConnectPath(uint8_t data[], uint8_t len, StationTopology* topolog
 			PrintIDTipsTick(topology->id, "It's not path connected.");
 		}
 	}
+}
+/**
+* @brief ：传输信息, 此处动态内存，内部分配，内部释放
+* @param ：
+* @param ： len    元字节数组长度
+* @param ： ListDouble* switchList    待更新列表
+* @return： 0-正常返回
+* @update： [2018-06-26][张宇飞][BRIEF]
+* [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
+*[2018-07-31][张宇飞][添加循环状态ONLINE_STATUS]
+*/
+ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
+{
+    uint8_t result = 0;
+    PointUint8 packet;
+    CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
+    CHECK_POINT_RETURN(pTransferNode, NULL, ERROR_NULL_PTR);
+
+    switch (code)
+	{
+	case LOOP_STATUS:
+    {
+        result = MakeSingleLoopStatusMessage(switchProperty->id, switchProperty->fault.state,
+            switchProperty->state,
+            switchProperty->operateType, switchProperty->overTimeType,
+            &packet);
+        break;
+    }
+
+    case STATUS_MESSAGE:
+    {
+        result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,
+            switchProperty->state,
+            switchProperty->operateType, switchProperty->overTimeType,
+            &packet);
+
+        break;
+    }
+    case REMOVAL_MESSAGE:
+    {
+        result = MakeRemovalMessage(switchProperty, switchProperty->removalType, &packet);
+        break;
+    }
+	case INSULATE_MESSAGE:
+	{
+		result = MakeInsulateMessage(switchProperty->id, switchProperty->insulateType, &packet);
+		break;
+	}
+
+	case ONLINE_STATUS:
+	{
+		OnlineStatus status = ONLINE_NULL;
+		if (switchProperty->onlineStamp.isValid)
+		{
+			status = ONLINE_ON;
+		}
+		else
+		{
+			status = ONLINE_OFF;
+		}
+
+		result = MakeSimpleMessage(ONLINE_STATUS, switchProperty->id, (uint8_t)status, &packet);
+		break;
+	}
+
+    default:
+        return ERROR_UNKONOW;
+    }
+
+    if (result)
+    {
+        return (ErrorCode)result;
+    }
+
+    MakePacketMessage(&packet, destAddress, GET_UINT16(pTransferNode->id));
+    result = pTransferNode->Send(pTransferNode, &packet);
+
+    return (ErrorCode)result;
 }

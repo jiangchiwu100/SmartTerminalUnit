@@ -16,9 +16,6 @@
 
 #include "coordinator_def.h"
 
-#define GetDeviceIndicate(handle) ((DeviceIndicate*)(handle->switchProperty->pDeviceIndicate))
-#define GetDeviceIndicateBySwitch(sw) ((DeviceIndicate*)(sw->pDeviceIndicate))
-
 
 static inline bool SystemNowTime(FaultDealHandle* handle) ;
 static inline uint32_t DiffTime(uint32_t lastTime);

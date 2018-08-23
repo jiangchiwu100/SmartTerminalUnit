@@ -1,18 +1,20 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
-  * @file:      distribution_interface.h
-  * @brief:     故障处理，故障判据，故障隔离
+  * @file:      status_update.h
+  * @brief:     状态更新与关联
   * @version:   V0.0.0 
   * @author:    Zhang Yufei
   * @date:      2018-08-23
   * @update:    
   */
-#ifndef __DISTRIBUTION_INTERFACE_GOOSE_H__
-#define __DISTRIBUTION_INTERFACE_GOOSE_H__
+#ifndef __UPDATE_STATUS_H__
+#define __UPDATE_STATUS_H__
 
 
 #include "distribution_def.h"
+#include "coordinator_def.h"
 
-
-
+void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
+void LocalPropertyToDataArribute(const SwitchProperty* const sw, DeviceIndicate* di);
+void SwitchPropertyGoosePublish(void);
 #endif

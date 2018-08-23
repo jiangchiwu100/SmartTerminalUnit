@@ -126,7 +126,7 @@ void  StationUpdateOnlineStatusMessage(uint8_t data[], uint8_t len, StationPoint
 			{
 				return;
 			}
-			OnlineStatus status = data[5 + i * 5];
+			OnlineStatus status = (OnlineStatus)data[5 + i * 5];
 
 			if (status == ONLINE_ON)
 			{

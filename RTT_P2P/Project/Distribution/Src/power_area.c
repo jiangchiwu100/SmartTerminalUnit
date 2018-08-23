@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      power_area.c
   * @brief:     配电区域相关处理与计算
@@ -679,7 +679,7 @@ ErrorCode ExtractPowerAreaFromList(SwitchProperty* switchRef, DistributionStatio
 	DistributionPowerArea* area;
 	area = distriStation->powerArea;
 
-	//先释放内存   
+	//先释放内存
 	if (area->areaSwitch != NULL)
 	{
 		FREE(area->areaSwitch);
@@ -705,7 +705,7 @@ ErrorCode ExtractPowerAreaFromList(SwitchProperty* switchRef, DistributionStatio
 			{
 				area->areaSwitch[k] = GET_SWITCH_ELEMENT(element);
 				area->areaSwitch[k]->distributionArea = distriStation; //标识所在的配电区域
-				area->areaSwitch[k]->indexArea[i] = k;    //设置索引                
+				area->areaSwitch[k]->indexArea[i] = k;    //设置索引
 				area->areaSwitch[k]->isExitArea[i] = true;
 				element = element->next;
 			}
@@ -716,8 +716,8 @@ ErrorCode ExtractPowerAreaFromList(SwitchProperty* switchRef, DistributionStatio
 			area->isFaultArea = false;
 			area->isExitFaultMessage = false;
 			area->removalType = RESULT_TYPE_NULL;
-			area->insulateType = RESULT_TYPE_NULL;			
-			
+			area->insulateType = RESULT_TYPE_NULL;
+
 			distriStation->areaCount++;
 
 		}

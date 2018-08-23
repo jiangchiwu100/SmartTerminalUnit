@@ -134,7 +134,7 @@ void TestGooseBeat(void)
     
     //¿ªÊ¼¶©ÔÄ
     //subscriber_main();
-    server61850_test();
+  //  server61850_test();
 //    do
 //    {
 //        rt_thread_delay(5000);

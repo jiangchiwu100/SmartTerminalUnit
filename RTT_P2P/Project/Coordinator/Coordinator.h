@@ -1,7 +1,7 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      Coordinator.h
-* @brief:     Ğ­µ÷Æ÷ÎÄ¼ş£¬±¾ÎÄ¼şÖ÷ÒªÓÃÓÚ²¹³ä·Ö²¼Ê½µÄ¼¯ÖĞ¿ØÖÆĞÔ
+* @brief:     åè°ƒå™¨æ–‡ä»¶ï¼Œæœ¬æ–‡ä»¶ä¸»è¦ç”¨äºè¡¥å……åˆ†å¸ƒå¼çš„é›†ä¸­æ§åˆ¶æ€§
 * @version:   V0.0.0
 * @author:    Zhang Yufei
 * @date:      2018-08-23
@@ -16,7 +16,6 @@
 #include <stdbool.h>
 
 bool DeviceIndicate_getBooleanStatus(DeviceIndicate* self, DeviceStatusCode code);
-
-
+void DeviceIndicate_setBooleanStatus(DeviceIndicate* self, DeviceStatusCode code, bool state);
 
 #endif

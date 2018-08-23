@@ -20,6 +20,12 @@
 
 
 //函数替换,根据实验环境
+#undef MALLOC
+#undef FREE
+#undef REALLOC
+#undef MEMCPY
+#undef CALLOC
+
 #define MALLOC rt_malloc
 #define FREE rt_free
 #define SafeFree(ptr)  {FREE(ptr); ptr = 0;}

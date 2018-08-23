@@ -55,6 +55,10 @@
 #define  MONITOR_LIFT_TIME 5000 //数据有效时间
 #define  ONLINE_LIFT_TIME 3000 //数据有效时间
 
+
+#define ENABLE_GOOSE   1
+
+
 #ifdef	__cplusplus
 }
 #endif

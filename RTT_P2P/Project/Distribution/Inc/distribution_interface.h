@@ -19,7 +19,7 @@ extern bool RemovalHandleInit(FaultDealHandle* handle, SwitchProperty* switchPro
 extern ErrorCode RemovalHandleCheckself(FaultDealHandle* handle);
 extern uint8_t RemovalHandleUpdateSwitchProperty(FaultDealHandle* handle, SwitchProperty* switchProperty);
 
-extern ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress);
+
 extern ErrorCode TransmitTransferMessageExtern(DatagramTransferNode* pTransferNode, TransferCode code, uint32_t objectID, uint16_t destAddress);
 extern bool FaultRemovalReset(FaultDealHandle* handle);
 #endif

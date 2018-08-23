@@ -7,8 +7,11 @@
 * @date:      2018-08-22
 * @update:    
 */
+#ifndef __CORDINATOR_DEF_H
+#define __CORDINATOR_DEF_H
 
-
+#include "common_def.h"
+#include "iec61850_model.h"
 typedef struct TagDeviceIndicate
 {
 	uint8_t count;
@@ -43,5 +46,5 @@ typedef enum TagDeviceStatusCode
   DEVICE_IED_ALM3 =     18,//ÊÇ·ñÊÇ¸æ¾¯3
 }DeviceStatusCode;
 
-
+#endif
 

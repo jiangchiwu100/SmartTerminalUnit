@@ -481,4 +481,9 @@ typedef struct TagStationManger
     bool firstRun; //首次运行
     bool isMaintanceRun; //维护正在运行
 }StationManger;
+
+#define GetDeviceIndicate(handle) ((DeviceIndicate*)(handle->switchProperty->pDeviceIndicate))
+#define GetDeviceIndicateBySwitch(sw) ((DeviceIndicate*)(sw->pDeviceIndicate))
+
+
 #endif // ! __DISTRIBUTION_H

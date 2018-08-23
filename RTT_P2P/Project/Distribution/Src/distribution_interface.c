@@ -13,6 +13,8 @@
 #include "distribution.h"
 
 #include "distribution_config.h"
+#include "status_update.h"
+
 
 static inline bool SystemNowTime(FaultDealHandle* handle) ;
 static inline uint32_t DiffTime(uint32_t lastTime);
@@ -68,6 +70,7 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
     return false;
 }
 
+
 /**
 * @brief ：传输信息, 此处动态内存，内部分配，内部释放
 * @param ：
@@ -78,29 +81,35 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
 * [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
 *[2018-07-31][张宇飞][添加循环状态ONLINE_STATUS]
 */
-ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
+static ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
 {
     uint8_t result = 0;
-    PointUint8 packet;   
+    PointUint8 packet;
     CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(pTransferNode, NULL, ERROR_NULL_PTR);
 
     switch (code)
 	{
-	case LOOP_STATUS:
-    {
-        result = MakeSingleLoopStatusMessage(switchProperty->id, switchProperty->fault.state,
-            switchProperty->state,
-            switchProperty->operateType, switchProperty->overTimeType,
-            &packet);
-        break;
-    }
+#if ENABLE_GOOSE
+	case STATUS_MESSAGE:
+	case REMOVAL_MESSAGE:
+	case INSULATE_MESSAGE:
+	{
+
+		LocalPropertyToDataArribute(switchProperty, GetDeviceIndicateBySwitch(switchProperty));
+		SwitchPropertyGoosePublish();
+		//TODO : goose更新
+		return ERROR_OK_NULL;
+	}
+
+#else
     case STATUS_MESSAGE:
     {
         result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,
             switchProperty->state,
             switchProperty->operateType, switchProperty->overTimeType,
             &packet);
+
         break;
     }
     case REMOVAL_MESSAGE:
@@ -113,6 +122,7 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
 		result = MakeInsulateMessage(switchProperty->id, switchProperty->insulateType, &packet);
 		break;
 	}
+
 	case ONLINE_STATUS:
 	{
 		OnlineStatus status = ONLINE_NULL;
@@ -128,21 +138,23 @@ ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, Data
 		result = MakeSimpleMessage(ONLINE_STATUS, switchProperty->id, (uint8_t)status, &packet);
 		break;
 	}
-	
+#endif
     default:
-        return ERROR_UNKONOW;       
+    	perror("Unknow Code\n")
+        return ERROR_UNKONOW;
     }
 
     if (result)
     {
         return (ErrorCode)result;
     }
-    
+
     MakePacketMessage(&packet, destAddress, GET_UINT16(pTransferNode->id));
     result = pTransferNode->Send(pTransferNode, &packet);
-   
+
     return (ErrorCode)result;
 }
+
 /**
 * @brief ：传输信息, 此处动态内存，内部分配，内部释放
 * @param ：
@@ -212,8 +224,7 @@ static inline uint32_t DiffTime(uint32_t lastTime)
     else
     {
         return  UINT32_MAX  - lastTime + currentTime;
-    }    
-	
+    }
 }
 
 /**
@@ -363,7 +374,7 @@ static inline bool IsFaultArea(FaultDealHandle* handle)
 	//如果已经是故障区域，则跳过直到复归
 	//if (!distributionArea->isAlreayExitedFault)
 	//{
-	//	distributionArea->JudgeIsExitFaultArea(distributionArea, true); //判断是否存在故障区域		
+	//	distributionArea->JudgeIsExitFaultArea(distributionArea, true); //判断是否存在故障区域
 	//	distributionArea->isAlreayExitedFault = distributionArea->IsAlreayExitedFault(distributionArea);
 	//}
 	    
@@ -377,7 +388,7 @@ static inline bool IsFaultArea(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-07-07][张宇飞][BRIEF]
 *[2018-07-09][张宇飞][修改判别错误]
-*[2018-07-11][张宇飞][修改累加，取消配电区域判断，改为直接判断拒分]         
+*[2018-07-11][张宇飞][修改累加，取消配电区域判断，改为直接判断拒分]
 */
 static inline bool IsRejectArea(FaultDealHandle* handle)
 {
