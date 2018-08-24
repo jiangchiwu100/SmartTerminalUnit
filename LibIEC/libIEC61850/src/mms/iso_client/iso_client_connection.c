@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  iso_client_connection.c
  *
  *  Client side representation of the ISO stack (COTP, session, presentation, ACSE)
@@ -427,7 +427,12 @@ IsoClientConnection_associate(IsoClientConnection self, IsoConnectionParameters 
     setState(self, STATE_ASSOCIATED);
 
     if (self->thread == NULL) {
-        self->thread = Thread_create(connectionThreadFunction, self, false);
+        struct TagThreadConfig config;
+        config.priority = 21;
+        config.name = "icc";
+        config.stack_size = 2028;
+        config.tick = 20;
+        self->thread = Thread_create(connectionThreadFunction, self, false, &config);
         Thread_start(self->thread);
     }
 

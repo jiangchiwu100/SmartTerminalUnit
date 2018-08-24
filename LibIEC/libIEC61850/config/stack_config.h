@@ -74,6 +74,11 @@
 /* Set to 1 to include GOOSE support in the build. Otherwise set to 0 */
 #define CONFIG_INCLUDE_GOOSE_SUPPORT 1
 
+#if (CONFIG_INCLUDE_GOOSE_SUPPORT)
+	/* 设置为1, goose单独处理 */
+#define CONFIG_GOOSE_ALONG  1
+
+#endif
 /* Set to 1 to include Sampled Values support in the build. Otherwise set to 0 */
 #define CONFIG_IEC61850_SAMPLED_VALUES_SUPPORT 1
 

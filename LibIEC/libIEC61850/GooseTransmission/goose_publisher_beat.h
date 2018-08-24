@@ -1,7 +1,7 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      goose_publisher_beat.h
-* @brief:     goose发布节拍机制
+* @brief:     goose鍙戝竷鑺傛媿鏈哄埗
 * @version:   V0.0.1
 * @author:    Zhang Yufei
 * @date:      2018/8/4
@@ -12,18 +12,41 @@
 
 #include "rtdef.h"
 
+#ifndef __GOOSE_PIBLISH_BEAT_
+#define __GOOSE_PIBLISH_BEAT_
+
 #define  MAX_BEAT  8
+
+
 /** 
-*googse 节拍控制
+*googse 鑺傛媿鎺у埗
 */
 typedef struct TagGooseBeat
 {
-	uint32_t beat[MAX_BEAT]; //节拍数组
-	uint8_t next; //下一个Beat
-	uint8_t count; //节拍数量
+	uint32_t beat[MAX_BEAT]; //鑺傛媿鏁扮粍
+	uint8_t next; //涓嬩竴涓狟eat
+	uint8_t count; //鑺傛媿鏁伴噺
 	struct rt_timer timer;
+	void* parameter;
 	uint8_t (*Execute)(struct TagGooseBeat* handle);
+	uint8_t (*FirstExecute)(struct TagGooseBeat* handle);
 }GooseBeat;
 
 
-extern void TestGooseBeat(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern GooseBeat* GooseBeat_create(char* name, uint32_t min, uint32_t max,
+		uint8_t (*Execute)(struct TagGooseBeat* handle),
+		uint8_t (*FirstExecute)(struct TagGooseBeat* handle));
+
+extern void GooseBeat_reTrigger(GooseBeat* pbeat);
+extern void GooseBeat_destory(GooseBeat* pbeat);
+
+#ifdef __cplusplus
+ }
+#endif
+
+
+#endif

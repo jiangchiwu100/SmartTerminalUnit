@@ -6,6 +6,7 @@
  * Has to be started as root in Linux.
  */
 
+#include "goose_misc.h"
 #include "goose_receiver.h"
 #include "goose_subscriber.h"
 #include "hal_thread.h"
@@ -16,7 +17,7 @@
 #include "iec61850_server.h"
 
 #include "ied_data_ref.h"
-
+#include "Coordinator.h"
 
 const char LocalDataSetRef[][24] = {
 	{ "GOINGGIO17.Ind1.stVal"},
@@ -164,7 +165,7 @@ const char Ref4[][24] = {
 * @return: void
 * @update: [2018-08-23][张宇飞][创建]
 */
-void UpdateLocalPulicRef(ServerModelManager* manager)
+void UpdateLocalPublicRef(ServerModelManager* manager)
 {
 	uint8_t count = sizeof(LocalDataSetRef)/sizeof(LocalDataSetRef[0]);
 	manager->localPulicDataset = DeviceIndicate_crate(count);
@@ -182,8 +183,6 @@ void UpdateLocalPulicRef(ServerModelManager* manager)
 			perror(" LocalDataSetRef[0] Unfind.\n");
 		}
 	}
-
-
 }
 
 

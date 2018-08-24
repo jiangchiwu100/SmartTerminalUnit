@@ -1,7 +1,7 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      goose_publisher_beat.c
-* @brief:     goose·¢²¼½ÚÅÄ»úÖÆ
+* @brief:     gooseå‘å¸ƒèŠ‚æ‹æœºåˆ¶
 * @version:   V0.0.1
 * @author:    Zhang Yufei
 * @date:      2018/8/4
@@ -20,25 +20,25 @@
 
 
 
-
+static void BeatExecuteTask(void* parameter);
 
 
 
 
 /**
-* @brief  : goose ½ÚÅÄÖÜÆÚ´¦Àí
+* @brief  : goose èŠ‚æ‹å‘¨æœŸå¤„ç†
 * @param  : void
-* @update: [2018-08-04][ÕÅÓî·É][]
+* @update: [2018-08-04][å¼ å®‡é£ž][]
 */
-void BeatExecuteTask(void* parameter)
+static void BeatExecuteTask(void* parameter)
 {
 	GooseBeat* beat = (GooseBeat*)parameter;
-	//Ö´ÐÐ·¢ËÍÈÎÎñ
+	//æ‰§è¡Œå‘é€ä»»åŠ¡
 
 	beat->Execute(beat);
 	
 	uint32_t nextTime = beat->beat[beat->next];
-	//¸üÐÂÏÂÒ»½ÚÅÄ
+	//æ›´æ–°ä¸‹ä¸€èŠ‚æ‹
 	if ((beat->next < beat->count) && (nextTime != 0))
 	{
 //        rt_timer_stop(&(beat->timer));
@@ -56,83 +56,155 @@ void BeatExecuteTask(void* parameter)
 
 }
 
-
 /**
-* @brief  : goose ½ÚÅÄ·¢²¼»úÖÆ³õÊ¼»¯
+* @brief  : æ ¹æ®å‚æ•°åˆ›å»ºï¼Œé¦–æ¬¡æŒ‰ç…§minï¼Œ minï¼Œ2minï¼Œ4minï¼ŒmaxèŠ‚æ‹
 * @param  : void
-* @update: [2018-08-04][ÕÅÓî·É][]
+* @update: [2018-08-24][å¼ å®‡é£ž][åˆ›å»ºï¼Œå¼€å§‹å€¼ä»Ž1å¼€å§‹]
 */
-void GooseBeatInit(const char* name, GooseBeat* beat)
-{
-	rt_timer_init(&(beat->timer), name, BeatExecuteTask, beat, beat->beat[beat->next], 
-		RT_TIMER_FLAG_ONE_SHOT| RT_TIMER_FLAG_SOFT_TIMER);
-
-}
-
-
-
-uint8_t publisher_test(GooseBeat* beat)
-{
-	LinkedList dataSetValues = LinkedList_create();
-
-	LinkedList_add(dataSetValues, MmsValue_newIntegerFromInt32(1234));
-	LinkedList_add(dataSetValues, MmsValue_newBinaryTime(false));
-	LinkedList_add(dataSetValues, MmsValue_newIntegerFromInt32(5678));
-
-	CommParameters gooseCommParameters;
-
-	gooseCommParameters.appId = 1000;
-	gooseCommParameters.dstAddress[0] = 0xFF;
-	gooseCommParameters.dstAddress[1] = 0xFF;
-	gooseCommParameters.dstAddress[2] = 0xFF;
-	gooseCommParameters.dstAddress[3] = 0xFF;
-	gooseCommParameters.dstAddress[4] = 0xFF;
-	gooseCommParameters.dstAddress[5] = 0xFF;
-	gooseCommParameters.vlanId = 0;
-	gooseCommParameters.vlanPriority = 4;
-
-	GoosePublisher publisher = GoosePublisher_create(&gooseCommParameters, "en0");
-
-	GoosePublisher_setGoCbRef(publisher, "simpleIOGenericIO/LLN0$GO$gcbAnalogValues");
-	GoosePublisher_setConfRev(publisher, 1);
-	GoosePublisher_setDataSetRef(publisher, "simpleIOGenericIO/LLN0$AnalogValues");
-
-	if (GoosePublisher_publish(publisher, dataSetValues) == -1) 
-	{
-		printf("Error sending message!\n");
-	}
-
-	GoosePublisher_destroy(publisher);
-	return 0;
-}
-
-static GooseBeat Beat;
-
-extern int server61850_test(void) ;
-/**
-* @brief  : goose ²âÊÔ
-* @param  : void
-* @update: [2018-08-04][ÕÅÓî·É][]
-*/
-void TestGooseBeat(void)
+GooseBeat* GooseBeat_create(char* name, uint32_t min, uint32_t max,
+		uint8_t (*Execute)(struct TagGooseBeat* handle) ,
+		uint8_t (*FirstExecute)(struct TagGooseBeat* handle))
 {
 	uint8_t index = 0;
+    uint32_t time = 0;
+	if (min > max)
+	{
+		perror("Error parameter.\n");
+		return NULL;
+	}
+	GooseBeat* pBeat = (GooseBeat*)rt_calloc(sizeof(GooseBeat), 1);
+	if (!pBeat)
+	{
+		perror("rt_calloc\n");
+		return NULL;
+	}
+	pBeat->beat[index++] = min;
+	pBeat->beat[index++] = min;
+    time = min << 1;
+    if (time > max)
+    {
+        time = max;
+    }
+	pBeat->beat[index++] = time;
+    time = min << 2;
+    if (time > max)
+    {
+        time = max;
+    }
+	pBeat->beat[index++] = time;
+    pBeat->beat[index++] = max;		
+	pBeat->count = index;
+	pBeat->next = 0;
+	pBeat->Execute = Execute;
+	pBeat->FirstExecute = FirstExecute;
+	rt_timer_init(&(pBeat->timer), name, BeatExecuteTask, pBeat, pBeat->beat[pBeat->next],
+		RT_TIMER_FLAG_ONE_SHOT| RT_TIMER_FLAG_SOFT_TIMER);
 
-	rt_memset(&Beat, 0, sizeof(GooseBeat));
-	Beat.beat[index++] = 2;
-	Beat.beat[index++] = 2;
-	Beat.beat[index++] = 4;
-	Beat.beat[index++] = 8; 
-	Beat.beat[index++] = 500;
-	Beat.count = index;
-	Beat.next = 0;
-	Beat.Execute = publisher_test;
-    GooseBeatInit("goose1", &Beat);
-    rt_thread_delay(1000);
+    return pBeat;
+}
+
+/**
+* @brief  : ç”¨äºŽå¼€å§‹ï¼Œæˆ–è€…é‡æ–°ä»Ž0å¼€å§‹goose beat,
+* @param  : void
+* @update: [2018-08-24][å¼ å®‡é£ž][]
+*/
+void GooseBeat_reTrigger(GooseBeat* pbeat)
+{
+	if (!pbeat)
+	{
+		perror("pbeat is NUll \n");
+		return;
+	}
+    rt_timer_t ptimer = &(pbeat->timer);
+	rt_timer_stop(ptimer);
+	pbeat->next = 0;
+    uint32_t nextTime = pbeat->beat[pbeat->next];
+    pbeat->next = 1;
+    rt_timer_control(ptimer, RT_TIMER_CTRL_SET_TIME, &nextTime);
+    rt_timer_start(ptimer);
+	pbeat->FirstExecute(pbeat);
+	
+}
+/**
+* @brief  : åˆ é™¤
+* @param  : void
+* @update: [2018-08-24][å¼ å®‡é£ž][]
+*/
+void GooseBeat_destory(GooseBeat* pbeat)
+{
+	if (!pbeat)
+	{
+		perror("pbeat is NUll \n");
+		return;
+	}
+	rt_timer_stop(&(pbeat->timer));
+	rt_timer_delete(&(pbeat->timer));
+	rt_free(pbeat);
+}
+
+
+//uint8_t publisher_test(GooseBeat* beat)
+//{
+//	LinkedList dataSetValues = LinkedList_create();
+//
+//	LinkedList_add(dataSetValues, MmsValue_newIntegerFromInt32(1234));
+//	LinkedList_add(dataSetValues, MmsValue_newBinaryTime(false));
+//	LinkedList_add(dataSetValues, MmsValue_newIntegerFromInt32(5678));
+//
+//	CommParameters gooseCommParameters;
+//
+//	gooseCommParameters.appId = 1000;
+//	gooseCommParameters.dstAddress[0] = 0xFF;
+//	gooseCommParameters.dstAddress[1] = 0xFF;
+//	gooseCommParameters.dstAddress[2] = 0xFF;
+//	gooseCommParameters.dstAddress[3] = 0xFF;
+//	gooseCommParameters.dstAddress[4] = 0xFF;
+//	gooseCommParameters.dstAddress[5] = 0xFF;
+//	gooseCommParameters.vlanId = 0;
+//	gooseCommParameters.vlanPriority = 4;
+//
+//	GoosePublisher publisher = GoosePublisher_create(&gooseCommParameters, "en0");
+//
+//	GoosePublisher_setGoCbRef(publisher, "simpleIOGenericIO/LLN0$GO$gcbAnalogValues");
+//	GoosePublisher_setConfRev(publisher, 1);
+//	GoosePublisher_setDataSetRef(publisher, "simpleIOGenericIO/LLN0$AnalogValues");
+//
+//	if (GoosePublisher_publish(publisher, dataSetValues) == -1)
+//	{
+//		printf("Error sending message!\n");
+//	}
+//
+//	GoosePublisher_destroy(publisher);
+//	return 0;
+//}
+
+//static GooseBeat Beat;
+
+//extern int server61850_test(void) ;
+/**
+* @brief  : goose æµ‹è¯•
+* @param  : void
+* @update: [2018-08-04][å¼ å®‡é£ž][]
+*/
+//void TestGooseBeat(void)
+//{
+//	uint8_t index = 0;
+
+//	rt_memset(&Beat, 0, sizeof(GooseBeat));
+//	Beat.beat[index++] = 2;
+//	Beat.beat[index++] = 2;
+//	Beat.beat[index++] = 4;
+//	Beat.beat[index++] = 8;
+//	Beat.beat[index++] = 500;
+//	Beat.count = index;
+//	Beat.next = 0;
+//	Beat.Execute = publisher_test;
+//    GooseBeatInit("goose1", &Beat);
+//    rt_thread_delay(1000);
    // Beat.Execute(&Beat);
   //  rt_timer_start(&Beat.timer);
     
-    //¿ªÊ¼¶©ÔÄ
+    //å¼€å§‹è®¢é˜…
     //subscriber_main();
   //  server61850_test();
 //    do
@@ -144,6 +216,6 @@ void TestGooseBeat(void)
 //        rt_timer_start(&Beat.timer);
 //    }while(1);
     
-}
+//}
 
 

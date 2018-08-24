@@ -95,9 +95,8 @@ static ErrorCode TransmitMessageExtern(const SwitchProperty* const switchPropert
 	case REMOVAL_MESSAGE:
 	case INSULATE_MESSAGE:
 	{
-
-		LocalPropertyToDataArribute(switchProperty, GetDeviceIndicateBySwitch(switchProperty));
-		SwitchPropertyGoosePublish();
+		
+		GoosePublishSwitchStatus(switchProperty, GetDeviceIndicateBySwitch(switchProperty));
 		//TODO : goose更新
 		return ERROR_OK_NULL;
 	}

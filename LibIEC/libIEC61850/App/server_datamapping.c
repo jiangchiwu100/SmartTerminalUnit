@@ -20,8 +20,9 @@
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
+#include "Coordinator.h"
 
-extern IedServer CurrentIedServer;
+extern ServerModelManager g_ServerModelManager;
 /**
   * @brief :创建IED Mode从配置文件
   * @param   char* path 文件路径 //sojo//test_goose.cfg
@@ -62,7 +63,7 @@ void SetMeasure_TotaVA(float fva)
 {
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_TotVA_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_TotVA_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_TotVA_mag_f, fva);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_TotVA_mag_f, fva);
 }
 /**
   * @brief :更新频率
@@ -74,7 +75,7 @@ void SetMeasure_Hz(float fhz)
 {
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_Hz_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_Hz_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_Hz_mag_f, fhz);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_Hz_mag_f, fhz);
 }
 /**
   * @brief :更新电压
@@ -88,7 +89,7 @@ void SetMeasure_PhV_A(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_PhV_phsA_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_PhV_phsA_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_PhV_phsA_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_PhV_phsA_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_PhV_phsA_cVal_ang_f, angle);
 }
 /**
   * @brief :更新电压
@@ -102,7 +103,7 @@ void SetMeasure_PhV_B(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_PhV_phsB_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_PhV_phsB_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_PhV_phsB_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_PhV_phsB_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_PhV_phsB_cVal_ang_f, angle);
 }
 /**
   * @brief :更新电压
@@ -116,7 +117,7 @@ void SetMeasure_PhV_C(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_PhV_phsC_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_PhV_phsC_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_PhV_phsC_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_PhV_phsC_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_PhV_phsC_cVal_ang_f, angle);
 }
 /**
   * @brief :更新电流
@@ -130,7 +131,7 @@ void SetMeasure_A_A(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_A_phsA_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_A_phsA_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_A_phsA_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_A_phsA_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_A_phsA_cVal_ang_f, angle);
 }
 /**
   * @brief :更新电流
@@ -144,7 +145,7 @@ void SetMeasure_A_B(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_A_phsB_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_A_phsB_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_A_phsB_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_A_phsB_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_A_phsB_cVal_ang_f, angle);
 }
 /**
   * @brief :更新电流
@@ -158,7 +159,7 @@ void SetMeasure_A_C(float f, float angle)
 	MmsValue_setBitStringFromInteger(IED_MEAS_MMXU1_A_phsC_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_MEAS_MMXU1_A_phsC_t->mmsValue, Hal_getTimeInMs());
 	MmsValue_setFloat(IED_MEAS_MMXU1_A_phsC_cVal_mag_f->mmsValue, f);
-	IedServer_updateFloatAttributeValue(CurrentIedServer, IED_MEAS_MMXU1_A_phsC_cVal_ang_f, angle);
+	IedServer_updateFloatAttributeValue(g_ServerModelManager.server, IED_MEAS_MMXU1_A_phsC_cVal_ang_f, angle);
 }
 
 
@@ -173,7 +174,7 @@ void SetRemote_Ind1(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind1_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind1_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind1_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind1_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -185,7 +186,7 @@ void SetRemote_Ind2(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind2_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind2_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind2_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind2_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -197,7 +198,7 @@ void SetRemote_Ind3(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind3_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind3_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind3_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind3_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -209,7 +210,7 @@ void SetRemote_Ind4(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind4_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind4_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind4_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind4_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -221,7 +222,7 @@ void SetRemote_Ind5(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind5_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind5_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind5_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind5_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -233,7 +234,7 @@ void SetRemote_Ind6(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind6_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind6_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind6_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind6_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -245,7 +246,7 @@ void SetRemote_Ind7(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind7_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind7_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind7_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind7_stVal, state);
 }
 /**
   * @brief :设置数字输入
@@ -257,7 +258,7 @@ void SetRemote_Ind8(bool state)
 {
 	MmsValue_setBitStringFromInteger(IED_LD0_GGIO1_Ind8_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_LD0_GGIO1_Ind8_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_LD0_GGIO1_Ind8_stVal, state);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_LD0_GGIO1_Ind8_stVal, state);
 }
 
 /**
@@ -271,7 +272,7 @@ void SetRemote_XCBR_Pos( Dbpos dbpos)
 	MmsValue_setBitStringFromInteger(IED_CTRL_XCBR1_Pos_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_CTRL_XCBR1_Pos_t->mmsValue, Hal_getTimeInMs());
 	//MmsValue_setBitStringFromIntegerBigEndian(IED_CTRL_XCBR1_Pos_stVal->mmsValue, dbpos);
-	IedServer_udpateDbposValue(CurrentIedServer, IED_CTRL_XCBR1_Pos_stVal, dbpos);
+	IedServer_udpateDbposValue(g_ServerModelManager.server, IED_CTRL_XCBR1_Pos_stVal, dbpos);
 }
 /**
   * @brief :设置过流保护状态
@@ -289,7 +290,7 @@ void SetRemote_PTOC1(bool str, bool op)
 
 	MmsValue_setBitStringFromInteger(IED_PROT_PTOC1_Op_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_PTOC1_Op_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_PTOC1_Op_general, op);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_PROT_PTOC1_Op_general, op);
 
 }
 /**
@@ -339,7 +340,7 @@ void SetRemote_SCPI1(bool a,bool b, bool c,  bool neut)
 
 
 	MmsValue_setInt16(IED_PROT_SCPI1_DirPrs_dirNeut->mmsValue , (uint32_t)0);//unknown|forward
-	IedServer_updateBooleanAttributeValue(CurrentIedServer,IED_PROT_SCPI1_DirPrs_neut, neut);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server,IED_PROT_SCPI1_DirPrs_neut, neut);
 }
 /**
   * @brief :设置电压指示
@@ -356,7 +357,7 @@ void SetRemote_SVPI1(bool a,bool b, bool c,  bool neut)
 	MmsValue_setBoolean(IED_PROT_SVPI1_Abc_phsB->mmsValue, b);
 	MmsValue_setBoolean(IED_PROT_SVPI1_Abc_phsC->mmsValue, c);
 	MmsValue_setBoolean(IED_PROT_SVPI1_Abc_general->mmsValue, a && b && c);
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_SVPI1_Abc_neut, neut);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_PROT_SVPI1_Abc_neut, neut);
 
 }
 /**
@@ -384,7 +385,7 @@ void SetRemote_SFPI1(bool a,bool b, bool c,  bool neut)
 
 
 	MmsValue_setInt16(IED_PROT_SFPI1_FltInd_dirNeut->mmsValue , (uint32_t)0);//unknown|forward
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_SFPI1_FltInd_neut, neut);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_PROT_SFPI1_FltInd_neut, neut);
 }
 /**
   * @brief :设置故障定位
@@ -401,7 +402,7 @@ void SetRemote_AFSL1(bool locInd, bool locStr)
 
 	MmsValue_setBitStringFromInteger(IED_PROT_AFSL1_FltLocStr_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_AFSL1_FltLocStr_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_AFSL1_FltLocStr_stVal, locStr);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_PROT_AFSL1_FltLocStr_stVal, locStr);
 }
 /**
   * @brief :设置故障隔离
@@ -418,7 +419,7 @@ void SetRemote_AFSI1(bool isoInd, bool isoStr)
 
 	MmsValue_setBitStringFromInteger(IED_PROT_AFSI1_FltIsoStr_q->mmsValue , (uint32_t)QUALITY_VALIDITY_GOOD);
 	MmsValue_setUtcTimeMs(IED_PROT_AFSI1_FltIsoStr_t->mmsValue, Hal_getTimeInMs());
-	IedServer_updateBooleanAttributeValue(CurrentIedServer, IED_PROT_AFSI1_FltIsoStr_stVal, isoStr);
+	IedServer_updateBooleanAttributeValue(g_ServerModelManager.server, IED_PROT_AFSI1_FltIsoStr_stVal, isoStr);
 
 }
 /**

@@ -1825,11 +1825,6 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
             </File>
             <File>
-              <FileName>distribution_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
-            </File>
-            <File>
               <FileName>distribution_test_case.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
@@ -1883,6 +1878,11 @@
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3045,14 +3045,14 @@
               <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_publisher_example.c</FilePath>
             </File>
             <File>
-              <FileName>goose_subscriber_example.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_subscriber_example.c</FilePath>
-            </File>
-            <File>
               <FileName>goose_publisher_beat.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\LibIEC\libIEC61850\GooseTransmission\goose_publisher_beat.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_misc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4912,11 +4912,6 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
             </File>
             <File>
-              <FileName>distribution_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
-            </File>
-            <File>
               <FileName>distribution_test_case.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_test_case.c</FilePath>
@@ -4970,6 +4965,11 @@
               <FileName>topology.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\topology.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6132,14 +6132,14 @@
               <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_publisher_example.c</FilePath>
             </File>
             <File>
-              <FileName>goose_subscriber_example.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_subscriber_example.c</FilePath>
-            </File>
-            <File>
               <FileName>goose_publisher_beat.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\LibIEC\libIEC61850\GooseTransmission\goose_publisher_beat.c</FilePath>
+            </File>
+            <File>
+              <FileName>goose_misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\LibIEC\libIEC61850\App\goose_misc.c</FilePath>
             </File>
           </Files>
         </Group>

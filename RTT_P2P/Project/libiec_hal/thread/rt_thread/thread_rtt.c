@@ -37,23 +37,22 @@ struct sThread {
 };
 
 Thread
-Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy)
+Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy, ThreadConfig config)
 {
-    static int priority = 4;
+    
     static int count = 0;
 	Thread thread =(Thread) GLOBAL_MALLOC(sizeof(struct sThread));
-    thread->parameter = parameter;
-	thread->parameter = parameter;
+    thread->parameter = parameter;	
 	thread->function = function;
 	thread->state = 0;
 	thread->autodestroy = autodestroy;
 
-	thread->handle = rt_thread_create("googse",
+	thread->handle = rt_thread_create(config->name,
 								(void (*)(void *))function,
 								parameter,
-	                            2048,
-	                            priority,
-	                            20);
+	                            config->stack_size,
+	                            config->priority,
+	                            config->tick);
 
 	if (thread->handle == NULL)
 	{
@@ -62,7 +61,7 @@ Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestro
 	}
 	else
 	{
-        rt_kprintf("Thread_create  Taske NUM:%d, priority: %d\r\n", ++count, priority++);
+        rt_kprintf("Thread_create  Taske NUM:%d, priority: %d\r\n", ++count, config->priority);
 		return thread;
 	}
 

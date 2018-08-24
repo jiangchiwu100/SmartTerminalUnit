@@ -17,5 +17,6 @@
 
 bool DeviceIndicate_getBooleanStatus(DeviceIndicate* self, DeviceStatusCode code);
 void DeviceIndicate_setBooleanStatus(DeviceIndicate* self, DeviceStatusCode code, bool state);
-
+extern DeviceIndicate* DeviceIndicate_crate(uint16_t daCount);
+extern void MmsDatasetToDataAtrributeSet(const MmsValue* self, DeviceIndicate* deviceIndicate);
 #endif

@@ -27,7 +27,7 @@ static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceI
 */
 void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 {
-	StationPoint* pPoint = g_StationManger->pWorkPoint;
+	StationPoint* pPoint = g_StationManger.pWorkPoint;
 	if(!pPoint || !di)
 	{
 		perror("!pPoint || !di\n");
@@ -35,7 +35,7 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 	}
 
 	SwitchProperty* sw;
-	ErrorCode code = FindSwitchNodeByID(pPoint->topology->globalSwitchList, di->id, *sw);
+	ErrorCode code = FindSwitchNodeByID(&(pPoint->topology.globalSwitchList), di->id, &sw);
 	if(code == ERROR_OK_NULL)
 	{
 		DataArributeToLocalProperty(sw, di);
@@ -55,9 +55,10 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 */
-void GoosePublishSwitchStatus(void)
+void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di)
 {
 	//针对单独绑定
+    LocalPropertyToDataArribute(sw, di);
 	perror("Unimplenment\n");
 }
 

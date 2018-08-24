@@ -150,7 +150,7 @@ GoosePublisher_increaseStNum(GoosePublisher self)
 void
 GoosePublisher_reset(GoosePublisher self) {
     self->sqNum = 0;
-    self->stNum = 1;
+    self->stNum = 0;//1->0
 }
 
 void

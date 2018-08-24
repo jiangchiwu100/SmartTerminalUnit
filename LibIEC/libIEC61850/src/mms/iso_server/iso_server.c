@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  iso_server.c
  *
  *  Copyright 2013-2018 Michael Zillgith
@@ -563,7 +563,12 @@ IsoServer_startListening(IsoServer self)
 
     self->state = ISO_SVR_STATE_IDLE;
 
-    self->serverThread = Thread_create((ThreadExecutionFunction) isoServerThread, self, false);
+    struct TagThreadConfig config;
+    config.priority = 21;
+    config.name = "iser";
+    config.stack_size = 2028;
+    config.tick = 20;
+    self->serverThread = Thread_create((ThreadExecutionFunction) isoServerThread, self, false, &config);
 
     Thread_start(self->serverThread);
 

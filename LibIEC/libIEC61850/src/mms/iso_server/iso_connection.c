@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  iso_connection.c
  *
  *  Copyright 2013-2018 Michael Zillgith
@@ -508,7 +508,12 @@ IsoConnection_create(Socket socket, IsoServer isoServer)
 
 #if (CONFIG_MMS_SINGLE_THREADED == 0)
 #if (CONFIG_MMS_THREADLESS_STACK == 0)
-    self->thread = Thread_create((ThreadExecutionFunction) handleTcpConnection, self, true);
+    struct TagThreadConfig config;
+    config.priority = 21;
+    config.name = "isT";
+    config.stack_size = 2028;
+    config.tick = 20;
+    self->thread = Thread_create((ThreadExecutionFunction) handleTcpConnection, self, true, &config);
 
     Thread_start(self->thread);
 #endif

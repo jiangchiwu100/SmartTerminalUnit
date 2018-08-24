@@ -12,6 +12,8 @@
 
 #include "common_def.h"
 #include "iec61850_model.h"
+#include "iec61850_server.h"
+#include "goose_receiver.h"
 typedef struct TagDeviceIndicate
 {
 	uint16_t count;

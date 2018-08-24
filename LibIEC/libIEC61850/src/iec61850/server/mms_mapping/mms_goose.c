@@ -38,6 +38,10 @@
 #include "mms_goose.h"
 #include "goose_publisher.h"
 
+#if (CONFIG_GOOSE_ALONG == 1)
+#include "goose_publisher_beat.h"
+#endif
+
 struct sMmsGooseControlBlock {
     char* name;
     bool goEna;
@@ -69,7 +73,14 @@ struct sMmsGooseControlBlock {
     char* goCBRef;
     char* goId;
     char* dataSetRef;
+
+#if (CONFIG_GOOSE_ALONG == 1)
+    GooseBeat*goBeat;  //为了发布添加
+#endif
 };
+
+extern uint8_t ExecuteBeat(struct TagGooseBeat* handle);
+extern uint8_t FirstExecuteBeat(struct TagGooseBeat* handle);
 
 MmsGooseControlBlock
 MmsGooseControlBlock_create()
@@ -112,7 +123,11 @@ MmsGooseControlBlock_destroy(MmsGooseControlBlock self)
             self->dataSet = NULL;
         }
     }
-
+#if (CONFIG_GOOSE_ALONG == 1)
+    if (self->goBeat != NULL) {
+    	GooseBeat_destory(self->goBeat);
+    }
+#endif
     MmsValue_delete(self->mmsValue);
 
     GLOBAL_FREEMEM(self);
@@ -258,12 +273,20 @@ MmsGooseControlBlock_enable(MmsGooseControlBlock self)
             self->goEna = true;
         }
 
+
     }
 
 #if (CONFIG_MMS_THREADLESS_STACK != 1)
     Semaphore_post(self->publisherMutex);
 #endif
+#if (CONFIG_GOOSE_ALONG == 1)   
+		if (self->goBeat != NULL) {
+			GooseBeat_reTrigger(self->goBeat);
+		}
+#endif
 }
+
+
 
 void
 MmsGooseControlBlock_disable(MmsGooseControlBlock self)
@@ -292,7 +315,7 @@ MmsGooseControlBlock_disable(MmsGooseControlBlock self)
     }
 }
 
-
+#if (!CONFIG_GOOSE_ALONG)
 void
 MmsGooseControlBlock_checkAndPublish(MmsGooseControlBlock self, uint64_t currentTime)
 {
@@ -360,6 +383,47 @@ MmsGooseControlBlock_observedObjectChanged(MmsGooseControlBlock self)
 #endif
      
 }
+#else
+void
+MmsGooseControlBlock_checkAndPublish(MmsGooseControlBlock self, uint64_t currentTime)
+{
+
+#if (CONFIG_MMS_THREADLESS_STACK != 1)
+	Semaphore_wait(self->publisherMutex);
+#endif
+
+	GoosePublisher_setTimeAllowedToLive(self->publisher,
+					self->goBeat->beat[self->goBeat->next] * 3);
+	GoosePublisher_publish(self->publisher, self->dataSetValues);
+
+
+
+#if (CONFIG_MMS_THREADLESS_STACK != 1)
+	Semaphore_post(self->publisherMutex);
+#endif
+    
+
+}
+void
+MmsGooseControlBlock_observedObjectChanged(MmsGooseControlBlock self)
+{
+#if (CONFIG_MMS_THREADLESS_STACK != 1)
+    Semaphore_wait(self->publisherMutex);
+#endif
+    GooseBeat* pbeat = self->goBeat;
+    GoosePublisher_setTimeAllowedToLive(self->publisher,
+    		pbeat->beat[pbeat->next] * 3);
+    uint64_t currentTime = GoosePublisher_increaseStNum(self->publisher);
+    GoosePublisher_publish(self->publisher, self->dataSetValues);
+
+#if (CONFIG_MMS_THREADLESS_STACK != 1)
+    Semaphore_post(self->publisherMutex);
+#endif
+
+}
+
+#endif
+
 
 static MmsVariableSpecification*
 createMmsGooseControlBlock(char* gcbName)
@@ -576,6 +640,13 @@ GOOSE_createGOOSEControlBlocks(MmsMapping* self, MmsDomain* domain,
 
         mmsGCB->mmsMapping = self;
 
+
+		#if (CONFIG_GOOSE_ALONG == 1)
+
+        mmsGCB->goBeat = GooseBeat_create(mmsGCB->name, mmsGCB->minTime, mmsGCB->maxTime,
+        		ExecuteBeat, FirstExecuteBeat);
+        mmsGCB->goBeat->parameter = mmsGCB;
+		#endif
         LinkedList_add(self->gseControls, mmsGCB);
 
         currentGCB++;
@@ -583,6 +654,59 @@ GOOSE_createGOOSEControlBlocks(MmsMapping* self, MmsDomain* domain,
 
     return namedVariable;
 }
+/**
+* @brief  : 更新发布
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+void 
+MmsGooseControlBlock_updatePublish_Ex(MmsGooseControlBlock self)
+{
+#if (CONFIG_GOOSE_ALONG == 1)   
+		if (self->goBeat != NULL) {
+			GooseBeat_reTrigger(self->goBeat);
+		}
+#endif
+}
+
+#if (CONFIG_GOOSE_ALONG == 1)
+
+/**
+* @brief  : beat执行
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+uint8_t ExecuteBeat(struct TagGooseBeat* handle)
+{
+	if (!handle || (!handle->parameter))
+	{
+		printf("ERROR:(!handle || (handle->parameter)), fucntion: %s, line: %d\n", __FUNCTION__, __LINE__);
+
+	}
+   // uint64_t currentTimeInMs = Hal_getTimeInMs();
+	MmsGooseControlBlock mmsGCB = (MmsGooseControlBlock)(handle->parameter);
+	MmsGooseControlBlock_checkAndPublish(mmsGCB, 0);
+    return 0;
+}
+/**
+* @brief  : first beat执行
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+uint8_t FirstExecuteBeat(struct TagGooseBeat* handle)
+{
+	if (!handle || (!handle->parameter))
+	{
+		printf("ERROR:(!handle || (handle->parameter)), fucntion: %s, line: %d\n", __FUNCTION__, __LINE__);
+
+	}
+	MmsGooseControlBlock mmsGCB = (MmsGooseControlBlock)(handle->parameter);
+	MmsGooseControlBlock_observedObjectChanged(mmsGCB);
+    return 0;
+}
+
+#endif
+
 
 #endif /* (CONFIG_INCLUDE_GOOSE_SUPPORT == 1) */
 

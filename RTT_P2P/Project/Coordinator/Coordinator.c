@@ -17,7 +17,7 @@
 #include "Coordinator.h"
 #include "goose_receiver.h"
 #include "iec61850_server.h"
-
+#include "status_update.h"
 /**
 * @brief :初始化数据指示空闿
 * @param : uint8_t neighbourCount 邻居数量
@@ -152,7 +152,7 @@ void MmsDatasetToDataAtrributeSet(const MmsValue* self, DeviceIndicate* deviceIn
 		return;
 	}
 
-	char buffer[1024];
+//	char buffer[1024];
 	switch (MmsValue_getType(self))
 	{
 	case MMS_STRUCTURE:

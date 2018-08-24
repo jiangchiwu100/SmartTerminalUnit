@@ -16,7 +16,7 @@
 
 extern void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
 extern void LocalPropertyToDataArribute(const SwitchProperty* const sw, DeviceIndicate* di);
-extern void SwitchPropertyGoosePublish(void);
+extern void GoosePublishSwitchStatus(const SwitchProperty*const sw, DeviceIndicate* di);
 
 extern void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di);
 #endif

@@ -2776,13 +2776,19 @@ MmsMapping_triggerGooseObservers(MmsMapping* self, MmsValue* value)
         if (MmsGooseControlBlock_isEnabled(gcb)) {
             DataSet* dataSet = MmsGooseControlBlock_getDataSet(gcb);
          
-            if (DataSet_isMemberValue(dataSet, value, NULL)) {       
-                MmsGooseControlBlock_observedObjectChanged(gcb);                    
+            if (DataSet_isMemberValue(dataSet, value, NULL)) {    
+#if (CONFIG_GOOSE_ALONG == 1) 
+
+                MmsGooseControlBlock_updatePublish_Ex(gcb);
+#else                
+                MmsGooseControlBlock_observedObjectChanged(gcb);
+#endif                
             }
             
         }
     }
 }
+ 
 
 void
 MmsMapping_enableGoosePublishing(MmsMapping* self)
@@ -2988,14 +2994,18 @@ GOOSE_processGooseEvents(MmsMapping* self, uint64_t currentTimeInMs)
 #endif /* (CONFIG_INCLUDE_GOOSE_SUPPORT == 1) */
 
 
-
+/**
+ *[2018-08-24][张宇飞][注释掉goose事件处理]
+ */
 static void
 processPeriodicTasks(MmsMapping* self)
 {
     uint64_t currentTimeInMs = Hal_getTimeInMs();
 
 #if (CONFIG_INCLUDE_GOOSE_SUPPORT == 1)
+#if (!CONFIG_GOOSE_ALONG)
     GOOSE_processGooseEvents(self, currentTimeInMs);
+#endif
 #endif
 
 #if (CONFIG_IEC61850_CONTROL_SERVICE == 1)
@@ -3051,8 +3061,12 @@ void
 MmsMapping_startEventWorkerThread(MmsMapping* self)
 {
     self->reportThreadRunning = true;
-
-    Thread thread = Thread_create((ThreadExecutionFunction) eventWorkerThread, self, false);
+    struct TagThreadConfig config;
+    config.priority = 10;
+    config.name = "mmse";
+    config.stack_size = 2028;
+    config.tick = 20;
+    Thread thread = Thread_create((ThreadExecutionFunction) eventWorkerThread, self, false, &config);
     self->reportWorkerThread = thread;
     Thread_start(thread);
 }

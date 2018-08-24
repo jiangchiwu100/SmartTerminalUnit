@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  sv_receiver.c
  *
  *  Copyright 2015 Michael Zillgith
@@ -177,7 +177,12 @@ svReceiverLoop(void* threadParameter)
 void
 SVReceiver_start(SVReceiver self)
 {
-    Thread thread = Thread_create((ThreadExecutionFunction) svReceiverLoop, (void*) self, true);
+    struct TagThreadConfig config;
+    config.priority = 20;
+    config.name = "svr";
+    config.stack_size = 2028;
+    config.tick = 20;
+    Thread thread = Thread_create((ThreadExecutionFunction) svReceiverLoop, (void*) self, true, &config);
 
     if (thread != NULL) {
         if (DEBUG_SV_SUBSCRIBER)

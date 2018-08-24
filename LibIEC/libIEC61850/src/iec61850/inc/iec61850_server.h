@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  iec61850_server.h
  *
  *  IEC 61850 server API for libiec61850.
@@ -1138,6 +1138,15 @@ IedServer_setWriteAccessPolicy(IedServer self, FunctionalConstraint fc, AccessPo
 /**@}*/
 
 /**@}*/
+
+/**
+* @brief  : iedserver 强制触发发送，数据更新由调用者保证。
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+void 
+IedServer_forceUpdatePublish_Ex(IedServer self, DataAttribute* dataAttribute);
+
 
 #ifdef __cplusplus
 }

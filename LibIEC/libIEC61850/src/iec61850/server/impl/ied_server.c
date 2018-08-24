@@ -544,7 +544,7 @@ singleThreadedServerThread(void* parameter)
 
         IedServer_performPeriodicTasks(self);
 
-        Thread_sleep(1);
+        Thread_sleep(5);//1->5
 
         running = mmsMapping->reportThreadRunning;
     }
@@ -565,8 +565,12 @@ IedServer_start(IedServer self, int tcpPort)
 
 #if (CONFIG_MMS_SINGLE_THREADED == 1)
         MmsServer_startListeningThreadless(self->mmsServer, tcpPort);
-
-        Thread serverThread = Thread_create((ThreadExecutionFunction) singleThreadedServerThread, (void*) self, true);
+        struct TagThreadConfig config;
+        config.priority = 10;
+        config.name = "ieds";
+        config.stack_size = 2028;
+        config.tick = 20;
+        Thread serverThread = Thread_create((ThreadExecutionFunction) singleThreadedServerThread, (void*) self, true, &config);
 
         Thread_start(serverThread);
 #else
@@ -882,6 +886,10 @@ checkForUpdateTrigger(IedServer self, DataAttribute* dataAttribute)
 #endif /* ((CONFIG_IEC61850_REPORT_SERVICE == 1) || (CONFIG_IEC61850_LOG_SERVICE == 1)) */
 }
 
+
+/**
+ * [2018-08-24][张宇飞][注释掉goose触发处理]
+ */
 static inline void
 checkForChangedTriggers(IedServer self, DataAttribute* dataAttribute)
 {
@@ -889,7 +897,9 @@ checkForChangedTriggers(IedServer self, DataAttribute* dataAttribute)
     if (dataAttribute->triggerOptions & TRG_OPT_DATA_CHANGED) {
 
 #if (CONFIG_INCLUDE_GOOSE_SUPPORT == 1)
-        MmsMapping_triggerGooseObservers(self->mmsMapping, dataAttribute->mmsValue);
+
+      MmsMapping_triggerGooseObservers(self->mmsMapping, dataAttribute->mmsValue);
+
 #endif
 
 #if (CONFIG_IEC61850_REPORT_SERVICE == 1)
@@ -906,7 +916,9 @@ checkForChangedTriggers(IedServer self, DataAttribute* dataAttribute)
     else if (dataAttribute->triggerOptions & TRG_OPT_QUALITY_CHANGED) {
 
 #if (CONFIG_INCLUDE_GOOSE_SUPPORT == 1)
+
         MmsMapping_triggerGooseObservers(self->mmsMapping, dataAttribute->mmsValue);
+
 #endif
 
 #if (CONFIG_IEC61850_REPORT_SERVICE == 1)
@@ -1194,6 +1206,9 @@ IedServer_updateTimestampAttributeValue(IedServer self, DataAttribute* dataAttri
     }
 }
 
+/**
+ * [2018-08-24][张宇飞][注释掉goose触发]
+ */
 void
 IedServer_updateQuality(IedServer self, DataAttribute* dataAttribute, Quality quality)
 {
@@ -1215,7 +1230,9 @@ IedServer_updateQuality(IedServer self, DataAttribute* dataAttribute, Quality qu
 #endif
 
 #if (CONFIG_INCLUDE_GOOSE_SUPPORT == 1)
+
         MmsMapping_triggerGooseObservers(self->mmsMapping, dataAttribute->mmsValue);
+
 #endif
 
 #if (CONFIG_IEC61850_REPORT_SERVICE == 1)
@@ -1478,3 +1495,21 @@ IedServer_setGooseInterfaceId(IedServer self, const char* interfaceId)
     self->mmsMapping->gooseInterfaceId = interfaceId;
 #endif
 }
+
+
+#if ((CONFIG_INCLUDE_GOOSE_SUPPORT == 1) && (CONFIG_GOOSE_ALONG == 1)) 
+/**
+* @brief  : iedserver 强制触发发送，数据更新由调用者保证。
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+void 
+IedServer_forceUpdatePublish_Ex(IedServer self, DataAttribute* dataAttribute)
+{
+    assert(self != NULL);
+    assert(dataAttribute != NULL);  
+    MmsMapping_triggerGooseObservers(self->mmsMapping, dataAttribute->mmsValue);
+}
+               
+
+#endif 

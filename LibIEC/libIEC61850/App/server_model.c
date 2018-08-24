@@ -24,11 +24,12 @@
 
 
 #include "station_manager.h"
-#include "Coordinator_def.h"
+#include "Coordinator.h"
 
 char* LPHD1_NEIGHBOURCOUNT_N = "LPHD1.NeighbourCountN.stVal";
 char* LPHD1_NEIGHBOURCOUNT_M = "LPHD1.NeighbourCountM.stVal";
 
+extern void UpdateLocalPublicRef(ServerModelManager* manager);
 #define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
@@ -80,14 +81,14 @@ int Iec61850Server(void)
     int tcpPort = 102;
 
 
-    IedModel* model = CreateIedModeFromConfig( MODEL_CONFIG_PATH);
-    if (!model)
+    g_ServerModelManager.model = CreateIedModeFromConfig( MODEL_CONFIG_PATH);
+    if (!g_ServerModelManager.model)
     {
         printf("CreateIedModeFromConfig is null\n");
         return -1;
     }
 	GooseReceiver receiver;
-    LogicalDeviceDataRefInit(model);
+    LogicalDeviceDataRefInit( g_ServerModelManager.model);
 	receiver = GooseReceiver_create();
 	//GooseSubscriberInstance(receiver);
 
@@ -102,24 +103,21 @@ int Iec61850Server(void)
 	
 	
 
-	CurrentIedServer = IedServer_create(model);
-	if (g_StationManger->pWorkPoint)
-	{
+	g_ServerModelManager.server = IedServer_create(g_ServerModelManager.model);
 
-	}
 
-	IedServer_start(CurrentIedServer, tcpPort);
+	IedServer_start(g_ServerModelManager.server , tcpPort);
 
-	if (!IedServer_isRunning(CurrentIedServer)) {
+	if (!IedServer_isRunning(g_ServerModelManager.server )) {
 		printf("Starting server failed! Exit.\n");
-		IedServer_destroy(CurrentIedServer);
+		IedServer_destroy(g_ServerModelManager.server );
 		return -1;
 	}
 
-	DataSet* dsGoose = IedModel_lookupDataSet(model, "STU1LD0/LLN0$dsGoose");
+	DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
 	/* Start GOOSE publishing */
-	IedServer_enableGoosePublishing(CurrentIedServer);
+	IedServer_enableGoosePublishing(g_ServerModelManager.server );
 
 	GetNeighbourCount();
 	int32_t cn = 0;
@@ -145,10 +143,10 @@ int Iec61850Server(void)
 		(cn++ > 10) ? (cn = -10) : (cn++);
 
 		//统一更新
-		IedServer_lockDataModel(CurrentIedServer);
+		IedServer_lockDataModel(g_ServerModelManager.server );
 
 
-		SetMeasure_TotaVA(va);
+		//SetMeasure_TotaVA(va);
 		/*SetMeasure_Hz(f);
 		SetMeasure_PhV_A(v,  angle);
 		SetMeasure_PhV_B(v,  angle);
@@ -157,14 +155,14 @@ int Iec61850Server(void)
 		SetMeasure_A_B(i,  angle);
 		SetMeasure_A_C(i,  angle);*/
 
-		SetRemote_Ind1(state);
-		SetRemote_Ind2(!state);
-		SetRemote_Ind3(state);
-		SetRemote_Ind4(!state);
-		SetRemote_Ind5(state);
-		SetRemote_Ind6(!state);
-		SetRemote_Ind7(state);
-		SetRemote_Ind8(!state);
+	//	SetRemote_Ind1(state);
+//		SetRemote_Ind2(!state);
+//		SetRemote_Ind3(state);
+//		SetRemote_Ind4(!state);
+//		SetRemote_Ind5(state);
+//		SetRemote_Ind6(!state);
+//		SetRemote_Ind7(state);
+//		SetRemote_Ind8(!state);
 
 		/*SetRemote_XCBR_Pos(DBPOS_ON);
 
@@ -175,15 +173,15 @@ int Iec61850Server(void)
 		SetRemote_AFSL1(state, !state);
 		SetRemote_AFSI1(state, !state);*/
 
-
+        IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO1_Ind8_stVal);
 		//以此触发
 
 
 
 
-		IedServer_unlockDataModel(CurrentIedServer);
+		IedServer_unlockDataModel(g_ServerModelManager.server );
 
-		Thread_sleep(5000);
+		Thread_sleep(11000);
 
 
 
@@ -191,11 +189,11 @@ int Iec61850Server(void)
 
 
 
-	IedServer_stop(CurrentIedServer);
+	IedServer_stop(g_ServerModelManager.server );
 
-	IedServer_destroy(CurrentIedServer);
+	IedServer_destroy(g_ServerModelManager.server );
 
-	IedModel_destroy(model);
+	IedModel_destroy(g_ServerModelManager.model);
 	
 
 
@@ -231,16 +229,16 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 * @return: DatasetSubscriber* 分配 好的空间
 * @update: [2018-08-22][张宇飞][创建]
 */
-void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscriber daSb)
+void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscriber* daSb)
 {
 	printf("Using interface eth0\n");
 	GooseReceiver_setInterfaceId(receiver, "eth0");
 	GooseSubscriber subscriber;
 	for (uint8_t i = 0; i < daSb->count; i++)
 	{
-		subscriber = GooseSubscriber_create(daSb->indicateCollect[i]->goCbRef, NULL);
-		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i]->appId);
-		GooseSubscriber_setListener(subscriber, gooseListenerRemote, daSb->indicateCollect[i]);
+		subscriber = GooseSubscriber_create(daSb->indicateCollect[i].goCbRef, NULL);
+		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i].appId);
+		GooseSubscriber_setListener(subscriber, gooseListenerRemote, (void*)(&(daSb->indicateCollect[i])));
 	}
 
 	GooseReceiver_start(receiver);

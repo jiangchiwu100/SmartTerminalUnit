@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  thread_hal.h
  *
  *  Multi-threading abstraction layer
@@ -27,6 +27,7 @@
 #define THREAD_HAL_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +55,18 @@ typedef void* Semaphore;
 typedef void* (*ThreadExecutionFunction) (void*);
 
 /**
+*线程配置参数针对有优先级的情况
+*/
+typedef struct TagThreadConfig
+{
+    char* name;
+    uint32_t stack_size;
+    uint8_t  priority;
+    uint32_t tick;
+}sThreadConfig;
+typedef struct TagThreadConfig* ThreadConfig;
+
+/**
  * \brief Create a new Thread instance
  *
  * \param function the entry point of the thread
@@ -63,7 +76,7 @@ typedef void* (*ThreadExecutionFunction) (void*);
  * \return the newly created Thread instance
  */
 Thread
-Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy);
+Thread_create(ThreadExecutionFunction function, void* parameter, bool autodestroy, ThreadConfig config);
 
 /**
  * \brief Start a Thread.

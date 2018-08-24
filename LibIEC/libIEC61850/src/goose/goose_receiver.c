@@ -882,7 +882,12 @@ void
 GooseReceiver_start(GooseReceiver self)
 {
 #if (CONFIG_MMS_THREADLESS_STACK == 0)
-    self->thread = Thread_create((ThreadExecutionFunction) gooseReceiverLoop, (void*) self, false);
+    struct TagThreadConfig config;
+    config.priority = 4;
+    config.name = "goRe";
+    config.stack_size = 2028;
+    config.tick = 20;
+    self->thread = Thread_create((ThreadExecutionFunction) gooseReceiverLoop, (void*) self, false, &config);
 
     if (self->thread != NULL) {
         if (DEBUG_GOOSE_SUBSCRIBER)

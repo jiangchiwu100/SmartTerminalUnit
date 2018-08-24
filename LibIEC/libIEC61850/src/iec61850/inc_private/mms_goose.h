@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  mms_goose.h
  *
  *  Copyright 2013 Michael Zillgith
@@ -72,4 +72,11 @@ MmsVariableSpecification*
 GOOSE_createGOOSEControlBlocks(MmsMapping* self, MmsDomain* domain,
         LogicalNode* logicalNode, int gseCount);
 
+/**
+* @brief  : 控制块启动发布
+* @param  : void
+* @update: [2018-08-24][张宇飞][]
+*/
+void 
+MmsGooseControlBlock_updatePublish_Ex(MmsGooseControlBlock self); 
 #endif /* MMS_GOOSE_H_ */
