@@ -1,7 +1,7 @@
 /**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      iec61850_datamapping.h
-  * @brief:     61850Êý¾ÝÓ³Éä
+  * @brief:     61850ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
   * @version:   V0.0.0
   * @author:    Zhang Yufei
   * @date:      2018-08-15
@@ -44,5 +44,6 @@ void SetRemote_AFSL1(bool locInd, bool locStr);
 void SetRemote_AFSI1(bool isoInd, bool isoStr);
 void SetRemote_ASRC1(void);
 
+void BindLocalSwitchStatus(void);
 
 #endif 

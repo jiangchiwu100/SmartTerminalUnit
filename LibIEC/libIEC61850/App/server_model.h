@@ -13,8 +13,9 @@
 
 
 #include "iec61850_model.h"
+#include "coordinator_def.h"
 
 int Iec61850Server(void);
 
-
+extern ServerModelManager g_ServerModelManager;
 #endif 

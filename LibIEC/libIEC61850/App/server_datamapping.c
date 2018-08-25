@@ -21,6 +21,8 @@
 
 #include "server_datamapping.h"
 #include "Coordinator.h"
+#include "extern_interface.h"
+#include "station_manager.h"
 
 extern ServerModelManager g_ServerModelManager;
 /**
@@ -438,3 +440,63 @@ void SetRemote_ASRC1(void)
 
 
 
+/**
+  * @brief :绑定本地开关状态
+  * @param
+  * @return:
+  * @update: [2018-08-25][创建]
+  */
+void BindLocalSwitchStatus(void)
+{
+    if(g_StationManger.pWorkPoint)
+    {
+    	DeviceIndicate* di = DeviceIndicate_crate(24);
+    	if (!di)
+    	{
+    		perror("Error : DeviceIndicate_crate\n");
+    		return;
+    	}
+    	g_ServerModelManager.localPulicDataset = di;
+    	di->id = g_StationManger.pWorkPoint->id;
+    	uint16_t index = 0;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind1_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind2_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind3_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind4_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind5_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind6_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind7_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind8_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind9_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind10_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind11_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind12_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind13_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind14_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind15_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Ind16_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm1_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm1_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm2_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm3_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm4_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm5_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm6_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm7_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm8_stVal;
+    	//check
+    	for(uint16_t i = 0; i < index; i++ )
+    	{
+    		if (!di->daCollect[index++])
+    		{
+    			perror("Error: Assigen, seq:%i, all: %d\n", i, index);
+    		}
+    	}
+    	//赋值给本地
+    	g_StationManger.pWorkPoint->topology.localSwitch->pDeviceIndicate = di;
+    }
+    else
+    {
+    	perror("BindLocalSwitchStatus. ERROR\n");
+    }
+}

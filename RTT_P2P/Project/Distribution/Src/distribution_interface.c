@@ -742,7 +742,7 @@ ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
     CHECK_POINT_RETURN(handle->IsOpenPosition, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsTrigger, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsGatherCompleted, NULL, ERROR_NULL_PTR);
-	
+    CHECK_POINT_RETURN(handle->switchProperty->pDeviceIndicate, NULL, ERROR_NULL_PTR);
     //首次检测通过后进行复归操作
     if (!handle->isCheckPass)
     {

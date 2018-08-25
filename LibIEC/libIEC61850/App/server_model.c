@@ -20,17 +20,18 @@
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
-
+#include "server_model.h"
 
 
 #include "station_manager.h"
 #include "Coordinator.h"
 
+
 char* LPHD1_NEIGHBOURCOUNT_N = "LPHD1.NeighbourCountN.stVal";
 char* LPHD1_NEIGHBOURCOUNT_M = "LPHD1.NeighbourCountM.stVal";
 
 extern void UpdateLocalPublicRef(ServerModelManager* manager);
-#define MODEL_CONFIG_PATH  "//sojo//test_goose.cfg"
+#define MODEL_CONFIG_PATH  "//sojo//stu.cfg"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
 
@@ -38,7 +39,6 @@ extern void UpdateLocalPublicRef(ServerModelManager* manager);
  * 61850服务管理
  */
 ServerModelManager g_ServerModelManager;
-
 
 
 
@@ -92,19 +92,7 @@ int Iec61850Server(void)
 	receiver = GooseReceiver_create();
 	//GooseSubscriberInstance(receiver);
 
-	char buffer[1024];
-	/*MmsValue* values = IED_LD0_LGOS1_GoCBRef_setSrcRef->mmsValue;
-	MmsValue_printToBuffer(values, buffer, 1024);
-	puts(buffer);
-	 values = IED_LD0_LGOS2_GoCBRef_setSrcRef->mmsValue;
-	MmsValue_printToBuffer(values, buffer, 1024);
-	puts(buffer);*/
-
-	
-	
-
 	g_ServerModelManager.server = IedServer_create(g_ServerModelManager.model);
-
 
 	IedServer_start(g_ServerModelManager.server , tcpPort);
 
@@ -113,6 +101,9 @@ int Iec61850Server(void)
 		IedServer_destroy(g_ServerModelManager.server );
 		return -1;
 	}
+
+	BindLocalSwitchStatus();
+
 
 	DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
@@ -145,40 +136,8 @@ int Iec61850Server(void)
 		//统一更新
 		IedServer_lockDataModel(g_ServerModelManager.server );
 
-
-		//SetMeasure_TotaVA(va);
-		/*SetMeasure_Hz(f);
-		SetMeasure_PhV_A(v,  angle);
-		SetMeasure_PhV_B(v,  angle);
-		SetMeasure_PhV_C(v,  angle);
-		SetMeasure_A_A(i,  angle);
-		SetMeasure_A_B(i,  angle);
-		SetMeasure_A_C(i,  angle);*/
-
-	//	SetRemote_Ind1(state);
-//		SetRemote_Ind2(!state);
-//		SetRemote_Ind3(state);
-//		SetRemote_Ind4(!state);
-//		SetRemote_Ind5(state);
-//		SetRemote_Ind6(!state);
-//		SetRemote_Ind7(state);
-//		SetRemote_Ind8(!state);
-
-		/*SetRemote_XCBR_Pos(DBPOS_ON);
-
-		SetRemote_PTOC1(state, !state);
-		SetRemote_SCPI1(state, !state, state, !state);
-		SetRemote_SVPI1(state, !state, state, !state);
-		SetRemote_SFPI1(state, !state, state, !state);
-		SetRemote_AFSL1(state, !state);
-		SetRemote_AFSI1(state, !state);*/
-
-        IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO1_Ind8_stVal);
+        IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
 		//以此触发
-
-
-
-
 		IedServer_unlockDataModel(g_ServerModelManager.server );
 
 		Thread_sleep(11000);
@@ -248,5 +207,8 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscrib
 	//GooseReceiver_destroy(receiver);
 	//return 0;
 }
+
+
+
 
 

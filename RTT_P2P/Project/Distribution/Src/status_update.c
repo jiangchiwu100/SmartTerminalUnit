@@ -13,8 +13,13 @@
 #include "log.h"
 #include "distribution_config.h"
 #include "coordinator.h"
-#include "status_update.h"
+
 #include "extern_interface.h"
+
+
+#include "ied_data_ref.h"
+#include "server_model.h"
+#include "status_update.h"
 
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
 static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di);
@@ -59,7 +64,8 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 {
 	//针对单独绑定
     LocalPropertyToDataArribute(sw, di);
-	perror("Unimplenment\n");
+    IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
+	//perror("Unimplenment\n");
 }
 
 
@@ -118,6 +124,8 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	}
 }
 
+
+
 /**
 * @brief : 由数据集信息更新本属性信息
 * @param : SwitchProperty* sw
@@ -174,6 +182,8 @@ static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceI
 	}
 
 }
+
+
 
 /**
 * @brief : 更新状态信息，更新配电区域相关信息,
