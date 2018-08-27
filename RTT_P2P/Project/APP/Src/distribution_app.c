@@ -45,8 +45,9 @@ void DistributionDatabaseInit(void)
 void DistributionAppInit(void)
 {
 
-	
+	 
     DistributionDatabaseInit();
+   
     EmmedNetInit();
     
     

@@ -80,7 +80,7 @@ void rtthread_startup(void)
 
 #ifdef RT_USING_EXT_SDRAM
     rt_system_heap_init((void*)EXT_SDRAM_BEGIN, (void*)EXT_SDRAM_END);
-	memset((void*)EXT_SDRAM_BEGIN, 0, EXT_SDRAM_END - EXT_SDRAM_BEGIN);
+	rt_memset((void*)EXT_SDRAM_BEGIN, 0, EXT_SDRAM_END - EXT_SDRAM_BEGIN);
 #else
     rt_system_heap_init((void*)HEAP_BEGIN, (void*)HEAP_END);
 #endif /* RT_USING_EXT_SDRAM */

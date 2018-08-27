@@ -33,7 +33,7 @@ bool DeviceIndicate_init(DeviceIndicate* ic , uint16_t daCount)
 	}
 	ic->count = daCount;
 	ic->daCollect = (DataAttribute**)GLOBAL_CALLOC(sizeof(DataAttribute*), daCount);
-	ic->indexTrans = (uint16_t*)GLOBAL_CALLOC(sizeof(uint8_t), daCount);//转换索引数组
+	ic->indexTrans = (uint16_t*)GLOBAL_CALLOC(sizeof(uint16_t), daCount);//转换索引数组
 	if ((!ic->daCollect)
 		|| (!ic->indexTrans))
 	{

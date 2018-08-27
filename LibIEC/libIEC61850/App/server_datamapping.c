@@ -54,7 +54,7 @@ IedModel* CreateIedModeFromConfig( char* path)
 }
 
 
-
+#if IED_DATA_ENABLE_OTHER
 /**
   * @brief :更新测量值
   * @param  float fva 视在功率
@@ -437,7 +437,7 @@ void SetRemote_ASRC1(void)
 
 }
 
-
+#endif
 
 
 /**
@@ -475,8 +475,7 @@ void BindLocalSwitchStatus(void)
     	di->daCollect[index++] = IED_LD0_GGIO17_Ind14_stVal;
     	di->daCollect[index++] = IED_LD0_GGIO17_Ind15_stVal;
     	di->daCollect[index++] = IED_LD0_GGIO17_Ind16_stVal;
-    	di->daCollect[index++] = IED_LD0_GGIO17_Alm1_stVal;
-    	di->daCollect[index++] = IED_LD0_GGIO17_Alm1_stVal;
+    	di->daCollect[index++] = IED_LD0_GGIO17_Alm1_stVal;    	
     	di->daCollect[index++] = IED_LD0_GGIO17_Alm2_stVal;
     	di->daCollect[index++] = IED_LD0_GGIO17_Alm3_stVal;
     	di->daCollect[index++] = IED_LD0_GGIO17_Alm4_stVal;
@@ -485,9 +484,13 @@ void BindLocalSwitchStatus(void)
     	di->daCollect[index++] = IED_LD0_GGIO17_Alm7_stVal;
     	di->daCollect[index++] = IED_LD0_GGIO17_Alm8_stVal;
     	//check
+        if (index != 24)
+        {
+            perror("Error: Num, req:%i, all: %d\n", 24, index);
+        }
     	for(uint16_t i = 0; i < index; i++ )
     	{
-    		if (!di->daCollect[index++])
+    		if (!di->daCollect[i++])
     		{
     			perror("Error: Assigen, seq:%i, all: %d\n", i, index);
     		}

@@ -9,11 +9,11 @@
 
 #include <stdlib.h>
 #include "iec61850_model.h"
-#define IED_DATA_ENABLE_OTHER
+//#define IED_DATA_ENABLE_OTHER
 
 extern IedModel*IED;
 extern LogicalDevice* IED_LD0;
-
+#ifdef IED_DATA_ENABLE_OTHER
 extern LogicalNode*   IED_LD0_LLN0;
 extern DataObject*    IED_LD0_LLN0_Mod;
 extern DataAttribute* IED_LD0_LLN0_Mod_stVal;
@@ -3971,6 +3971,7 @@ extern DataAttribute* IED_LD0_GOINGGIO16_Alm8_subVal;
 extern DataAttribute* IED_LD0_GOINGGIO16_Alm8_subQ;
 extern DataAttribute* IED_LD0_GOINGGIO16_Alm8_subID;
 extern DataAttribute* IED_LD0_GOINGGIO16_Alm8_dU;
+#endif
 extern LogicalNode*   IED_LD0_GGIO17;
 extern DataObject*    IED_LD0_GGIO17_Mod;
 extern DataAttribute* IED_LD0_GGIO17_Mod_stVal;
@@ -5484,6 +5485,8 @@ extern DataAttribute* IED_PROT_ASRC1_Mir_subVal;
 extern DataAttribute* IED_PROT_ASRC1_Mir_subQ;
 extern DataAttribute* IED_PROT_ASRC1_Mir_subID;
 extern DataAttribute* IED_PROT_ASRC1_Mir_dU;
+
+#endif
 
 #define REF_LD0         "LD0"
 #define REF_LD0_LLN0         "LLN0"
@@ -10952,7 +10955,6 @@ extern DataAttribute* IED_PROT_ASRC1_Mir_dU;
 #define REF_PROT_ASRC1_Mir_subID         "ASRC1.Mir.subID"
 #define REF_PROT_ASRC1_Mir_dU         "ASRC1.Mir.dU"
 
-#endif
 
 extern bool DataRefInit(void);
 extern bool LogicalDeviceDataRefInit(IedModel* model);

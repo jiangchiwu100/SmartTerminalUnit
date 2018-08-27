@@ -733,11 +733,11 @@ uint8_t RemovalHandleUpdateSwitchProperty(FaultDealHandle* handle, SwitchPropert
 */
 ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
 {
-	//是否在线
-	CHECK_EQUAL_RETURN(handle->switchProperty->parent->systemOnlineStamp.isValid, false, ERROR_NULL_PTR);
+	//是否在线	
     CHECK_POINT_RETURN(handle, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->switchProperty, NULL, ERROR_NULL_PTR);    
     CHECK_POINT_RETURN(handle->switchProperty->distributionArea, NULL, ERROR_NULL_PTR);
+    //CHECK_EQUAL_RETURN(handle->switchProperty->parent->systemOnlineStamp.isValid, false, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->pTransferNode, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsOpenPosition, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsTrigger, NULL, ERROR_NULL_PTR);

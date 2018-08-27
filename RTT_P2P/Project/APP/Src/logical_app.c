@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_app.c
   * @brief:     分布式保护逻辑
@@ -63,7 +63,7 @@ static void DistributionLogicalApp(StationManger* manager)
     //FaultRemovalInit()
     list = &(server->stationPointList);
 
-    //循环更新模拟开关状态
+    
     do
     {
         element = list_head(list);
@@ -148,8 +148,8 @@ static void connected_thread_entry(void* parameter)
 					GetNeighboorRunState(station); //获取邻居
 				}
 				//周期性发送状态信息
-				StationSendStatusMessage(station);
-				CheckMessageValid(station);
+				//StationSendStatusMessage(station);
+				//CheckMessageValid(station);
 			}
 			else
 			{

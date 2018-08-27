@@ -102,15 +102,15 @@ int Iec61850Server(void)
 		return -1;
 	}
 
-	BindLocalSwitchStatus();
-
+	
 
 	DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(g_ServerModelManager.server );
+    BindLocalSwitchStatus();
 
-	GetNeighbourCount();
+	//GetNeighbourCount();
 	int32_t cn = 0;
 	float i = 100;
 	float v = 1000;

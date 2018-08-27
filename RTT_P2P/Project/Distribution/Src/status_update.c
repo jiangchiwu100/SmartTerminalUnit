@@ -62,6 +62,7 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 */
 void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di)
 {
+    
 	//针对单独绑定
     LocalPropertyToDataArribute(sw, di);
     IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);

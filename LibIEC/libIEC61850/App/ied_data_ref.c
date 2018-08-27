@@ -9,7 +9,10 @@
 #include "iec61850_model.h"
 
 IedModel*IED;
+
 LogicalDevice* IED_LD0;
+
+#ifdef IED_DATA_ENABLE_OTHER
 LogicalNode*   IED_LD0_LLN0;
 DataObject*    IED_LD0_LLN0_Mod;
 DataAttribute* IED_LD0_LLN0_Mod_stVal;
@@ -3967,6 +3970,7 @@ DataAttribute* IED_LD0_GOINGGIO16_Alm8_subVal;
 DataAttribute* IED_LD0_GOINGGIO16_Alm8_subQ;
 DataAttribute* IED_LD0_GOINGGIO16_Alm8_subID;
 DataAttribute* IED_LD0_GOINGGIO16_Alm8_dU;
+#endif
 LogicalNode*   IED_LD0_GGIO17;
 DataObject*    IED_LD0_GGIO17_Mod;
 DataAttribute* IED_LD0_GGIO17_Mod_stVal;

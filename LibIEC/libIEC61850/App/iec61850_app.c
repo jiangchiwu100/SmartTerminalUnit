@@ -11,7 +11,7 @@
 #include "extern_interface.h"
 #include "server_model.h"
 
-
+#include "distribution_app.h"
 
 
 static struct rt_thread iec61850_thread;//缁捐法鈻奸幒褍鍩楅崸锟?
@@ -19,7 +19,7 @@ static struct rt_thread iec61850_thread;//缁捐法鈻奸幒褍鍩楅崸锟?
 
 
 ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t rt_iec61850_thread_stack[2048];//
+static rt_uint8_t rt_iec61850_thread_stack[4096];//
 
 
 
@@ -31,9 +31,12 @@ static void iec61850_thread_entry(void* parameter)
 {    
 	rt_kprintf("thread iec61850App start.\r\n");
     rt_thread_delay(1000);
+    DistributionAppInit();
+    rt_thread_delay(1000);
 //    subscriber_example();
 	Iec61850Server();
     //TestGooseBeat();
+   
 }
   
 
@@ -68,17 +71,17 @@ void IEC61850AppInit(void)
 
     rt_thread_init(&iec61850_thread,                 
 		"61850",                       
-                   iec61850_thread_entry,           
-                   RT_NULL,                      
-                   &rt_iec61850_thread_stack,     
+        iec61850_thread_entry,           
+        RT_NULL,                      
+        &rt_iec61850_thread_stack,     
 		sizeof(rt_iec61850_thread_stack), 
 		14,                            
 		20);                          
                                
     rt_thread_startup(&iec61850_thread);  
     
-
-
+    //rt_thread_delay(3000);
+   // DistributionAppInit();
     return;
 
 }
