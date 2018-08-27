@@ -83,8 +83,8 @@ static void DistributionLogicalApp(StationManger* manager)
 					{
 						handle->switchProperty->isChanged = false;
 						handle->TransmitMessage(handle, STATUS_MESSAGE);
-						handle->TransmitMessage(handle, REMOVAL_MESSAGE);
-						handle->TransmitMessage(handle, INSULATE_MESSAGE);
+						//handle->TransmitMessage(handle, REMOVAL_MESSAGE);
+						//handle->TransmitMessage(handle, INSULATE_MESSAGE);
 					}
                 }  
 				else
@@ -244,8 +244,8 @@ void DistributionLogicalAppInit(void)
 		RT_NULL,                      //线程入口函数参数
 		&rt_distribution_thread_stack,     //线程栈起始地址
 		sizeof(rt_distribution_thread_stack), //线程栈大小
-		5,                            //线程的优先级
-		20);                          //线程时间片
+		THREAD_DISTRIBUTION_PRIORITY,                            //线程的优先级
+		THREAD_DISTRIBUTION_TIMESLICE);                          //线程时间片
 
 	rt_thread_startup(&distribution_thread);
 

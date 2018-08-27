@@ -134,11 +134,11 @@ int Iec61850Server(void)
 		(cn++ > 10) ? (cn = -10) : (cn++);
 
 		//统一更新
-		IedServer_lockDataModel(g_ServerModelManager.server );
+		//IedServer_lockDataModel(g_ServerModelManager.server );
 
-        IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
+      //  IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
 		//以此触发
-		IedServer_unlockDataModel(g_ServerModelManager.server );
+		//IedServer_unlockDataModel(g_ServerModelManager.server );
 
 		Thread_sleep(11000);
 

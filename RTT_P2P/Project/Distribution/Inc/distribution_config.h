@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      config
   * @brief:     
@@ -12,7 +12,7 @@
 
   //仿真开关
 #define THREAD_SIMSWITCH_NAME                                              "SIMSW"
-#define THREAD_SIMSWITCH_PRIORITY                                          (3)
+#define THREAD_SIMSWITCH_PRIORITY                                          (2)
 #define THREAD_SIMSWITCH_STACK_SIZE                                        (1024)
 #define THREAD_SIMSWITCH_TIMESLICE                                         (20)
 

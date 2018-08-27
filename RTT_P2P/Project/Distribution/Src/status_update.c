@@ -64,8 +64,10 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 {
     
 	//针对单独绑定
+    IedServer_lockDataModel(g_ServerModelManager.server );
     LocalPropertyToDataArribute(sw, di);
     IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
+    IedServer_unlockDataModel(g_ServerModelManager.server );
 	//perror("Unimplenment\n");
 }
 
