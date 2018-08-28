@@ -8,7 +8,7 @@
 #include "rtthread.h"
 #include "extern_interface.h"
 
-#define EXSIT_VLAN_TAG 1
+//#define EXSIT_VLAN_TAG 1
 
 #if EXSIT_VLAN_TAG
 
@@ -54,27 +54,27 @@ static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len);
 * @return: true--发送成功
 * @update: [2018-08-2][张宇飞][]
 *[2018-08-06][张宇飞][添加邮箱发送，返回值为true]
+*[2018-08-28][张宇飞][适应有无VLAN标记两种情况]
 */
 bool EthernetInput(uint8_t* pData, uint16_t len)
 {
+    uint16_t bufPos = 0;
     if (pData == NULL)
     {
         return false;
     }
 
-    
- #if EXSIT_VLAN_TAG   
+    bufPos = 12;
+
     //检测TPID是否是0x8100
-    if((pData[TPID_INDEX] != TPID_LOW) 
-        || (pData[TPID_INDEX + 1] != TPID_HIGHT))
+    if ((pData[bufPos] == 0x81) && (pData[bufPos + 1] == 0x00)) 
     {
-       return  false;
+        bufPos += 4; /* skip VLAN tag */        
     }
-#endif
     
      //检测协议类型是否是0x88B8
-    if((pData[ETHERNET_TYPE_INDEX] != ETHERNET_TYPE_LOW) 
-        || (pData[ETHERNET_TYPE_INDEX + 1] != ETHERNET_TYPE_HIGHT))
+    if((pData[bufPos++] != ETHERNET_TYPE_LOW) 
+        || (pData[bufPos++] != ETHERNET_TYPE_HIGHT))
     {
        return false;
     }   
