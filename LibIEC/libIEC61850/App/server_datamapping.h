@@ -45,5 +45,5 @@ void SetRemote_AFSI1(bool isoInd, bool isoStr);
 void SetRemote_ASRC1(void);
 
 void BindLocalSwitchStatus(void);
-
+bool ServerModelManager_updateGooseSubscribeData(uint8_t* name);
 #endif 

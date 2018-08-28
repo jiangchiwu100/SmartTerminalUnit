@@ -14,12 +14,11 @@
 #include "distribution_app.h"
 
 
-static struct rt_thread iec61850_thread;//缁捐法鈻奸幒褍鍩楅崸锟?
+static rt_thread_t iec61850_thread;//缁捐法鈻奸幒褍鍩楅崸锟?
 
 
 
-ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t rt_iec61850_thread_stack[4096];//
+
 
 
 
@@ -69,19 +68,23 @@ static void iec61850App(void)
 void IEC61850AppInit(void)
 {
 
-    rt_thread_init(&iec61850_thread,                 
+    iec61850_thread = NULL;
+    iec61850_thread = rt_thread_create(              
 		"61850",                       
         iec61850_thread_entry,           
         RT_NULL,                      
-        &rt_iec61850_thread_stack,     
-		sizeof(rt_iec61850_thread_stack), 
+        1024*10,     		
 		14,                            
 		20);                          
-                               
-    rt_thread_startup(&iec61850_thread);  
+     if (iec61850_thread)
+     {
+         rt_thread_startup(iec61850_thread);  
+     }         
+    else
+    {
+        perror(" rt_thread_startup(iec61850_thread) failure\n");
+    }
     
-    //rt_thread_delay(3000);
-   // DistributionAppInit();
     return;
 
 }

@@ -21,10 +21,15 @@
 
 #include "server_datamapping.h"
 #include "Coordinator.h"
-#include "extern_interface.h"
+
 #include "station_manager.h"
 
+#include "server_model.h"
+#include "extern_interface.h"
+
 extern ServerModelManager g_ServerModelManager;
+
+static char* StringCopy(char* str);
 /**
   * @brief :创建IED Mode从配置文件
   * @param   char* path 文件路径 //sojo//test_goose.cfg
@@ -503,3 +508,114 @@ void BindLocalSwitchStatus(void)
     	perror("BindLocalSwitchStatus. ERROR\n");
     }
 }
+
+/**
+  * @brief :拷贝字符串
+  * @param :char* str
+  * @return:
+  * @update: [2018-08-28][创建]
+  */
+static char* StringCopy(char* str)
+{
+	if (!str)
+	{
+		return NULL;
+	}
+	uint16_t size  = strlen(str);
+	char* copy = (char*)CALLOC(sizeof(char), size + 1);
+	if (!copy)
+	{
+		return NULL;
+	}
+	MEMCPY(copy, str, size);
+	return copy;
+
+}
+
+/**
+  * @brief :更新订阅
+  * @param :uint8_t* name 文件名称
+  * @return:
+  * @update: [2018-08-15][创建]
+  */
+bool ServerModelManager_updateGooseSubscribeData(uint8_t* name)
+{
+	char ref[129] = { 0 };
+    uint32_t result = GooseIniParser(name,  &(g_ServerModelManager.gooseTxMessage),
+    		&(g_ServerModelManager.gooseRxMessage));
+    if (result)
+    {
+    	perror("GooseIniParser failure.\n");
+    	return false;
+    }
+    GooseRxMessage* rx = &(g_ServerModelManager.gooseRxMessage);
+
+    uint16_t* daCount = (uint16_t*)CALLOC(sizeof(uint16_t), rx->numGoCb);
+    if (!daCount)
+    {
+    	perror("ERROR:CALLOC Falire.\n");
+    	return false;
+    }
+    uint16_t sum = 0;
+    for (uint16_t i = 0; i < rx->numGoCb; i++)
+    {
+    	daCount[i] = rx->gocd[i].numDatSetEntriess;
+    	sum += daCount[i];
+    }
+    if ( sum != rx->numInput || sum == 0)
+    {
+    	perror("ERROR:sum != rx->input.\n");
+    	return false;
+    }
+
+    g_ServerModelManager.dsSubscriber =
+    		DatasetSubscriber_create(rx->numGoCb,
+    				daCount);
+    FREE(daCount);
+    if (!g_ServerModelManager.dsSubscriber)
+    {
+    	perror("ERROR:DatasetSubscriber_create Falire.\n");
+    	return false;
+    }
+
+    DatasetSubscriber* dsSubscriber = g_ServerModelManager.dsSubscriber;
+
+    //赋值ID号
+    for (uint16_t i = 0; i < rx->numGoCb; i++)
+	{
+    	dsSubscriber->indicateCollect[i].id = 0xC0A80000 | rx->gocd[i].appid;
+        dsSubscriber->indicateCollect[i].appId = rx->gocd[i].appid;
+        dsSubscriber->indicateCollect[i].goCbRef = StringCopy(rx->gocd[i].gocbRef);
+	}
+
+
+
+
+    for(uint16_t i = 0; i< rx->numInput; i++)
+    {
+    	uint32_t gocbIndex = rx->input[i].gocbIndex;
+    	uint32_t gocbEntryIntex = rx->input[i].gocbEntryIntex;
+    	if ((gocbIndex == 0) ||(gocbIndex > rx->numGoCb)
+    			|| (gocbEntryIntex == 0)
+				|| (gocbEntryIntex > rx->gocd[gocbIndex - 1].numDatSetEntriess))
+    	{
+    		perror("Error:OverLimit. i: %i\n", i);
+    		return false;
+    	}
+        rt_memset(ref, 0, sizeof(ref));
+    	strcat(ref, g_ServerModelManager.model->name);
+    	strcat(ref, rx->input[i].outVarName);
+    	DataAttribute* ds   =
+    	(DataAttribute*) IedModel_getModelNodeByObjectReference(g_ServerModelManager.model, ref);
+    	if (ds == NULL)
+    	{
+    		perror("Error:ds == NULL,i: %i, ref:%s\n", i,ref);
+    		return false;
+    	}
+    	dsSubscriber->indicateCollect[gocbIndex - 1].daCollect[gocbEntryIntex - 1] = ds;
+
+    }
+
+    return true;
+}
+

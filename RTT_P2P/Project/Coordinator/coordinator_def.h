@@ -14,6 +14,8 @@
 #include "iec61850_model.h"
 #include "iec61850_server.h"
 #include "goose_receiver.h"
+#include "GooseParser.h"
+
 typedef struct TagDeviceIndicate
 {
 	uint16_t count;
@@ -42,6 +44,8 @@ typedef struct TagServerModelManager{
 	DatasetSubscriber* dsSubscriber; //数据集订阅信息
 	DeviceIndicate* localPulicDataset;  //本地发布
 	IedServer server; //服务
+    GooseTxMessage gooseTxMessage;  //goose发送信息
+    GooseRxMessage gooseRxMessage;  //goose接收信息
 }ServerModelManager;
 
 typedef enum TagDeviceStatusCode

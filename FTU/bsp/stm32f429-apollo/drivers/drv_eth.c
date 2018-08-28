@@ -508,8 +508,8 @@ error:
 * @param  uint8_t* pData ����ָ��
 * @param  uint16_t count ���ݳ���
 * @retutn [RT_ERROR] error;[ERR_OK] success.
-* @update[2018-08-03][�����][����]
-* @update[2018-08-06][�����][���VLAN��ʶ]
+* @update[2018-08-03][张宇飞][创建]
+* @update[2018-08-06][张宇飞][添加VLAN标记]
 */
 rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
 {
@@ -556,9 +556,8 @@ rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
         ret = ERR_USE;
         goto error;
     }
-    //����һ��VLAN
-    //DmaTxDesc->Status |= ETH_DMATXDESC_VF;
-    
+    //VLAN TAG
+   EthHandle.TxDesc->Status |= ETH_DMATXDESC_VF;
     
     ETH_PRINTF("copy one frame\n");
     
@@ -604,7 +603,7 @@ error:
   * @brief  ethernet device interface, reception packet.
   * @param  [dev] the ETH_HandleTypeDef pointer.
   * @retval return the reception packet.
-*@update[2018-08-96][�����][���ڽ�ȡ�ɹ��ģ�������ת����ͨ֡����]
+*@update[2018-08-06][张宇飞][创建]
   */
 struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
 {

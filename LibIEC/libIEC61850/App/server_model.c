@@ -20,19 +20,22 @@
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
-#include "server_model.h"
+
 
 
 #include "station_manager.h"
 #include "Coordinator.h"
+#include "GooseParser.h"
 
+#define MODEL_CONFIG_PATH  "//sojo//stu.cfg"
+#define GOOSE_CONFIG_PATH  "//sojo//stu-goose.txt"
+//#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
-char* LPHD1_NEIGHBOURCOUNT_N = "LPHD1.NeighbourCountN.stVal";
-char* LPHD1_NEIGHBOURCOUNT_M = "LPHD1.NeighbourCountM.stVal";
 
 extern void UpdateLocalPublicRef(ServerModelManager* manager);
-#define MODEL_CONFIG_PATH  "//sojo//stu.cfg"
-//#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
+
+
+void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscriber* daSb);
 
 
 /**
@@ -46,25 +49,10 @@ ServerModelManager g_ServerModelManager;
 
 
 
-extern  char Ref1[][24];
+
 void GetNeighbourCount(void)
 {
-	DataAttribute* da = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, LPHD1_NEIGHBOURCOUNT_N);
-	uint16_t countN = MmsValue_toInt32(da->mmsValue);
-	 da = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, LPHD1_NEIGHBOURCOUNT_M);
-	uint16_t countM = MmsValue_toInt32(da->mmsValue);
-	
-	
-//	NeighborCollect* nc =   NeighborCollect_create(3, 24);
 
-//	for (uint8_t i = 0; i < 6; i++)
-//	{
-//		for (uint8_t k = 0; k < 24; k++)
-//		{
-//			nc->indicateCollect[i].daCollect[k] = (DataAttribute*)ModelNode_getChild((ModelNode*)IED_LD0, Ref1[k]);
-//		}
-//		
-//	}
 
 
 }
@@ -87,10 +75,14 @@ int Iec61850Server(void)
         printf("CreateIedModeFromConfig is null\n");
         return -1;
     }
-	GooseReceiver receiver;
+
     LogicalDeviceDataRefInit( g_ServerModelManager.model);
-	receiver = GooseReceiver_create();
-	//GooseSubscriberInstance(receiver);
+    g_ServerModelManager.receiver = GooseReceiver_create();
+	if (!g_ServerModelManager.receiver)
+	{
+		perror("GooseReceiver_create failre\n");
+		return  -1;
+	}
 
 	g_ServerModelManager.server = IedServer_create(g_ServerModelManager.model);
 
@@ -102,13 +94,24 @@ int Iec61850Server(void)
 		return -1;
 	}
 
-	
-
-	DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
+	//绑定本地开关
+	BindLocalSwitchStatus();
+	//获取订阅数据集
+	bool result = ServerModelManager_updateGooseSubscribeData(GOOSE_CONFIG_PATH);
+	if(result)
+	{
+		GooseSubscriberInstanceStart_remote(g_ServerModelManager.receiver,
+				g_ServerModelManager.dsSubscriber);
+	}
+	else
+	{
+		printf("ServerModelManager_updateGooseSubscribeData! failure.\n");
+	}
+	//DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(g_ServerModelManager.server );
-    BindLocalSwitchStatus();
+
 
 	//GetNeighbourCount();
 	int32_t cn = 0;
@@ -195,9 +198,11 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscrib
 	GooseSubscriber subscriber;
 	for (uint8_t i = 0; i < daSb->count; i++)
 	{
-		subscriber = GooseSubscriber_create(daSb->indicateCollect[i].goCbRef, NULL);
+		subscriber = GooseSubscriber_create(daSb->indicateCollect[i].goCbRef, NULL);        
 		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i].appId);
 		GooseSubscriber_setListener(subscriber, gooseListenerRemote, (void*)(&(daSb->indicateCollect[i])));
+        GooseReceiver_addSubscriber(receiver, subscriber);
+        printf("goCbRef:%s, appId, id:0x%x.\n", daSb->indicateCollect[i].goCbRef, daSb->indicateCollect[i].appId);
 	}
 
 	GooseReceiver_start(receiver);
