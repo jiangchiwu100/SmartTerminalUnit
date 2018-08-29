@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      extern_mutal.c
 * @brief:	  用于通信外部交互
@@ -16,6 +16,8 @@
 
 #include "miscellaneous.h"
 #include "database.h"
+
+
 /**************************************************
 *函数名： ExecuteFunctioncode()
 *功能：  执行功能代码
@@ -96,7 +98,8 @@ void ExecuteFunctioncode(FrameRtu* pRtu, SimulationStationServer* server)
                     bool state = StationMessageSave(manger.pWorkPoint);
                     if (state)
                     {
-                        rt_kprintf("update sucess! and restart.......\n");
+                        System_getConfigFile((uint8_t)(manger.pWorkPoint->id));
+                        rt_kprintf("update sucess! and restart.......\r\n\r\n");
                         SystemReset();
 
                     }

@@ -12,6 +12,9 @@
 #include "distribution.h"
 #include "distribution_config.h"
 #include "distribution_app.h"
+#include "common_data.h"
+#include "stm32f429xx.h"
+#include "station.h"
 
 /*
 FRAM区域规划
@@ -35,7 +38,8 @@ FRAM区域规划
 #define SAVE_FLAG_TAG2  0x5A
 
 
-
+static bool CheckIp(uint8_t ip);
+static bool ConfigNetMessage(StationMessage* pMessage);
 static bool FramWriteAndReadCheck(PointUint8* pPacket);
 /**
 * @brief :配置值保存保存
@@ -387,3 +391,158 @@ bool StationMessageRead(StationManger* manger)
 }
 
 
+/**
+* @brief :站点信息读取
+* @param : void (*ConfigDeal)(StationMessage* pMessage) 配置处理信息
+* @return: bool
+* @update: [2018-08-29][张宇飞][创建]
+*/
+bool StationMessageConfigRead(bool (*ConfigDeal)(StationMessage* pMessage))
+{
+    PointUint8 packet;
+
+    packet.len = 512;
+    uint8_t data[512];
+    packet.pData = data;
+    if (packet.pData == NULL)
+    {
+        perror("CALLOC Failure\n");
+        return false;
+    }
+
+    bool state = FramRead(packet.pData, &packet.len);
+    if ((!state) || (packet.len == 0) )
+    {
+       perror("Read Failure.\n");
+       return false;
+    }
+    StationMessage message = StationMessage_init_zero;
+	//反序列化生成拓扑信息
+	ErrorCode error = PacketDecodeStationMessage_ALL(&message, packet.pData + 1, packet.len - 1);
+
+
+	if (error != ERROR_OK_NULL)
+	{
+		perror("PacketDecodeStationMessage_ALL ERROR : 0x%X\n", error);
+		return false;
+	}
+    else
+    {
+    	return ConfigDeal(&message);
+       
+    }
+
+
+
+}
+/**
+* @brief :检测ip是否符合要求，需要位于[1,253]
+* @param : uint8_t ip
+* @return: bool
+* @update: [2018-08-29][张宇飞][创建]
+*/
+static bool CheckIp(uint8_t ip)
+{
+	return (ip >= 1) && (ip <= 253);
+}
+
+/**
+* @brief :配置网络信息的默认值
+* @param : StationMessage* pMessage
+* @return: bool
+* @update: [2018-08-29][张宇飞][创建]
+*/
+static bool ConfigNetMessage(StationMessage* pMessage)
+{
+
+	
+	if (!pMessage)
+	{
+		perror("Error:!pMessage\n");
+		return false;
+	}
+
+	g_EthDP83848.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
+	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
+	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node.id, 1) + 1;
+	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node.id, 0);
+	for (uint8_t i = 0; i < 4; i++)
+	{
+		if(!CheckIp(g_EthDP83848.ip[i]))
+		{
+			perror("Error:g_EthDP83848.ip, ip:0x%x\n", g_EthDP83848.ip[i]);
+			return false;
+		}
+	}
+	g_EthW5500.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
+	g_EthW5500.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
+	g_EthW5500.ip[2] =  GET_N_BYTE( pMessage->node.id, 1);
+	g_EthW5500.ip[3] =  GET_N_BYTE( pMessage->node.id, 0);
+
+
+	g_EthDP83848.mac[0] = 0x01;
+	g_EthDP83848.mac[1] = 0x80;
+	g_EthDP83848.mac[2] = 0xC2;
+	g_EthDP83848.mac[3] = *(rt_uint8_t*)(UID_BASE + 4); //驱动内另有设置
+	g_EthDP83848.mac[4] = *(rt_uint8_t*)(UID_BASE + 2);
+	g_EthDP83848.mac[5] = *(rt_uint8_t*)(UID_BASE + 0);
+
+	g_EthW5500.mac[0] = 0x00;
+	g_EthW5500.mac[1] = 0x80;
+	g_EthW5500.mac[2] = 0xE1;
+	g_EthW5500.mac[3] = *(rt_uint8_t*)(UID_BASE + 0);
+	g_EthW5500.mac[4] = *(rt_uint8_t*)(UID_BASE + 2);
+	g_EthW5500.mac[5] = *(rt_uint8_t*)(UID_BASE + 4);
+
+	//相同
+	g_EthDP83848.netmask[0] = 255;
+	g_EthDP83848.netmask[1] = 255;
+	g_EthDP83848.netmask[2] = 0;
+	g_EthDP83848.netmask[3] = 0;
+	g_EthDP83848.gateway[0] = 192;
+	g_EthDP83848.gateway[1] = 168;
+	g_EthDP83848.gateway[2] = 11;
+	g_EthDP83848.gateway[3] = 254;
+
+
+	g_EthDP83848.dns[0] = 114;
+	g_EthDP83848.dns[1] = 114;
+	g_EthDP83848.dns[2] = 114;
+	g_EthDP83848.dns[3] = 114;
+	g_EthDP83848.remoteip[0] = 192;
+	g_EthDP83848.remoteip[1] = 168;
+	g_EthDP83848.remoteip[2] = 10;
+	g_EthDP83848.remoteip[3] = 111;
+	g_EthDP83848.dhcpstatus = 0;
+
+	g_EthW5500.netmask[0] = 255;
+	g_EthW5500.netmask[1] = 255;
+	g_EthW5500.netmask[2] = 0;
+	g_EthW5500.netmask[3] = 0;
+	g_EthW5500.gateway[0] = 192;
+	g_EthW5500.gateway[1] = 168;
+	g_EthW5500.gateway[2] = 10;
+	g_EthW5500.gateway[3] = 254;
+	g_EthW5500.dns[0] = 114;
+	g_EthW5500.dns[1] = 114;
+	g_EthW5500.dns[2] = 114;
+	g_EthW5500.dns[3] = 114;
+
+	g_EthW5500.remoteip[0] = 192;
+	g_EthW5500.remoteip[1] = 168;
+	g_EthW5500.remoteip[2] = 10;
+	g_EthW5500.remoteip[3] = 111;
+	g_EthW5500.dhcpstatus = 0;
+	return true;
+}
+
+/**
+* @brief :读取然后，配置网络信息的默认值
+* @param : StationMessage* pMessage
+* @return: bool
+* @update: [2018-08-29][张宇飞][创建]
+*/
+bool ReadAndConfigNetMessage(void)
+{	
+	return StationMessageConfigRead(ConfigNetMessage);	
+}

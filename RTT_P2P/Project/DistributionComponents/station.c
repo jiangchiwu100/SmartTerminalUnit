@@ -44,7 +44,7 @@ static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdes
 	const FaultDealHandle* const psrc);
 static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology);
-static ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len);
+
 /**
 * @brief :区域ID单独设置
 * @param ：
@@ -586,7 +586,7 @@ ErrorCode  TransmitEncodeStationMessage_All(StationPoint* point, uint16_t destAd
 * @param ：uint16_t len 长度
 * @update: [2018-07-25][张宇飞][]
 */
-static ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len)
+ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len)
 {
 
 	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_OK_NULL, 0);

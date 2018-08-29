@@ -26,9 +26,8 @@
 #include "station_manager.h"
 #include "Coordinator.h"
 #include "GooseParser.h"
+#include "miscellaneous.h"
 
-#define MODEL_CONFIG_PATH  "//sojo//stu.cfg"
-#define GOOSE_CONFIG_PATH  "//sojo//stu-goose.txt"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
 
@@ -67,9 +66,20 @@ void GetNeighbourCount(void)
 int Iec61850Server(void)
 {
     int tcpPort = 102;
-
-
-    g_ServerModelManager.model = CreateIedModeFromConfig( MODEL_CONFIG_PATH);
+    uint8_t id;
+          
+    if (g_StationManger.pWorkPoint)
+    {
+        id = (uint8_t)(g_StationManger.pWorkPoint->id);
+        System_getConfigFile(id);            
+    }
+    else
+    {
+         perror("g_StationManger.pWorkPoint isNull\n");
+         return -1;
+    }
+    
+    g_ServerModelManager.model = CreateIedModeFromConfig( (char*)System_getConfigFullName(id));
     if (!g_ServerModelManager.model)
     {
         printf("CreateIedModeFromConfig is null\n");
@@ -97,7 +107,7 @@ int Iec61850Server(void)
 	//绑定本地开关
 	BindLocalSwitchStatus();
 	//获取订阅数据集
-	bool result = ServerModelManager_updateGooseSubscribeData(GOOSE_CONFIG_PATH);
+	bool result = ServerModelManager_updateGooseSubscribeData(System_getGooseConfigFullName(id));
 	if(result)
 	{
 		GooseSubscriberInstanceStart_remote(g_ServerModelManager.receiver,

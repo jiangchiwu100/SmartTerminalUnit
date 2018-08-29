@@ -11,11 +11,23 @@
 #define __MISCELLANEOUS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
-void SystemReset(void);
+
+extern void SystemReset(void);
+
+
 
 extern void StopWatchInit(void);
 extern void StopWatchStart(void);
 extern uint32_t StopWatchStop(void);
+
+extern uint8_t* System_getGooseConfigName(uint8_t id);
+extern uint8_t* System_getConfigName(uint8_t id);
+
+extern uint8_t* System_getGooseConfigFullName(uint8_t id);
+extern uint8_t* System_getConfigFullName(uint8_t id);
+
+extern bool System_getConfigFile(uint8_t id);
 #endif
 

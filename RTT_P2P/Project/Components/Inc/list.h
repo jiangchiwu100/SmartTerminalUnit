@@ -1,4 +1,4 @@
-﻿/*
+/*
 ** ------------------------------- Copyright (c) -------------------------------                                     
 **
 **                           http://www.sojoline.com
@@ -40,7 +40,7 @@ typedef struct ListElement
 } ListElment;  
   
 /*Define a structure for linked lists.*/  
-typedef struct List_  
+typedef struct ListDouble_  
 {  
     int size;  
     int (*match)(const void *key1,const void *key2);  

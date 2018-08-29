@@ -13,7 +13,7 @@
 #include "distribution_def.h"
 #include "common_def.h"
 #include <stdint.h>
-
+#include "station.pb.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -25,6 +25,7 @@ extern ErrorCode TransmitEncodeStationMessage_All(StationPoint* point, uint16_t 
 extern ErrorCode ParseNanopb(StationPoint*, uint16_t sourceAddress, uint8_t* pdata, uint8_t len);
 extern ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointUint8* packet, uint16_t addLen, uint16_t offset);
 extern void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger);
+extern ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data, uint16_t len);
 #ifdef	__cplusplus
 }
 #endif

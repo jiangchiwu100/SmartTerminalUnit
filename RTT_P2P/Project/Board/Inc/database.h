@@ -1,6 +1,6 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
-  * @file:      databse.c
+  * @file:      databse.h
   * @brief:     
   * @version:   V0.0.1 
   * @author:    Zhang Yufei
@@ -15,10 +15,13 @@
 
 #include "distribution_def.h"
 
+
 bool TopologyMessageSave(const TopologyMessage* topology);
 bool TopologyMessageRead(StationManger* manger);
 
 bool StationMessageSave(const StationPoint* const point);
 bool StationMessageRead(StationManger* manger);
+
+bool ReadAndConfigNetMessage(void);
 #endif
 

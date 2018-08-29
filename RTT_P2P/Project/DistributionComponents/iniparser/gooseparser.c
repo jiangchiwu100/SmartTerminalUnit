@@ -68,6 +68,11 @@ uint32_t GooseIniParser(uint8_t* argv, GooseTxMessage* gooseTxMessage, GooseRxMe
     GooseMessageInit(gooseTxMessage, gooseRxMessage);
 
     ini = iniparser_load((char*)iniName);
+    if (!ini)
+    {
+        rt_kprintf("GooseMessageInit failure\r\n");
+        return 1;
+    }
     IniToStruct(ini, gooseTxMessage, gooseRxMessage);
     iniparser_freedict(ini);
 

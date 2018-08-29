@@ -834,6 +834,7 @@ dictionary * iniparser_load(const char * ininame)
         }
         
         if ((line[len] != '\n') && eof) {
+            printf(line);
             iniparser_error_callback(
               "iniparser: input line too long in %s (%d)\n",
               ininame,

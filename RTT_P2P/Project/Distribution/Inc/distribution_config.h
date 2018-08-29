@@ -25,7 +25,7 @@
 //UDPserver
 #define THREAD_UDPSERVER_NAME                                              "udpser"
 #define THREAD_UDPSERVER_PRIORITY                                          (5)
-#define THREAD_UDPSERVER_STACK_SIZE                                        (2048)
+#define THREAD_UDPSERVER_STACK_SIZE                                        (1024*3)
 #define THREAD_UDPSERVER_TIMESLICE                                         (20)
 
 //路由通信

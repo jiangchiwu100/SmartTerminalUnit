@@ -26,7 +26,7 @@
 #include "common_config.h"
 #include "drv_wdg.h"
 #include "distributed_interface.h"
-
+#include <stdbool.h>
 /* PUBLIC VARIABLES ---------------------------------------------------------*/
 uint16_t                            g_ThreadRunSta;
 uint16_t                            g_AddrCount;
@@ -445,7 +445,7 @@ uint8_t DBWriteValue(uint8_t *pData, struct CommonInfo *pInfo)
         for (i = 0; i < pInfo->num; i++)
         {
             memcpy(&g_ValueParaPresetDB.property[i + g_ValueParaOperateInfo.num], data, sizeof(ValueParameterStr)); // 记录定值信息
-            memcpy(&g_ValueParaPresetDB.value[g_ValueParaOperateInfo.len], &data[sizeof(ValueParameterStr)], data[3]); // 记录定值        
+            memcpy(&g_ValueParaPresetDB.value[g_ValueParaOperateInfo.len], &data[sizeof(ValueParameterStr)], data[3]); // 记录定值
             g_ValueParaOperateInfo.len += data[3]/sizeof(float);
             memcpy(&data, &data[sizeof(ValueParameterStr) + data[3]], 256);
 
@@ -640,7 +640,7 @@ void CalibrationFactorCal(uint8_t num)
             complate = 0;
             g_ValueParaOperateInfo.calibratFlag = 0;
             ParameterCheck();
-            /* 固化到FRAM */            
+            /* 固化到FRAM */
             rt_multi_common_data_save_value_to_fram(DB_CALI);
             
             memset(&g_ValueParaPresetDB, 0, sizeof(g_ValueParaPresetDB));
@@ -767,7 +767,7 @@ rt_uint8_t DBWriteSOE(uint16_t addr, rt_uint8_t state)
                     }
                 }
                 
-                if((Property>>NEWPROPERTY_COS)&NEWPROPERTY_JUDG)//上送COS    
+                if((Property>>NEWPROPERTY_COS)&NEWPROPERTY_JUDG)//上送COS
                 {
                     g_COSDB[g_COSDBIn].addr = newaddr;
                     g_COSDB[g_COSDBIn].value = value;
@@ -1059,7 +1059,7 @@ static void DBRevert(uint16_t addr)
 
     DBWriteCO(addr, ON);
     
-    DBWriteSOE(g_TelesignalAddr.batteryFaultAlarm, OFF); // 电池故障复归    
+    DBWriteSOE(g_TelesignalAddr.batteryFaultAlarm, OFF); // 电池故障复归
 }
 
 /**
@@ -1324,7 +1324,7 @@ rt_uint16_t rt_multi_common_data_fram_record_write(uint8_t type, uint8_t *pBuf, 
             rt_device_write(device_fram, ADDR_FRAM_GRID, pBuf, len);	
             break;
                 
-        case CURRENT_SN: // 当前定值区号	
+        case CURRENT_SN: // 当前定值区号
             rt_device_write(device_fram, ADDR_FRAM_CURRENT_SN, pBuf, len);            						
             break;	
         
@@ -1561,7 +1561,7 @@ static void rt_common_data_save_value_default_to_fram(void)
                 rt_multi_common_data_save_value_to_fram(i);
             }
 
-            rt_multi_common_data_configure_default(); //配置参数写入默认值     
+            rt_multi_common_data_configure_default(); //配置参数写入默认值
             
             memset((uint8_t *)GridStructureSet,0,GRIDSTRUCTUERSETSIZE);
 
@@ -1670,7 +1670,7 @@ void rt_multi_common_data_read_config_from_fram(void)
         }
     } 
     
-    /* 读取遥信 */    
+    /* 读取遥信 */
 	rt_multi_common_data_fram_record_read(TELESIGNAL, (uint8_t *)&g_TelesignalDB);
     
 	for (j = 0; j < DI_CS_NUM; j++)
@@ -1779,9 +1779,16 @@ void rt_multi_common_data_read_config_from_fram(void)
   * @param : none
   * @return: none
   * @updata: [2017-12-07][Lexun][Make the code cleanup]
+  *[2018-8-29][张宇飞][添加读取配置ReadAndConfigNetMessage]
   */
 void rt_multi_common_data_para_init(void)
-{
+{	
+    extern bool ReadAndConfigNetMessage(void);
+	bool state = ReadAndConfigNetMessage();
+	if (state)
+	{
+		return;
+	}
 //    g_EthDP83848 = (struct lwip_dev)RT_ETH1_CONFIG_DEFAULT;
 //    g_EthW5500 = (struct lwip_dev)RT_ETH2_CONFIG_DEFAULT;
 	
@@ -1857,6 +1864,7 @@ void rt_multi_common_data_para_init(void)
     g_EthW5500.remoteip[2] = 60;
     g_EthW5500.remoteip[3] = 115;
     g_EthW5500.dhcpstatus = 0;
+
 }
 
 /**
@@ -1922,7 +1930,7 @@ void rt_multi_common_data_config(void)
         }
     }	
     
-    //遥信配置  
+    //遥信配置
     for(i=0,temp1=0,g_NewMaxNumTelesignal=0;i<g_ConfigurationSetDB->YXSetNum;i++)//取消最后一行空行//新点表总数
     {
         if(g_ConfigurationSetDB->YXSet[temp1]>>NEWONEYX_NUM)

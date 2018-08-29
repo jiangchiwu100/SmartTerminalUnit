@@ -847,11 +847,11 @@ void file_operate_Format(void)
 //    if(dfs_mkfs("elm","W25Q256FV") != -1) 
     if (dfs_mkfs("elm", RT_SPI_FLASH_NAME) != -1) 
     {
-        FILE_PRINTF("spi flash mk to /spi !\n");
+        rt_kprintf("spi flash mk to /spi !\n");
     }
     else
     {
-        FILE_PRINTF("spi flash mk to /spi failed!\n");
+        rt_kprintf("spi flash mk to /spi failed!\n");
     }
     
 //    dfs_mount("W25Q256FV", "/sojo", "elm", 0, 0);
@@ -1470,6 +1470,8 @@ void file_operate_Init(void)
     
     g_CommunicatFlag[COM_FILE] |= COMMUNICATLOCKJSON;
 }
+
+
 
 /* END OF FILE ---------------------------------------------------------------*/
 

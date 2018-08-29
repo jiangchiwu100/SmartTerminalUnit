@@ -397,13 +397,13 @@ static void rt_ftuidle_thread_entry(void *param)
 {   
 	static uint8_t s_run_state = 0;
 
-    file_operate_Init();
+    file_operate_Init();//转移到原始初始化
     
     for (;;)
     {      
 		g_ThreadRunSta |= THREAD_RUN_IDLE;
 		
-        file_operate();  
+       // file_operate();  
 
         if (s_run_state == 0)
         {   
