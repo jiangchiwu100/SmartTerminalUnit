@@ -13,16 +13,18 @@
 #include "log.h"
 #include "distribution_config.h"
 #include "coordinator.h"
-
-#include "extern_interface.h"
-
-
+#include "station_manager.h"  
 #include "ied_data_ref.h"
 #include "server_model.h"
 #include "status_update.h"
+#include "extern_interface.h"
 
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
-static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di);
+
+
+void  Station_updateFaultStatus(SwitchProperty* switchProperty, StationPoint* point);
+void  Station_updateRemovalStatus(SwitchProperty* find, StationTopology* station);
+void  Station_updateInsulateStatus(SwitchProperty* find, StationTopology* station);
 /**
 * @brief : 通过goose订阅更新订阅
 * @param : SwitchProperty* sw
@@ -43,7 +45,10 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 	ErrorCode code = FindSwitchNodeByID(&(pPoint->topology.globalSwitchList), di->id, &sw);
 	if(code == ERROR_OK_NULL)
 	{
-		DataArributeToLocalProperty(sw, di);
+		if (pPoint->isAllowUpdate)
+		{
+			DataArributeToLocalProperty(sw, di);
+		}
 	}
 	else
 	{
@@ -64,8 +69,8 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 {
     
 	//针对单独绑定
-    IedServer_lockDataModel(g_ServerModelManager.server );
     LocalPropertyToDataArribute(sw, di);
+    IedServer_lockDataModel(g_ServerModelManager.server );   
     IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);
     IedServer_unlockDataModel(g_ServerModelManager.server );
 	//perror("Unimplenment\n");
@@ -78,9 +83,12 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 * @param : DeviceIndicate* di
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
+*[2018-08-30][张宇飞][添加更新]
 */
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 {
+
+
 	if (!sw || !di)
 	{
 		perror("!sw || !di\n");
@@ -125,18 +133,22 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	{
 		sw->insulateType = RESULT_FAILURE;
 	}
+    StationTopology* station = &(g_StationManger.pWorkPoint->topology);
+    Station_updateFaultStatus(sw, g_StationManger.pWorkPoint);
+    Station_updateRemovalStatus(sw, station);
+    Station_updateInsulateStatus(sw, station);
 }
 
 
 
 /**
-* @brief : 由数据集信息更新本属性信息
+* @brief : 本地属性信息到数据集
 * @param : SwitchProperty* sw
 * @param : DeviceIndicate* di
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 */
-static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di)
+void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate* di)
 {
 	if (!sw || !di)
 	{
@@ -184,6 +196,7 @@ static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceI
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, false);
 	}
 
+  
 }
 
 
@@ -199,26 +212,20 @@ static void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceI
 *		    [2018-07-28][张宇飞][添加更新标识]
 *[2018-07-30][张宇飞][添加联络开关判别闭锁]
 *[2018-08-23][张宇飞][修改适应直接数据更新，取消开关列表检测， 根据数据属性信息进行计算]
+*[2018-08-30][张宇飞][修改形参switchProperty]
 */
-void  Station_updateFaultStatus(uint32_t id, StationPoint* point)
+void  Station_updateFaultStatus(SwitchProperty* switchProperty, StationPoint* point)
 {
-    SwitchProperty* switchProperty;
+    
     ErrorCode result;
     DistributionStation* distribution;
-    ListDouble* list = &(point->topology.globalSwitchList);
+   
     if ( point == NULL)
     {
-        perror("data == NULL  || point == NULL!.\n");
+        perror("switchProperty == NULL  || point == NULL!.\n");
         return;
     }
-
-	result = FindSwitchNodeByID(list, id, &switchProperty);
-
-	if (result != ERROR_OK_NULL)
-	{
-		perror("Unfind id\n");
-		return;
-	}
+	
 
 	distribution = switchProperty->distributionArea;
 	if (distribution != NULL)
@@ -245,28 +252,25 @@ void  Station_updateFaultStatus(uint32_t id, StationPoint* point)
 *[2018-07-10][张宇飞][适应多个节点]
 *[2018-07-16][张宇飞][改邻居列表为全局列表，修改故障标记]
 *[2018-08-23][张宇飞][适应goose，修改为更新移除信息状态]
+*[2018-08-30][张宇飞][修改形参find,修正赋值错误]
 */
-void  Station_updateRemovalStatus(uint32_t id, StationTopology* station)
+void  Station_updateRemovalStatus(SwitchProperty* find, StationTopology* station)
 {
-	ResultType type;
+	ResultType type = find->removalType;
 	ErrorCode error;
-	SwitchProperty* find;
 	if ( station == NULL)
 	{
 		LogAddException(ERROR_OVER_LIMIT, 0);
 		perror("station == NULL");
 	}
 
-	error = FindSwitchNodeByID(&(station->globalSwitchList), id, &find);
-	if (error == ERROR_OK_NULL)
-	{
-		if(find->distributionArea != NULL)
-		{
-			find->distributionArea->SignRemovalMessage(find, type);
-		}
+    if(find->distributionArea != NULL)
+    {
+        find->distributionArea->SignRemovalMessage(find, type);
+    }
 
-		//(find->distributionArea != NULL) ? (find->distributionArea->SignRemovalMessage(find, type)) : (find );
-	}
+    //(find->distributionArea != NULL) ? (find->distributionArea->SignRemovalMessage(find, type)) : (find );
+	
 }
 /**
 * @brief : 接收隔离信息，只考虑单个隔离信息信息
@@ -275,8 +279,9 @@ void  Station_updateRemovalStatus(uint32_t id, StationTopology* station)
 * @update: [2018-07-07][张宇飞][创建]
 *[2018-07-12][张宇飞][搜索列表从邻居列表改为全局列表]
 *[2018-08-23][张宇飞][修改为更新移除信息状态]
+*[2018-08-30][张宇飞][修改形参find]
 */
-void  Station_updateInsulateStatus(uint32_t id, StationTopology* station)
+void  Station_updateInsulateStatus(SwitchProperty* find, StationTopology* station)
 {
 	if (station == NULL)
 	{
@@ -284,15 +289,12 @@ void  Station_updateInsulateStatus(uint32_t id, StationTopology* station)
 		perror("data == NULL || len != 6 || server == NULL");
 	}
 
-	SwitchProperty* find;
-	ErrorCode error = FindSwitchNodeByID(&(station->globalSwitchList), id, &find);
-	if (error == ERROR_OK_NULL)
-	{
-        if(find->distributionArea != NULL)
-        {
-            find->distributionArea->SignInsulateMessage(find);
-        }
+	
+    if(find->distributionArea != NULL)
+    {
+        find->distributionArea->SignInsulateMessage(find);
+    }
 		//(find->distributionArea != NULL) ? (find->distributionArea->SignInsulateMessage(find)) : (find);
-	}
+	
 }
 

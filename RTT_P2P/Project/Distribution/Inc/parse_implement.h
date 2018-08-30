@@ -43,8 +43,7 @@ extern ErrorCode MakeInsulateMessage(uint32_t id, ResultType result, PointUint8*
 extern ErrorCode MakeSingleReplyTopologyMessage(TopologyMessage* topology, PointUint8* packet);
 extern ErrorCode SendLogMessage(uint16_t source, uint16_t dest);
 extern void  ManagerAddStation(uint8_t data[], uint8_t len, StationManger* manger);
-extern ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty,
-		DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress);
+
 extern void  StationSendStatusMessage(StationPoint* station);
 extern void  StationUpdateStatusMessage(uint8_t data[], uint8_t len, StationPoint* point);
 extern void  StationUpdateLoopStatusMessage(uint8_t data[], uint8_t len, StationPoint* point);

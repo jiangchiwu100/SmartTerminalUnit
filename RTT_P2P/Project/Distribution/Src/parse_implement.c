@@ -991,7 +991,9 @@ void  StationOperateSwitch(uint8_t data[], uint8_t len, SimulationStationServer*
         id = COMBINE_UINT32(id4, id3, id2, id1);
         operate = (SwitchControlOperate)data[index++];
         station = FindSimulationStationById(list, id);
+        rt_enter_critical();
         SimulationSwitchControlOperate(station,  operate);
+        rt_exit_critical();
     }
 }
 
@@ -1047,71 +1049,71 @@ void StationSetConnectPath(uint8_t data[], uint8_t len, StationTopology* topolog
 * [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
 *[2018-07-31][张宇飞][添加循环状态ONLINE_STATUS]
 */
-ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
-{
-    uint8_t result = 0;
-    PointUint8 packet;
-    CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
-    CHECK_POINT_RETURN(pTransferNode, NULL, ERROR_NULL_PTR);
+//ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
+//{
+//    uint8_t result = 0;
+//    PointUint8 packet;
+//    CHECK_POINT_RETURN(switchProperty, NULL, ERROR_NULL_PTR);
+//    CHECK_POINT_RETURN(pTransferNode, NULL, ERROR_NULL_PTR);
 
-    switch (code)
-	{
-	case LOOP_STATUS:
-    {
-        result = MakeSingleLoopStatusMessage(switchProperty->id, switchProperty->fault.state,
-            switchProperty->state,
-            switchProperty->operateType, switchProperty->overTimeType,
-            &packet);
-        break;
-    }
+//    switch (code)
+//	{
+//	case LOOP_STATUS:
+//    {
+//        result = MakeSingleLoopStatusMessage(switchProperty->id, switchProperty->fault.state,
+//            switchProperty->state,
+//            switchProperty->operateType, switchProperty->overTimeType,
+//            &packet);
+//        break;
+//    }
 
-    case STATUS_MESSAGE:
-    {
-        result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,
-            switchProperty->state,
-            switchProperty->operateType, switchProperty->overTimeType,
-            &packet);
+//    case STATUS_MESSAGE:
+//    {
+//        result = MakeSingleStatusMessage(switchProperty->id, switchProperty->fault.state,
+//            switchProperty->state,
+//            switchProperty->operateType, switchProperty->overTimeType,
+//            &packet);
 
-        break;
-    }
-    case REMOVAL_MESSAGE:
-    {
-        result = MakeRemovalMessage(switchProperty, switchProperty->removalType, &packet);
-        break;
-    }
-	case INSULATE_MESSAGE:
-	{
-		result = MakeInsulateMessage(switchProperty->id, switchProperty->insulateType, &packet);
-		break;
-	}
+//        break;
+//    }
+//    case REMOVAL_MESSAGE:
+//    {
+//        result = MakeRemovalMessage(switchProperty, switchProperty->removalType, &packet);
+//        break;
+//    }
+//	case INSULATE_MESSAGE:
+//	{
+//		result = MakeInsulateMessage(switchProperty->id, switchProperty->insulateType, &packet);
+//		break;
+//	}
 
-	case ONLINE_STATUS:
-	{
-		OnlineStatus status = ONLINE_NULL;
-		if (switchProperty->onlineStamp.isValid)
-		{
-			status = ONLINE_ON;
-		}
-		else
-		{
-			status = ONLINE_OFF;
-		}
+//	case ONLINE_STATUS:
+//	{
+//		OnlineStatus status = ONLINE_NULL;
+//		if (switchProperty->onlineStamp.isValid)
+//		{
+//			status = ONLINE_ON;
+//		}
+//		else
+//		{
+//			status = ONLINE_OFF;
+//		}
 
-		result = MakeSimpleMessage(ONLINE_STATUS, switchProperty->id, (uint8_t)status, &packet);
-		break;
-	}
+//		result = MakeSimpleMessage(ONLINE_STATUS, switchProperty->id, (uint8_t)status, &packet);
+//		break;
+//	}
 
-    default:
-        return ERROR_UNKONOW;
-    }
+//    default:
+//        return ERROR_UNKONOW;
+//    }
 
-    if (result)
-    {
-        return (ErrorCode)result;
-    }
+//    if (result)
+//    {
+//        return (ErrorCode)result;
+//    }
 
-    MakePacketMessage(&packet, destAddress, GET_UINT16(pTransferNode->id));
-    result = pTransferNode->Send(pTransferNode, &packet);
+//    MakePacketMessage(&packet, destAddress, GET_UINT16(pTransferNode->id));
+//    result = pTransferNode->Send(pTransferNode, &packet);
 
-    return (ErrorCode)result;
-}
+//    return (ErrorCode)result;
+//}

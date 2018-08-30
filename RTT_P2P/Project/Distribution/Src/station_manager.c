@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      logical_simulation.c
   * @brief:     仿真处理
@@ -158,8 +158,7 @@ uint8_t  StationMangerInit(StationManger* manger)
 {
     uint16_t result = 0;   
     //初始化路由管理器
-    MEMSET(manger, 0, sizeof(StationManger));
-	
+    MEMSET(manger, 0, sizeof(StationManger));	
     result = SimulationStationServerInit(&(manger->simulationServer));
     if (result)
     {
@@ -360,6 +359,7 @@ StationPoint* FindStationPointById(const  ListDouble* list, uint32_t id)
 * [2018-06-16[张宇飞][增加形参 StationPoint** pstation]
 * [2018-06-19[张宇飞][增加形参 const TopologyMessage*  topologyMessage]
 *[2018-07-19[张宇飞][修改nodefifo]
+*[2018-08-30[张宇飞][增加station->isAllowUpdate = true]
 */
 ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topologyMessage, StationPoint** pstation)
 {
@@ -376,7 +376,8 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     station = (StationPoint*)CALLOC(1, sizeof(StationPoint));
     CHECK_POINT_RETURN(station, NULL, ERROR_MALLOC);    
    
-    station->id = id;	
+    station->id = id;
+    station->isAllowUpdate = true;
 	RouterDatagram_NewTransferNode(id, 100, &(station->transferNode));
 	ProtocolAnylastDatagramInit(&(station->anylast), &(station->transferNode), id);
 

@@ -16,7 +16,7 @@
 
 #include "hal_filesystem.h"
 #include "iec61850_config_file_parser.h"
-//#include "extern_interface.h"
+
 #include "ied_data_ref.h"
 
 #include "server_datamapping.h"
@@ -27,7 +27,8 @@
 #include "Coordinator.h"
 #include "GooseParser.h"
 #include "miscellaneous.h"
-
+#include "extern_interface.h"
+#include "status_update.h"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
 
@@ -119,9 +120,14 @@ int Iec61850Server(void)
 	}
 	//DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
+    //首先进行绑定更新
+    LocalPropertyToDataArribute(g_StationManger.pWorkPoint->topology.localSwitch, 
+    g_StationManger.pWorkPoint->topology.localSwitch->pDeviceIndicate);
+  
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(g_ServerModelManager.server );
-
+    
+    
 
 	//GetNeighbourCount();
 	int32_t cn = 0;
@@ -179,14 +185,15 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 	{
 		return;
 	}
-	printf("GOOSE event:\n");
-	printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
-		GooseSubscriber_getSqNum(subscriber));
-	printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
+//    return;
+//	printf("GOOSE event:\n");
+//	printf("  stNum: %u sqNum: %u\n", GooseSubscriber_getStNum(subscriber),
+//		GooseSubscriber_getSqNum(subscriber));
+//	printf("  timeToLive: %u\n", GooseSubscriber_getTimeAllowedToLive(subscriber));
 
-	uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
+//	uint64_t timestamp = GooseSubscriber_getTimestamp(subscriber);
 
-	printf("  timestamp: %u.%u\n", (uint32_t)(timestamp / 1000), (uint32_t)(timestamp % 1000));
+//	printf("  timestamp: %u.%u\n", (uint32_t)(timestamp / 1000), (uint32_t)(timestamp % 1000));
 
 	MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
 

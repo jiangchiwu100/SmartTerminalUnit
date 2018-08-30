@@ -375,12 +375,12 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
     //输出状态变化
     if (pswitch->fault.state != station->faultState)
     {
-        rt_kprintf("ID: %X, FAULT: %X， TICK:%d.\n", station->id, station->faultState, rt_tick_get());  
+        //rt_kprintf("ID: %X, FAULT: %X， TICK:%d.\n", station->id, station->faultState, rt_tick_get());  
         pswitch->isChanged = true;
     }
     if (pswitch->state != station->switchState)
     {
-        rt_kprintf("ID: %X, SwitchState: %X. TICK:%d\n ", station->id, station->switchState, rt_tick_get());
+        //rt_kprintf("ID: %X, SwitchState: %X. TICK:%d\n ", station->id, station->switchState, rt_tick_get());
         pswitch->isChanged = true;
     }
     
@@ -444,14 +444,20 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
         StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
         if (point != NULL)
         {
+            DatagramTransferNode* pTransferNode = &(point->transferNode);
+            //仅在此处修改更新标志
+            point->isAllowUpdate = false;
             point->removalHandle.Reset(&(point->removalHandle));
-
+            TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);           
+            point->isAllowUpdate = true;
 			//发送复归后的信息
-			DatagramTransferNode* pTransferNode = &(point->transferNode);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
-			TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
+			
+			
+			//TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
+			//TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
             PrintIDTipsTick(station->id, "CONTROL_REMOVAL_RESET");
+            
+            
             
         }
         break;

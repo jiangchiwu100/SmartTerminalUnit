@@ -30,7 +30,7 @@ static bool IsExitFaultMessage(SwitchProperty* switchProperty);
  * @param  : SwitchProperty* left 
  * @param  ：SwitchProperty* right
  * @param  ：uint8_t flag
- * @return: 0-正常，非空--未找到或异常 
+ * @return: 0-正常，非空--未找到或异常
  * @update: [2018-05-26][张宇飞][]
  *[2018-07-0][张宇飞][重构]
  */
@@ -52,10 +52,10 @@ ErrorCode FindSwitchNodeByID(const ListDouble* listNeighboorSwitch, uint32_t id,
 }
 /**
  * @brief : 根据ID，查找是否存在该节点
- * @param  : ListDouble* listNeighboorSwitch 拓扑列表 
+ * @param  : ListDouble* listNeighboorSwitch 拓扑列表
  * @param  ：uint32_t id 要查找的ID
  * @param  ：TopologyMessage** find 拓扑信息节点
- * @return: 0-正常，非空--未找到或异常 
+ * @return: 0-正常，非空--未找到或异常
  * @update: [2018-05-26][张宇飞][]
  *[2018-07-10][张宇飞][出现几次异常，怀疑括号优先级问题]
  *[2018-07-17][张宇飞][修改错误GET_TOPOLOGY_ELEMENT 错为GET_SWITCH_ELEMENT]
@@ -229,7 +229,7 @@ ErrorCode GetPowerDistributionArea(TopologyMessage* local, ListDouble* listNeigh
 }
 
 /**
- * @brief :  销毁配电区域链表，释放占用内存 
+ * @brief :  销毁配电区域链表，释放占用内存
  * @param : ListDouble* areaList 数组指针
            注意没有单独分配动态分配空间。
  * @param :  len 数组长度
@@ -288,7 +288,7 @@ ErrorCode GetNeighboorSwitch(ListDouble* neighbourSwitchList,  TopologyMessage* 
 * @brief : 更新配电区域故障状态
 * @param  :SwitchProperty* switchProperty 开关
 * @return: ErrorCode
-* @update: [2018-06-22][张宇飞][适应一个到两个配电区域]          
+* @update: [2018-06-22][张宇飞][适应一个到两个配电区域]
 */
 ErrorCode UpdatePowerAreaFaultState(SwitchProperty* switchProperty)
 {
@@ -374,7 +374,7 @@ static ErrorCode SignExitFaultMessage(SwitchProperty* switchProperty)
             (switchProperty->fault.state == FAULT_YES))
         {            
               area->isExitFaultMessage = true;
-              switchProperty->isGather[i] = true; //标记收集与否   
+              switchProperty->isGather[i] = true; //标记收集与否
               distributionArea->switchRef->isGather[i] = true;
 			 
         } 
@@ -413,6 +413,7 @@ ErrorCode SignRemovalMessage(SwitchProperty* switchProperty, ResultType reult)
 * @param  :SwitchProperty* switchProperty 开关属性
 * @return:
 * @update: [2018-07-07][张宇飞][创建]
+*[2018-08-30][张宇飞][对于配电区域不存在信息则取消标记]
 */
 static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 {
@@ -420,7 +421,8 @@ static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 	DistributionStation* distributionArea = switchProperty->distributionArea;
 	CHECK_POINT_RETURN(distributionArea, NULL, ERROR_NULL_PTR);
 	DistributionPowerArea* area = distributionArea->powerArea;
-	//清空状态位
+	SwitchProperty* sw;
+    bool isExitedFailure = false;
 	for (uint8_t i = 0; i < distributionArea->areaCount; i++, area++)
 	{
 		if (switchProperty->isExitArea[i])
@@ -430,7 +432,27 @@ static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 			if (area->insulateType == RESULT_FAILURE)
 			{
 				distributionArea->isExitedInsulateFailure = true;
-			}
+			}            
+		}
+		
+	}
+    //清除隔离消失的信息
+    for (uint8_t i = 0; i < distributionArea->areaCount; i++, area++)
+	{
+		if (switchProperty->isExitArea[i])
+		{
+			isExitedFailure = false;
+            for(uint8_t k = 0; k < area->switchNum; k++)
+            {
+               // as/as/此处有bug
+            	sw = area->areaSwitch[k];
+                if (sw && (sw->insulateType == RESULT_FAILURE))
+            	{
+            		isExitedFailure = true;
+            	}
+            }
+            area->insulateType = isExitedFailure;
+
 		}
 		
 	}

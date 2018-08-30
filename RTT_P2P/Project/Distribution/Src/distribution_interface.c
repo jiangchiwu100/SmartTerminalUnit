@@ -81,7 +81,7 @@ bool SystemIsOverTime(uint32_t startTime, uint32_t limitTime)
 * [2018-07-28][张宇飞][添加循环状态LOOP_STATUS]
 *[2018-07-31][张宇飞][添加循环状态ONLINE_STATUS]
 */
-static ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
+ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty, DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress)
 {
     uint8_t result = 0;
     PointUint8 packet;

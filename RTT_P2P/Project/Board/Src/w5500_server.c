@@ -16,7 +16,7 @@
 #include "distribution_config.h"
 #include "distribution_app.h"
 
-
+#include "extern_interface.h"
 uint8_t SocketNum = 0; //使用的W5500 Socket号
 uint8_t SocketMaintanceNum = 1; //使用的维护 Socket号
 
@@ -100,7 +100,7 @@ static void W5500_SetDefaultNetInfo( wiz_NetInfo* pNetinfo)
 
     pNetinfo->sn[0] = 255;
     pNetinfo->sn[1] = 255;
-    pNetinfo->sn[2] = 255;
+    pNetinfo->sn[2] = 0;
     pNetinfo->sn[3] = 0;
     pNetinfo->gw[0] = 0;
     pNetinfo->gw[1] = 0;

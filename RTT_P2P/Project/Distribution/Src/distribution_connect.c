@@ -372,6 +372,7 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
     {
         return ERROR_OK_NULL;
     }
+  //  return ERROR_OK_NULL;
     //若已经是联络开关,检测是否仍然满足条件
     if (topology->connect.isConnect)
     {

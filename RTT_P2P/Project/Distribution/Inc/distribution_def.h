@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     分布式相关的公共定义，避免循环引用
@@ -457,6 +457,7 @@ typedef struct TagStationPoint
 	ProtocolAnylastDatagram  anylast;
 
 	void* server61850; //61850对应服务
+    bool isAllowUpdate;
 }StationPoint;
 
 /**
@@ -482,6 +483,7 @@ typedef struct TagStationManger
 	SimulationStation* pWorkSimulation; //工作模拟站点
     bool firstRun; //首次运行
     bool isMaintanceRun; //维护正在运行
+   
 }StationManger;
 
 #define GetDeviceIndicate(handle) ((DeviceIndicate*)(handle->switchProperty->pDeviceIndicate))

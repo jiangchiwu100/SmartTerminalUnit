@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      distribution_interface.h
   * @brief:     故障处理，故障判据，故障隔离
@@ -22,4 +22,7 @@ extern uint8_t RemovalHandleUpdateSwitchProperty(FaultDealHandle* handle, Switch
 
 extern ErrorCode TransmitTransferMessageExtern(DatagramTransferNode* pTransferNode, TransferCode code, uint32_t objectID, uint16_t destAddress);
 extern bool FaultRemovalReset(FaultDealHandle* handle);
+
+extern ErrorCode TransmitMessageExtern(const SwitchProperty* const switchProperty,
+		DatagramTransferNode* pTransferNode, FuncionCode code, uint16_t destAddress);
 #endif
