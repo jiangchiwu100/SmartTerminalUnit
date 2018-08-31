@@ -500,11 +500,12 @@ parseAllDataUnknownValue(GooseSubscriber self, uint8_t* buffer, int allDataLengt
 * @return: true--继续下面处理，false--不再进行处理 
 * @update: [2018-08-03][张宇飞][创建]
 */
+#include "extern_interface.h"
 static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNum, uint32_t sqNum ,
 		uint32_t timeAllowedToLive)
 {
 
-    return true;
+    //return true;
 	//序列号错误设置为无效状态
 	 if (matchingSubscriber->stNum == stNum) {
 		if (matchingSubscriber->sqNum >= sqNum) {
@@ -532,7 +533,7 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
              
 //             printf("AppID: 0x%x, jump, st:%d , sq: %d!\n",  
 //                            matchingSubscriber->appId,  stNum,  sqNum);
-             StopWatchStop();
+            
                
 			 return false;
 		}

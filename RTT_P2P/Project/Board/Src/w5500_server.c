@@ -32,7 +32,9 @@ static void MaintaceServer(void);
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_udpserver_thread_stack[THREAD_UDPSERVER_STACK_SIZE];//线程栈
+ALIGN(RT_ALIGN_SIZE)
 static uint8_t UdpReciveBuffer[1024];
+ALIGN(RT_ALIGN_SIZE)
 static uint8_t UdpSendBuffer[1024];
 static uint8_t DefautIp[4];
 static uint16_t LocalPort; 

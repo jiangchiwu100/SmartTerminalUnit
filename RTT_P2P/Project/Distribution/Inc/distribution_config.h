@@ -31,7 +31,7 @@
 
 //UDPserver
 #define THREAD_UDPSERVER_NAME                                              "udpser"
-#define THREAD_UDPSERVER_PRIORITY                                          (6)
+#define THREAD_UDPSERVER_PRIORITY                                          (3)
 #define THREAD_UDPSERVER_STACK_SIZE                                        (1024*3)
 #define THREAD_UDPSERVER_TIMESLICE                                         (20)
 
