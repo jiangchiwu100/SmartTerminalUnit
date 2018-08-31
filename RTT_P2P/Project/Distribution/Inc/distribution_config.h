@@ -16,15 +16,22 @@
 #define THREAD_SIMSWITCH_STACK_SIZE                                        (1024)
 #define THREAD_SIMSWITCH_TIMESLICE                                         (20)
 
+
 //分布式保护逻辑
 #define THREAD_DISTRIBUTION_NAME                                              "distpro"
-#define THREAD_DISTRIBUTION_PRIORITY                                          (4)
+#define THREAD_DISTRIBUTION_PRIORITY                                          (5)
 #define THREAD_DISTRIBUTION_STACK_SIZE                                        (1024)
 #define THREAD_DISTRIBUTION_TIMESLICE                                         (20)
 
+  //goose接收
+#define THREAD_GOOSERE_NAME                                                "goRe"
+#define THREAD_GOOSERE_PRIORITY                                          (4)
+#define THREAD_GOOSERE_STACK_SIZE                                        (2048)
+#define THREAD_GOOSERE_TIMESLICE                                         (20)
+
 //UDPserver
 #define THREAD_UDPSERVER_NAME                                              "udpser"
-#define THREAD_UDPSERVER_PRIORITY                                          (5)
+#define THREAD_UDPSERVER_PRIORITY                                          (6)
 #define THREAD_UDPSERVER_STACK_SIZE                                        (1024*3)
 #define THREAD_UDPSERVER_TIMESLICE                                         (20)
 

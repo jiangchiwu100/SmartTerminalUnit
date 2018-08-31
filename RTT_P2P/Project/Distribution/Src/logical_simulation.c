@@ -89,7 +89,7 @@ static inline void SimulationCloseOperate(SimulationStation* station)
 
 
 /**
-  * @brief :开关状态模拟，只考虑，合闸储能，分闸动作，分闸储能，合闸动作 4个状态，逐步完善  
+  * @brief :开关状态模拟，只考虑，合闸储能，分闸动作，分闸储能，合闸动作 4个状态，逐步完善
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
@@ -197,7 +197,7 @@ uint8_t SimulationStationInit(ListDouble* stationList)
     
 }
 /**
-  * @brief :所有节点状态更新 
+  * @brief :所有节点状态更新
   * @param  ListDouble* stationList 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
@@ -245,8 +245,8 @@ SimulationStation* FindSimulationStationById(const  ListDouble* list, uint32_t i
 }
 /**
   * @brief :添加模拟节点
-  * @param ： ListDouble* stationList 模拟的站点 
-  * @param ： id 
+  * @param ： ListDouble* stationList 模拟的站点
+  * @param ： id
   * @param ： SwitchProperty* switchProperty 开关属性
   * @return: ErrorCode
   * @update: [2018-06-09][张宇飞][创建]
@@ -306,7 +306,7 @@ static ErrorCode  AddSimulationStation(ListDouble* stationList, uint32_t id, Swi
  * @brief  : 删除节点释放内存,供列表删除使用
  * @param  : 
  * @param  ：
- * @return: 0-正常，非空--未找到或异常 
+ * @return: 0-正常，非空--未找到或异常
  * @update: [2018-06-08][张宇飞][]
  */
 static void DestorySimulationStation(void* node)
@@ -317,7 +317,7 @@ static void DestorySimulationStation(void* node)
  * @brief  : 删除节点释放内存
  * @param  : 
  * @param  ：
- * @return: 0-正常，非空--未找到或异常 
+ * @return: 0-正常，非空--未找到或异常
  * @update: [2018-06-08][张宇飞][]
  */
 static uint8_t  RemoveSimulationStation(SimulationStation** node)
@@ -375,7 +375,7 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
     //输出状态变化
     if (pswitch->fault.state != station->faultState)
     {
-        //rt_kprintf("ID: %X, FAULT: %X， TICK:%d.\n", station->id, station->faultState, rt_tick_get());  
+        //rt_kprintf("ID: %X, FAULT: %X， TICK:%d.\n", station->id, station->faultState, rt_tick_get());
         pswitch->isChanged = true;
     }
     if (pswitch->state != station->switchState)
@@ -491,10 +491,40 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 	}
 	case  CONTROL_RESET:
 	{
-        PrintIDTipsTick(station->id, "reset。。。。.\n");	
+        PrintIDTipsTick(station->id, "reset。。。。.\n");
 		
 		rt_thread_delay(600);
 		SystemReset();
+		break;
+	}
+	case CONTROL_DSITRIBUTION_INTO:
+	{
+
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		if (point)
+		{
+			point->topology.isRunDistribution = true;
+			PrintIDTipsTick(station->id, "distribution into.\n");
+		}
+		else
+		{
+			PrintIDTipsTick(station->id, "point is null.\n");
+		}
+		break;
+	}
+	case CONTROL_DSITRIBUTION_EXIT:
+	{
+
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		if (point)
+		{
+			point->topology.isRunDistribution = false;
+			PrintIDTipsTick(station->id, "distribution exit.\n");
+		}
+		else
+		{
+			PrintIDTipsTick(station->id, "point is null.\n");
+		}
 		break;
 	}
     default:
@@ -503,3 +533,5 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 
     return ERROR_OK_NULL;
 }
+
+

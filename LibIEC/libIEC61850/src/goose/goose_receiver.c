@@ -876,17 +876,17 @@ gooseReceiverLoop(void* threadParameter)
     self->stopped = true;
 }
 #endif
-
+#include "distribution_config.h"
 // start GOOSE receiver in a separate thread
 void
 GooseReceiver_start(GooseReceiver self)
 {
 #if (CONFIG_MMS_THREADLESS_STACK == 0)
     struct TagThreadConfig config;
-    config.priority = 4;
-    config.name = "goRe";
-    config.stack_size = 2028;
-    config.tick = 20;
+    config.priority = THREAD_GOOSERE_PRIORITY;
+    config.name = THREAD_GOOSERE_NAME;
+    config.stack_size = THREAD_GOOSERE_STACK_SIZE;
+    config.tick = THREAD_GOOSERE_TIMESLICE;
     self->thread = Thread_create((ThreadExecutionFunction) gooseReceiverLoop, (void*) self, false, &config);
 
     if (self->thread != NULL) {

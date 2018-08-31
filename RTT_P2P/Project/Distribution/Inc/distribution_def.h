@@ -23,7 +23,7 @@
 */
 typedef struct TagFaultInformation
 {
-    FaultState state; //是否有故障 
+    FaultState state; //是否有故障
     bool isFaultEdgeConnected;           //故障区域边缘，且为联络开关路径上
 }FaultInformation;
 /**
@@ -48,7 +48,7 @@ typedef struct TagSwitchProperty
     SwitchType      type;                           //开关类型
     SwitchState     state;                          // 开关状态
     uint8_t         neighbourNum;                   //邻接数量
-    uint32_t*       neighbourCollect;               //开关邻接关系，反应相邻STU的ID地址      
+    uint32_t*       neighbourCollect;               //开关邻接关系，反应相邻STU的ID地址
     float           capacity;                       // 开关容量
                                                     //void*           other;                        //其它属性备用
     uint8_t         tempflag;                       //临时使用
@@ -59,7 +59,7 @@ typedef struct TagSwitchProperty
 	ResultType      insulateType;						//隔离结果
     FaultInformation  fault;                        //故障信息
     struct TagDistributionStation* distributionArea;     // 指向所属的配电区域
-    uint8_t          indexArea[2];                         //配电区域内索引 与 配电区域内相对应   
+    uint8_t          indexArea[2];                         //配电区域内索引 与 配电区域内相对应
     bool             isExitArea[2];                          //对应配电区域是否存在
     bool             isGather[2];                          //是否收集，如果为true则判定对应配电区域
 
@@ -90,7 +90,7 @@ typedef struct TagTopologyMessage
     uint8_t          idArray[6]; //拓扑片ID号数组表示形式
     TopologyType     type;  //拓扑片类型
     uint8_t          switchNum; //开关数量
-    SwitchProperty*  switchCollect;//开关集合    
+    SwitchProperty*  switchCollect;//开关集合
 
 }TopologyMessage;
 
@@ -119,7 +119,7 @@ typedef struct TagDistributionPowerArea
     uint32_t upadetedFlag;        //按照 areaSwitch索引置位或者复位，表示更新完毕upadetedFull
     uint8_t  isUpadeted;          //更新完成标志
 
-    bool isFaultArea;            //是否为故障区域 
+    bool isFaultArea;            //是否为故障区域
     bool isExitFaultMessage;        //配电区域内，是否存在故障信息
 
     uint32_t upadetedFull;      //(2^switchNum - 1)
@@ -135,7 +135,7 @@ typedef struct TagDistributionStation
     ListDouble powerAreaList[POWER_AREA_NUM];
     DistributionPowerArea powerArea[POWER_AREA_NUM];  //配电区域相关信息
     uint8_t areaCount;                                 //配电区域个数
-    bool isComplted; //是否已经实现 注意需要维护   
+    bool isComplted; //是否已经实现 注意需要维护
 	bool isGatherCompleted; //是否收集完成
 	bool isGatherCalculateCompleted;//是否收集计算完成
     SwitchProperty* switchRef; //参考开关
@@ -183,7 +183,7 @@ typedef struct TagConnectPath
 {
 	uint32_t id; //id
 	uint32_t remainderCapacity; //剩余容量
-	uint8_t  hopsNumber; //到联络开关的跳数	
+	uint8_t  hopsNumber; //到联络开关的跳数
 	bool isUpdated; //是否更新
 	CheckTimeStamp timeStamp;
 }ConnectPath;
@@ -194,6 +194,7 @@ typedef struct TagConnectPath
 *  开关节点站信息
 * 添加有效监测isValidAll 所有开关列表
 *@update [2018-7-31][张宇飞][增加systemOnlineStamp]
+*@update [2018-8-31][张宇飞][增加isRunDistribution]
 */
 typedef struct TagStationTopology
 {
@@ -204,7 +205,7 @@ typedef struct TagStationTopology
     TopologyMessage*  aimTopology; //目的拓扑
 
     ListDouble globalTopologyList;   //全局拓扑列表
-    ListDouble neighbourSwitchList; //邻居开关列表        
+    ListDouble neighbourSwitchList; //邻居开关列表
     ListDouble globalSwitchList;   //全局开关列表
 	bool isValidAll;//globalSwitchList是否全部有效
 
@@ -232,7 +233,7 @@ typedef struct TagStationTopology
 
     AreaID areaID;// 区域ID合集
 
-
+    bool isRunDistribution;  //是否允许允许分布式保护
 }StationTopology;
 
 
@@ -257,7 +258,7 @@ typedef struct TagDatagramTransferNode
 	RingQueue  sendRing;   //发送
 	uint32_t id;       //ID  
 	ErrorCode (*Write)(RingQueue* ring, PointUint8*); //发送函数
-	ErrorCode (*Send)(struct TagDatagramTransferNode* node, PointUint8*); //发送函数	
+	ErrorCode (*Send)(struct TagDatagramTransferNode* node, PointUint8*); //发送函数
 }DatagramTransferNode;
 /**
 *故障移除判别控制体,字节对齐提高效率
@@ -344,7 +345,7 @@ typedef struct TagFrameRtu
     uint16_t datalen; //数据长度
     uint8_t* pData; //指向数据指针
     uint8_t* pValidData; //指向发指向有效数据部分
-    bool completeFlag; //0-未完成 
+    bool completeFlag; //0-未完成
 } FrameRtu;
 
 /**
@@ -410,7 +411,7 @@ typedef struct TagSimulationStation
     uint8_t isStartClose;   //启动合闸
     uint8_t isStartOpen;    //启动分闸
 
-    uint32_t startTime;    //开始时间    
+    uint32_t startTime;    //开始时间
     uint32_t limitTime; //限制时间
 
 
@@ -451,13 +452,14 @@ typedef struct TagStationPoint
 
     StationTopology topology;  //拓扑
     
-    FaultDealHandle removalHandle; // 故障切除模块       
+    FaultDealHandle removalHandle; // 故障切除模块
     
 	DatagramTransferNode transferNode;//
 	ProtocolAnylastDatagram  anylast;
 
 	void* server61850; //61850对应服务
-    bool isAllowUpdate;
+    bool isAllowUpdate; //是否允许开入更新
+
 }StationPoint;
 
 /**

@@ -2078,12 +2078,12 @@ void EXTI2_IRQHandler(void)
   * @param : None.
   * @return: None.
   */  
-void EXTI3_IRQHandler(void)
-{
-    rt_interrupt_enter();
-    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
-    rt_interrupt_leave();
-}
+//void EXTI3_IRQHandler(void)
+//{
+//    rt_interrupt_enter();
+//    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+//    rt_interrupt_leave();
+//}
 
 /**
   * @brief : the GPIO EXTI4 handler.

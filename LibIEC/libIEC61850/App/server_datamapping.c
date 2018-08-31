@@ -585,7 +585,7 @@ bool ServerModelManager_updateGooseSubscribeData(uint8_t* name)
 	{
     	dsSubscriber->indicateCollect[i].id = 0xC0A80000 | rx->gocd[i].appid;
         dsSubscriber->indicateCollect[i].appId = rx->gocd[i].appid;
-        dsSubscriber->indicateCollect[i].goCbRef = StringCopy(rx->gocd[i].gocbRef);
+        dsSubscriber->indicateCollect[i].goCbRef = (char*)StringCopy(rx->gocd[i].gocbRef);
 	}
 
 

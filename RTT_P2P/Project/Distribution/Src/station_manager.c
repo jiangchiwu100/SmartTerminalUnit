@@ -360,6 +360,7 @@ StationPoint* FindStationPointById(const  ListDouble* list, uint32_t id)
 * [2018-06-19[张宇飞][增加形参 const TopologyMessage*  topologyMessage]
 *[2018-07-19[张宇飞][修改nodefifo]
 *[2018-08-30[张宇飞][增加station->isAllowUpdate = true]
+*[2018-08-31[张宇飞][增加stationTopology->isRunDistribution =  false]
 */
 ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topologyMessage, StationPoint** pstation)
 {
@@ -393,6 +394,7 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     stationTopology->localTopology = topologyMessage;    
     stationTopology->localSwitch = topologyMessage->switchCollect;
 	stationTopology->localSwitch->parent = stationTopology;
+	stationTopology->isRunDistribution = false;
     ListInit(&(stationTopology->connectPath), FREE);
 
 
@@ -410,7 +412,7 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
 /**
 * @brief : 站点服务器增加服务成员 通过拓扑信息
 * @param  ：TopologyMessage*  topologyMessage
-* @param  ： StationManger* manger 
+* @param  ： StationManger* manger
 * @return: ErrorCode
 * @update: [2018-07-25[张宇飞][]
 */

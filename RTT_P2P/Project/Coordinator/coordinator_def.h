@@ -59,9 +59,10 @@ typedef enum TagDeviceStatusCode
   DEVICE_IED_DISTRIBUTION_EXIT = 6,//分布式是否投入
   DEVICE_IED_SWITCH_POS 			= 7,//开关位置
   DEVICE_IED_REMOVE_SUCESS = 8,//切除成功
-  DEVICE_IED_INSULATE_SUCESS = 9,//隔离成功
-  DEVICE_IED_ACTION =      10,//动作
-
+  DEVICE_IED_INSULATE_FAILURE = 9,//隔离失败 
+  DEVICE_IED_INSULATE_SUCESS = 10,//隔离失败
+  DEVICE_IED_ACTION =      11,//动作  
+    
   DEVICE_IED_ALM1 =   16,//是否是告警1
   DEVICE_IED_ALM2=     17,//是否是告警2
   DEVICE_IED_ALM3 =     18,//是否是告警3

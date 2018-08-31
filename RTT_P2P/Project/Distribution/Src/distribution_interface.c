@@ -710,6 +710,7 @@ static bool FaultRemovalReset(FaultDealHandle* handle)
 
 	//联络开关复归 解锁
 	switchProperty->parent->connect.isLock = false;
+	//switchProperty->parent->isRunDistribution = false;//复位禁止，需要重新投入
     return true;
 }
 /**
@@ -733,7 +734,7 @@ uint8_t RemovalHandleUpdateSwitchProperty(FaultDealHandle* handle, SwitchPropert
 */
 ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
 {
-	//是否在线	
+	//是否在线
     CHECK_POINT_RETURN(handle, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->switchProperty, NULL, ERROR_NULL_PTR);    
     CHECK_POINT_RETURN(handle->switchProperty->distributionArea, NULL, ERROR_NULL_PTR);
@@ -743,6 +744,7 @@ ErrorCode RemovalHandleCheckself(FaultDealHandle* handle)
     CHECK_POINT_RETURN(handle->IsTrigger, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->IsGatherCompleted, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(handle->switchProperty->pDeviceIndicate, NULL, ERROR_NULL_PTR);
+    CHECK_EQUAL_RETURN(handle->switchProperty->parent->isRunDistribution , false, ERROR_NULL_PTR);
     //首次检测通过后进行复归操作
     if (!handle->isCheckPass)
     {

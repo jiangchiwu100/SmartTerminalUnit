@@ -7,6 +7,8 @@
   * @date:      2018-07-21 w5500 udp server专用
   * @update:    
   */
+  
+#include "ll_driver.h"  
  #include "stm32f429xx.h" 
 #include "w5500_server.h"
 #include "drv_w5500_socket.h"
@@ -17,6 +19,8 @@
 #include "distribution_app.h"
 
 #include "extern_interface.h"
+
+
 uint8_t SocketNum = 0; //使用的W5500 Socket号
 uint8_t SocketMaintanceNum = 1; //使用的维护 Socket号
 
@@ -35,9 +39,9 @@ static uint16_t LocalPort;
 static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
 static struct rt_mutex udp_mutex;
-
- #define ON_LOCK()   { result = rt_mutex_take(&udp_mutex, RT_WAITING_FOREVER);}
- #define OFF_LOCK()  {if (result  == RT_EOK) {rt_mutex_release(&udp_mutex);}};
+static struct rt_semaphore    w5500_int_sem;
+ #define ON_LOCK()   {     result = rt_mutex_take(&udp_mutex, RT_WAITING_FOREVER); }
+ #define OFF_LOCK()  {     if (result  == RT_EOK) {rt_mutex_release(&udp_mutex);}};
 
 
 
@@ -166,10 +170,38 @@ void EmmedNetInit(void)
         g_StationManger.isMaintanceRun = true;
         rt_kprintf("W5500 start init Sucess!\n");
     } 
+    result = rt_sem_init(&w5500_int_sem, "w5500_int", 0,  RT_IPC_FLAG_FIFO);
+    if (result != RT_EOK)
+    {
+        rt_kprintf("w5500_int sem failure.\r\n");        
+    }
     OFF_LOCK();
    
 }    
 
+// ÖÐ¶ÏÅäÖÃ³ÌÐò
+void NVIC_Configuration(void)
+{
+    LL_EXTI_InitTypeDef EXTI_InitStruct;
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOE);
+    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTE, LL_SYSCFG_EXTI_LINE3);
+    
+    EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_3;
+    EXTI_InitStruct.LineCommand = ENABLE;
+    EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
+    EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_FALLING;
+    LL_EXTI_Init(&EXTI_InitStruct);
+    
+    LL_GPIO_SetPinPull(GPIOE, LL_GPIO_PIN_3, LL_GPIO_PULL_UP);
+    LL_GPIO_SetPinMode(GPIOE, LL_GPIO_PIN_3, LL_GPIO_MODE_INPUT);
+    
+    
+ //   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTE, LL_SYSCFG_EXTI_LINE3);
+    
+  /* EXTI interrupt init*/
+    NVIC_SetPriority(EXTI3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),INT_ETH_PRIO, INT_ETH_PRIO));
+    NVIC_EnableIRQ(EXTI3_IRQn);    
+}
 /**
   * @brief :W5500用于UDP通信
   * @param  void *param
@@ -186,9 +218,9 @@ static void udpserver_thread_entry(void *param)
     rt_err_t result;
    
 
-	
-    //setSIMR(0x01);//
-    //setSn_IMR(SocketNum, Sn_IR_RECV); //
+	NVIC_Configuration(); 
+    setSIMR(0x01);//
+    setSn_IMR(SocketNum, Sn_IR_RECV); //
 	uint8_t get_result =0;
 	
     rt_kprintf("udpserver start!\n");
@@ -202,15 +234,26 @@ static void udpserver_thread_entry(void *param)
         OFF_LOCK();
 		switch (get_result)
 		{
-			case SOCK_UDP:			
+			case SOCK_UDP:		
+                result = rt_sem_take(&w5500_int_sem, 40);
+                if (result == -RT_ETIMEOUT)
+                {
+                    break;
+                }
+                if (result != RT_EOK)
+                {
+                    perror("result = rt_sem_take() , ERROR: %d\n", result);
+                    break;
+                }                
                 do
                 {
+                   
                     ON_LOCK();
                     if(getSn_IR(SocketNum) & Sn_IR_RECV)
 					{
 						setSn_IR(SocketNum, Sn_IR_RECV);// Sn_IR的RECV位置1
 					}
-                   
+                    
                     length = getSn_RX_RSR(SocketNum);
                     OFF_LOCK();
                                         
@@ -247,8 +290,8 @@ static void udpserver_thread_entry(void *param)
 		}
 		
        
-        rt_thread_delay(4);
-        if (cn ++ > 10)
+       // rt_thread_delay(4);
+       // if (cn ++ > 10)
         {
             cn = 0;
             MaintaceServer();
@@ -441,6 +484,20 @@ ErrorCode Udp_SendPacketNode(DatagramTransferNode* node, PointUint8* pPacket)
 	FREE(pPacket->pData);
 	return error;
 }
+
+
+void EXTI3_IRQHandler(void)
+{
+  rt_interrupt_enter();
+  if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_3) != RESET)
+  {
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_3);
+   //Intflag = getSn_IR(0);  
+    rt_sem_release(&w5500_int_sem);
+  }
+  rt_interrupt_leave();
+}
+
 
 /**
 * @brief :UDP任务初始化

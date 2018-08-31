@@ -31,6 +31,7 @@ void  Station_updateInsulateStatus(SwitchProperty* find, StationTopology* statio
 * @param : DeviceIndicate* di
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
+* [2018-08-31][张宇飞][若是在分布式未投入时，禁止更新]
 */
 void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 {
@@ -124,15 +125,27 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 		sw->removalType = RESULT_FAILURE;
 	}
 	//隔离信息
-	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS))
+	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_FAILURE))
 	{
-		sw->insulateType = RESULT_SUCCESS;
+		sw->insulateType = RESULT_FAILURE ;
 
 	}
 	else
 	{
-		sw->insulateType = RESULT_FAILURE;
+		sw->insulateType = RESULT_TYPE_NULL;
 	}
+    if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS))
+    {
+        sw->insulateType = RESULT_SUCCESS ;
+    }
+    else
+    {
+        sw->insulateType = RESULT_TYPE_NULL;
+    }
+        
+    
+    
+    
     StationTopology* station = &(g_StationManger.pWorkPoint->topology);
     Station_updateFaultStatus(sw, g_StationManger.pWorkPoint);
     Station_updateRemovalStatus(sw, station);
@@ -187,7 +200,16 @@ void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_SUCESS, false);
 	}
 	//隔离信息
-	if (sw->insulateType == RESULT_SUCCESS)
+	if (sw->insulateType == RESULT_FAILURE)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_FAILURE, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_FAILURE, false);
+	}
+    
+    if (sw->insulateType == RESULT_SUCCESS)
 	{
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, true);
 	}
@@ -195,7 +217,6 @@ void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate
 	{
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, false);
 	}
-
   
 }
 

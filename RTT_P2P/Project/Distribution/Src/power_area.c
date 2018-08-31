@@ -421,7 +421,7 @@ static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 	DistributionStation* distributionArea = switchProperty->distributionArea;
 	CHECK_POINT_RETURN(distributionArea, NULL, ERROR_NULL_PTR);
 	DistributionPowerArea* area = distributionArea->powerArea;
-	SwitchProperty* sw;
+	
     bool isExitedFailure = false;
 	for (uint8_t i = 0; i < distributionArea->areaCount; i++, area++)
 	{
@@ -437,9 +437,14 @@ static  ErrorCode SignInsulateMessage(SwitchProperty* switchProperty)
 		
 	}
     //清除隔离消失的信息
+    SwitchProperty* sw;
+    SwitchProperty* switchRef = distributionArea->switchRef;
+    distributionArea = switchRef->distributionArea;
+    area = distributionArea->powerArea;
     for (uint8_t i = 0; i < distributionArea->areaCount; i++, area++)
 	{
-		if (switchProperty->isExitArea[i])
+        
+		if (switchRef->isExitArea[i])
 		{
 			isExitedFailure = false;
             for(uint8_t k = 0; k < area->switchNum; k++)

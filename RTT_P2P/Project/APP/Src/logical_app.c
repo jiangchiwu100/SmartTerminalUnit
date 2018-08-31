@@ -103,7 +103,7 @@ static void DistributionLogicalApp(StationManger* manager)
         }
         
     
-        rt_thread_delay(3);
+        rt_thread_delay(1);
     } while (1);
 
 }
