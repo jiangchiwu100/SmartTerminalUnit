@@ -94,7 +94,7 @@ static void SimulationSwitchStationLogicalApp(StationManger* manager)
             UpdateBindSwitchState(station); 
             element = element->next;
         }
-        rt_thread_delay(5);
+        rt_thread_delay(1);
     }while(1);
         
     

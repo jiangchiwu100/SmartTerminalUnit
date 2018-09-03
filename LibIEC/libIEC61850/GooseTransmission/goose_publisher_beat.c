@@ -78,20 +78,20 @@ GooseBeat* GooseBeat_create(char* name, uint32_t min, uint32_t max,
 		perror("rt_calloc\n");
 		return NULL;
 	}
-	pBeat->beat[index++] = min;
-	pBeat->beat[index++] = min;
+	pBeat->beat[index++] = min;// min;
+	pBeat->beat[index++] = min;//min
     time = min << 1;
     if (time > max)
     {
         time = max;
     }
-	pBeat->beat[index++] = time;
+	pBeat->beat[index++] = time;//time
     time = min << 2;
     if (time > max)
     {
         time = max;
     }
-	pBeat->beat[index++] = time;
+	pBeat->beat[index++] = time;//time
     pBeat->beat[index++] = max;		
 	pBeat->count = index;
 	pBeat->next = 0;

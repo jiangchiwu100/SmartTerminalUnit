@@ -1884,6 +1884,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
             </File>
+            <File>
+              <FileName>distribution_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Inc\distribution_config.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5015,6 +5020,11 @@
               <FileName>distribution_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Inc\distribution_config.h</FilePath>
             </File>
           </Files>
         </Group>

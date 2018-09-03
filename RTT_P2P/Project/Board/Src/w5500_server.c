@@ -237,7 +237,7 @@ static void udpserver_thread_entry(void *param)
 		switch (get_result)
 		{
 			case SOCK_UDP:		
-                result = rt_sem_take(&w5500_int_sem, 40);
+                result = rt_sem_take(&w5500_int_sem, 100);
                 if (result == -RT_ETIMEOUT)
                 {
                     break;
@@ -296,7 +296,7 @@ static void udpserver_thread_entry(void *param)
        // if (cn ++ > 10)
         {
             cn = 0;
-            MaintaceServer();
+           // MaintaceServer();
         }
 		
     }

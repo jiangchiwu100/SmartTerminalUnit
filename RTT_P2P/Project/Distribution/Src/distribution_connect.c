@@ -386,7 +386,7 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
         if (state)
         {
 			//周期性发送联络信息
-			error = SendConnectPathCmd(topology->connect.path, SET_PATH_CONNECT, &(point->transferNode));
+		//	error = SendConnectPathCmd(topology->connect.path, SET_PATH_CONNECT, &(point->transferNode));
             return error;
         }   
         else //说明是由联络开关转换到非联络开关
