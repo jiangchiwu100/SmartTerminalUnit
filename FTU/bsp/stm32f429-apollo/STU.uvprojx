@@ -2090,14 +2090,14 @@
               <FilePath>..\..\..\RTT_P2P\Project\APP\Src\mutal_app.c</FilePath>
             </File>
             <File>
-              <FileName>tftp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>H:\CodeResourceLib\RTOS\RT-Thread\rt-thread\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
-            </File>
-            <File>
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\readme.txt</FilePath>
+            </File>
+            <File>
+              <FileName>tftp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5227,14 +5227,14 @@
               <FilePath>..\..\..\RTT_P2P\Project\APP\Src\mutal_app.c</FilePath>
             </File>
             <File>
-              <FileName>tftp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>H:\CodeResourceLib\RTOS\RT-Thread\rt-thread\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
-            </File>
-            <File>
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\readme.txt</FilePath>
+            </File>
+            <File>
+              <FileName>tftp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\net\lwip-1.3.2\apps\tftp.c</FilePath>
             </File>
           </Files>
         </Group>

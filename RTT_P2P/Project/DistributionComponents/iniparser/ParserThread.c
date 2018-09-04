@@ -17,7 +17,7 @@
 #include "rtdef.h"
 #include "gooseparser.h"
 #include "ParserThread.h"
-#include ".\MultiThread\multi_thread.h"
+//#include ".\MultiThread\multi_thread.h"
 
 
 /*--------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ static uint8_t *rt_thread_iniparser_stack;
 #endif /* RT_USING_STATIC_THREAD */
 
 const char* g_GoosePathName = "//sojo//stu-goose.txt";
-extern void list_mem(void);
+//extern void list_mem(void);
 
 
 /**
@@ -50,16 +50,16 @@ static void rt_iniparser_thread_entry(void *param)
     GooseRxMessage gooseRxMessage;
 
 	printf("rt_iniparser_thread_entry start\r\n");
-	list_mem();
+	//list_mem();
 	rt_thread_delay(5000);
 	//for(uint8_t i=0; i<3; i++)
 	{
 		printf("%d:\r\n", 0);
-		list_mem();
+		//list_mem();
 		GooseIniParser((uint8_t*)g_GoosePathName, &gooseTxMessage, &gooseRxMessage);
 		PrintGooseTxRxMessage(&gooseTxMessage, &gooseRxMessage);
 		FreeGooseMessageMem(&gooseTxMessage, &gooseRxMessage);
-		list_mem();
+		//list_mem();
 		printf("\r\n");
 		//rt_thread_delay(2000);
 	}

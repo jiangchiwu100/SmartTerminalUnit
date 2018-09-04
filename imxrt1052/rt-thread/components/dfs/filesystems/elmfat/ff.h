@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 #include <rtthread.h>
-#include "integer.h"	/* Basic integer types */
+#include "ff_integer.h"	/* Basic integer types */
 #include "ffconf.h"	/* FatFs configuration options */
 
 #if _FATFS != _FFCONF

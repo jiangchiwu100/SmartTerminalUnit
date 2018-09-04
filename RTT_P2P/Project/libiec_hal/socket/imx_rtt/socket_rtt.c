@@ -18,6 +18,14 @@
 
 #define INVALID_SOCKET (~0)
 
+
+int  lwip_send_ex(int fd, uint8_t* buf, int size, int s)
+{
+    printf("Uminplent!\n");
+    return 0;
+}
+
+
 struct sSocket {
 	int fd;
 	uint32_t connectTimeout;
@@ -147,7 +155,7 @@ TcpServerSocket_create(const char* address, int port)
     }
     
     int optionReuseAddr = 1;
-	setsockopt(serverSocket->fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optionReuseAddr, sizeof(int));
+	lwip_setsockopt(serverSocket->fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optionReuseAddr, sizeof(int));
     
     serverSocket->server_addr.sin_family = AF_INET;
     serverSocket->server_addr.sin_port = htons(port);

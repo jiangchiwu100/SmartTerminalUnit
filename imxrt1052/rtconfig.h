@@ -71,7 +71,7 @@
 #define DFS_USING_WORKDIR
 #define DFS_FILESYSTEMS_MAX 2
 #define DFS_FILESYSTEM_TYPES_MAX 2
-#define DFS_FD_MAX 4
+#define DFS_FD_MAX 16
 #define RT_USING_DFS_ELMFAT
 
 /* elm-chan's FatFs, Generic FAT Filesystem Module */
@@ -103,9 +103,9 @@
 /* POSIX layer and C standard library */
 
 #define RT_USING_LIBC
-
+#define RT_USING_POSIX
 /* Network stack */
-
+#define RT_USING_DFS_NET
 /* light weight TCP/IP stack */
 
 #define RT_USING_LWIP
@@ -194,7 +194,7 @@
 
 /* sample package */
 
-#define PKG_USING_SAMPLES
+//#define PKG_USING_SAMPLES
 
 /* basic sample select options */
 
@@ -207,10 +207,10 @@
 
 /* network sample options */
 
-#define RT_USING_SAMPLE_TCP_CLIENT
-#define RT_USING_SAMPLE_TCP_SERVER
-#define RT_USING_SAMPLE_UDP_CLIENT
-#define RT_USING_SAMPLE_UDP_SERVER
+//#define RT_USING_SAMPLE_TCP_CLIENT
+//#define RT_USING_SAMPLE_TCP_SERVER
+//#define RT_USING_SAMPLE_UDP_CLIENT
+//#define RT_USING_SAMPLE_UDP_SERVER
 
 /* driver sample options */
 

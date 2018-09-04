@@ -13,20 +13,30 @@
 #define TFTP_ERROR			5	/* error */
 
 rt_uint8_t tftp_buffer[512 + 4];
-/* tftp client */
+
+
+/**
+* @brief :tftp-get
+* @param  :const char* host 主机名
+* @param  :const char* dir 本地目录
+* @param  :const char* filename 远程文件
+* @return: void
+* @update: [2018-08-29][张宇飞]
+[使用RTT自带程序，针对当前配置需要修改3处，1,“%s//%s". 2,lwip_socket, 3,rt_int32_t length]
+*/
 void tftp_get(const char* host, const char* dir, const char* filename)
 {
 	int fd, sock_fd, sock_opt;
 	struct sockaddr_in tftp_addr, from_addr;
-	rt_uint32_t length;
+	rt_int32_t length;
 	socklen_t fromlen;
 
 	/* make local file name */
 	rt_snprintf((char*)tftp_buffer, sizeof(tftp_buffer),
-		"%s/%s", dir, filename);
+		"%s//%s", dir, filename);
 
 	/* open local file for write */
-	fd = open((char*)tftp_buffer, O_RDWR | O_CREAT, 0);
+	fd = open((char*)tftp_buffer, O_RDWR | O_CREAT  , 0);
 	if (fd < 0)
 	{
 		rt_kprintf("can't open local filename\n");
@@ -38,7 +48,7 @@ void tftp_get(const char* host, const char* dir, const char* filename)
     tftp_addr.sin_family = AF_INET;
     tftp_addr.sin_port = htons(TFTP_PORT);
     
-    sock_fd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    sock_fd = lwip_socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if (sock_fd < 0)
 	{
 	    close(fd);
@@ -94,12 +104,12 @@ void tftp_put(const char* host, const char* dir, const char* filename)
 {
 	int fd, sock_fd, sock_opt;
 	struct sockaddr_in tftp_addr, from_addr;
-	rt_uint32_t length, block_number = 0;
+	rt_int32_t length, block_number = 0;
 	socklen_t fromlen;
 
 	/* make local file name */
 	rt_snprintf((char*)tftp_buffer, sizeof(tftp_buffer),
-		"%s/%s", dir, filename);
+		"%s//%s", dir, filename);
 
 	/* open local file for write */
 	fd = open((char*)tftp_buffer, O_RDONLY, 0);
@@ -114,7 +124,7 @@ void tftp_put(const char* host, const char* dir, const char* filename)
     tftp_addr.sin_family = AF_INET;
     tftp_addr.sin_port = htons(TFTP_PORT);
 
-    sock_fd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    sock_fd = lwip_socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if (sock_fd < 0)
 	{
 	    close(fd);

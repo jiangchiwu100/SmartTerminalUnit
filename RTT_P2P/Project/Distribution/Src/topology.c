@@ -441,11 +441,11 @@ ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, ListDouble* to
 void FreeTopologyMemory(TopologyMessage** topology)
 {
    
-    rt_uint32_t total;
-    rt_uint32_t used;
-    rt_uint32_t maxused;
-    rt_memory_info(&total, &used, &maxused);
-    rt_kprintf("FreeTopologyMemory before memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
+    //rt_uint32_t total;
+    //rt_uint32_t used;
+    //rt_uint32_t maxused;
+    //rt_memory_info(&total, &used, &maxused);
+    //rt_kprintf("FreeTopologyMemory before memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
     if (*topology == NULL)
     {
         rt_kprintf("topology is null, cann't relese!\n");
@@ -475,8 +475,8 @@ void FreeTopologyMemory(TopologyMessage** topology)
         FREE(*topology);
         *topology = 0;
     }
-    rt_memory_info(&total, &used, &maxused);    
-    rt_kprintf("FreeTopologyMemory after memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
+    //rt_memory_info(&total, &used, &maxused);    
+    //rt_kprintf("FreeTopologyMemory after memory total: %d, used:%d, maxused: %d\n", total, used, maxused);
 }
 /**
  * @brief : 释放Helper 结构数据

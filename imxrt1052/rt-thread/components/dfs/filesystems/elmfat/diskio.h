@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "integer.h"
+#include "ff_integer.h"
 
 
 /* Status of Disk Functions */
