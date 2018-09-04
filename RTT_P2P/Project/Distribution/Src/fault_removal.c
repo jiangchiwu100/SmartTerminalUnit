@@ -23,6 +23,7 @@
   * @return: 0-正常
   * @update: [2018-06-04][张宇飞][BRIEF]
   *  [2018-07-11][张宇飞][添加切除拒动]
+  *[2018-09-03][张宇飞][取消delaygatger判别，修改t1为最大时间暂设为50ms]
   */
  StateResult RemovalState_Start(FaultDealHandle* handle)
 {
@@ -35,7 +36,7 @@
     
 	handle->state = REMOVAL_START;
         
-	if (handle->IsFault(handle))
+	if (handle->IsFault(handle) || handle->IsTrigger(handle))
 	{	
         handle->isRun = true;
 		//此处可能和后面的冲突
@@ -55,11 +56,11 @@
 		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
 		handle->TransmitMessage(handle, STATUS_MESSAGE);
         PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
-		handle->limitTime = handle->t2; 
+		handle->limitTime = handle->t1;
 		handle->GetNowTime(handle);
         handle->step = 0;
         
-		handle->nextState =  REMOVAL_DELAY_GATHER;
+		handle->nextState =  REMOVAL_GATHER;
 	}
 	//是否为隔离期间拒绝接收故障
 	else if (handle->IsRejectInsulate(handle))
@@ -100,7 +101,7 @@
   * @param  
   * @return: 0-正常
   * @update: [2018-06-05][张宇飞][BRIEF]
-  *  [2018-06-05][张宇飞][首次]
+  *  [2018-09-03][张宇飞][超时作为最大期限处理]
   */
 StateResult RemovalState_Gather(FaultDealHandle* handle)
 {
@@ -116,20 +117,21 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
     //是否超时
 	if (handle->IsOverTime(handle))
 	{       
-        handle->switchProperty->overTimeType = OVER_TIME_GATHER;
-		handle->nextState =  REMOVAL_OVERTIME;
+        //handle->switchProperty->overTimeType = OVER_TIME_GATHER;
+		//handle->nextState =  REMOVAL_OVERTIME;
+		handle->nextState = REMOVAL_TREATMENT;
 	}
-	else
-	{
-		if (handle->IsGatherCompleted(handle))
-		{
-			handle->nextState = REMOVAL_TREATMENT;           
-		}	
-		else
-		{
-			handle->nextState = REMOVAL_GATHER;
-		}		
-	}
+//	else
+//	{
+//		if (handle->IsGatherCompleted(handle))
+//		{
+//			handle->nextState = REMOVAL_TREATMENT;
+//		}
+//		else
+//		{
+//			handle->nextState = REMOVAL_GATHER;
+//		}
+//	}
 	
 		
 	handle->lastState = handle->state;

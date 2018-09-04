@@ -629,7 +629,7 @@ bool RemovalHandleInit(FaultDealHandle* handle, SwitchProperty* switchProperty, 
     handle->startTime = 0;
     handle->limitTime = 0;
     
-    handle->t1 = 300;
+    handle->t1 = 50;
     handle->t2 = 150;
     handle->t3 = 200;
     handle->t4 = 400;
