@@ -76,7 +76,7 @@ typedef struct TagFifoHandle
     FifoInformation fifo;
     uint8_t(*Enqueue)(struct TagFifoHandle *const fifohandle, uint8_t const indata);
     uint8_t(*Dequeue)(struct TagFifoHandle *const fifohandle, uint8_t*  dedata);
-    uint8_t(*Peek)(struct TagFifoHandle *const fifohandle, uint8_t  *peekdata, uint8_t len);
+    uint8_t(*Peek)(struct TagFifoHandle *const fifohandle, uint8_t  *peekdata, uint16_t len);
 } FifoHandle;
 
 

@@ -18,7 +18,7 @@
 
 #define INIPARSER_THREAD_NAME                                          "iniparser"
 #define INIPARSER_THREAD_PRIORITY                                      (25)
-#define INIPARSER_THREAD_STACK_SIZE                                    (1024*10)
+#define INIPARSER_THREAD_STACK_SIZE                                    (1024*20)
 #define INIPARSER_THREAD_TIMESLICE                                     (20)
 
 

@@ -3,7 +3,7 @@
 #include <lwip/sockets.h>
 
 #include <finsh.h>
-
+#include "extern_interface.h"
 #define TFTP_PORT	69
 /* opcode */
 #define TFTP_RRQ			1 	/* read request */

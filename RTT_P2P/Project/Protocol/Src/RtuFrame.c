@@ -38,6 +38,7 @@
   * [2018-06-20][张宇飞][添加广播地址0xFFFF识别接收]
   * [2018-06-21][张宇飞][结构中增加源地址]
   *[2018-07-28][张宇飞][修改广播地址BROADCAST_ADDRESS]
+  *[2018-09-05][张宇飞][修改索引从uint8_t 到uint16_t]
   */
 uint8_t DataProtocolAnylast(ProtocolAnylast* anylast )
 {
@@ -127,7 +128,7 @@ uint8_t DataProtocolAnylast(ProtocolAnylast* anylast )
                             
                             if (crc == ((uint16_t)crcH<<8  | crcL))
                             {
-                                for (uint8_t k = 0; k <  pReciveFrame->datalen + FRAME_END_LEN; k++)
+                                for (uint16_t k = 0; k <  pReciveFrame->datalen + FRAME_END_LEN; k++)
                                 {
                                      handle->Dequeue(handle, &data);
                                 }  

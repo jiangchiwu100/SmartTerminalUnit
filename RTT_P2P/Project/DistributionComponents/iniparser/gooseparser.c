@@ -18,7 +18,7 @@
 
 #include "iniparser.h"
 #include "GooseParser.h"
-
+#include "extern_interface.h"
 /*--------------------------------------------------------------------------*/
 
 /*----------------------------STATIC FUNCTION-------------------------------*/
@@ -169,7 +169,7 @@ void IniToStruct(const dictionary* dict, GooseTxMessage* gooseTxMessage, GooseRx
                     }
                     else if(strcmp(strTrim, "Appid") == 0)
                     {
-                        gooseTxMessage->gocd[numGocb-1].appid = HexToInt(dict->val[i], 4);
+                        gooseTxMessage->gocd[numGocb-1].appid = HexToInt(dict->val[i], strlen(dict->val[i]));
                     }
                     else if(strcmp(strTrim, "MinTime") == 0)
                     {
@@ -247,7 +247,7 @@ void IniToStruct(const dictionary* dict, GooseTxMessage* gooseTxMessage, GooseRx
                     }
                     else if(strcmp(strTrim, "Appid") == 0)
                     {
-                        gooseRxMessage->gocd[numGocb-1].appid = HexToInt(dict->val[i], 4);
+                        gooseRxMessage->gocd[numGocb-1].appid = HexToInt(dict->val[i], strlen(dict->val[i]));
                     }
                     else if(strcmp(strTrim, "GoCBRef") == 0)
                     {
@@ -553,7 +553,7 @@ static void AddrToInt(uint8_t* str, uint8_t* ret)
  * @brief 将16进制的字符串转为int类型的数字
  * @param str 将要转换的字符串
  * @param size 将要转换的字符串的大小
- * @return 转换完成的数
+ * @return 转换完成的数; 0:错误
  * 
  * @example "CD"   ->   0xCD
  **/
@@ -561,11 +561,15 @@ static uint32_t HexToInt(uint8_t* str, uint8_t size)
 {
     uint8_t i = 0;
     uint32_t retVal = 0;            /* 返回值 */
-    uint8_t pStr[5] = {0};
+    uint8_t pStr[32] = {0};
     strncpy(pStr, str, size);
     for(i=0; i<size; i++)
     {
         retVal *= 16;
+        if(retVal > 0xFFFFFFF0)
+        {
+            return 0;
+        }
         if((pStr[i] >= 'A') && (pStr[i] <= 'F'))
         {
             retVal += (pStr[i] - 'A' + 10);

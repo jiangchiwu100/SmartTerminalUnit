@@ -112,7 +112,7 @@
 #define RT_USING_LWIP202
 #define RT_LWIP_ICMP
 #define RT_LWIP_DNS
-#define RT_LWIP_DHCP
+//#define RT_LWIP_DHCP
 #define IP_SOF_BROADCAST 1
 #define IP_SOF_BROADCAST_RECV 1
 

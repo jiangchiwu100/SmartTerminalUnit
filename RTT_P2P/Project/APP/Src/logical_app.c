@@ -117,6 +117,7 @@ static void DistributionLogicalApp(StationManger* manager)
 */
 static void connected_thread_entry(void* parameter)
 {
+    extern void MaintaceServer(void);
 	rt_kprintf("thread connected_thread_entry start.\r\n");
 
 	StationManger* manager = (StationManger*)parameter;
@@ -160,7 +161,7 @@ static void connected_thread_entry(void* parameter)
 
 		}
 		FOR_EARCH_LIST_END();
-
+      //  MaintaceServer();
 		rt_thread_delay(MONITOR_CHECK_TIME);
 	} while (1);
 

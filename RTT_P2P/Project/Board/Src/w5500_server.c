@@ -28,7 +28,7 @@ uint8_t SocketMaintanceNum = 1; //使用的维护 Socket号
 
 static struct rt_thread udpserver_thread;
 
-static void MaintaceServer(void);
+void MaintaceServer(void);
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_udpserver_thread_stack[THREAD_UDPSERVER_STACK_SIZE];//线程栈
@@ -237,7 +237,7 @@ static void udpserver_thread_entry(void *param)
 		switch (get_result)
 		{
 			case SOCK_UDP:		
-                result = rt_sem_take(&w5500_int_sem, 100);
+                result = rt_sem_take(&w5500_int_sem, 200);
                 if (result == -RT_ETIMEOUT)
                 {
                     break;
@@ -296,7 +296,8 @@ static void udpserver_thread_entry(void *param)
        // if (cn ++ > 10)
         {
             cn = 0;
-           // MaintaceServer();
+           //
+            MaintaceServer();
         }
 		
     }
@@ -309,7 +310,7 @@ static void udpserver_thread_entry(void *param)
 * @return: 0--正常
 * @update: [2018-07-23][张宇飞][创建]
 */
-static void MaintaceServer(void)
+ void MaintaceServer(void)
 {    
     extern ProtocolAnylast LocalAnylast;
     uint8_t srcip[4];

@@ -108,8 +108,9 @@ static uint8_t BufferDequeue(FifoHandle *const fifohanlde, uint8_t  *dedata)
  * @param  pMsg    出队信息
  * @return          <code>true</code>   成功检视
  *                  <code>FASLE</code>  失败
+ * @update [2018-09-05][张宇飞][修改形参从uint8_t 到uint16_t]
  */
-static uint8_t BufferPeek(FifoHandle *const fifohanlde, uint8_t  *peekdata, uint8_t len)
+static uint8_t BufferPeek(FifoHandle *const fifohanlde, uint8_t  *peekdata, uint16_t len)
 {
     FifoInformation *pInf =  &fifohanlde->fifo;
 

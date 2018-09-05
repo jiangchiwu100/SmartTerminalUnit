@@ -104,6 +104,10 @@ void ExecuteFunctioncode(FrameRtu* pRtu, SimulationStationServer* server)
 
                     }
                 }
+                else
+                {
+                     rt_kprintf("update failure! manger.pWorkPoint is null\r\n\r\n");
+                }
             }	
             break;
         }
