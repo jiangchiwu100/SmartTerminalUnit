@@ -85,6 +85,7 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
 *[2018-08-30][张宇飞][添加更新]
+*[2018-09-05][张宇飞][添加拒分状态，切除判断]
 */
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 {
@@ -122,8 +123,17 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	}
 	else
 	{
-		sw->removalType = RESULT_FAILURE;
+		if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_REMOVE_FAILURE))
+		{
+			sw->removalType = RESULT_FAILURE;
+
+		}
+		else
+		{
+			sw->removalType = RESULT_TYPE_NULL;
+		}
 	}
+
 	//隔离信息
 	if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_FAILURE))
 	{
@@ -132,18 +142,26 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	}
 	else
 	{
-		sw->insulateType = RESULT_TYPE_NULL;
+		if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS))
+		{
+			sw->insulateType = RESULT_SUCCESS ;
+		}
+		else
+		{
+			sw->insulateType = RESULT_TYPE_NULL;
+		}
 	}
-    if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS))
-    {
-        sw->insulateType = RESULT_SUCCESS ;
-    }
-    else
-    {
-        sw->insulateType = RESULT_TYPE_NULL;
-    }
-        
-    
+
+     //拒动信息
+    if(DeviceIndicate_getBooleanStatus(di, DEVICE_IED_REJECT_ACTION))
+	{
+		sw->operateType = OPERATE_REJECT_OPEN ;
+
+	}
+	else
+	{
+		sw->operateType = OPERATE_NULL;
+	}
     
     
     StationTopology* station = &(g_StationManger.pWorkPoint->topology);
@@ -199,6 +217,14 @@ void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate
 	{
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_SUCESS, false);
 	}
+	if (sw->removalType == RESULT_FAILURE)
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_FAILURE, true);
+	}
+	else
+	{
+		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REMOVE_FAILURE, false);
+	}
 	//隔离信息
 	if (sw->insulateType == RESULT_FAILURE)
 	{
@@ -217,6 +243,15 @@ void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate
 	{
 		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_INSULATE_SUCESS, false);
 	}
+    //拒动信息
+    if (sw->operateType == OPERATE_REJECT_OPEN)
+   	{
+   		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REJECT_ACTION, true);
+   	}
+   	else
+   	{
+   		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REJECT_ACTION, false);
+   	}
   
 }
 
