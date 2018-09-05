@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) TOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      fault_removal.c
   * @brief:     故障移除，此处主要指故障移除
@@ -24,6 +24,7 @@
   * @update: [2018-06-04][张宇飞][BRIEF]
   *  [2018-07-11][张宇飞][添加切除拒动]
   *[2018-09-03][张宇飞][取消delaygatger判别，修改t1为最大时间暂设为50ms]
+  *[2018-09-05][张宇飞][区分触发与直接故障检测]
   */
  StateResult RemovalState_Start(FaultDealHandle* handle)
 {
@@ -46,22 +47,31 @@
 		handle->TransmitMessage(handle, STATUS_MESSAGE);              
         PrintIDTipsTick(switchProperty->id, "Fault TransmitMessage");
 		handle->limitTime = handle->t1; 
+		handle->step = 0;
 		handle->GetNowTime(handle);
-		handle->nextState = REMOVAL_GATHER;        
+		if (handle->IsFault(handle))
+		{
+			handle->nextState = REMOVAL_GATHER;
+		}
+		else
+		{
+			handle->nextState= REMOVAL_DELAY_GATHER;
+		}
+
 	}
-	else if (handle->IsTrigger(handle))
-	{
-		//发送非故障信息
-        handle->isRun = true;
-		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
-		handle->TransmitMessage(handle, STATUS_MESSAGE);
-        PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
-		handle->limitTime = handle->t1;
-		handle->GetNowTime(handle);
-        handle->step = 0;
-        
-		handle->nextState =  REMOVAL_GATHER;
-	}
+//	else if (handle->IsTrigger(handle))
+//	{
+//		//发送非故障信息
+//        handle->isRun = true;
+//		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
+//		handle->TransmitMessage(handle, STATUS_MESSAGE);
+//        PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
+//		handle->limitTime = handle->t1;
+//		handle->GetNowTime(handle);
+//        handle->step = 0;
+//
+//		handle->nextState =  REMOVAL_GATHER;
+//	}
 	//是否为隔离期间拒绝接收故障
 	else if (handle->IsRejectInsulate(handle))
 	{
@@ -102,6 +112,7 @@
   * @return: 0-正常
   * @update: [2018-06-05][张宇飞][BRIEF]
   *  [2018-09-03][张宇飞][超时作为最大期限处理]
+  *  [2018-09-05][张宇飞][对于不存在故障情况，跳转到后备处理]
   */
 StateResult RemovalState_Gather(FaultDealHandle* handle)
 {
@@ -120,6 +131,7 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
         //handle->switchProperty->overTimeType = OVER_TIME_GATHER;
 		//handle->nextState =  REMOVAL_OVERTIME;
 		handle->nextState = REMOVAL_TREATMENT;
+
 	}
 //	else
 //	{
@@ -145,6 +157,7 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
   * @update: [2018-05-25][张宇飞][BRIEF]
   *  [2018-06-04][张宇飞][首次]
   *[2018-07-07][张宇飞][添加进入隔离状态的判别条件]
+  *[2018-09-05][张宇飞][]
   */
 StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 {
@@ -162,44 +175,27 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
             //是否超时
         if (handle->IsOverTime(handle))
         {
-            handle->step =  1;			
-            handle->limitTime =  handle->t1 -  handle->t2;
-            handle->GetNowTime(handle);
-        }
-        else
-        {
-            if (handle->IsFault(handle))
-            {
-                switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
-                //发送故障信息
-                handle->TransmitMessage(handle, STATUS_MESSAGE);
-                PrintIDTipsTick(switchProperty->id, "DelayGather Fault TransmitMessage");
-                uint32_t time = handle->DiffTime(handle->startTime);
-                if (time <= handle->t1)//着重分析时间配合问题。
-                {
-                    handle->limitTime = handle->t1 - time;
-                } 
-                else
-                {
-                    handle->limitTime = 0;
-                }               
-                handle->GetNowTime(handle);
-                handle->nextState = REMOVAL_GATHER;
-            }         
+        	if(handle->IsFault(handle))
+			{
+        		handle->nextState = REMOVAL_TREATMENT;
+			}
+        	else
+        	{
+        		handle->step =  1;
+        	}
+
+            //handle->limitTime =  handle->t1 -  handle->t2;
+            //handle->GetNowTime(handle);
+
         }
         
+
         break;
         }
         case 1:
         {
-           if (handle->IsOverTime(handle))
-           {              
-               switchProperty->overTimeType = OVER_TIME_GATHER;
-               handle->nextState = REMOVAL_OVERTIME;
-           }
-           else
-           {
-                if (handle->IsGatherCompleted(handle))//覆盖问题
+
+                //if (handle->IsGatherCompleted(handle))//覆盖问题
                 {
 					//是故障区域 且是联络开关路径上的开关
 					bool isFaultArea = handle->IsFaultArea(handle);
@@ -219,7 +215,7 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
                         handle->nextState = REMOVAL_EXIT;
                     }                  
                 }	               	
-           }
+           
             
            break;
         }
