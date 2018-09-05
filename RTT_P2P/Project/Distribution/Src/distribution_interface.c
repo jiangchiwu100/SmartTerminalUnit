@@ -478,7 +478,6 @@ static inline bool IsRemovalSuccessInsulateBackup(FaultDealHandle* handle)
 * @param  RemovalHandle* handle 控制句柄
 * @return: true bool
 * @update: [2018-07-08][张宇飞][BRIEF]
-*
 */
 static inline bool IsRemovalSuccessBackup(FaultDealHandle* handle)
 {

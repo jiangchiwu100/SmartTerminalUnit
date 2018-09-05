@@ -274,6 +274,7 @@ void  Station_updateFaultStatus(SwitchProperty* switchProperty, StationPoint* po
 *[2018-07-16][张宇飞][改邻居列表为全局列表，修改故障标记]
 *[2018-08-23][张宇飞][适应goose，修改为更新移除信息状态]
 *[2018-08-30][张宇飞][修改形参find,修正赋值错误]
+*[2018-09-05][张宇飞][标记当前区域也是切除成功区域，TODO：简单检索只适应只能发生一处故障]
 */
 void  Station_updateRemovalStatus(SwitchProperty* find, StationTopology* station)
 {
@@ -289,6 +290,22 @@ void  Station_updateRemovalStatus(SwitchProperty* find, StationTopology* station
     {
         find->distributionArea->SignRemovalMessage(find, type);
     }
+
+
+    //标记当前配电区域也为切除成功信息区域
+    if(find->removalType == RESULT_SUCCESS)
+    {
+		DistributionStation* distributionArea = station->localSwitch->distributionArea;
+		DistributionPowerArea* area = distributionArea->powerArea;
+
+		for (uint8_t i = 0; i < distributionArea->areaCount; i++)
+		{
+			//切除成功
+			area->removalType = find->removalType;
+			area++;
+		}
+    }
+
 
     //(find->distributionArea != NULL) ? (find->distributionArea->SignRemovalMessage(find, type)) : (find );
 	

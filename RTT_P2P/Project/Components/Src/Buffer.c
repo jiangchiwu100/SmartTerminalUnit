@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      buffer.c
 * @brief:     缓冲队列
@@ -18,7 +18,7 @@ static void BufferInit( FifoInformation *const fifo, PointUint8 *pdata);
 
 static uint8_t BufferEnqueue( FifoHandle *const fifohanlde, uint8_t const indata);
 static uint8_t BufferDequeue(FifoHandle *const fifohanlde, uint8_t  *dedata);
-static uint8_t BufferPeek(FifoHandle *const fifohanlde, uint8_t  *peekdata, uint8_t len);
+static uint8_t BufferPeek(FifoHandle *const fifohanlde, uint8_t  *peekdata, uint16_t len);
 
 /**
  * 使用句柄对FIFO初始化
