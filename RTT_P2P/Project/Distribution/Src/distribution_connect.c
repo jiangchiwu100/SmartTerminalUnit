@@ -1,10 +1,10 @@
 /**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_connect.c
-* @brief:     
+* @brief:
 * @version:   V0.0.0
 * @author:    Zhang Yufei
-* @date:      2018-06-08
+* @date:      2018-06-06
 * @update:    
 */
 
@@ -15,14 +15,11 @@
 #include "list.h"
 
 static ErrorCode SendConnectPathMessage(uint32_t id, PathConnected iseset, uint8_t hops,  DatagramTransferNode* pTransferNode);
-static bool CheckIsMeetConnectCondition(StationTopology* topology);
 static ErrorCode SendConnectPathCmd(ListDouble* path, PathConnected iseset, DatagramTransferNode* pTransferNode);
-static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList);
-static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList);
 static ErrorCode ExtractSwitchPath(StationTopology* station, ListDouble* bfsList);
 
 /**
-* @brief :  判别是否为联络开关，并计算其路径 
+* @brief :  判别是否为联络开关，并计算其路径
 * @param  ：StationTopology* station 站点
 * @return: void
 * @update: [2018-07-05][张宇飞][]
@@ -145,7 +142,7 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责]
 */
-static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList)
+ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList)
 {
 	uint8_t size = list_size(list);
 	ListElment* element = list_head(list);
@@ -172,7 +169,7 @@ static ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDoub
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责]
 */
-static ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList)
+ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList)
 {
 	BFSHelper* bfs;
 	uint8_t size = list_size(powerList);
@@ -283,7 +280,7 @@ ErrorCode GetAllTopologyByMutual(StationPoint* point)
         }	
         error = SendGetTopologyMessage(area->idCollect[i], &(point->transferNode));
         CHECK_UNEQUAL_RETURN_LOG(error, ERROR_OK_NULL, error, point->id);
-        rt_thread_delay(10);//延迟10ms进行获取，避免阻塞 
+        rt_thread_delay(10);//延迟10ms进行获取，避免阻塞
     }
     return ERROR_OK_NULL;
 }
@@ -409,7 +406,7 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
 	{
 		if (topology->connect.isConnect)
 		{
-			//通知路径上的开关			
+			//通知路径上的开关
 			rt_kprintf("ID:%X, is connect swtich.\n", topology->id);
 			PrintSwitchList(topology->connect.path);
 			PrintSwitchList(topology->connect.path + 1);
@@ -450,7 +447,7 @@ ErrorCode SearchToPowerPathAPP(StationPoint* point)
 	{
 		if (topology->connect.isConnect)
 		{
-			//通知路径上的开关			
+			//通知路径上的开关
 			rt_kprintf("ID:%X, is connect swtich.\n", topology->id);
 			PrintSwitchList(topology->connect.path);
 			PrintSwitchList(topology->connect.path + 1);
@@ -531,7 +528,7 @@ ErrorCode SetConnectPath(uint32_t id,  PathConnected isSet, uint8_t hops, Statio
 * @return:
 * @update: [2018-07-06][张宇飞][]
 */
-static bool CheckIsMeetConnectCondition(StationTopology* topology)
+bool CheckIsMeetConnectCondition(StationTopology* topology)
 {
     bool state = true;
     SwitchProperty* node;

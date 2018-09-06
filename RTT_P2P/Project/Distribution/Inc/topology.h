@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      topology.h
   * @brief:     
@@ -83,6 +83,11 @@ extern void StationCalConnectPathAndJudge(StationTopology* station);
 extern bool CheckIsPermitTransferpower(ConnectSwitch* topology);
 extern ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point);
 extern ErrorCode SetConnectPath(uint32_t id, PathConnected isSet, uint8_t hops, StationTopology* toplogy);
+extern ErrorCode ConnectedSwitch_SelfCheck_APP(StationPoint* point);
+extern ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList);
+extern ErrorCode SerachPowerPath(SwitchProperty* sourceSwitch, ListDouble* powerList, ListDouble* findList, ListDouble* bfsList);
+extern bool CheckIsCompletedAndCalGloabalSwitch(StationTopology* station);
+extern bool CheckIsMeetConnectCondition(StationTopology* topology);
 
 extern ErrorCode ConnectPath_ResetUpdateFlag(ListDouble* list);
 extern ErrorCode ConnectPath_CheckIsUpdateComplete(ListDouble* list, bool* result);

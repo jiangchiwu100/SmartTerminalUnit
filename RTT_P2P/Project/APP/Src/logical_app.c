@@ -143,7 +143,8 @@ static void connected_thread_entry(void* parameter)
 			StationPoint* station = (StationPoint*)list_data(m_foreach);
 			if (station != NULL)
 			{
-				ConnectedSwitchJuadgeAPP(station);//获取所有开关
+				//ConnectedSwitchJuadgeAPP(station);//获取所有开关
+                ConnectedSwitch_SelfCheck_APP(station);
 				if (station->topology.areaID.isGainComplted)
 				{
 					GetNeighboorRunState(station); //获取邻居

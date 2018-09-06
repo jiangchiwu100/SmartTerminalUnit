@@ -1820,6 +1820,11 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
             </File>
             <File>
+              <FileName>distribution_connect_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect_check.c</FilePath>
+            </File>
+            <File>
               <FileName>distribution_helper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_helper.c</FilePath>
@@ -4955,6 +4960,11 @@
               <FileName>distribution_connect.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_connect_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_connect_check.c</FilePath>
             </File>
             <File>
               <FileName>distribution_helper.c</FileName>
