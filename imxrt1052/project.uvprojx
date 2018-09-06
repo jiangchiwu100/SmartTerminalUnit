@@ -367,7 +367,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x10000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>.\Libraries\arm\MIMXRT1052xxxxx_flexspi_nor.scf</ScatterFile>
+            <ScatterFile>.\SCRIPT\rt1052_flexspi_scf.scf</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--keep *.o(.rti_fn.*)   --keep *.o(FSymTab) --keep *.o(VSymTab)</Misc>

@@ -35,6 +35,11 @@
 #endif
 
 #include <board.h>
+#define LED_PIN 46
+void rt_hw_led_init(void)
+{
+    rt_pin_mode(LED_PIN, PIN_MODE_OUTPUT);
+}
 
 int main(void)
 {
@@ -57,10 +62,13 @@ int main(void)
         rt_kprintf("sdcard init fail or timeout: %d!\n", result);
     }
 #endif
-
+    rt_hw_led_init();
     while (1)
     {
-        rt_thread_delay(RT_TICK_PER_SECOND);
+        rt_pin_write(LED_PIN, 0);
+        rt_thread_delay(500);//RT_TICK_PER_SECOND
+        rt_pin_write(LED_PIN, 1);
+        rt_thread_delay(500);
     }
 }
 
