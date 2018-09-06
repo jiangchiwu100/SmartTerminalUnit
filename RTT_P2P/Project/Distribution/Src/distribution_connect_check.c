@@ -355,7 +355,10 @@ ErrorCode ConnectedSwitch_SelfCheck_APP(StationPoint* point)
 //		   }
 //
 //	 }
-    
+    if(point->topology.connect.isLock)
+    {
+    	return ERROR_OK_NULL;
+    }
     if (topology->areaID.count == 0)
     {
         return ERROR_OVER_LIMIT;

@@ -18,6 +18,8 @@
 #include "server_model.h"
 #include "status_update.h"
 #include "extern_interface.h"
+#include "snapshoot.h"
+
 
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
 
@@ -90,7 +92,6 @@ void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 {
 
-
 	if (!sw || !di)
 	{
 		perror("!sw || !di\n");
@@ -100,6 +101,7 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_FAULT))
 	{
 		sw->fault.state = FAULT_YES;
+		Station_Snapshoot(sw->parent); //快照保存信息
 	}
 	else
 	{

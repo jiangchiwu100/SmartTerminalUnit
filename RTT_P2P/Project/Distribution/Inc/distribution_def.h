@@ -234,9 +234,20 @@ typedef struct TagStationTopology
     AreaID areaID;// 区域ID合集
 
     bool isRunDistribution;  //是否允许允许分布式保护
+    struct TagSwitchSnapshoot* snapshoot;//开关信息快照
 }StationTopology;
 
-
+/**
+* 开关属性快照信息
+*update: [2018-09-06][张宇飞][创建]
+*/
+typedef struct TagSwitchSnapshoot
+{
+	uint32_t time; //保存的时间
+	bool isFaultEdgeConnected;           //故障区域边缘，且为联络开关路径上
+	ConnectSwitch connect;//联络开关维护判别所需信息
+	ListDouble connectPath; //联络开关路径上判别,有成员则是，否则不是 ConnectPath
+}SwitchSnapshoot;
 
 /**
 *缓冲队列信息

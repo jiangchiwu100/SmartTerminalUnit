@@ -1894,6 +1894,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Inc\distribution_config.h</FilePath>
             </File>
+            <File>
+              <FileName>snapshoot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\snapshoot.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5035,6 +5040,11 @@
               <FileName>distribution_config.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Inc\distribution_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>snapshoot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\snapshoot.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -14,7 +14,7 @@
 
 #include "distribution_config.h"
 #include "status_update.h"
-
+#include "snapshoot.h"
 
 static inline bool SystemNowTime(FaultDealHandle* handle) ;
 static inline uint32_t DiffTime(uint32_t lastTime);
@@ -329,11 +329,23 @@ static inline bool IsGatherCompleted(FaultDealHandle* handle)
 * @return: true bool
 * @update: [2018-06-14][张宇飞][BRIEF]
 [2018-07-16][张宇飞][增加跳数条件不全为1]
+[2018-09-06][张宇飞][增加跳数条件不全为1]
 */
 static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
+
     bool isFaultEdgeConnected = handle->switchProperty->fault.isFaultEdgeConnected;
 	ListDouble* list = &(handle->switchProperty->parent->connectPath);
+	SwitchSnapshoot* snap = handle->switchProperty->parent->snapshoot;
+	if (snap)
+	{
+		//perror("snap is null\n");
+		 isFaultEdgeConnected = snap->isFaultEdgeConnected;
+		 list = &snap->connectPath;
+		//return false;
+	}
+
+
 	uint8_t size = list_size(list);
 	uint8_t num = 0;
 	if (size == 0)
@@ -681,6 +693,7 @@ bool RemovalHandleInit(FaultDealHandle* handle, SwitchProperty* switchProperty, 
 */
 static bool FaultRemovalReset(FaultDealHandle* handle)
 {
+	extern void ResumeConnectedThread(StationTopology* topology);
     if (handle == NULL)
     {
         return ERROR_NULL_PTR;
@@ -710,6 +723,7 @@ static bool FaultRemovalReset(FaultDealHandle* handle)
 	//联络开关复归 解锁
 	switchProperty->parent->connect.isLock = false;
 	//switchProperty->parent->isRunDistribution = false;//复位禁止，需要重新投入
+	Station_DeleteSnapshoot(switchProperty->parent);
     return true;
 }
 /**

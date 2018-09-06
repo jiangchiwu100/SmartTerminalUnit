@@ -37,7 +37,7 @@
     
 	handle->state = REMOVAL_START;
         
-	if (handle->IsFault(handle) || handle->IsTrigger(handle))
+	if (handle->IsFault(handle) )
 	{	
         handle->isRun = true;
 		//此处可能和后面的冲突
@@ -49,29 +49,21 @@
 		handle->limitTime = handle->t1; 
 		handle->step = 0;
 		handle->GetNowTime(handle);
-		if (handle->IsFault(handle))
-		{
-			handle->nextState = REMOVAL_GATHER;
-		}
-		else
-		{
-			handle->nextState= REMOVAL_DELAY_GATHER;
-		}
-
+		handle->nextState = REMOVAL_GATHER;
 	}
-//	else if (handle->IsTrigger(handle))
-//	{
-//		//发送非故障信息
-//        handle->isRun = true;
-//		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
-//		handle->TransmitMessage(handle, STATUS_MESSAGE);
-//        PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
-//		handle->limitTime = handle->t1;
-//		handle->GetNowTime(handle);
-//        handle->step = 0;
-//
-//		handle->nextState =  REMOVAL_GATHER;
-//	}
+	else if (handle->IsTrigger(handle))
+	{
+		//发送非故障信息
+        handle->isRun = true;
+		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
+		handle->TransmitMessage(handle, STATUS_MESSAGE);
+        PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
+		handle->limitTime = handle->t1;
+		handle->GetNowTime(handle);
+        handle->step = 0;
+
+		handle->nextState =  REMOVAL_DELAY_GATHER;
+	}
 	//是否为隔离期间拒绝接收故障
 	else if (handle->IsRejectInsulate(handle))
 	{
@@ -200,6 +192,9 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 					//是故障区域 且是联络开关路径上的开关
 					bool isFaultArea = handle->IsFaultArea(handle);
 					bool isFaultEdgeConnected = handle->IsFaultEdgeConnected(handle);
+
+					rt_kprintf("isFaultArea:%d, isFaultEdgeConnected:%d", isFaultArea, isFaultEdgeConnected);
+
                     if (isFaultArea && isFaultEdgeConnected)
                     {
 						handle->step = INSULATE_INIT;

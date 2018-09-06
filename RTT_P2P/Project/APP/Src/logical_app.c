@@ -233,6 +233,29 @@ void  MonitorApp(StationManger* manager)
 
 }
 /**
+* @brief :挂起 判断线程，并置闭锁位
+* @param
+* @return: 0--正常
+* @update: [2018-09-06][张宇飞][创建]
+*/
+void SuspendConnectedThread(StationTopology* topology)
+{
+	rt_thread_suspend(&connected_thread);
+	topology->connect.isLock = true;
+}
+/**
+* @brief :恢复 判断线程，并解除闭锁位
+* @param
+* @return: 0--正常
+* @update: [2018-09-06][张宇飞][创建]
+*/
+void ResumeConnectedThread(StationTopology* topology)
+{
+
+	rt_thread_startup(&connected_thread);
+	topology->connect.isLock = false;
+}
+/**
 * @brief :分布式逻辑功能引用初始化：分布式保护，联络判别
 * @param  
 * @return: 0--正常
@@ -262,3 +285,5 @@ void DistributionLogicalAppInit(void)
 
 	rt_thread_startup(&connected_thread);
 }
+
+

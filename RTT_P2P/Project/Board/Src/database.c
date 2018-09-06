@@ -464,8 +464,17 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 
 	g_EthDP83848.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
 	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
-	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node.id, 1) + 1;
-	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node.id, 0);
+	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node.id, 1) ;
+	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node.id, 0) ;
+    if (g_EthDP83848.ip[3] < 0x80)
+    {
+        g_EthDP83848.ip[3] += 0x80;
+    }
+    else
+    {
+        perror("Error:g_EthDP83848.ip[3] < 0x80, ip:0x%x\n", g_EthDP83848.ip[3]);
+        return false;
+    }
 	for (uint8_t i = 0; i < 4; i++)
 	{
 		if(!CheckIp(g_EthDP83848.ip[i]))
