@@ -506,7 +506,7 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 	//相同
 	g_EthDP83848.netmask[0] = 255;
 	g_EthDP83848.netmask[1] = 255;
-	g_EthDP83848.netmask[2] = 0;
+	g_EthDP83848.netmask[2] = 255;
 	g_EthDP83848.netmask[3] = 0;
 	g_EthDP83848.gateway[0] = 192;
 	g_EthDP83848.gateway[1] = 168;
@@ -526,7 +526,7 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 
 	g_EthW5500.netmask[0] = 255;
 	g_EthW5500.netmask[1] = 255;
-	g_EthW5500.netmask[2] = 0;
+	g_EthW5500.netmask[2] = 255;
 	g_EthW5500.netmask[3] = 0;
 	g_EthW5500.gateway[0] = 192;
 	g_EthW5500.gateway[1] = 168;

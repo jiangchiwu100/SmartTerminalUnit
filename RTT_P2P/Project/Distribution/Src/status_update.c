@@ -101,7 +101,7 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	if (DeviceIndicate_getBooleanStatus(di, DEVICE_IED_FAULT))
 	{
 		sw->fault.state = FAULT_YES;
-		Station_Snapshoot(sw->parent); //快照保存信息
+		Station_Snapshoot(&(g_StationManger.pWorkPoint->topology)); //快照保存信息
 	}
 	else
 	{

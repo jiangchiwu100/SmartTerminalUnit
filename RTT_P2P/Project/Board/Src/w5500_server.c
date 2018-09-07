@@ -106,7 +106,7 @@ static void W5500_SetDefaultNetInfo( wiz_NetInfo* pNetinfo)
 
     pNetinfo->sn[0] = 255;
     pNetinfo->sn[1] = 255;
-    pNetinfo->sn[2] = 0;
+    pNetinfo->sn[2] = 255;
     pNetinfo->sn[3] = 0;
     pNetinfo->gw[0] = 0;
     pNetinfo->gw[1] = 0;

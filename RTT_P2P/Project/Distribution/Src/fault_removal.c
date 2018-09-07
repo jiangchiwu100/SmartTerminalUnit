@@ -25,6 +25,7 @@
   *  [2018-07-11][张宇飞][添加切除拒动]
   *[2018-09-03][张宇飞][取消delaygatger判别，修改t1为最大时间暂设为50ms]
   *[2018-09-05][张宇飞][区分触发与直接故障检测]
+  *[2018-09-07][张宇飞][故障状态时增加快照]
   */
  StateResult RemovalState_Start(FaultDealHandle* handle)
 {
@@ -50,6 +51,7 @@
 		handle->step = 0;
 		handle->GetNowTime(handle);
 		handle->nextState = REMOVAL_GATHER;
+		Station_Snapshoot();
 	}
 	else if (handle->IsTrigger(handle))
 	{

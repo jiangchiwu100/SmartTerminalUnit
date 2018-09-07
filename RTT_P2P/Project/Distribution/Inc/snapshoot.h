@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      snapshoot.h
 * @brief:     保存快照信息
@@ -13,7 +13,7 @@
 #include "distribution_def.h"
 
 extern SwitchSnapshoot* SnapshootSwitchProperty(StationTopology* st);
-extern void SwitchSnapshoot_Destory(SwitchSnapshoot** ss);
+extern void SwitchSnapshoot_Destory(SwitchSnapshoot* ss);
 extern ErrorCode Station_Snapshoot(StationTopology* pTopology);
 extern ErrorCode Station_DeleteSnapshoot(StationTopology* pTopology);
 

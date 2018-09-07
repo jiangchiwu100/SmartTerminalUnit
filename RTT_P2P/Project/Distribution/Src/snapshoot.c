@@ -139,17 +139,17 @@ SwitchSnapshoot* SnapshootSwitchProperty(StationTopology* st)
 * @return:
 * @update: [2018-09-06][张宇飞][创建]
 */
-void SwitchSnapshoot_Destory(SwitchSnapshoot** ss)
+void SwitchSnapshoot_Destory(SwitchSnapshoot* ss)
 {
-	if (! *ss)
+	if (! ss)
 	{
 		return;
 	}
-	Listdestroy(&(*ss)->connectPath);
-	Listdestroy((*ss)->connect.path);
-	Listdestroy((*ss)->connect.path + 1);
-	FREE(*ss);
-	*ss = NULL;
+	Listdestroy(&(ss)->connectPath);
+	Listdestroy((ss)->connect.path);
+	Listdestroy((ss)->connect.path + 1);
+	FREE(ss);
+	
 }
 
 /**
@@ -160,7 +160,7 @@ void SwitchSnapshoot_Destory(SwitchSnapshoot** ss)
 */
 ErrorCode Station_Snapshoot(StationTopology* pTopology)
 {
-	CHECK_POINT_RETURN(pTopology, NULL, ERROR_MALLOC);
+	CHECK_POINT_RETURN(pTopology, NULL, ERROR_NULL_PTR);
 	if(!pTopology->snapshoot)
 	{
 		pTopology->snapshoot = SnapshootSwitchProperty(pTopology);
@@ -186,8 +186,9 @@ ErrorCode Station_Snapshoot(StationTopology* pTopology)
 */
 ErrorCode Station_DeleteSnapshoot(StationTopology* pTopology)
 {
-	CHECK_POINT_RETURN(pTopology, NULL, ERROR_MALLOC);
-	SwitchSnapshoot_Destory(&pTopology->snapshoot);
+	CHECK_POINT_RETURN(pTopology, NULL, ERROR_NULL_PTR);
+	SwitchSnapshoot_Destory(pTopology->snapshoot);
+    pTopology->snapshoot = NULL;
 	return ERROR_OK_NULL;
 
 }

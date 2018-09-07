@@ -328,17 +328,22 @@ static inline bool IsGatherCompleted(FaultDealHandle* handle)
 * @param  RemovalHandle* handle 控制句柄
 * @return: true bool
 * @update: [2018-06-14][张宇飞][BRIEF]
-[2018-07-16][张宇飞][增加跳数条件不全为1]
-[2018-09-06][张宇飞][增加跳数条件不全为1]
+*[2018-07-16][张宇飞][增加跳数条件不全为1]
+*[2018-09-06][张宇飞][增加快照]
+*[2018-09-07][张宇飞][补充条件]
 */
 static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
 
+	StationTopology* station =handle->switchProperty->parent;
     bool isFaultEdgeConnected = handle->switchProperty->fault.isFaultEdgeConnected;
-	ListDouble* list = &(handle->switchProperty->parent->connectPath);
-	SwitchSnapshoot* snap = handle->switchProperty->parent->snapshoot;
-	if (snap)
+	ListDouble* list = &(station->connectPath);
+	SwitchSnapshoot* snap;
+	ConnectPath* cp;
+	SwitchProperty* sw;
+	if (station->snapshoot)
 	{
+        snap = station->snapshoot;
 		//perror("snap is null\n");
 		 isFaultEdgeConnected = snap->isFaultEdgeConnected;
 		 list = &snap->connectPath;
@@ -353,14 +358,49 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 		return false;
 	}
 
+	uint32_t id;
 	FOR_EARCH_LIST_START(list);
-	if (((ConnectPath*)list_data(m_foreach))->hopsNumber <= 1)
 	{
-		num++;
+		cp = (ConnectPath*)list_data(m_foreach);
+		if (cp->hopsNumber <= 1)
+		{
+			id = cp->id;
+			num++;
+		}
 	}
 	FOR_EARCH_LIST_END();
 
-	if ((num != size) && (isFaultEdgeConnected))
+	//获取对应配电区域开关个数
+	uint8_t switchNum = 0;
+	if (num > 0)
+	{
+		ErrorCode error = FindSwitchNodeByID(&(station->globalSwitchList), id, &sw);
+		if (error)
+		{
+			perror("Unfind id, error:0x%x, id:0x%X\n", error, id);
+		}
+		if(sw->distributionArea)
+		{
+			if (sw->isExitArea[0])
+			{
+
+				switchNum = sw->distributionArea->powerArea[sw->indexArea[0]].switchNum;
+			}
+			else if (sw->isExitArea[1])
+			{
+				switchNum = sw->distributionArea->powerArea[sw->indexArea[1]].switchNum;
+			}
+
+		}
+	}
+
+
+	/**
+	 *条件1：isFaultEdgeConnected
+	 *条件2：switchNum > (num+1) 此配电区域只有联络开关和自身开关。
+	 *TODO:跳数可以考虑取消
+	 */
+	if (((switchNum > (num+1)) || (num != size)) && (isFaultEdgeConnected))
 	{
 		return true;
 	}
