@@ -2521,6 +2521,16 @@
               <FileType>5</FileType>
               <FilePath>..\RTT_P2P\Project\Distribution\Inc\distribution_config.h</FilePath>
             </File>
+            <File>
+              <FileName>snapshoot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\RTT_P2P\Project\Distribution\Src\snapshoot.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_connect_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\RTT_P2P\Project\Distribution\Src\distribution_connect_check.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

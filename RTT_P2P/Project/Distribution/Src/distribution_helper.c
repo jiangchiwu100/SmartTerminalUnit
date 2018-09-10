@@ -223,7 +223,7 @@ void PrintMemoryUsed(void)
 */
 void PrintIDTipsTick(uint32_t id, const char* tips)
 {
-    uint32_t tick =  rt_tick_get();    
+    uint32_t tick =  rt_tick_get();
     rt_kprintf("%X,%s,TICK:%6d.\n", id, tips, tick);
    
 

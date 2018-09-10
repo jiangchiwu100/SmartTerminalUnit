@@ -195,7 +195,7 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 					bool isFaultArea = handle->IsFaultArea(handle);
 					bool isFaultEdgeConnected = handle->IsFaultEdgeConnected(handle);
 
-					rt_kprintf("isFaultArea:%d, isFaultEdgeConnected:%d", isFaultArea, isFaultEdgeConnected);
+					rt_kprintf("isFaultArea:%d, isFaultEdgeConnected:%d.\n", isFaultArea, isFaultEdgeConnected);
 
                     if (isFaultArea && isFaultEdgeConnected)
                     {

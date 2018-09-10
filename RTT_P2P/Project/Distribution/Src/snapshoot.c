@@ -56,6 +56,7 @@ static bool ListCopy(ListDouble* from, ListDouble* to)
 * @param : ListDouble* to
 * @return:
 * @update: [2018-09-06][张宇飞][创建]
+* [2018-09-10][张宇飞][修改目的和源错误]
 */
 static bool ListDeepCopy_ConnectPath(ListDouble* from, ListDouble* to)
 {
@@ -67,7 +68,7 @@ static bool ListDeepCopy_ConnectPath(ListDouble* from, ListDouble* to)
 		perror("CALLOC is null\n");
 		return false;
 	}
-	MEMCPY(list_data(m_foreach), cp, sizeof(ConnectPath));
+	MEMCPY(cp, list_data(m_foreach), sizeof(ConnectPath));
 
 	ListInsertNext(to, NULL, cp);
 	FOR_EARCH_LIST_END();
@@ -151,6 +152,34 @@ void SwitchSnapshoot_Destory(SwitchSnapshoot* ss)
 	FREE(ss);
 	
 }
+/**
+* @brief : 站点快照, 打印输出
+* @param :StationTopology* pTopology
+* @return: void
+* @update: [2018-09-10][张宇飞][创建]
+*/
+static void Snapshoot_print(SwitchSnapshoot* snapshoot)
+{
+	ConnectPath* cp;
+	rt_kprintf("snapshoot out:\n");
+	rt_kprintf("isFaultEdgeConnected:0x%x, time:%d\n", snapshoot->isFaultEdgeConnected, snapshoot->time);
+	rt_kprintf("connectPath :\n");
+	FOR_EARCH_LIST_START(&(snapshoot->connectPath))
+	cp = (ConnectPath*)list_data(m_foreach);
+	rt_kprintf("connectPath: id:0x%x, hops:%d, isUpdated:0x%x, cap:%d, switchNum:%d. \n",
+			cp->id, cp->hopsNumber, cp->isUpdated, cp->remainderCapacity, cp->switchNum);
+	FOR_EARCH_LIST_END()
+
+
+
+	rt_kprintf("connect.count :%d.\n", snapshoot->connect.count);
+	rt_kprintf("connect.isConnect :%d.\n", snapshoot->connect.isConnect);
+	rt_kprintf("connect.transferCode :0x%x.\n", snapshoot->connect.transferCode);
+	rt_kprintf("connect.path[0]:\n");
+	PrintSwitchList(snapshoot->connect.path);
+	rt_kprintf("connect.path[1]:\n");
+	PrintSwitchList(snapshoot->connect.path + 1);
+}
 
 /**
 * @brief : 站点快照, 不进行覆盖
@@ -166,6 +195,7 @@ ErrorCode Station_Snapshoot(StationTopology* pTopology)
 		pTopology->snapshoot = SnapshootSwitchProperty(pTopology);
 		if (pTopology->snapshoot)
 		{
+            Snapshoot_print(pTopology->snapshoot);
 			return ERROR_OK_NULL;
 		}
 		else

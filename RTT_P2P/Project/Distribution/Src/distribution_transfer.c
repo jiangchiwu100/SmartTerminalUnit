@@ -23,12 +23,20 @@ static ErrorCode Transfer_CapacitySend(FaultDealHandle* handle);
 * @return: 0-正常
 * @update: [2018-07-12][张宇飞][BRIEF]
 * [2018-07-16][张宇飞][补全判断漏洞]
+* [2018-09-10][张宇飞][添加snap操作]
 */
 StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 {
 	SwitchProperty* switchProperty = handle->switchProperty;
 	StationTopology* stationTopology = switchProperty->parent;
 	ListDouble* Listcp = &(stationTopology->connectPath);
+	SwitchSnapshoot* snap;
+	if (stationTopology->snapshoot)
+	{
+		snap = stationTopology->snapshoot;
+		Listcp = &snap->connectPath;
+
+	}
 	ErrorCode error;
 	if (handle->nextState != TRANSFER_MASTER)
 	{
@@ -104,6 +112,15 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 	CHECK_UNEQUAL_RETURN_LOG(handle->nextState, TRANSFER_CONNECT, RESULT_ERROR_MATCH, switchProperty->id);	
 	handle->state = TRANSFER_CONNECT;
 
+	SwitchSnapshoot* snap;
+	ConnectPath* cp;
+	if (stationTopology->snapshoot)
+	{
+		snap = stationTopology->snapshoot;
+		pconnect = &snap->connect;
+
+	}
+
 	switch (handle->step)
 	{
 	case 0: //初始化状态
@@ -137,7 +154,7 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 			}
 			else
 			{
-				PrintIDTipsTick(handle->switchProperty->id, "Transfer Connect Cacer");
+				PrintIDTipsTick(handle->switchProperty->id, "Transfer Connect Cancer");
 				handle->nextState = DISTRIBUTION_LOCK;
 			}
 			break;
@@ -245,6 +262,7 @@ static ErrorCode Transfer_CapacitySend( FaultDealHandle* handle)
 * @param
 * @return: 0-正常
 * @update: [2018-07-12][张宇飞][BRIEF]
+* [2018-09-10][张宇飞][添加快照]
 */
 ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* station)
 {
@@ -254,7 +272,19 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 	ErrorCode error = ERROR_OK_NULL;
 	uint32_t id = 0, data = 0;
 	ConnectPath* cp;
+	ListDouble* list = &station->connectPath;
 	TransferCode code = (TransferCode)pdata[0];
+	ConnectSwitch* cs = &station->connect;
+	SwitchSnapshoot* snap;
+
+	if (station->snapshoot)
+	{
+		snap = station->snapshoot;
+		list = &snap->connectPath;
+		cs = &snap->connect;
+	}
+
+
 	switch (code)
 	{
 	case  TRANSFER_REMAINDER_CAP:
@@ -262,7 +292,6 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 		CHECK_UNEQUAL_RETURN_LOG(len, 9, ERROR_LEN, station->id);
 		id = COMBINE_UINT32(pdata[4], pdata[3], pdata[2], pdata[1]);
 		data = COMBINE_UINT32(pdata[8], pdata[7], pdata[6], pdata[5]);
-		ListDouble* list = &(station->connectPath);
 
 		FOR_EARCH_LIST_START(list);
 
@@ -288,9 +317,9 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 	{
 		CHECK_UNEQUAL_RETURN_LOG(len, 5, ERROR_LEN, station->id);
 		id = COMBINE_UINT32(pdata[4], pdata[3], pdata[2], pdata[1]);
-		if ((station->id == id) && (station->connect.isConnect))
+		if ((station->id == id) && (cs->isConnect))
 		{
-			station->connect.transferCode = code;
+			cs->transferCode = code;
 		}
 
 		break;

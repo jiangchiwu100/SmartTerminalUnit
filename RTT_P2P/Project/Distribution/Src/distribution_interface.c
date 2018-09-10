@@ -339,7 +339,7 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
     bool isFaultEdgeConnected = handle->switchProperty->fault.isFaultEdgeConnected;
 	ListDouble* list = &(station->connectPath);
 	SwitchSnapshoot* snap;
-	ConnectPath* cp;
+	ConnectPath* cp = NULL;
 	SwitchProperty* sw;
 	if (station->snapshoot)
 	{
@@ -359,48 +359,51 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	}
 
 	uint32_t id;
+	//TODO:此种判别方法仅适用跳数为1只有一个联络开关的情形。
 	FOR_EARCH_LIST_START(list);
 	{
 		cp = (ConnectPath*)list_data(m_foreach);
-		if (cp->hopsNumber <= 1)
+		if (cp->hopsNumber == 1)
 		{
 			id = cp->id;
 			num++;
+
+			//获取对应配电区域开关个数
+			ErrorCode error = FindSwitchNodeByID(&(station->globalSwitchList), id, &sw);
+			if (error)
+			{
+				perror("Unfind id, error:0x%x, id:0x%X\n", error, id);
+			}
+			else
+			{
+				if(sw->distributionArea)
+				{
+					if (sw->isExitArea[0])
+					{
+
+						cp->switchNum = sw->distributionArea->powerArea[0].switchNum;
+					}
+					else if (sw->isExitArea[1])
+					{
+						cp->switchNum = sw->distributionArea->powerArea[1].switchNum;
+					}
+					else
+					{
+						cp->switchNum = 0;
+					}
+				}
+			}
 		}
 	}
 	FOR_EARCH_LIST_END();
-
-	//获取对应配电区域开关个数
-	uint8_t switchNum = 0;
-	if (num > 0)
-	{
-		ErrorCode error = FindSwitchNodeByID(&(station->globalSwitchList), id, &sw);
-		if (error)
-		{
-			perror("Unfind id, error:0x%x, id:0x%X\n", error, id);
-		}
-		if(sw->distributionArea)
-		{
-			if (sw->isExitArea[0])
-			{
-
-				switchNum = sw->distributionArea->powerArea[sw->indexArea[0]].switchNum;
-			}
-			else if (sw->isExitArea[1])
-			{
-				switchNum = sw->distributionArea->powerArea[sw->indexArea[1]].switchNum;
-			}
-
-		}
-	}
-
 
 	/**
 	 *条件1：isFaultEdgeConnected
 	 *条件2：switchNum > (num+1) 此配电区域只有联络开关和自身开关。
 	 *TODO:跳数可以考虑取消
 	 */
-	if (((switchNum > (num+1)) || (num != size)) && (isFaultEdgeConnected))
+	if (( (cp ? (cp->switchNum > (num+1)) : (false))
+        || (num != size)) && (isFaultEdgeConnected))
 	{
 		return true;
 	}
