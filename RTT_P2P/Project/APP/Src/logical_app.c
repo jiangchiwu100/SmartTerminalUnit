@@ -20,6 +20,7 @@ static struct rt_thread monitor_thread;
 
 static void DistributionLogicalApp(StationManger* manager);
 static void distribution_thread_entry(void* parameter);
+static void SationMonitorGainCheck(StationPoint* station);
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_distribution_thread_stack[THREAD_DISTRIBUTION_STACK_SIZE];//线程栈
@@ -27,6 +28,10 @@ ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_connected_thread_stack[THREAD_CONNECT_STACK_SIZE];//线程栈
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_monitor_thread_stack[1024];//线程栈
+
+
+
+
 
 static void distribution_thread_entry(void* parameter)
 {
@@ -40,6 +45,7 @@ static void distribution_thread_entry(void* parameter)
 * @return: 0--正常
 * @update: [2018-06-16][张宇飞][创建]
 *[2018-07-31][张宇飞][添加置isCheckPass为false]
+*[2018-09-10][张宇飞][添加获取监控状态]
 */
 static void DistributionLogicalApp(StationManger* manager)
 {
@@ -49,6 +55,9 @@ static void DistributionLogicalApp(StationManger* manager)
     StationPoint* station;
     FaultDealHandle* handle;
     ErrorCode code;
+    static uint32_t currentTime = 0;
+
+
     if (manager == NULL)
     {
         perror("DistributionLogicalApp ERROR :manager = NULL.\n");
@@ -73,6 +82,13 @@ static void DistributionLogicalApp(StationManger* manager)
             station = (StationPoint*)(element->data);
             if (station != NULL)
             {
+            	if (SystemIsOverTime(currentTime, MONITOR_CHECK_TIME))
+				{
+					SationMonitorGainCheck(station);
+					currentTime = rt_tick_get();
+				}
+
+
                 handle = &(((StationPoint*)(element->data))->removalHandle);
                 code = RemovalHandleCheckself(handle);
                 if (code == ERROR_OK_NULL)
@@ -98,7 +114,8 @@ static void DistributionLogicalApp(StationManger* manager)
                 perror("StationPoint* station = NULL.\n");
                 LogAddException(ERROR_NULL_PTR, 0);
                 break;
-            }           
+            }
+
             element = element->next;
         }
         
@@ -108,7 +125,27 @@ static void DistributionLogicalApp(StationManger* manager)
 
 }
 
+/**
+* @brief : 监控获取检测
+* @param : StationServer*   stationServer
+* @return: 0--正常
+* @update: [2018-09-10][张宇飞][创建]
+*/
+static void SationMonitorGainCheck(StationPoint* station)
+{
+    extern void MaintaceServer(void);
 
+	//ConnectedSwitchJuadgeAPP(station);//获取所有开关
+	ConnectedSwitch_SelfCheck_APP(station);
+	if (station->topology.areaID.isGainComplted)
+	{
+		GetNeighboorRunState(station); //获取邻居
+	}
+	//周期性发送状态信息
+	//StationSendStatusMessage(station);
+	//CheckMessageValid(station);
+
+}
 /**
 * @brief :联络功能判别
 * @param  StationManger* manager
@@ -274,16 +311,16 @@ void DistributionLogicalAppInit(void)
 
 	rt_thread_startup(&distribution_thread);
 
-	rt_thread_init(&connected_thread,                 //线程控制块
-		THREAD_CONNECT_NAME,                       //线程名字，在shell里面可以看到
-		connected_thread_entry,            //线程入口函数
-		&g_StationManger,                      //线程入口函数参数
-		&rt_connected_thread_stack,     //线程栈起始地址
-		sizeof(rt_connected_thread_stack), //线程栈大小
-		THREAD_CONNECT_PRIORITY,                            //线程的优先级
-		THREAD_CONNECT_TIMESLICE);                          //线程时间片
-
-	rt_thread_startup(&connected_thread);
+//	rt_thread_init(&connected_thread,                 //线程控制块
+//		THREAD_CONNECT_NAME,                       //线程名字，在shell里面可以看到
+//		connected_thread_entry,            //线程入口函数
+//		&g_StationManger,                      //线程入口函数参数
+//		&rt_connected_thread_stack,     //线程栈起始地址
+//		sizeof(rt_connected_thread_stack), //线程栈大小
+//		THREAD_CONNECT_PRIORITY,                            //线程的优先级
+//		THREAD_CONNECT_TIMESLICE);                          //线程时间片
+//
+//	rt_thread_startup(&connected_thread);
 }
 
 
