@@ -331,6 +331,7 @@ static inline bool IsGatherCompleted(FaultDealHandle* handle)
 *[2018-07-16][张宇飞][增加跳数条件不全为1]
 *[2018-09-06][张宇飞][增加快照]
 *[2018-09-07][张宇飞][补充条件]
+*[2018-09-10][张宇飞][修改中数量判别条件]
 */
 static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
@@ -359,7 +360,7 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	}
 
 	uint32_t id;
-	//TODO:此种判别方法仅适用跳数为1只有一个联络开关的情形。
+    uint8_t switchNum = 0;//查找后重新赋值，
 	FOR_EARCH_LIST_START(list);
 	{
 		cp = (ConnectPath*)list_data(m_foreach);
@@ -378,19 +379,24 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 			{
 				if(sw->distributionArea)
 				{
-					if (sw->isExitArea[0])
+                    //适用于3-1供电结构,选择非故障区域， TODO:需要快照保存当前状态
+					if (sw->isExitArea[0] && (!sw->distributionArea->powerArea[0].isFaultArea))
+					{
+                        cp->switchNum = sw->distributionArea->powerArea[0].switchNum;
+                        switchNum = cp->switchNum;
+					}
+					else if (sw->isExitArea[1] && (!sw->distributionArea->powerArea[1].isFaultArea))
 					{
 
-						cp->switchNum = sw->distributionArea->powerArea[0].switchNum;
+                        cp->switchNum = sw->distributionArea->powerArea[1].switchNum;
+                        switchNum = cp->switchNum;
 					}
-					else if (sw->isExitArea[1])
-					{
-						cp->switchNum = sw->distributionArea->powerArea[1].switchNum;
-					}
-					else
-					{
-						cp->switchNum = 0;
-					}
+                    else
+                    {
+                        cp->switchNum = 0;
+                        switchNum = cp->switchNum;
+                    }
+
 				}
 			}
 		}
@@ -402,7 +408,7 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	 *条件2：switchNum > (num+1) 此配电区域只有联络开关和自身开关。
 	 *TODO:跳数可以考虑取消
 	 */
-	if (( (cp ? (cp->switchNum > (num+1)) : (false))
+	if (( (switchNum > (num+1))
         || (num != size)) && (isFaultEdgeConnected))
 	{
 		return true;
