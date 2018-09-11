@@ -141,6 +141,7 @@ void StationCalConnectPathAndJudge(StationTopology* station)
 * @param  ：
 * @return: void
 * @update: [2018-07-10][张宇飞][未进行参数检测，由调用者负责]
+* @update: [2018-09-11][张宇飞][修正排除自己的错误]
 */
 ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* list, ListDouble* powerList, ListDouble* findList)
 {
@@ -155,7 +156,7 @@ ErrorCode SerachPowerConditionList(SwitchProperty* sourceSwitch, ListDouble* lis
 			ListInsertNext(powerList, NULL, sw);
 		}
 		//排除除了自己，为分位的开关
-		if (sw->state != SWITCH_OPEN || sw == sourceSwitch)
+		if ((sw->state != SWITCH_OPEN) || (sw == sourceSwitch))
 		{
 			ListInsertNext(findList, NULL, sw);
 		}

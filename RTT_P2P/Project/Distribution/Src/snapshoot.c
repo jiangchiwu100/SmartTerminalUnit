@@ -97,6 +97,7 @@ static bool ConnectSwitch_Copy(ConnectSwitch* from, ConnectSwitch* to)
 * @param :GetNeighboorHandle* handle
 * @return:
 * @update: [2018-09-06][张宇飞][创建]
+* @update: [2018-09-11][张宇飞][修改path初始化为free设置错误]
 */
 SwitchSnapshoot* SnapshootSwitchProperty(StationTopology* st)
 {
@@ -111,7 +112,7 @@ SwitchSnapshoot* SnapshootSwitchProperty(StationTopology* st)
 	ss->isFaultEdgeConnected = st->localSwitch->fault.isFaultEdgeConnected;
 
 	ListInit(ss->connect.path, NULL);
-	ListInit(ss->connect.path + 1, FREE);
+	ListInit(ss->connect.path + 1, NULL);
 
 	bool state = ConnectSwitch_Copy(&st->connect, &ss->connect);
 	if (!state)

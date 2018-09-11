@@ -82,11 +82,11 @@ static void DistributionLogicalApp(StationManger* manager)
             station = (StationPoint*)(element->data);
             if (station != NULL)
             {
-            	if (SystemIsOverTime(currentTime, MONITOR_CHECK_TIME))
-				{
-					SationMonitorGainCheck(station);
-					currentTime = rt_tick_get();
-				}
+//            	if (SystemIsOverTime(currentTime, MONITOR_CHECK_TIME))
+//				{
+//					SationMonitorGainCheck(station);
+//					currentTime = rt_tick_get();
+//				}
 
 
                 handle = &(((StationPoint*)(element->data))->removalHandle);
@@ -182,15 +182,7 @@ static void connected_thread_entry(void* parameter)
 			StationPoint* station = (StationPoint*)list_data(m_foreach);
 			if (station != NULL)
 			{
-				//ConnectedSwitchJuadgeAPP(station);//获取所有开关
-                ConnectedSwitch_SelfCheck_APP(station);
-				if (station->topology.areaID.isGainComplted)
-				{
-					GetNeighboorRunState(station); //获取邻居
-				}
-				//周期性发送状态信息
-				//StationSendStatusMessage(station);
-				//CheckMessageValid(station);
+				SationMonitorGainCheck(station);
 			}
 			else
 			{
@@ -313,16 +305,16 @@ void DistributionLogicalAppInit(void)
 
 	rt_thread_startup(&distribution_thread);
 
-//	rt_thread_init(&connected_thread,                 //线程控制块
-//		THREAD_CONNECT_NAME,                       //线程名字，在shell里面可以看到
-//		connected_thread_entry,            //线程入口函数
-//		&g_StationManger,                      //线程入口函数参数
-//		&rt_connected_thread_stack,     //线程栈起始地址
-//		sizeof(rt_connected_thread_stack), //线程栈大小
-//		THREAD_CONNECT_PRIORITY,                            //线程的优先级
-//		THREAD_CONNECT_TIMESLICE);                          //线程时间片
-//
-//	rt_thread_startup(&connected_thread);
+	rt_thread_init(&connected_thread,                 //线程控制块
+		THREAD_CONNECT_NAME,                       //线程名字，在shell里面可以看到
+		connected_thread_entry,            //线程入口函数
+		&g_StationManger,                      //线程入口函数参数
+		&rt_connected_thread_stack,     //线程栈起始地址
+		sizeof(rt_connected_thread_stack), //线程栈大小
+		THREAD_CONNECT_PRIORITY,                            //线程的优先级
+		THREAD_CONNECT_TIMESLICE);                          //线程时间片
+
+	rt_thread_startup(&connected_thread);
 }
 
 
