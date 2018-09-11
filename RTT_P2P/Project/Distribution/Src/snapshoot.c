@@ -195,7 +195,7 @@ ErrorCode Station_Snapshoot(StationTopology* pTopology)
 		pTopology->snapshoot = SnapshootSwitchProperty(pTopology);
 		if (pTopology->snapshoot)
 		{
-            Snapshoot_print(pTopology->snapshoot);
+			//Snapshoot_print(pTopology->snapshoot);
 			return ERROR_OK_NULL;
 		}
 		else

@@ -55,7 +55,7 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 	}
 	else
 	{
-		perror("Unfind Switch\n");
+		perror("Unfind Switch. error:0x%X.\n", code);
 		return;
 	}
 }

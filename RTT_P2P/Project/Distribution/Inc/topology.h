@@ -66,7 +66,7 @@ extern ErrorCode PathTo(const ListDouble* switchList, const BFSHelper* helper, c
 extern ErrorCode FindPath(const ListDouble* switchList, const SwitchProperty* start, const SwitchProperty* end, BFSHelper** helper);
 
 extern ErrorCode GetAllTopologyByMutual(StationPoint* point);
-extern ErrorCode CheckAllTopologyCompleted(StationPoint* point, bool* result);
+extern ErrorCode CheckAllTopologyCompleted(StationTopology* point, bool* result);
 
 //配电区域相关
 extern ErrorCode GetPowerDistributionArea(TopologyMessage* local,ListDouble* listNeighboorSwitch, ListDouble* listArea);

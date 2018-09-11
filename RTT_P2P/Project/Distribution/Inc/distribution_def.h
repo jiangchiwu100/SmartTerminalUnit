@@ -471,7 +471,7 @@ typedef struct TagStationPoint
 
 	void* server61850; //61850对应服务
     bool isAllowUpdate; //是否允许开入更新
-
+    bool isCompltedTopology;// 是否为完整的拓扑
 }StationPoint;
 
 /**

@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      mutal_app.c
   * @brief:     
@@ -179,7 +179,7 @@ static void MutalCommunicationApp(StationManger* manager)
 * @brief :分布式交互通讯应用
 * @param  void
 * @return: 0--正常
-* @update: [2018-07-21][张宇飞][创建]
+* @update: [2018-07-21][张宇飞][创建]//TODO:可以优化删去
 */
 void DistributionMutalAppInit(void)
 {

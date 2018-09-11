@@ -130,6 +130,7 @@ static void DistributionLogicalApp(StationManger* manager)
 * @param : StationServer*   stationServer
 * @return: 0--正常
 * @update: [2018-09-10][张宇飞][创建]
+*[2018-09-11][张宇飞][添加更新配电区域]
 */
 static void SationMonitorGainCheck(StationPoint* station)
 {
@@ -139,7 +140,8 @@ static void SationMonitorGainCheck(StationPoint* station)
 	ConnectedSwitch_SelfCheck_APP(station);
 	if (station->topology.areaID.isGainComplted)
 	{
-		GetNeighboorRunState(station); //获取邻居
+        UpdateDistributionPowerArea(&(station->topology));
+		//GetNeighboorRunState(station); //获取邻居
 	}
 	//周期性发送状态信息
 	//StationSendStatusMessage(station);

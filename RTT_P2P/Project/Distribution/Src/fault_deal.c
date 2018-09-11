@@ -107,7 +107,7 @@ uint8_t FaultDealStateCenter(FaultDealHandle* handle)
             }
             case REMOVAL_STOP:
             {
-                if (handle->isRun)
+                if (handle->isRun)//TODO:可以优化删去
                 {
                     handle->TransmitMessage(handle, STATUS_MESSAGE);
                 }

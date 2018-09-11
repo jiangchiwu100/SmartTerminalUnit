@@ -292,12 +292,13 @@ ErrorCode GetAllTopologyByMutual(StationPoint* point)
 * @param :
 * @return:
 * @update: [2018-07-05][张宇飞][创建]
+* [2018-09-11][张宇飞][添加isCompltedTopology]
 */
-ErrorCode CheckAllTopologyCompleted(StationPoint* point, bool* result)
+ErrorCode CheckAllTopologyCompleted(StationTopology* st, bool* result)
 {
-    CHECK_POINT_RETURN_LOG(point, NULL, ERROR_NULL_PTR, 0);
-    AreaID* area = &(point->topology.areaID);
-    uint8_t size = list_size(&(point->topology.globalTopologyList));
+    CHECK_POINT_RETURN_LOG(st, NULL, ERROR_NULL_PTR, 0);
+    AreaID* area = &(st->areaID);
+    uint8_t size = list_size(&(st->globalTopologyList));
     if (area->count == size)
     {
         *result = true;
@@ -306,6 +307,7 @@ ErrorCode CheckAllTopologyCompleted(StationPoint* point, bool* result)
     {
         *result = false;
     }
+
     return ERROR_OK_NULL;
 
 }
@@ -353,7 +355,7 @@ ErrorCode ConnectedSwitchJuadgeAPP(StationPoint* point)
         for (uint8_t i = 0; i < 10; i++)
         {
             rt_thread_delay(200);// 等待5000收集完成
-            CheckAllTopologyCompleted(point, result);
+            CheckAllTopologyCompleted(&(point->topology), result);
             if (*result)
             {
                 break;

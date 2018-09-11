@@ -252,7 +252,7 @@ ErrorCode GetAllTopologyRunState(StationPoint* point)
     ErrorCode error;
 
 
-    error = CheckAllTopologyCompleted(point, &result);
+    error = CheckAllTopologyCompleted(&(point->topology), &result);
     if (error != ERROR_OK_NULL)
     {
         return error;
@@ -379,6 +379,7 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
    
     station->id = id;
     station->isAllowUpdate = true;
+    station->isCompltedTopology = false;
 	RouterDatagram_NewTransferNode(id, 100, &(station->transferNode));
 	ProtocolAnylastDatagramInit(&(station->anylast), &(station->transferNode), id);
 

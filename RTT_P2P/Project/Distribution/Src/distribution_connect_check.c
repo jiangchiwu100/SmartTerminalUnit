@@ -37,20 +37,26 @@ bool CheckIsCompletedAndCalGloabalSwitch(StationTopology* station)
 	}
     ErrorCode result = ERROR_OK_NULL;    
     ListDouble* globalList = &(station->globalSwitchList);
-
+    ListDouble* globalTopologyList; 
     if (station->areaID.count == 0)
     {
     	perror("station->areaID.count == 0\n");
         return false;
     }
     if (globalList->size != station->areaID.count)
-    {
+    {     
+        globalTopologyList = &(station->globalTopologyList);
+        if (list_size(globalTopologyList) < station->areaID.count)
+        {
+            return false;
+        }
+        printf("Re generate globalList,size:%d, Allcount:%d.\n", globalList->size, station->areaID.count);
         //销毁链表
         Listdestroy(globalList);
 		//重新初始化
 		ListInit(globalList, NULL);
 
-		result = GetSwitchList(&(station->globalTopologyList), globalList);
+		result = GetSwitchList(globalTopologyList, globalList);
 		if (result)
 		{
 			perror("GetSwitchList Error: %d\n", result);
@@ -335,6 +341,7 @@ static ErrorCode ExtractThroughPath(ListDouble* globalList, ConnectSwitch* conne
 * @param :GetNeighboorHandle* handle
 * @return:
 * @update: [2018-09-06][张宇飞][联络信息自检和判断]
+*[2018-09-06][张宇飞][完整性判断移到接收处理]
 */
 ErrorCode ConnectedSwitch_SelfCheck_APP(StationPoint* point)
 {
@@ -375,7 +382,6 @@ ErrorCode ConnectedSwitch_SelfCheck_APP(StationPoint* point)
         for (uint8_t i = 0; i < 10; i++)
         {
             rt_thread_delay(200);// 等待5000收集完成
-            CheckAllTopologyCompleted(point, result);
             if (*result)
             {
                 break;

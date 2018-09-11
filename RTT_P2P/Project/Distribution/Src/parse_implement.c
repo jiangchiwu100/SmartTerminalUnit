@@ -494,6 +494,7 @@ void  StationUpdateLoopStatusMessage(uint8_t data[], uint8_t len, StationPoint* 
 * @param :
 * @return: void
 * @update: [2018-06-21][张宇飞][]
+* [2018-09-11][张宇飞][删除UpdateDistributionPowerArea,添加满判别与满禁止更新]
 */
 void  StationReciveReplyMessage(uint8_t data[], uint8_t len, StationTopology* station)
 {
@@ -506,17 +507,22 @@ void  StationReciveReplyMessage(uint8_t data[], uint8_t len, StationTopology* st
         {
         case  GET_TOPOLOGY:
         {
+        	//若已满则禁止添加
+        	if(station->areaID.isGainComplted)
+        	{
+        		return;
+        	}
             error = AddTopologyMember(data + offset, len, &(station->globalTopologyList));
             if (error == ERROR_OK_NULL)
             {
-                UpdateDistributionPowerArea(station);
-              //  PrintTopologyMessage(GET_TOPOLOGY_ELEMENT(list_head(&(station->globalTopologyList))));
-               //计算下次偏移
-                offset = COMBINE_UINT16(data[offset+2], data[offset + 1]) + offset;
+            	//检测是否满
+            	CheckAllTopologyCompleted(station, &(station->areaID.isGainComplted));
+            	//计算下次偏移
+            	offset = COMBINE_UINT16(data[offset+2], data[offset + 1]) + offset;
             }
             else
             {
-                rt_kprintf("StationReciveReplyMessage ERROR.\n");
+                rt_kprintf("StationReciveReplyMessage ERROR:0x%X.\n", error);
                 return;
             }
            

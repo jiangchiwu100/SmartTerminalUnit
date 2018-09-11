@@ -28,7 +28,7 @@ static ErrorCode CalTopologyMessageLength(const TopologyMessage* topology, uint1
 
 /**
   * @brief :数据反序列化，即将数组数据转换成格式化数据，数据格式定义见数据手册
-  * @param  sourceArray    元字节数组 
+  * @param  sourceArray    元字节数组
   * @param  startIndex     开始索引
   * @param  topology       拓扑属性
   * @return: 0-正常返回
@@ -134,7 +134,7 @@ ErrorCode  ReserializeCollectTopology(const uint8_t* sourceArray, uint16_t start
         SwitchState	          1
         neighbourNum	      1
         neighbourCollect	 neighbourNum*4
-        。。。。	
+        。。。。
         累加和	              2
   * @update: [2018-05-25][张宇飞][BRIEF]
   */
@@ -158,7 +158,7 @@ static ErrorCode CalTopologyMessageLength(const TopologyMessage* topology, uint1
   * @param  uint16_t offset  偏移
   * @return: ErrorCode
   * @update: [2018-05-25][张宇飞][BRIEF]
-  *          [2018-05-25][张宇飞][序列化增加状态量] 
+  *          [2018-05-25][张宇飞][序列化增加状态量]
   *          [2018-06-21][张宇飞][序列化增加状态量
   */
 ErrorCode  SerializeCollectTopology(const TopologyMessage* topology, PointUint8* packet, uint16_t addLen, uint16_t offset)
@@ -354,12 +354,12 @@ void DeleteTopologyListNodeById(ListDouble* topologyList, uint32_t id)
         if (element)//若找到，先先删除
         {
              ListRemoveNext(topologyList, element, (void**)&tempTopology);//移除
-             FreeTopologyMemory(&tempTopology);//释放                    
+             FreeTopologyMemory(&tempTopology);//释放
         }               
     } 
 }
 /**
- * @brief : 添加邻居列表判断ID号，若已经存在则删除，否则添加。
+ * @brief : 添加邻居列表判断ID号，若不存在则添加。
  * @param  : uint8_t data[] 数据
  * @param  ：uitn8_t len  数据长度
  * @param  : TopologyMessage* topolog
@@ -367,6 +367,7 @@ void DeleteTopologyListNodeById(ListDouble* topologyList, uint32_t id)
  * @update: [2018-05-29][张宇飞][]
  *          [2018-06-07][张宇飞][修改接口，增加为]
  *          [2018-06-21][张宇飞][改返回值为ErrorCode,添加形参检测]
+*           [2018-09-11][张宇飞][若已经存在，则不再添加]
  */
 
 ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* topologyList)
@@ -387,9 +388,22 @@ ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* top
         }
         else
         {
-            
-            DeleteTopologyListNodeById(topologyList, topologyMessage->id);
-            ListInsertNext(topologyList, NULL, topologyMessage);//最后统一插入
+        	TopologyMessage* find;
+        	error = FindTopologyNodeByID(topologyList, topologyMessage->id, &find);
+        	//不存在则插入
+        	if (error == ERROR_UNFIND)
+        	{
+        		ListInsertNext(topologyList, NULL, topologyMessage);
+        	}
+        	else
+        	{
+        		if (error)
+        		{
+        			perror("FindTopologyNodeByID. error:0x%x.\n", error);
+        		}
+
+        		FreeTopologyMemory(&topologyMessage);
+        	}
         }
      
     }
@@ -534,7 +548,7 @@ void DestoryBFSHelper(void* pHelper)
 }
 
 /**
- * @brief : 搜索索引，通过ID 
+ * @brief : 搜索索引，通过ID
  * @param : 
  * @return: 
  * @update: [2018-06-06][张宇飞][]
@@ -685,7 +699,7 @@ ErrorCode BreadthFirstPath(const ListDouble* switchList, const SwitchProperty* s
         
 }
 /**
- * @brief : 查找指定两点之间的路径, 
+ * @brief : 查找指定两点之间的路径,
  * @param  : 
  * @return: 
  * @update: [2018-06-06][张宇飞][]
@@ -743,7 +757,7 @@ ErrorCode PathTo(const ListDouble* switchList, const BFSHelper* helper, const Sw
 
 
 /**
- * @brief : 查找指定两点之间的路径, 
+ * @brief : 查找指定两点之间的路径,
  * @param : 
  * @return: 
  * @update: [2018-06-06][张宇飞][]
