@@ -20,6 +20,9 @@ static bool ListCopy(ListDouble* from, ListDouble* to);
 static bool ListDeepCopy_ConnectPath(ListDouble* from, ListDouble* to);
 static void SwitchSnapshootPrint(SwitchSnapshoot* snap);
 
+
+
+
 /**
 * @brief : 快照打印输出
 * @param : ListDouble* from
@@ -129,20 +132,24 @@ SwitchSnapshoot* SnapshootSwitchProperty(StationTopology* st)
 		return NULL;
 	}
 
-
-
+	ss->sanp_mutex = rt_mutex_create("snap", RT_IPC_FLAG_FIFO);
+	if (!ss->sanp_mutex)
+	{
+		perror("snap_mux failure.\n");
+	}
 	return ss;
 }
 
 
 /**
-* @brief : 保存开关状态信息
+* @brief : 删除快照
 * @param :GetNeighboorHandle* handle
 * @return:
 * @update: [2018-09-06][张宇飞][创建]
 */
 void SwitchSnapshoot_Destory(SwitchSnapshoot* ss)
 {
+	Snapshoot_StartUse(ss);
 	if (! ss)
 	{
 		return;
@@ -150,6 +157,7 @@ void SwitchSnapshoot_Destory(SwitchSnapshoot* ss)
 	Listdestroy(&(ss)->connectPath);
 	Listdestroy((ss)->connect.path);
 	Listdestroy((ss)->connect.path + 1);
+	rt_mutex_delete(ss->sanp_mutex);
 	FREE(ss);
 	
 }
@@ -221,5 +229,34 @@ ErrorCode Station_DeleteSnapshoot(StationTopology* pTopology)
 	SwitchSnapshoot_Destory(pTopology->snapshoot);
     pTopology->snapshoot = NULL;
 	return ERROR_OK_NULL;
+
+}
+
+/**
+* @brief : 开始使用站点快照，为互斥准备,配对使用
+* @param :StationTopology* pTopology
+* @return: void
+* @update: [2018-09-11][张宇飞][创建]
+*/
+bool Snapshoot_StartUse(SwitchSnapshoot* ss)
+{
+	rt_err_t err = rt_mutex_take(ss->sanp_mutex, RT_WAITING_FOREVER);
+	if (err != RT_EOK)
+	{
+		perror("sanp_mutex take error:0x%X\n.", err);
+		return false;
+	}
+	return true;
+
+}
+/**
+* @brief : 停止使用站点快照，为互斥准备,配对使用
+* @param :StationTopology* pTopology
+* @return: void
+* @update: [2018-09-11][张宇飞][创建]
+*/
+void Snapshoot_StopUse(SwitchSnapshoot* ss)
+{
+	rt_err_t err = rt_mutex_release(ss->sanp_mutex);
 
 }

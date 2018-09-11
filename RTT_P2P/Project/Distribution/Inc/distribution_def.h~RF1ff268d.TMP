@@ -15,7 +15,7 @@
 #include "distribution_enum.h"
 
 #include "list.h"  
-#include "rtdef.h"
+
 
 
 /**
@@ -236,7 +236,6 @@ typedef struct TagStationTopology
 
     bool isRunDistribution;  //是否允许允许分布式保护
     struct TagSwitchSnapshoot* snapshoot;//开关信息快照
-
 }StationTopology;
 
 /**
@@ -249,7 +248,6 @@ typedef struct TagSwitchSnapshoot
 	bool isFaultEdgeConnected;           //故障区域边缘，且为联络开关路径上
 	ConnectSwitch connect;//联络开关维护判别所需信息
 	ListDouble connectPath; //联络开关路径上判别,有成员则是，否则不是 ConnectPath
-	rt_mutex_t sanp_mutex;//快照互斥量
 }SwitchSnapshoot;
 
 /**

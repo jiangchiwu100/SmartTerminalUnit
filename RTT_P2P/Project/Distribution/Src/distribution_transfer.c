@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution_transfer.c
 * @brief:     用于转供电的各种操作
@@ -24,6 +24,7 @@ static ErrorCode Transfer_CapacitySend(FaultDealHandle* handle);
 * @update: [2018-07-12][张宇飞][BRIEF]
 * [2018-07-16][张宇飞][补全判断漏洞]
 * [2018-09-10][张宇飞][添加snap操作]
+* [2018-09-11][张宇飞][添加互斥snap]
 */
 StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 {
@@ -31,16 +32,23 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 	StationTopology* stationTopology = switchProperty->parent;
 	ListDouble* Listcp = &(stationTopology->connectPath);
 	SwitchSnapshoot* snap;
+	bool stateSnap;
+	StateResult returnState = RESULT_NULL;
 	if (stationTopology->snapshoot)
 	{
-		snap = stationTopology->snapshoot;
-		Listcp = &snap->connectPath;
+		stateSnap = Snapshoot_StartUse(stationTopology->snapshoot);
+		if (stateSnap)
+		{
+			snap = stationTopology->snapshoot;
+			Listcp = &snap->connectPath;
+		}
 
 	}
 	ErrorCode error;
 	if (handle->nextState != TRANSFER_MASTER)
 	{
-		return RESULT_ERROR_MATCH;
+		returnState =  RESULT_ERROR_MATCH;
+		goto ExitTransferPowerSupply_Master;
 	}
 	handle->state = TRANSFER_MASTER;
 
@@ -55,7 +63,8 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 		if (error)
 		{
 			perror("ConnectPath_ResetUpdateFlag Error: 0x%X", error);
-			return RESULT_ERROR;
+			returnState =  RESULT_ERROR;
+			goto ExitTransferPowerSupply_Master;
 		}
 		stationTopology->isConnectPathUpdatedComplted = false;
 
@@ -73,7 +82,8 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 			if (error)
 			{
 				perror("Transfer_ControlSend Error: 0x%X", error);
-				return RESULT_ERROR;
+				returnState =  RESULT_ERROR;
+				goto ExitTransferPowerSupply_Master;
 			}
 			PrintIDTipsTick(handle->switchProperty->id, "Transfer Master Send Cmd.");
 			handle->nextState = DISTRIBUTION_LOCK;
@@ -90,9 +100,16 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 	}
 	}
 
+	returnState =  RESULT_NULL;
+
+ExitTransferPowerSupply_Master:
+	if (stateSnap)
+	{
+		Snapshoot_StopUse(stationTopology->snapshoot);
+	}
 
 	handle->lastState = handle->state;
-	return RESULT_NULL;
+	return returnState;
 }
 
 
@@ -102,6 +119,7 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 * @param
 * @return: 0-正常
 * @update: [2018-07-13][张宇飞][BRIEF]
+* @update: [2018-09-11][张宇飞][添加互斥机制]
 */
 StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 {	
@@ -111,13 +129,19 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 	ErrorCode error;
 	CHECK_UNEQUAL_RETURN_LOG(handle->nextState, TRANSFER_CONNECT, RESULT_ERROR_MATCH, switchProperty->id);	
 	handle->state = TRANSFER_CONNECT;
-
+	StateResult returnState = RESULT_NULL;
 	SwitchSnapshoot* snap;
 	ConnectPath* cp;
+	bool stateSnap = false;
+
 	if (stationTopology->snapshoot)
 	{
-		snap = stationTopology->snapshoot;
-		pconnect = &snap->connect;
+		stateSnap = Snapshoot_StartUse(stationTopology->snapshoot);
+		if (stateSnap)
+		{
+			snap = stationTopology->snapshoot;
+			pconnect = &snap->connect;
+		}
 
 	}
 
@@ -132,7 +156,8 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 		if (error)
 		{
 			perror("Transfer_CapacitySend Error: 0x%X", error);
-			return RESULT_ERROR;
+			returnState =  RESULT_ERROR;
+			goto ExitTransferPowerSupply_Connect;
 		}		
 		handle->nextState = TRANSFER_CONNECT;
 		handle->step = 1;
@@ -192,9 +217,13 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 
 	}
 
-
+ExitTransferPowerSupply_Connect:
+	if (stateSnap)
+	{
+		Snapshoot_StopUse(stationTopology->snapshoot);
+	}
 	handle->lastState = handle->state;
-	return RESULT_NULL;
+	return returnState;
 }
 /**
 * @brief :转供电——控制发送,不进行参数检查
@@ -263,6 +292,7 @@ static ErrorCode Transfer_CapacitySend( FaultDealHandle* handle)
 * @return: 0-正常
 * @update: [2018-07-12][张宇飞][BRIEF]
 * [2018-09-10][张宇飞][添加快照]
+* [2018-09-11][张宇飞][添加互斥机制]
 */
 ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* station)
 {
@@ -276,12 +306,17 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 	TransferCode code = (TransferCode)pdata[0];
 	ConnectSwitch* cs = &station->connect;
 	SwitchSnapshoot* snap;
-
+	bool stateSnap = false;
 	if (station->snapshoot)
 	{
-		snap = station->snapshoot;
-		list = &snap->connectPath;
-		cs = &snap->connect;
+		stateSnap = Snapshoot_StartUse(station->snapshoot);
+		if (stateSnap)
+		{
+			snap = station->snapshoot;
+            list = &snap->connectPath;
+            cs = &snap->connect;
+		}
+
 	}
 
 
@@ -327,6 +362,10 @@ ErrorCode Transfer_ParseDeal(uint8_t* pdata, uint16_t len,  StationTopology* sta
 	default:
 		break;
 	}
-
+ExitTransfer_ParseDeal:
+	if (stateSnap)
+	{
+		Snapshoot_StopUse(station->snapshoot);
+	}
 	return error;
 }

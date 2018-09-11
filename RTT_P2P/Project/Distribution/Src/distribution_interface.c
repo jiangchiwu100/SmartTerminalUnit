@@ -332,6 +332,7 @@ static inline bool IsGatherCompleted(FaultDealHandle* handle)
 *[2018-09-06][张宇飞][增加快照]
 *[2018-09-07][张宇飞][补充条件]
 *[2018-09-10][张宇飞][修改中数量判别条件]
+*[2018-09-11][张宇飞][添加snap互斥]
 */
 static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域边缘，且为联络开关路径上
 {
@@ -342,13 +343,18 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	SwitchSnapshoot* snap;
 	ConnectPath* cp = NULL;
 	SwitchProperty* sw;
+	bool returnResult = false;
+	bool stateSnap = false;
 	if (station->snapshoot)
 	{
-        snap = station->snapshoot;
-		//perror("snap is null\n");
-		 isFaultEdgeConnected = snap->isFaultEdgeConnected;
-		 list = &snap->connectPath;
-		//return false;
+		stateSnap = Snapshoot_StartUse(station->snapshoot);
+		if (stateSnap)
+		{
+	        snap = station->snapshoot;
+			isFaultEdgeConnected = snap->isFaultEdgeConnected;
+			list = &snap->connectPath;
+		}
+
 	}
 
 
@@ -356,7 +362,8 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	uint8_t num = 0;
 	if (size == 0)
 	{
-		return false;
+		returnResult = false;
+		goto ExitIsFaultEdgeConnected;
 	}
 
 	uint32_t id;
@@ -411,13 +418,18 @@ static inline bool IsFaultEdgeConnected(FaultDealHandle* handle)//故障区域�
 	if (( (switchNum > (num+1))
         || (num != size)) && (isFaultEdgeConnected))
 	{
-		return true;
+		returnResult =  true;
 	}
 	else
 	{
-		return false;
+		returnResult =  false;
 	}
-
+ExitIsFaultEdgeConnected:
+	if (stateSnap)
+	{
+		Snapshoot_StopUse(station->snapshoot);
+	}
+	return returnResult;
 
 }
 /**

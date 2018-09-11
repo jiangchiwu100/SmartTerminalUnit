@@ -35,5 +35,5 @@
 #include "station.h"
 #include "distribution_monitor.h"
 #include "distribution_online.h"
-
+#include "snapshoot.h"
 #endif

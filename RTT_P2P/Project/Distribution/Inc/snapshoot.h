@@ -17,4 +17,6 @@ extern void SwitchSnapshoot_Destory(SwitchSnapshoot* ss);
 extern ErrorCode Station_Snapshoot(StationTopology* pTopology);
 extern ErrorCode Station_DeleteSnapshoot(StationTopology* pTopology);
 
+extern bool Snapshoot_StartUse(SwitchSnapshoot* ss);
+extern void Snapshoot_StopUse(SwitchSnapshoot* ss);
 #endif
