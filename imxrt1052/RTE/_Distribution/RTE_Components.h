@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'project' 
+ * Project: 'stu_imx' 
  * Target:  'Distribution' 
  */
 

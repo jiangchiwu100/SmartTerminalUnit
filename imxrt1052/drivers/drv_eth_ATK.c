@@ -31,6 +31,8 @@
 #include "lwipopts.h"
 #include "drv_pcf8574.h"
 
+#include "ethernet_hook.h"
+
 #define ENET_RXBD_NUM (4)
 #define ENET_TXBD_NUM (4)
 #define ENET_RXBUFF_SIZE (ENET_FRAME_MAX_FRAMELEN)
@@ -211,16 +213,16 @@ static void _enet_io_init(void)
     IOMUXC_SetPinMux(IOMUXC_GPIO_B1_07_ENET_TX_DATA00,0);                                    
     IOMUXC_SetPinMux(IOMUXC_GPIO_B1_08_ENET_TX_DATA01,0);                                   
     IOMUXC_SetPinMux(IOMUXC_GPIO_B1_09_ENET_TX_EN,0);                                    
-    IOMUXC_SetPinMux(IOMUXC_GPIO_B1_10_ENET_REF_CLK,1);    //±ØÐëÎª1£¬·ñÔòÍøÂç¹¤×÷²»Õý³££¡                                                                   
+    IOMUXC_SetPinMux(IOMUXC_GPIO_B1_10_ENET_REF_CLK,1);    //ï¿½ï¿½ï¿½ï¿½Îª1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     IOMUXC_SetPinMux(IOMUXC_GPIO_B1_14_ENET_MDC,0);                                   
     IOMUXC_SetPinMux(IOMUXC_GPIO_B1_15_ENET_MDIO,0);
 
     
-    //ÉèÖÃ¸´Î»ºÍÖÐ¶ÏÒý½Å
-    //¸ß×ª»»ËÙ¶È,Çý¶¯ÄÜÁ¦ÎªR0/5,ËÙ¶ÈÎª100Mhz£¬¿ªÂ·Êä³ö£¬Ê¹ÄÜpull/keepr
-	//Ñ¡Ôñpull¹¦ÄÜ£¬ÉÏÀ­100K Ohm£¬¹Ø±ÕHyst                             
+    //ï¿½ï¿½ï¿½Ã¸ï¿½Î»ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½
+    //ï¿½ï¿½×ªï¿½ï¿½ï¿½Ù¶ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªR0/5,ï¿½Ù¶ï¿½Îª100Mhzï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½pull/keepr
+	//Ñ¡ï¿½ï¿½pullï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½100K Ohmï¿½ï¿½ï¿½Ø±ï¿½Hyst
 
-    //ÉèÖÃÍøÂ·Òý½Å
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½
     IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_04_ENET_RX_DATA00,0X110F9);                             
     IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_05_ENET_RX_DATA01,0X110F9);                            
     IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_06_ENET_RX_EN,0X110F9);                            
@@ -231,9 +233,9 @@ static void _enet_io_init(void)
     IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_14_ENET_MDC,0X110F9);                                   
     IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_15_ENET_MDIO,0X110F9);
     
-    //Ê¹ÄÜÍøÂçµÄTX_CLKÒý½ÅÊä³ö¹¦ÄÜ
+    //Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½TX_CLKï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     IOMUXC_EnableMode(IOMUXC_GPR,kIOMUXC_GPR_ENET1TxClkOutputDir,true);
-	IOMUXC_GPR->GPR1|=1<<23;		//ipg clk ×Ü¿ªÆô
+	IOMUXC_GPR->GPR1|=1<<23;		//ipg clk ï¿½Ü¿ï¿½ï¿½ï¿½
 }
 
 static void _enet_clk_init(void)
@@ -579,9 +581,178 @@ static status_t _ENET_SendFrame(ENET_Type *base, enet_handle_t *handle, const ui
         return kStatus_ENET_TxFrameBusy;
     }
 }
+/**
+* @brief  ä»¥å¤ªç½‘è¾“å‡º
+* @param  uint8_t* pData
+* @param  uint16_t count
+* @retutn [RT_ERROR] error;[RT_EOK] success.
+* @update[2018-09-12][å¼ å®‡é£ž][_ENET_SendFrameåŸºç¡€ä¸Šï¼Œæ›´æ”¹å¤åˆ¶æœºåˆ¶]
+*/
+static status_t _ENET_SendFrameEx(ENET_Type *base, enet_handle_t *handle, const uint8_t *data, uint32_t length)
+{
+    assert(handle);
+    assert(data);
 
-/* ethernet device interface */
-/* transmit packet. */
+    volatile enet_tx_bd_struct_t *curBuffDescrip;
+    uint32_t len = 0;
+    uint32_t sizeleft = 0;
+    uint32_t address;
+
+    /* Check the frame length. */
+    if (length > ENET_FRAME_MAX_FRAMELEN)
+    {
+        return kStatus_ENET_TxFrameOverLen;
+    }
+
+    /* Check if the transmit buffer is ready. */
+    curBuffDescrip = handle->txBdCurrent[0];
+    if (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_TX_READY_MASK)
+    {
+        return kStatus_ENET_TxFrameBusy;
+    }
+#ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
+    bool isPtpEventMessage = false;
+    /* Check PTP message with the PTP header. */
+    isPtpEventMessage = ENET_Ptp1588ParseFrame(data, NULL, true);
+#endif /* ENET_ENHANCEDBUFFERDESCRIPTOR_MODE */
+    /* One transmit buffer is enough for one frame. */
+    if (handle->txBuffSizeAlign[0] >= length)
+    {
+        /* Copy data to the buffer for uDMA transfer. */
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
+        address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,kMEMORY_DMA2Local);
+#else
+        address = (uint32_t)curBuffDescrip->buffer;
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+
+        memcpy( (void *)address,data, length);
+
+        /* Set data length. */
+        curBuffDescrip->length = length;
+#ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
+        /* For enable the timestamp. */
+        if (isPtpEventMessage)
+        {
+            curBuffDescrip->controlExtend1 |= ENET_BUFFDESCRIPTOR_TX_TIMESTAMP_MASK;
+        }
+        else
+        {
+            curBuffDescrip->controlExtend1 &= ~ENET_BUFFDESCRIPTOR_TX_TIMESTAMP_MASK;
+        }
+
+#endif /* ENET_ENHANCEDBUFFERDESCRIPTOR_MODE */
+        curBuffDescrip->control |= (ENET_BUFFDESCRIPTOR_TX_READY_MASK | ENET_BUFFDESCRIPTOR_TX_LAST_MASK);
+
+        /* Increase the buffer descriptor address. */
+        if (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_TX_WRAP_MASK)
+        {
+            handle->txBdCurrent[0] = handle->txBdBase[0];
+        }
+        else
+        {
+            handle->txBdCurrent[0]++;
+        }
+#if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
+        /* Add the cache clean maintain. */
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
+        address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,kMEMORY_DMA2Local);
+#else
+        address = (uint32_t)curBuffDescrip->buffer;
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+        DCACHE_CleanByRange(address, length);
+#endif  /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
+        /* Active the transmit buffer descriptor. */
+        _ENET_ActiveSend(base, 0);
+
+        return kStatus_Success;
+    }
+    else
+    {
+        /* One frame requires more than one transmit buffers. */
+        do
+        {
+#ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
+            /* For enable the timestamp. */
+            if (isPtpEventMessage)
+            {
+                curBuffDescrip->controlExtend1 |= ENET_BUFFDESCRIPTOR_TX_TIMESTAMP_MASK;
+            }
+            else
+            {
+                curBuffDescrip->controlExtend1 &= ~ENET_BUFFDESCRIPTOR_TX_TIMESTAMP_MASK;
+            }
+#endif /* ENET_ENHANCEDBUFFERDESCRIPTOR_MODE */
+
+            /* Increase the buffer descriptor address. */
+            if (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_TX_WRAP_MASK)
+            {
+                handle->txBdCurrent[0] = handle->txBdBase[0];
+            }
+            else
+            {
+                handle->txBdCurrent[0]++;
+            }
+            /* update the size left to be transmit. */
+            sizeleft = length - len;
+            if (sizeleft > handle->txBuffSizeAlign[0])
+            {
+                /* Data copy. */
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
+                address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,kMEMORY_DMA2Local);
+#else
+                address = (uint32_t)curBuffDescrip->buffer;
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+                memcpy((void *)address, data + len, handle->txBuffSizeAlign[0]);
+                /* Data length update. */
+                curBuffDescrip->length = handle->txBuffSizeAlign[0];
+                len += handle->txBuffSizeAlign[0];
+                /* Sets the control flag. */
+                curBuffDescrip->control &= ~ENET_BUFFDESCRIPTOR_TX_LAST_MASK;
+                curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_TX_READY_MASK;
+                /* Active the transmit buffer descriptor*/
+                _ENET_ActiveSend(base, 0);
+            }
+            else
+            {
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
+                address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,kMEMORY_DMA2Local);
+#else
+                address = (uint32_t)curBuffDescrip->buffer;
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+                memcpy((void *)address, data + len, sizeleft);
+                curBuffDescrip->length = sizeleft;
+                /* Set Last buffer wrap flag. */
+                curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_TX_READY_MASK | ENET_BUFFDESCRIPTOR_TX_LAST_MASK;
+#if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
+                /* Add the cache clean maintain. */
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
+                address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,kMEMORY_DMA2Local);
+#else
+                address = (uint32_t)curBuffDescrip->buffer;
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+                DCACHE_CleanByRange(address, handle->txBuffSizeAlign[0]);
+#endif  /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
+                /* Active the transmit buffer descriptor. */
+                _ENET_ActiveSend(base, 0);
+
+                return kStatus_Success;
+            }
+
+            /* Get the current buffer descriptor address. */
+            curBuffDescrip = handle->txBdCurrent[0];
+
+        } while (!(curBuffDescrip->control & ENET_BUFFDESCRIPTOR_TX_READY_MASK));
+
+        return kStatus_ENET_TxFrameBusy;
+    }
+}
+/**
+* @brief  ä»¥å¤ªç½‘è¾“å‡º
+* @param  uint8_t* pData
+* @param  uint16_t count
+* @retutn [RT_ERROR] error;[RT_EOK] success.
+* @update[2018-09-12][å¼ å®‡é£ž][æ·»åŠ æ³¨é‡Šã€æ·»åŠ äº’æ–¥æœºåˆ¶]
+*/
 rt_err_t rt_imxrt_eth_tx(rt_device_t dev, struct pbuf *p)
 {
 	rt_err_t result = RT_EOK;
@@ -595,9 +766,10 @@ rt_err_t rt_imxrt_eth_tx(rt_device_t dev, struct pbuf *p)
 #ifdef ETH_TX_DUMP
     packet_dump("send", p);
 #endif
-
+    EhernetOuputMutex_OnLock();
     do
     {
+
         result = _ENET_SendFrame(imxrt_eth_device.enet_base, enet_handle, (const uint8_t *)p, p->tot_len);
 
         if (result == kStatus_ENET_TxFrameBusy)
@@ -608,9 +780,37 @@ rt_err_t rt_imxrt_eth_tx(rt_device_t dev, struct pbuf *p)
 
     }
     while (result == kStatus_ENET_TxFrameBusy);
-
+    EhernetOuputMutex_OffLock();
     return RT_EOK;
 }
+
+/**
+* @brief  ä»¥å¤ªç½‘è¾“å‡º
+* @param  uint8_t* pData
+* @param  uint16_t count
+* @retutn [RT_ERROR] error;[RT_EOK] success.
+* @update[2018-09-12][å¼ å®‡é£ž][åˆ›å»º]
+*/
+rt_err_t EthernetOutput(const uint8_t* pData, uint16_t count)
+{
+	rt_err_t result = RT_EOK;
+	enet_handle_t * enet_handle = &imxrt_eth_device.enet_handle;
+
+	EhernetOuputMutex_OnLock();
+	do
+	{
+			result = _ENET_SendFrameEx(imxrt_eth_device.enet_base, enet_handle, pData, count);
+			if (result == kStatus_ENET_TxFrameBusy)
+			{
+				imxrt_eth_device.tx_is_waiting = RT_TRUE;
+				rt_sem_take(&imxrt_eth_device.tx_wait, RT_WAITING_FOREVER);
+			}
+	}
+	while (result == kStatus_ENET_TxFrameBusy);
+	EhernetOuputMutex_OffLock();
+    return RT_EOK;
+}
+
 
 /* reception packet. */
 struct pbuf *rt_imxrt_eth_rx(rt_device_t dev)
@@ -637,6 +837,12 @@ struct pbuf *rt_imxrt_eth_rx(rt_device_t dev)
             status = ENET_ReadFrame(enet_base, enet_handle, p->payload, length);
             if (status == kStatus_Success)
             {
+            	 bool resultState = EthernetInput(p->payload, length);
+            	 if (resultState)
+            	 {
+            		 pbuf_free(p);
+            		 return NULL;
+            	 }
 #ifdef ETH_RX_DUMP
                 packet_dump("recv", p);
 #endif
@@ -809,6 +1015,7 @@ static int rt_hw_imxrt_eth_init(void)
             rt_thread_startup(tid);
     }
 
+    EthernetHookInit();
     return state;
 }
 INIT_ENV_EXPORT(rt_hw_imxrt_eth_init);

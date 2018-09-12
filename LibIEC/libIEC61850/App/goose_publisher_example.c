@@ -15,8 +15,7 @@
 #include "extern_interface.h"
 
 // has to be executed as root!
-int
-publisher_main(int argc, char** argv)
+void publisher_main(void* paramter)
 {
 	char* interface;
 
@@ -56,7 +55,7 @@ publisher_main(int argc, char** argv)
 
 	int i = 0;
 
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < 10000; i++) {
 		Thread_sleep(1000);
 
 		if (GoosePublisher_publish(publisher, dataSetValues) == -1) {
@@ -65,7 +64,7 @@ publisher_main(int argc, char** argv)
 	}
 
 	GoosePublisher_destroy(publisher);
-    return 0;
+
 }
 
 

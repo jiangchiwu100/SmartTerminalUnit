@@ -13,15 +13,18 @@
 
 /* INCLUDES ------------------------------------------------------------------*/	
 #include "stm32f4xx_hal.h"
+#include "sys.h"
 
-/* DEFINE --------------------------------------------------------------------*/	
-#define  IO_SPI1_SCK_HIGH()               HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET) 
-#define  IO_SPI1_SCK_LOW()                HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET) 
-#define  IO_SPI1_MOSI_HIGH()              HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET) 
-#define  IO_SPI1_MOSI_LOW()               HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET) 
-#define  IO_SPI1_MISO_READ()              HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)
-#define  IO_SPI1_CS_HIGH()                HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET) 
-#define  IO_SPI1_CS_LOW()                 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET) 
+/* DEFINE --------------------------------------------------------------------*/
+#define DEVICEID  		0x2400			  //FRAM设备ID
+
+#define  IO_SPI2_SCK_HIGH()               HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET) 
+#define  IO_SPI2_SCK_LOW()                HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET) 
+#define  IO_SPI2_MOSI_HIGH()              HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET) 
+#define  IO_SPI2_MOSI_LOW()               HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET) 
+#define  IO_SPI2_MISO_READ()              HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)
+#define  IO_SPI2_CS_HIGH()                HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET) 
+#define  IO_SPI2_CS_LOW()                 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET) 
 
 #define FM25V10_MAX_ADDR					0x3FFF 
 
@@ -41,34 +44,55 @@ enum ProgramState{
 #define IS_RUNERROR_FLAG					(!IS_RUNOK_FLAG)//运行异常标志
 #define IS_ROLLBACK_FLAG					0x20//回退标志
 
-#define FRAM_WREN                       0x06     // Set write enable latch
-#define FRAM_WRDI                       0x04     // Write disable
-#define FRAM_RDSR                       0x05     // Read status register
-#define FRAM_WRSR                       0x01     // Write status register
-#define FRAM_READ                       0x03     // Read memory data
-#define FRAM_FSTRD                      0x0B     // Fast read memory data
-#define FRAM_WRITE                      0x02     // Write memory data
-#define FRAM_SLEEP                      0xB9     // Enter sleep mode
-#define FRAM_RIID                       0x9F     // Read device ID
-#define FRAM_SNR                        0xC3     // Read S/N
-
+#define WREN                       0x06     // Set write enable latch
+#define WRDI                       0x04     // Write disable
+#define RDSR                       0x05     // Read status register
+#define WRSR                       0x01     // Write status register
+#define READ                       0x03     // Read memory data
+#define FSTRD                      0x0B     // Fast read memory data
+#define WRITE                      0x02     // Write memory data
+#define SLEEP                      0xB9     // Enter sleep mode
+#define RDID                       0x9F     // Read device ID
+#define SNR                        0xC3     // Read S/N
+#define FRAM_CS							PFout(6)
 
 #ifndef  FALSE
 #define  FALSE     0
 #define  TRUE      !FALSE
 #endif /* END FALSE */
-#include "fm25v10.h"
+
 
 /* PUBLIC FUNCTION  ----------------------------------------------------------*/
-#define FM25VxxReadData(addr, flag, pBuf,  len) FramReadBatch(addr, len, pBuf)
-#define FM25VxxWriteData(addr, flag, pBuf,  len) FramWriteBatch(addr, len, pBuf)
-//void FM25VxxInit(void);
-//uint8_t FM25VxxReadData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
-//uint8_t FM25VxxWriteData(uint32_t addr, uint8_t *flag, uint8_t *pBuf, uint32_t len);
+extern uint8_t (*FramReadDate)(uint32_t address, uint32_t number, uint8_t* p);
+extern void (*FramWriteDate)(uint32_t address, uint32_t number, uint8_t* p);
+void FRAM_Init(void);
+void FramSPI5WriteString(uint32_t address, uint32_t number, uint8_t* p);
+void FramSPI2WriteString(uint32_t address, uint32_t number, uint8_t* p);
+uint8_t FramSPI5ReadString(uint32_t address, uint32_t number, uint8_t* p);
+uint8_t FramSPI2ReadString(uint32_t address, uint32_t number, uint8_t* p);
+
+
+
+void FM25VxxInit(void);						//FRAM初始化
+
+void FRAM_SPI5_Init(void);					
+
+void FramWriteByte(uint32_t address, uint8_t da);	
+uint8_t FramReadByte(uint32_t address);
+void FramWriteString(uint32_t address, uint32_t number, uint8_t* p);
+uint8_t FramReadString(uint32_t address, uint32_t number, uint8_t* p);
+
+void IO_SPI2_Init(void);
+uint8_t IO_SPI2_ReadWriteByte(uint8_t byte);
+
+uint16_t FRAM_SPI2_ReadID(void);
+uint16_t FRAM_SPI5_ReadID(void);
+
+void Fram_Check(void);						//检查fram
 void FM25VxxUseKill(void);
 
-
-
+#define FM25VxxReadData(addr, flag, pBuf,  len) FramReadDate(addr, len, pBuf)
+#define FM25VxxWriteData(addr, flag, pBuf,  len) FramWriteDate(addr, len, pBuf)
 #endif
 
 /* END OF FILE ---------------------------------------------------------------*/

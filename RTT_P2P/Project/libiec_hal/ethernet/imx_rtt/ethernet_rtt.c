@@ -25,16 +25,6 @@
 
 
 
-rt_err_t EthernetOutput( uint8_t* pData, uint16_t count)
-{
-    perror("Unimplent!\n");
-    return 0;
-}
-
-
-
-
-
 
 EthernetHandleSet
 EthernetHandleSet_new(void)

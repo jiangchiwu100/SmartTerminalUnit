@@ -13,7 +13,7 @@ extern rt_mutex_t g_ethernet_mutex;
 
 void EthernetHookInit(void);
 bool EthernetInput(uint8_t* pData, uint16_t len);
-rt_err_t EthernetOutput( uint8_t* pData, uint16_t count);
+rt_err_t EthernetOutput(const uint8_t* pData, uint16_t count);
 uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size);
 
 void EhernetOuputMutex_OnLock(void);

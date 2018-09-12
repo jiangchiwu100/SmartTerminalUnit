@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "drv_fm25vxx.h"
-#include "fm25v10.h"
+
 
 #include "database.h"
 
@@ -56,8 +56,8 @@ int tftp_demo(void)
 	//TIM3_Int_Init(1000,71);//10Khz的计数频率，计数到1000为1ms 
 	rt_kprintf("\r\n MCU initialized.\r\n");
 	
-     w5500_spi_init();
-     Reset_W5500();
+    w5500_spi_init();
+    Reset_W5500();
     bool state = StationMessageRead();
     if (!state)
     {
@@ -104,8 +104,11 @@ int tftp_demo(void)
                         ProgramSize = SaveCount;
                         //写长度
                         uint8_t data = IS_WILLUPDATA_FLAG;
-                        FramWriteByte(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE, data);
-                         data =  FramReadByte(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE);
+                        FramWriteDate(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE, 1, &data);
+                        //FramWriteByte(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE, data);
+                        data = 0;
+                       //  data =  FramReadByte(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE);
+                        FramReadDate(PRO_STATE_BEGINADDR + PRO_MAINBOARD_STATE, 1, &data);
                         if (data != IS_WILLUPDATA_FLAG)
                         {
                             rt_kprintf("Write Frame ERROR!\r\n");

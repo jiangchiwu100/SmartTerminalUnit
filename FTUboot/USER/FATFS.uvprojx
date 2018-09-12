@@ -596,9 +596,9 @@
               <FilePath>..\HARDWARE\IAP\MainBoardBoot.c</FilePath>
             </File>
             <File>
-              <FileName>fm25v10.c</FileName>
+              <FileName>drv_fm25vxx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\FM25Vxx\fm25v10.c</FilePath>
+              <FilePath>..\HARDWARE\FM25Vxx\drv_fm25vxx.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -343,12 +343,9 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
     rt_err_t result;
     result = eth_device_ready(&(stm32_eth_device.parent));
     if (result != RT_EOK)
-		{
+    {
         rt_kprintf("HAL_ETH_RxCpltCallback RX err =%d\n", result );
-		}
-        
-    StopWatchInit();
-    StopWatchStart();
+    }        
 }
 
 /**
@@ -504,10 +501,10 @@ error:
     return ret;
 }
 /**
-* @brief ���ͺ���ʹ�û�����,ÿ�η���һ֡
-* @param  uint8_t* pData ����ָ��
-* @param  uint16_t count ���ݳ���
-* @retutn [RT_ERROR] error;[ERR_OK] success.
+* @brief  以太网输出
+* @param  uint8_t* pData
+* @param  uint16_t count
+* @retutn [RT_ERROR] error;[RT_EOK] success.
 * @update[2018-08-03][张宇飞][创建]
 * @update[2018-08-06][张宇飞][添加VLAN标记]
 */

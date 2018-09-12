@@ -347,7 +347,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>(?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -3826,7 +3825,7 @@
 
   <Group>
     <GroupName>Distribution</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4038,7 +4037,7 @@
 
   <Group>
     <GroupName>Distribution/Mutal</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4418,7 +4417,7 @@
 
   <Group>
     <GroupName>Distribution/APP</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

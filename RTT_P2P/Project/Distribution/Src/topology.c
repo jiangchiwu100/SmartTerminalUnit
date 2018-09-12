@@ -394,6 +394,7 @@ ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* top
         	if (error == ERROR_UNFIND)
         	{
         		ListInsertNext(topologyList, NULL, topologyMessage);
+                error = ERROR_OK_NULL;
         	}
         	else
         	{

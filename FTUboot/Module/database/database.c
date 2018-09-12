@@ -10,7 +10,7 @@
   
 #include "database.h"
 
-#include "fm25v10.h"
+#include "drv_fm25vxx.h"
 #include "systemconfig.h"
 
 
@@ -53,7 +53,7 @@ static uint8_t rt_device_read(uint8_t dev,
                          void       *buffer,
                          uint32_t   size)
 {
-    FramReadBatch(pos, size, buffer);
+    FramReadDate(pos, size, buffer);
     return 0;
 }
 

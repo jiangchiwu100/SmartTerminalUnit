@@ -41,6 +41,9 @@ void rt_hw_led_init(void)
     rt_pin_mode(LED_PIN, PIN_MODE_OUTPUT);
 }
 
+
+static void IEC61850AppInit(void);
+
 int main(void)
 {
     rt_uint32_t result;
@@ -62,6 +65,7 @@ int main(void)
         rt_kprintf("sdcard init fail or timeout: %d!\n", result);
     }
 #endif
+    IEC61850AppInit();
     rt_hw_led_init();
     while (1)
     {
@@ -70,6 +74,42 @@ int main(void)
         rt_pin_write(LED_PIN, 1);
         rt_thread_delay(500);
     }
+}
+
+
+
+
+static rt_thread_t test_thread;
+
+
+/**
+  * @brief :IEC61850AppInit
+  * @param  void
+  * @return: void
+  * @update: [2018-08-13][??]
+  */
+static void IEC61850AppInit(void)
+{
+    extern void publisher_main(void* paramter);
+  
+    test_thread = rt_thread_create(              
+		"test",                       
+        publisher_main,           
+        RT_NULL,                      
+        1024*4,     		
+		14,                            
+		20);                          
+     if (test_thread)
+     {
+         rt_thread_startup(test_thread);  
+     }         
+    else
+    {
+        perror(" test_thread(publisher_main) failure\n");
+    }
+    
+    return;
+
 }
 
 
