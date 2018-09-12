@@ -467,72 +467,7 @@ static int rt_hw_io_spi1_init(void)
 		
     return(RT_EOK);
 }
-INIT_BOARD_EXPORT(rt_hw_io_spi1_init);
-
-/**
-  * @brief : fm25vxx hardware init
-  * @param : [param] the parameter.
-  * @return: [RT_EOK] 
-  * @updata: [2017-12-21][Sunxr][newly increased]
-  */
-int rt_hw_fm25vxx_init(void)
-{
-    struct rt_spi_configuration cfg;	
-    rt_spi_flash_device_t rtt_dev = (rt_spi_flash_device_t) rt_malloc(sizeof(struct spi_flash_device));
-    rt_device_t device = RT_NULL;
-	
-    /* SPI configure */
-    rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_IO_SPI1_DEVICE_NAME);
-	
-    if (rtt_dev->rt_spi_device == NULL)
-    {
-        FRAM_PRINTF("io_spi1 bus device io_spi10 not found! fm25vxx init failed \r\n"); 
-		
-        return(RT_ERROR);
-    }
-    cfg.mode = RT_SPI_MODE_MASK;
-    cfg.max_hz = 50 * 1000 * 1000;
-    cfg.data_width = 8;	
-    rt_spi_configure(rtt_dev->rt_spi_device, &cfg);	
-	
-    /* initialize lock */
-    rt_mutex_init(&(rtt_dev->lock), "fram0", RT_IPC_FLAG_FIFO);	
-	
-    /* register device */
-    fm25vxx.flash_device.type = RT_Device_Class_SPIDevice;
-    fm25vxx.flash_device.init = RT_NULL;
-    fm25vxx.flash_device.open = RT_NULL;
-    fm25vxx.flash_device.close = RT_NULL;
-    fm25vxx.flash_device.read = rt_hw_fm25vxx_read;
-    fm25vxx.flash_device.write = rt_hw_fm25vxx_write;
-    fm25vxx.flash_device.control = rt_hw_fm25vxx_control;	
-    /* no private */
-    fm25vxx.user_data = RT_NULL;
-	
-    rt_device_register(&fm25vxx.flash_device, RT_SPI_FRAM_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	
-
-    device = rt_device_find(RT_SPI_FRAM_NAME);
-	
-    if (device == NULL)
-    {
-        FRAM_PRINTF("fram is not found! \r\n"); 		
-    }
-    else	
-    {
-        rt_device_open(device, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	  
-
-        rt_device_control(&fm25vxx.flash_device, FM_READ_ID, RT_NULL); 
-//	    rt_device_control(&fm25vxx.flash_device, FM_TEST, RT_NULL);		
-    }	
-
-    rt_hw_fram_first_clear();
-	
-    return(RT_EOK);
-}
-INIT_PREV_EXPORT(rt_hw_fm25vxx_init)
-
-#else 
-
+//INIT_BOARD_EXPORT(rt_hw_io_spi1_init);
 /**
   * @brief : spi4 init 
   * @param : [none]
@@ -595,7 +530,137 @@ static int rt_hw_spi5_init(void)
 		
     return(RT_EOK);
 }
-INIT_BOARD_EXPORT(rt_hw_spi5_init);
+//INIT_BOARD_EXPORT(rt_hw_spi5_init);
+/**
+  * @brief : fm25vxx hardware init
+  * @param : [param] the parameter.
+  * @return: [RT_EOK] 
+  * @updata: [2017-12-21][Sunxr][newly increased]
+  */
+int rt_hw_fm25vxx_init(void)
+{
+	uint8_t i = 10;
+    struct rt_spi_configuration cfg;	
+    rt_spi_flash_device_t rtt_dev = (rt_spi_flash_device_t) rt_malloc(sizeof(struct spi_flash_device));
+    rt_device_t device = RT_NULL;
+//	if(RT_EOK == rt_hw_fram_read_id())
+//	{	
+	rt_hw_io_spi1_init();	
+		/* SPI configure */
+	rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_IO_SPI1_DEVICE_NAME);
+		
+	if (rtt_dev->rt_spi_device == NULL)
+	{
+		FRAM_PRINTF("io_spi1 bus device io_spi10 not found! fm25vxx init failed \r\n"); 
+			
+		return(RT_ERROR);
+	}
+	cfg.mode = RT_SPI_MODE_MASK;
+	cfg.max_hz = 50 * 1000 * 1000;
+	cfg.data_width = 8;	
+	rt_spi_configure(rtt_dev->rt_spi_device, &cfg);	
+	i = rt_hw_fram_read_id();
+	if( i == 0)
+	{
+		rt_kprintf("\r\n      spi2      \r\n");
+		/* initialize lock */
+		rt_mutex_init(&(rtt_dev->lock), "fram0", RT_IPC_FLAG_FIFO);	
+	
+		/* register device */
+		fm25vxx.flash_device.type = RT_Device_Class_SPIDevice;
+		fm25vxx.flash_device.init = RT_NULL;
+		fm25vxx.flash_device.open = RT_NULL;
+		fm25vxx.flash_device.close = RT_NULL;
+		fm25vxx.flash_device.read = rt_hw_fm25vxx_read;
+		fm25vxx.flash_device.write = rt_hw_fm25vxx_write;
+		fm25vxx.flash_device.control = rt_hw_fm25vxx_control;	
+    /* no private */
+		fm25vxx.user_data = RT_NULL;
+	
+		rt_device_register(&fm25vxx.flash_device, RT_SPI_FRAM_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	
+
+		device = rt_device_find(RT_SPI_FRAM_NAME);
+	
+		if (device == NULL)
+		{
+			FRAM_PRINTF("fram is not found! \r\n"); 		
+		}
+		else	
+		{
+			rt_device_open(device, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	  
+
+			rt_device_control(&fm25vxx.flash_device, FM_READ_ID, RT_NULL); 
+//	   		rt_device_control(&fm25vxx.flash_device, FM_TEST, RT_NULL);		
+		}	
+
+		rt_hw_fram_first_clear();
+	
+		return(RT_EOK);
+	}
+	else 
+	{
+		rt_hw_spi5_init();
+		    /* SPI configure */
+		rtt_dev->rt_spi_device = (struct rt_spi_device *) rt_device_find(RT_SPI5_DEVICE_NAME);
+    
+		if (rtt_dev->rt_spi_device == NULL)
+		{
+			FRAM_PRINTF("spi5 bus device spi50 not found! fm25vxx init failed \r\n"); 
+		
+			return RT_ERROR;
+		}
+	
+		cfg.mode = RT_SPI_MODE_MASK;
+		cfg.max_hz = 50 * 1000 * 1000;
+		cfg.data_width = 8;	
+		rt_spi_configure(rtt_dev->rt_spi_device, &cfg);	
+		
+		i = rt_hw_fram_read_id();
+		if(i == 0)
+		{
+			rt_kprintf("\r\n      spi5      \r\n");
+			/* initialize lock */
+			rt_mutex_init(&(rtt_dev->lock), "fram0", RT_IPC_FLAG_FIFO);	
+		
+			/* register device */
+			fm25vxx.flash_device.type = RT_Device_Class_SPIDevice;
+			fm25vxx.flash_device.init = RT_NULL;
+			fm25vxx.flash_device.open = RT_NULL;
+			fm25vxx.flash_device.close = RT_NULL;
+			fm25vxx.flash_device.read = rt_hw_fm25vxx_read;
+			fm25vxx.flash_device.write = rt_hw_fm25vxx_write;
+			fm25vxx.flash_device.control = rt_hw_fm25vxx_control;
+		
+			/* no private */
+			fm25vxx.user_data = RT_NULL;
+	
+			rt_device_register(&fm25vxx.flash_device, RT_SPI_FRAM_NAME, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	
+	
+			device = rt_device_find(RT_SPI_FRAM_NAME);
+	
+			if (device == NULL)
+			{
+				FRAM_PRINTF("fram is not found! \r\n"); 		
+			}
+			else	
+			{
+				rt_device_open(device, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE);	  
+	
+				rt_device_control(&fm25vxx.flash_device, FM_READ_ID, RT_NULL); 
+//	   			 rt_device_control(&fm25vxx.flash_device, FM_TEST, RT_NULL);		
+			}
+
+			rt_hw_fram_first_clear();
+	
+			return RT_EOK;
+		}
+	}
+	rt_kprintf("\r\n      err      \r\n");
+	return RT_ERROR;
+}
+INIT_PREV_EXPORT(rt_hw_fm25vxx_init)
+
+#else 
 
 /**
   * @brief : fm25vxx hardware init

@@ -51,7 +51,7 @@ void DistributionAppInit(void)
     EmmedNetInit();
     
     
-    rt_kprintf("\n\n\n DATA:%s, %s, %s, %d\n\n", __DATE__, __TIME__, __FUNCTION__, __LINE__);
+    rt_kprintf("\n\n\n DATA:%s, %s, %s, %d\n\n ", __DATE__, __TIME__, __FUNCTION__, __LINE__);
    
     UdpServerAppInit();
 	// TestListPrevCase();

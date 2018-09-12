@@ -180,6 +180,8 @@
 #define RT_USING_SPI4
 #define RT_USING_SPI5
 
+#define RT_USING_IO_SPI1  //AUTOÊ¶±ð
+
 #define RT_SPI2_DEVICE_NAME                                            "spi20"
 #define RT_SPI2_BUS_NAME                                               "spi2"
 #define RT_SPI4_DEVICE_NAME                                            "spi40"
