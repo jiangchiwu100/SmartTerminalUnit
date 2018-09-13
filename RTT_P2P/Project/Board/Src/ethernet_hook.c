@@ -7,7 +7,7 @@
 
 #include "rtthread.h"
 #include "extern_interface.h"
-
+#include "RingQueue.h"
 //#define EXSIT_VLAN_TAG 1
 
 #if EXSIT_VLAN_TAG
@@ -28,17 +28,23 @@
 
 
 #define MAX_RECIVE_COUNT 1518
-static uint8_t EthernetReciveBuffer[MAX_RECIVE_COUNT]; 
-static uint16_t EthernetReciveCount;
+//static uint8_t EthernetReciveBuffer[MAX_RECIVE_COUNT]; 
+//static uint16_t EthernetReciveCount;
 
 /**
 *以太网发送使用的互斥信号量
 */
 static struct rt_mutex ethernet_mutex;
 rt_mutex_t g_ethernet_mutex;
+/**
+*以太网帧接收使用信号量
+*/
+static rt_sem_t mac_raw_sem;
 
-
-
+/**
+*动态分配内存池，静态使用
+*/
+static RingQueuePool* RingPool;
 /**
 *消息邮箱
 */
@@ -46,6 +52,8 @@ static  rt_mailbox_t MacRawReciveMb;
 
 
 static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len);
+
+
 
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
@@ -104,7 +112,7 @@ bool EthernetInput(uint8_t* pData, uint16_t len)
 
 }
 
-
+#ifdef USE_PBUF
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
 * @param : uint8_t* pData 数据指针
@@ -153,32 +161,61 @@ bool EthernetInputPbuf(struct pbuf *p, uint16_t len)
 
 }
 
+#endif
 
 /**
 * @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
 * @param : uint8_t* pData 数据指针
 * @param : uint16_t len 数据长度
-* @return: void
-* @update: [2018-08-2][张宇飞][]
-*[2018-08-06][张宇飞][添加接收邮箱]
-*[2018-08-16][张宇飞][修改邮箱容量100->500]
+* @return: true--发送成功
+* @update: [2018-09-13][张宇飞][]
 */
-void EthernetHookInit(void)
+bool EthernetInputPool(uint8_t* pData, uint16_t len)
 {
-    
-    rt_err_t err = rt_mutex_init (&ethernet_mutex, "udp_mutex", RT_IPC_FLAG_PRIO );
-    if (err != RT_EOK)
+    uint16_t bufPos = 0;
+    if (pData == NULL)
     {
-        rt_kprintf("rt_mutex_init g_ethernet_mutex err != RT_EOK");
-        g_ethernet_mutex = NULL;
+        return false;
     }
-    else
+
+    bufPos = 12;
+
+    //检测TPID是否是0x8100
+    if ((pData[bufPos] == 0x81) && (pData[bufPos + 1] == 0x00))
     {
-        g_ethernet_mutex = &ethernet_mutex;
+        bufPos += 4; /* skip VLAN tag */
+    }
+
+     //检测协议类型是否是0x88B8
+    if((pData[bufPos++] != ETHERNET_TYPE_LOW)
+        || (pData[bufPos++] != ETHERNET_TYPE_HIGHT))
+    {
+       return false;
+    }
+
+    if (len > MAX_RECIVE_COUNT)
+    {
+        return false;
     }
     
-    
-    MacRawReciveMb = rt_mb_create ("macraw", 500, RT_IPC_FLAG_FIFO);    
+   
+    bool reslut = RingQueuePool_Write(RingPool, pData, len);
+
+	if (!reslut)
+	{
+		perror("RingQueuePool_Write failure\n");
+        return false;
+	}
+
+	rt_err_t err = rt_sem_release(mac_raw_sem);
+	if (err != RT_EOK)
+	{
+		perror("rt_sem_release(mac_raw_sem, (rt_uint32_t)(RingPool)), error: %d.\n", err);
+        return false;
+	}
+    return true;
+
+
 }
 
 
@@ -217,7 +254,7 @@ static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len)
 */
 uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size)
 {
-#ifdef USE_PBUF
+#if defined( USE_PBUF)
     struct pbuf *p;
     uint16_t count;
 	rt_err_t err = rt_mb_recv(MacRawReciveMb, (rt_uint32_t*)(&p), RT_WAITING_FOREVER);    
@@ -235,6 +272,25 @@ uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size)
 		return count;		
 	}
     
+#elif defined( RING_MEM_POOL)
+    PointUint8 out;
+    out.len = size;
+    out.pData = pData;
+    rt_err_t err = rt_sem_take(mac_raw_sem, RT_WAITING_FOREVER);
+
+    if (err == RT_EOK)
+	{
+    	bool reslut = RingQueuePool_Read(RingPool, &out);
+
+		if (!reslut)
+		{
+			perror("RingQueuePool_Read failure\n");
+			return 0;
+		}
+		return out.len;
+	}
+
+
 #else
 	PointUint8* pPacket;
     uint16_t count;
@@ -302,4 +358,68 @@ void EhernetOuputMutex_OffLock(void)
 
 
 
+/**
+* @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
+* @param : uint8_t* pData 数据指针
+* @param : uint16_t len 数据长度
+* @return: void
+* @update: [2018-08-2][张宇飞][]
+*[2018-08-06][张宇飞][添加接收邮箱]
+*[2018-08-16][张宇飞][修改邮箱容量100->500]
+*/
 
+PointUint8 point;
+uint8_t tx[64];
+uint8_t rx[64];
+
+void EthernetHookInit(void)
+{
+
+    rt_err_t err = rt_mutex_init (&ethernet_mutex, "udp_mutex", RT_IPC_FLAG_PRIO );
+    if (err != RT_EOK)
+    {
+        rt_kprintf("rt_mutex_init g_ethernet_mutex err != RT_EOK");
+        g_ethernet_mutex = NULL;
+    }
+    else
+    {
+        g_ethernet_mutex = &ethernet_mutex;
+    }
+
+
+    MacRawReciveMb = rt_mb_create ("macraw", 500, RT_IPC_FLAG_FIFO);
+    if (!MacRawReciveMb)
+    {
+    	perror("rt_mb_create failure\n");
+
+    }
+    mac_raw_sem = rt_sem_create("macraw", 0, RT_IPC_FLAG_FIFO);
+    if (!mac_raw_sem)
+	{
+		perror("rt_sem_create failure\n");
+
+	}
+    RingPool = RingQueuePool_Create(500, 1524);
+    
+//    for(uint8_t i = 0; i < 64; i++)
+//    {
+//        tx[i] = i;
+//        rx[i] = 0;
+//    }
+//    for(uint8_t i = 0; i < 64; i++)
+//    {
+//        tx[0] = 0;
+//        MEMSET(rx, 0, 64);
+//        point.len =64;
+//        point.pData =rx;
+//        bool reslut = RingQueuePool_Write(RingPool, tx, 64);
+//        reslut = RingQueuePool_Read(RingPool, &point);
+//    }
+    
+    
+    if (!RingPool)
+    {
+
+    	perror("RingQueuePool_Init failure\n");
+    }
+}

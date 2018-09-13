@@ -156,3 +156,113 @@ static bool RingQueuePeek(RingQueue *const ring, void  **peekdata, uint16_t len)
     }
     return false;
 }
+
+
+
+
+/**
+ * 创建FIFO初始化
+ * <p>
+ *
+ * @param  capacity     内存池容量
+ * @param  pdata   指向的缓冲区
+ * @return  void
+ */
+RingQueuePool*  RingQueuePool_Create(uint16_t capacity, uint16_t size)
+{
+	RingQueuePool* ring = (RingQueuePool*)CALLOC(1, sizeof(RingQueuePool));
+	if (!ring)
+	{
+		return NULL;
+	}
+    ring->capacity = capacity;
+    ring->count = 0;
+    ring->head = 0;
+    ring->tail = 0;
+    ring->poolSize = size;
+
+
+    ring->poolCoollect = (PointUint8*)CALLOC(capacity ,  sizeof(PointUint8));
+    if (!ring->poolCoollect)
+    {
+        return NULL;
+    }
+    PointUint8* point = ring->poolCoollect;
+    for (uint16_t i = 0; i < capacity; i++, point++)
+    {
+    	point->pData = (uint8_t*)CALLOC(size ,  sizeof(uint8_t));
+		if (!point->pData)
+		{
+			return NULL;
+		}
+		point->len = size;
+    }
+    return ring;
+}
+/**
+ * 缓冲数据入队  多个调用注意互斥问题
+ * <p>
+ *
+ * @param  RingQueuePool* ring
+ * @param  pMsg    入队信息
+ * @return          <code>true</code>   成功入队
+ *                  <code>FASLE</code>  失败
+ */
+bool RingQueuePool_Write(RingQueuePool* ring, uint8_t* pbuffer,  uint16_t len)
+{
+    if (!ring || !pbuffer)
+    {
+        return false;
+    }
+    PointUint8* point = ring->poolCoollect + ring->tail;
+    MEMCPY(point->pData, pbuffer, len);
+    point->len = len;
+
+
+    ring->tail = (ring->tail + 1) % ring->capacity;
+    ring->count++;
+
+    if (ring->count >= ring->capacity)//超出时候，更新head，保证最新更新
+    {
+        ring->head = ring->tail;
+        ring->count = ring->capacity;
+        rt_kprintf("Over Range\n");
+    }
+    return true;
+}
+/**
+ * 缓环形队列内存池读
+ * <p>
+ *
+ * @param  RingQueuePool* ring
+ * @param  PointUint8* out
+ * @return          <code>true</code>   成功出队
+ *                  <code>FASLE</code>  失败
+ */
+bool  RingQueuePool_Read(RingQueuePool* ring,   PointUint8* out)
+{
+    if (!ring || !out)
+    {
+        return false;
+    }
+
+    if (ring->count > 0)
+    {
+    	 PointUint8* point = ring->poolCoollect + ring->head;
+    	 if (out->len >= point->len )
+    	 {
+			 out->len = point->len;
+			 MEMCPY(out->pData, point->pData, out->len);
+
+			ring->head = (ring->head + 1) % ring->capacity;
+			ring->count--;
+            return true;
+    	 }
+    	 else
+    	 {
+    		 return false;
+    	 }
+        
+    }
+    return false;
+}

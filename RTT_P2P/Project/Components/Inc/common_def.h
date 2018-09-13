@@ -100,6 +100,21 @@ typedef struct TagRingQueue
 } RingQueue;
 
 
+
+/*
+*如何实现同步互斥机制
+*/
+typedef struct TagRingQueuePool
+{
+
+    uint16_t capacity;//FIFO总容量
+    uint16_t count;//总总数
+    uint16_t head;//队尾索引，入队索引dashu
+    uint16_t tail;  //队头索引，出队索引
+    PointUint8* poolCoollect;//内存池合集
+    uint16_t poolSize; //内存池大小
+
+} RingQueuePool;
 /**
 * @brief : 自定义打包数据，适用于UDP包等情况
 */
