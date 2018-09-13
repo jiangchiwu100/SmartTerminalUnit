@@ -25,7 +25,7 @@ static struct rt_thread communication_thread;
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_router_thread_stack[THREAD_MUTAL_STACK_SIZE];//线程栈
 //static rt_uint8_t rt_comself_thread_stack[1024];//线程栈
-static rt_uint8_t rt_communication_thread_stack[1024];//线程栈
+static rt_uint8_t rt_communication_thread_stack[128];//线程栈
 
 
 static void router_thread_entry(void* parameter);

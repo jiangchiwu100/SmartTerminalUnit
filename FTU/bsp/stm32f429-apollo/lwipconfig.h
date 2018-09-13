@@ -28,7 +28,7 @@
 /* RT_LWIP_PPP is not set */
 /* RT_LWIP_PPPOE is not set */
 /* RT_LWIP_PPPOS is not set */
-#define RT_LWIP_PBUF_NUM                                               8
+#define RT_LWIP_PBUF_NUM                                               30
 #define RT_LWIP_RAW_PCB_NUM                                            4
 #define RT_LWIP_UDP_PCB_NUM                                            4
 #define RT_LWIP_TCP_PCB_NUM                                            4
@@ -47,7 +47,7 @@
 #define RT_LWIP_ETHTHREAD_TX_NAME                                      "etx"
 //以太网接收优先级
 #define RT_LWIP_ETHTHREAD_RX_PRIORITY                               3
-#define RT_LWIP_ETHTHREAD_TX_PRIORITY                               11
+#define RT_LWIP_ETHTHREAD_TX_PRIORITY                               11//11
 
 
 

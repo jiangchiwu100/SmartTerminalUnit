@@ -476,6 +476,7 @@ typedef struct TagTelesignalAddr
     overcurrentIb,                                  // B相过流保护
     overcurrentIc,                                  // C相过流保护
     overcurrentI0;                                  // 零序过流保护
+    
 }TelesignalAddr;
 
 #define TELESIGNAL_TOTAL_NUM (sizeof(TelesignalAddr)/sizeof(rt_uint16_t))

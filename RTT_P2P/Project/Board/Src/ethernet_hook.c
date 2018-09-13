@@ -83,13 +83,15 @@ bool EthernetInput(uint8_t* pData, uint16_t len)
     {
         return false;
     }
-    
+  
 	PointUint8* pPacket = MakePacketMacRawMessage(pData, len);
 	if (!pPacket)
 	{
 		perror("MakePacketMacRawMessage Make failure\n");
         return false;
 	}
+
+    
     
 	rt_err_t err = rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket));
 	if (err != RT_EOK)
@@ -99,27 +101,57 @@ bool EthernetInput(uint8_t* pData, uint16_t len)
 	}
     return true;
     
-//    EthernetReciveCount = len;
-//    
-//    //调试打印输出
-//    rt_kprintf("ReciveData rxCount : %d HEX:\n", len);
-//    uint16_t i;
-//    for(i = 0; i < len; i++)
-//    {
-//        rt_kprintf("%2X ", EthernetReciveBuffer[i]);
-//    }
-//    rt_kprintf("\r\n");
-//    
-//    pData[0] = 0xFF;
-//    pData[1] = 0xFF;
-//    pData[2] = 0xFF;
-//    pData[3] = 0xFF;
-//    pData[4] = 0xFF;
-//    pData[5] = 0xFF;
-//    EthernetOutput(pData, len);
+
 }
 
 
+/**
+* @brief : 嵌入以太网输入回调,嵌入在任务中，注意占用时间
+* @param : uint8_t* pData 数据指针
+* @param : uint16_t len 数据长度
+* @return: true--发送成功
+* @update: [2018-09-13][张宇飞][]
+*/
+bool EthernetInputPbuf(struct pbuf *p, uint16_t len)
+{
+    uint8_t* pData = p->payload;
+    uint16_t bufPos = 0;
+    if (pData == NULL)
+    {
+        return false;
+    }
+
+    bufPos = 12;
+
+    //检测TPID是否是0x8100
+    if ((pData[bufPos] == 0x81) && (pData[bufPos + 1] == 0x00)) 
+    {
+        bufPos += 4; /* skip VLAN tag */        
+    }
+    
+     //检测协议类型是否是0x88B8
+    if((pData[bufPos++] != ETHERNET_TYPE_LOW) 
+        || (pData[bufPos++] != ETHERNET_TYPE_HIGHT))
+    {
+       return false;
+    }   
+    
+    if (len > MAX_RECIVE_COUNT)
+    {
+        return false;
+    }
+    
+	    
+	rt_err_t err = rt_mb_send(MacRawReciveMb, (rt_uint32_t)(p));
+	if (err != RT_EOK)
+	{
+		perror("rt_mb_send(MacRawReciveMb, (rt_uint32_t)(pPacket)), error: %d.\n", err);
+        return false;
+	}
+    return true;
+    
+
+}
 
 
 /**
@@ -146,8 +178,7 @@ void EthernetHookInit(void)
     }
     
     
-    MacRawReciveMb = rt_mb_create ("macraw", 500, RT_IPC_FLAG_FIFO);
-    
+    MacRawReciveMb = rt_mb_create ("macraw", 500, RT_IPC_FLAG_FIFO);    
 }
 
 
@@ -186,6 +217,25 @@ static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len)
 */
 uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size)
 {
+#ifdef USE_PBUF
+    struct pbuf *p;
+    uint16_t count;
+	rt_err_t err = rt_mb_recv(MacRawReciveMb, (rt_uint32_t*)(&p), RT_WAITING_FOREVER);    
+    if (err == RT_EOK)
+	{
+        count = p->len;
+		if (count > size || count== 0)
+		{
+			return 0;
+		}
+
+		MEMCPY(pData, p->payload, count);
+        pbuf_free(p);
+        
+		return count;		
+	}
+    
+#else
 	PointUint8* pPacket;
     uint16_t count;
 	rt_err_t err = rt_mb_recv(MacRawReciveMb, (rt_uint32_t*)(&pPacket), RT_WAITING_FOREVER);
@@ -203,6 +253,8 @@ uint16_t MacRawInputBlock(uint8_t* pData, uint16_t size)
         
 		return count;		
 	}
+#endif
+    
 	return 0;
 }
 

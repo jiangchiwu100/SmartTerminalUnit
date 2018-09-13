@@ -2036,8 +2036,8 @@ int rt_multi_common_data_init(void)
     }
     else
     {
-        rt_multi_common_data_read_config();         		
-        rt_multi_common_data_config();
+       // rt_multi_common_data_read_config();         		
+        //rt_multi_common_data_config();
     }	
 	
     device_pcf8563 = rt_device_find(RT_I2C_PCF8563_NAME);

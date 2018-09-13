@@ -475,7 +475,7 @@ static void CheckSequence(RingQueue* pRing, uint32_t appId,  uint32_t* lastStNum
 {
 
 	uint16_t count = pRing->count;
-    if (count > 5)
+    if (count > 1)
     {
         for(uint16_t i = 0; i< count; i++)
         {

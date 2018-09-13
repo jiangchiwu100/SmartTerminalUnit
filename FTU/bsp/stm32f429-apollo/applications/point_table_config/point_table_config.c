@@ -19,7 +19,7 @@ struct tagTelesignalCfg TelesignalCfg[] =
 {
 //   使能    名称	        点号                                         遥信           描述
     { 1,  "开关分位",     &g_TelesignalAddr.switchOpen,                  NULL,          {"分", "合"},      {"合->分","分->合"}},
-    { 1,  "开关合位",     &g_TelesignalAddr.switchClose,                 NULL,          {"分", "合"},      {"合->分","分->合"}},
+ /*   { 1,  "开关合位",     &g_TelesignalAddr.switchClose,                 NULL,          {"分", "合"},      {"合->分","分->合"}},
     { 1,  "储能/有压",    &g_TelesignalAddr.operatingMechanism,          NULL,          {"无", "有"},      {"有->无","无->有"}},
     { 1,  "低气压",       &g_TelesignalAddr.lowPressure,                 NULL,          {"无", "告警"},    {"告警->复位","无->告警"}},
     { 0,  "备用1",        &g_TelesignalAddr.spareDi1,                    NULL,          {"分", "合"},      {"合->分","分->合"}},
@@ -133,6 +133,7 @@ struct tagTelesignalCfg TelesignalCfg[] =
     { 0,  "对等B相过流",  &g_TelesignalAddr.overcurrentIb,               NULL,          {"复位","保护"},   {"复位","保护"}},	
     { 0,  "对等C相过流",  &g_TelesignalAddr.overcurrentIc,               NULL,          {"复位","保护"},   {"复位","保护"}},
     { 0,  "对等零序过流", &g_TelesignalAddr.overcurrentI0,               NULL,          {"复位","保护"},   {"复位","保护"}},	
+*/
 };
 	
 /* 遥测 */
@@ -141,7 +142,7 @@ struct tagTelemetryCfg TelemetryCfg[] =
 //   使能 菜单编号   名称           上位机名称          点号                                值         单位        额定值             零漂                             死区	
     { 1,  SECONDRY,  "f",           "频率(f)",          &g_TelemetryAddr.F,                 NULL,      "Hz",       50.00f,      &g_Parameter[ZERODRIFT_F],      &g_Parameter[DEADZONE_F]},
     { 1,  SECONDRY,  "Ia",          "相电流(Ia)",       &g_TelemetryAddr.Ia,                NULL,      "A",     RATED_VALUE_I,      &g_Parameter[ZERODRIFT_Ia],     &g_Parameter[DEADZONE_Ia]},
-    { 1,  SECONDRY,  "Ib",          "相电流(Ib)",       &g_TelemetryAddr.Ib,                NULL,      "A",     RATED_VALUE_I,      &g_Parameter[ZERODRIFT_Ib],     &g_Parameter[DEADZONE_Ib]},
+/*    { 1,  SECONDRY,  "Ib",          "相电流(Ib)",       &g_TelemetryAddr.Ib,                NULL,      "A",     RATED_VALUE_I,      &g_Parameter[ZERODRIFT_Ib],     &g_Parameter[DEADZONE_Ib]},
     { 1,  SECONDRY,  "Ic",          "相电流(Ic)",       &g_TelemetryAddr.Ic,                NULL,      "A",     RATED_VALUE_I,      &g_Parameter[ZERODRIFT_Ic],     &g_Parameter[DEADZONE_Ic]},	
     { 1,  SECONDRY,  "I0",          "相电流(I0)",       &g_TelemetryAddr.I0,                NULL,      "A",    RATED_VALUE_I0,      &g_Parameter[ZERODRIFT_I0],     &g_Parameter[DEADZONE_I0]},
     { 1,  SECONDRY,  "Uab",         "线电压(Uab)",      &g_TelemetryAddr.Uab,               NULL,      "V",     RATED_VALUE_U,      &g_Parameter[ZERODRIFT_Uab],    &g_Parameter[DEADZONE_Uab]},
@@ -194,7 +195,7 @@ struct tagTelemetryCfg TelemetryCfg[] =
     { 1,  HARMONIC,  "五次Ib",      "五次谐波Ib",       &g_TelemetryAddr.fifthharmonicIb,   NULL,      "A",     RATED_VALUE_I,     &g_Parameter[ZERODRIFT_Ib],     &g_Parameter[DEADZONE_Ib]},
     { 1,  HARMONIC,  "五次Ic",      "五次谐波Ic",       &g_TelemetryAddr.fifthharmonicIc,   NULL,      "A",     RATED_VALUE_I,     &g_Parameter[ZERODRIFT_Ic],     &g_Parameter[DEADZONE_Ic]},
     { 1,  HARMONIC,  "五次I0",      "五次谐波I0",       &g_TelemetryAddr.fifthharmonicI0,   NULL,      "A",    RATED_VALUE_I0,     &g_Parameter[ZERODRIFT_I0],     &g_Parameter[DEADZONE_I0]},		
-	
+*/	
 };	
 
 /* 遥控 */
@@ -265,7 +266,7 @@ struct tagValueParaCfg ParameterCfg[] =
 {
 //   使能  菜单编号          名称                             值                         单位      上限        下限   缺省值    数据类型  小数点位数       显示内容           备注  
     { 1,  ME_BASIC_SET,   "操作机构",        &g_Parameter[OPERATING_MECHANISM],          "-",       1,           0,     0,         2,         0,         {"弹簧", "永磁"    },   " "   },    
-    { 1,  ME_BASIC_SET,   "对等通讯投退",    &g_Parameter[DISTRIBUTE_SWITCH],            "-",       1,           0,     0,         2,         0,         {"退", "投",       },   " "    },
+ /*   { 1,  ME_BASIC_SET,   "对等通讯投退",    &g_Parameter[DISTRIBUTE_SWITCH],            "-",       1,           0,     0,         2,         0,         {"退", "投",       },   " "    },
     { 1,  ME_BASIC_SET,   "断路器模式",      &g_Parameter[BREAK_WORK_MODE],              "-",       4,           0,     1,         5,         0,         {"无","常规保护","电压时间型","电压电流型","电流计数型"},   " "   },	
     { 1,  ME_BASIC_SET,   "负荷开关模式",    &g_Parameter[LOAD_WORK_MODE],               "-",       4,           0,     0,         5,         0,         {"无","电压时间型","电压电流型","电流计数型","分界"},   " "   },
     { 1,  ME_BASIC_SET,   "负荷侧线电压",    &g_Parameter[CFG_PRO_VOL_N],                "-",       1,           0,     1,         2,         0,         {"UAB", "UCB"},   " "   },     
@@ -355,14 +356,14 @@ struct tagValueParaCfg ParameterCfg[] =
     { 1,  ME_NET_COM,     "网关_4",         &g_Parameter[NET_GATEWAY_3],                 "-",     255.00f,     0.00f,  254.00f,     0,         0,         {"-",  "-"         },   " "    },                          
     { 1,  ME_NET_COM,     "从站地址",       &g_Parameter[NET_SOURCEADDR],                "-",   65535.00f,     1.00f,    1.00f,     0,         0,         {"-",  "-"         },   " "    },                
     { 1,  ME_NET_COM,     "ASDU地址",       &g_Parameter[NET_ASDUADDR],                  "-",   65535.00f,     1.00f,    1.00f,     0,         0,         {"-",  "-"         },   " "    },   
-}; 
+*/}; 
 
 /* 定值一区 */
 struct tagValueParaCfg FixedValueCfg1[] = 
 {
 //   使能  菜单编号       名称                            值                           单位       上限        下限   缺省值     数据类型   小数点位数       显示内容           备注
     { 1,  INTERGHASE,   "过流一段投退",    &g_FixedValue1[OVER_CURRENT_SWITCH1],          "-",       1,           0,     0,          2,         0,         {"退", "投"        },   " "   },    
-    { 1,  INTERGHASE,   "过流一段电流",    &g_FixedValue1[OVER_CURRENT_VALUE1],           "A",     100.00f,     0.00f,   10,         0,         3,         {"-",  "-"         },   " "   }, 
+/*    { 1,  INTERGHASE,   "过流一段电流",    &g_FixedValue1[OVER_CURRENT_VALUE1],           "A",     100.00f,     0.00f,   10,         0,         3,         {"-",  "-"         },   " "   }, 
     { 1,  INTERGHASE,   "过流一段时间",    &g_FixedValue1[OVER_CURRENT_TIME1],            "S",     100.00f,     0.00f,   0,          0,         3,         {"-",  "-"         },   " "   },	
     { 1,  INTERGHASE,   "过流二段投退",    &g_FixedValue1[OVER_CURRENT_SWITCH2],          "-",       1,           0,     0,          2,         0,         {"退", "投"        },   " "   },    
     { 1,  INTERGHASE,   "过流二段电流",    &g_FixedValue1[OVER_CURRENT_VALUE2],           "A",     100.00f,     0.00f,   8,          0,         3,         {"-",  "-"         },   " "   }, 
@@ -488,7 +489,7 @@ struct tagValueParaCfg FixedValueCfg1[] =
 	{ 1,  DISTRIBUTE,   "对等有压",        &g_FixedValue1[DISTRIBUTE_OVER_VOLTAGE_VAL],   "V",     9999.99f,    0.00f,  176.0f,      0,         0,         {"-",  "-",        },   " "    },
 	{ 1,  DISTRIBUTE,   "对等无压",        &g_FixedValue1[DISTRIBUTE_OVER_NO_VOLTAGE_VAL],"V",     9999.99f,    0.00f,   80.0f,      0,         0,         {"-",  "-",        },   " "    },
 	{ 1,  DISTRIBUTE,   "转供电负荷",      &g_FixedValue1[DISTRIBUTE_POWER_CHANGE_LOAD],  "A",     9999.99f,    0.00f,   20.0f,      0,         0,         {"-",  "-",        },   " "    },
-}; 
+*/}; 
 
 /* 定值二区 */
 struct tagValueParaCfg FixedValueCfg2[sizeof(FixedValueCfg1) / sizeof(FixedValueCfg1[0])];

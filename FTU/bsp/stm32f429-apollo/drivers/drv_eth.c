@@ -632,70 +632,81 @@ struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
     ETH_PRINTF("receive frame len : %d\n", len);
     
     //��ȡ����
-    bool resultState = EthernetInput(buffer, len);//�м�����
-    if (!resultState)
-    {    
-        if (len > 0)
-        {
-            /* We allocate a pbuf chain of pbufs from the Lwip buffer pool */
-            p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
-        }
-
-    #ifdef ETH_RX_DUMP
-        {
-            rt_uint32_t i;
-            rt_uint8_t *ptr = buffer;
-
-            ETH_PRINTF("rx_dump, len:%d\r\n", p->tot_len);
-            for (i = 0; i < len; i++)
-            {
-                ETH_PRINTF("%02x ", *ptr);
-                ptr++;
-
-                if (((i + 1) % 8) == 0)
-                {
-                    ETH_PRINTF("  ");
-                }
-                if (((i + 1) % 16) == 0)
-                {
-                    ETH_PRINTF("\r\n");
-                }
-            }
-            ETH_PRINTF("\r\ndump done!\r\n");
-        }
-    #endif
-        
-        if (p != NULL)
-        {
-            dmarxdesc = EthHandle.RxFrameInfos.FSRxDesc;
-            bufferoffset = 0;
-            for(q = p; q != NULL; q = q->next)
-            {
-                byteslefttocopy = q->len;
-                payloadoffset = 0;
-
-                /* Check if the length of bytes to copy in current pbuf is bigger than Rx buffer size*/
-                while( (byteslefttocopy + bufferoffset) > ETH_RX_BUF_SIZE )
-                {
-                    /* Copy data to pbuf */
-                    memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), (ETH_RX_BUF_SIZE - bufferoffset));
-
-                    /* Point to next descriptor */
-                    dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
-                    buffer = (uint8_t *)(dmarxdesc->Buffer1Addr);
-
-                    byteslefttocopy = byteslefttocopy - (ETH_RX_BUF_SIZE - bufferoffset);
-                    payloadoffset = payloadoffset + (ETH_RX_BUF_SIZE - bufferoffset);
-                    bufferoffset = 0;
-                }
-                /* Copy remaining data in pbuf */
-                memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), byteslefttocopy);
-                bufferoffset = bufferoffset + byteslefttocopy;
-            }
-        }  
     
+      
+    if (len > 0)
+    {
+        /* We allocate a pbuf chain of pbufs from the Lwip buffer pool */
+        p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
     }
-  
+
+#ifdef ETH_RX_DUMP
+    {
+        rt_uint32_t i;
+        rt_uint8_t *ptr = buffer;
+
+        ETH_PRINTF("rx_dump, len:%d\r\n", p->tot_len);
+        for (i = 0; i < len; i++)
+        {
+            ETH_PRINTF("%02x ", *ptr);
+            ptr++;
+
+            if (((i + 1) % 8) == 0)
+            {
+                ETH_PRINTF("  ");
+            }
+            if (((i + 1) % 16) == 0)
+            {
+                ETH_PRINTF("\r\n");
+            }
+        }
+        ETH_PRINTF("\r\ndump done!\r\n");
+    }
+#endif
+    
+    if (p != NULL)
+    {
+        dmarxdesc = EthHandle.RxFrameInfos.FSRxDesc;
+        bufferoffset = 0;
+        for(q = p; q != NULL; q = q->next)
+        {
+            byteslefttocopy = q->len;
+            payloadoffset = 0;
+
+            /* Check if the length of bytes to copy in current pbuf is bigger than Rx buffer size*/
+            while( (byteslefttocopy + bufferoffset) > ETH_RX_BUF_SIZE )
+            {
+                /* Copy data to pbuf */
+                memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), (ETH_RX_BUF_SIZE - bufferoffset));
+
+                /* Point to next descriptor */
+                dmarxdesc = (ETH_DMADescTypeDef *)(dmarxdesc->Buffer2NextDescAddr);
+                buffer = (uint8_t *)(dmarxdesc->Buffer1Addr);
+
+                byteslefttocopy = byteslefttocopy - (ETH_RX_BUF_SIZE - bufferoffset);
+                payloadoffset = payloadoffset + (ETH_RX_BUF_SIZE - bufferoffset);
+                bufferoffset = 0;
+            }
+            /* Copy remaining data in pbuf */
+            memcpy( (uint8_t*)((uint8_t*)q->payload + payloadoffset), (uint8_t*)((uint8_t*)buffer + bufferoffset), byteslefttocopy);
+            bufferoffset = bufferoffset + byteslefttocopy;
+        }
+        
+        bool resultState = EthernetInputPbuf(p, len);
+        if (resultState)
+        {
+            
+            p = NULL;
+        }
+    } 
+    else
+    {
+        perror("pbuf_alloc is failure.\n");
+    }    
+        
+   
+    
+    
     /* Release descriptors to DMA */
     /* Point to first descriptor */
     dmarxdesc = EthHandle.RxFrameInfos.FSRxDesc;

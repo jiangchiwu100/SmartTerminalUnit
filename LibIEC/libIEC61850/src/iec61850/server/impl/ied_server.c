@@ -568,7 +568,7 @@ IedServer_start(IedServer self, int tcpPort)
         struct TagThreadConfig config;
         config.priority = 10;
         config.name = "ieds";
-        config.stack_size = 2028;
+        config.stack_size = 2048;
         config.tick = 20;
         Thread serverThread = Thread_create((ThreadExecutionFunction) singleThreadedServerThread, (void*) self, true, &config);
 
