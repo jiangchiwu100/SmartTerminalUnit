@@ -21,7 +21,7 @@
 
 #include "server_datamapping.h"
 
-
+#include "goose_misc.h"
 
 #include "station_manager.h"
 #include "Coordinator.h"
@@ -199,6 +199,7 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 
 
 	MmsDatasetToDataAtrributeSet(values, di);
+    GooseCheckAdd(subscriber, &(di->ringCheck));
 }
 
 /**
@@ -219,6 +220,7 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscrib
 		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i].appId);
 		GooseSubscriber_setListener(subscriber, gooseListenerRemote, (void*)(&(daSb->indicateCollect[i])));
         GooseReceiver_addSubscriber(receiver, subscriber);
+        RingQueueInit(&(daSb->indicateCollect[i].ringCheck), 1000);
         printf("goCbRef:%s, appId, id:0x%x.\n", daSb->indicateCollect[i].goCbRef, daSb->indicateCollect[i].appId);
 	}
 

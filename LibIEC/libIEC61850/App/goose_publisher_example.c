@@ -17,7 +17,7 @@
 // has to be executed as root!
 void publisher_main(void* paramter)
 {
-	char* interface;
+	char* interface = "e0";
 
 	
 
@@ -54,7 +54,7 @@ void publisher_main(void* paramter)
 	GoosePublisher_setDataSetRef(publisher, "simpleIOGenericIO/LLN0$AnalogValues");
 
 	int i = 0;
-
+    subscriber_test();
 	for (i = 0; i < 10000; i++) {
 		Thread_sleep(1000);
 

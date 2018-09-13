@@ -505,6 +505,7 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 		uint32_t timeAllowedToLive)
 {
 
+    return true;
     //return true;
 	//序列号错误设置为无效状态
 	 if (matchingSubscriber->stNum == stNum) {
@@ -535,7 +536,7 @@ static bool reciveValidPredeal(GooseSubscriber matchingSubscriber, uint32_t stNu
 //                            matchingSubscriber->appId,  stNum,  sqNum);
             
                
-			 return false;
+			 return true;
 		}
 	}
 	else if (matchingSubscriber->stNum < stNum) {//新数据

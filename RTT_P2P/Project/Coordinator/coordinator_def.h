@@ -16,6 +16,26 @@
 #include "goose_receiver.h"
 #include "GooseParser.h"
 
+
+typedef struct TagGooseCheck
+{
+	uint32_t (*testData)[3];
+	uint32_t lastSqNum;
+	uint32_t lastStNum;
+	uint32_t sqNum;
+	uint32_t stNum ;
+	uint16_t index;
+
+    uint32_t appId;
+}GooseCheck;
+
+typedef struct TagSequenceInformation
+{
+    uint32_t stNum;
+	uint32_t sqNum;
+    uint32_t time;
+}SequenceInformation;
+
 typedef struct TagDeviceIndicate
 {
 	uint16_t count;
@@ -24,6 +44,10 @@ typedef struct TagDeviceIndicate
 	uint32_t id;//
 	uint16_t appId;
 	char* goCbRef;
+
+	RingQueue ringCheck;
+	uint32_t lastSq;
+	uint32_t lastSt;
 }DeviceIndicate;
 
 

@@ -841,6 +841,7 @@ struct pbuf *rt_imxrt_eth_rx(rt_device_t dev)
             	 if (resultState)
             	 {
             		 pbuf_free(p);
+            		 ENET_EnableInterrupts(enet_base, kENET_RxFrameInterrupt);
             		 return NULL;
             	 }
 #ifdef ETH_RX_DUMP

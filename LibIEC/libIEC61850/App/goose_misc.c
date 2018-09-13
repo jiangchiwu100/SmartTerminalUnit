@@ -19,6 +19,7 @@
 #include "ied_data_ref.h"
 #include "Coordinator.h"
 
+
 const char LocalDataSetRef[][24] = {
 	{ "GOINGGIO17.Ind1.stVal"},
 	{ "GOINGGIO17.Ind2.stVal" },
@@ -256,17 +257,19 @@ GooseSubscriberInstance(GooseReceiver receiver)
 * @return: true--??????,false--??????
 * @update: [2018-08-03][???][??]
 */
-static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t lastSq, uint32_t stNum, uint32_t sqNum )
+static bool reciveValidPredealTest(uint32_t appId, uint32_t* lastSt, uint32_t* lastSq, uint32_t stNum, uint32_t sqNum )
 {
 
    
 	//????????????
-	 if (lastSt == stNum) {
-		if (lastSq >= sqNum) {
+	 if (*lastSt == stNum) 
+     {
+		if (*lastSq >= sqNum) 
+        {
 
 			
 			printf("\n\nAppID: 0x%x sqNum Loss Error Sequence, last:%d , current: %d!\n\n" ,
-                   appId, lastSq, sqNum);
+                   appId, *lastSq, sqNum);
             //return false;
             printf("Restart Recive!!!!!!!!\n");
 			return true;
@@ -274,65 +277,61 @@ static bool reciveValidPredealTest(uint32_t appId, uint32_t lastSt, uint32_t las
 		else
 		{
 
-			if ((lastSq + 1) != sqNum){
+			if ((*lastSq + 1) != sqNum){
 				 //if (DEBUG_GOOSE_SUBSCRIBER)
 					 printf("AppID: 0x%x, SqNum Loss, last:%d , current: %d!\n",  
-                            appId,  lastSq, sqNum);
+                            appId,  *lastSq, sqNum);
 			}
+           
 			//????
 			 
-			 lastSt = stNum;
-			 lastSq = sqNum;
+			// *lastSt = stNum;
+			// *lastSq = sqNum;
 			 
              
-             printf("AppID: 0x%x, jump, st:%d , sq: %d!\n",  
-                           appId,  stNum,  sqNum);
+             //printf("AppID: 0x%x, jump, st:%d , sq: %d!\n",  
+             //              appId,  stNum,  sqNum);
              
                
 			 return false;
 		}
 	}
-	else if (lastSt < stNum) {//???
-		 if ((lastSt + 1) != stNum){
+	else if (*lastSt < stNum) 
+    {//???
+		 if ((*lastSt + 1) != stNum)
+		 {
 			 //if (DEBUG_GOOSE_SUBSCRIBER)
 			  printf("\n\nAppID: 0x%x, stNum Loss, last:%d , current: %d!\n",
-                     appId, lastSt, stNum);
+                     appId, *lastSt, stNum);
 			  return true;
 		 }
-	 }
+         else
+         {
+        	 if (sqNum != 0)
+        	 {
+        		 printf("\n\nAppID: 0x%x, sqNum Change Loss, lastSt:%d , currentSt: %d,lastSq:%d , currentSq: %d!\n",
+        		                      appId, *lastSt, stNum, *lastSq, sqNum);
+        	 }
+
+         }
+	}
 	else
 	{
 		
 		//if (DEBUG_GOOSE_SUBSCRIBER)
 		printf("\n\nAppID: 0x%x, stNum Loss Error Sequence, last:%d , current: %d!\n" ,
-               appId,  lastSt, stNum);
+               appId,  *lastSt, stNum);
 		//return false;
         printf("Restart Recive!!!!!!!!\n");
 	    return true;
 	}
-     printf("AppID: 0x%x, valid, st:%d , sq: %d!\n",  
-                           appId,  stNum,  sqNum);
+    // printf("AppID: 0x%x, valid, st:%d , sq: %d!\n",  
+    //                       appId,  stNum,  sqNum);
 	 return true;
 
 }
 
-typedef struct TagGooseCheck
-{
-	uint32_t (*testData)[3];
-	uint32_t lastSqNum;
-	uint32_t lastStNum;
-	uint32_t sqNum;
-	uint32_t stNum ;
-	uint16_t index;
-    
-    uint32_t appId;
-}GooseCheck;
-typedef struct TagSequenceInformation
-{	
-    uint32_t stNum;
-	uint32_t sqNum;
-    uint32_t time;
-}SequenceInformation;
+
 
 #define GOOSE_CHECK_COUNT   10
 
@@ -417,13 +416,31 @@ gooseListener(GooseSubscriber subscriber, void* parameter)
         RingQueue* ring = (RingQueue*)parameter;
         pInfo->stNum = GooseSubscriber_getStNum(subscriber);
         pInfo->sqNum = GooseSubscriber_getSqNum(subscriber);
-        pInfo->time = StopWatchStop();
+        pInfo->time = rt_tick_get();
         ring->Write(ring, pInfo);
     }
     gooseParese(subscriber, NULL);
     
 }
+/**
+* @brief : goose检测追加
+* @param :
+* @param :
+* @return: DatasetSubscriber* 分配 好的空间
+* @update: [2018-08-22][张宇飞][创建]
+*/
+void GooseCheckAdd(GooseSubscriber subscriber, RingQueue* ring)
+{
 
+    SequenceInformation* pInfo = SequenceInformation_create();
+    if (pInfo)
+    {
+        pInfo->stNum = GooseSubscriber_getStNum(subscriber);
+        pInfo->sqNum = GooseSubscriber_getSqNum(subscriber);
+        pInfo->time = rt_tick_get();
+        ring->Write(ring, pInfo);
+    }
+}
 //void
 //gooseListener(GooseSubscriber subscriber, void* parameter)
 //{
@@ -456,15 +473,16 @@ gooseListener(GooseSubscriber subscriber, void* parameter)
 
 static void CheckSequence(RingQueue* pRing, uint32_t appId,  uint32_t* lastStNum, uint32_t* lastSqNum)
 {
-    //?500????
-    if (pRing->count > 1000)
+
+	uint16_t count = pRing->count;
+    if (count > 5)
     {
-        for(uint16_t i = 0; i< 1000; i++)
+        for(uint16_t i = 0; i< count; i++)
         {
             SequenceInformation* pInfo;
             pRing->Read(pRing, (void**)(&pInfo));
             
-            reciveValidPredealTest(appId, *lastStNum, *lastSqNum, pInfo->stNum,   pInfo->sqNum);
+            reciveValidPredealTest(appId, lastStNum, lastSqNum, pInfo->stNum,   pInfo->sqNum);
             *lastStNum =  pInfo->stNum;
             *lastSqNum = pInfo->sqNum;
             SequenceInformation_destory(pInfo);
@@ -473,24 +491,47 @@ static void CheckSequence(RingQueue* pRing, uint32_t appId,  uint32_t* lastStNum
     
 }
 
+
+/***
+ *goose序列检测合集
+ */
+
+
+/**
+  * @brief :任务空闲时检查数据
+  * @param :
+  * @return: 0--
+  * @update: [2018-09-12][创建]
+  */
 void FtuIdleHook(void)
 {
-    static uint32_t lastSq1000 = 0;
-    static uint32_t lastSt1000 = 0;
-    static uint32_t lastSq1001 = 0;
-    static uint32_t lastSt1001 = 0;
-    static uint32_t lastSq1003 = 0;
-    static uint32_t lastSt1003 = 0;
-    static uint32_t lastSq1004 = 0;
-    static uint32_t lastSt1004 = 0;   
+    extern ServerModelManager g_ServerModelManager;
+//    static uint32_t lastSq1000 = 0;
+//    static uint32_t lastSt1000 = 0;
+//    static uint32_t lastSq1001 = 0;
+//    static uint32_t lastSt1001 = 0;
+//    static uint32_t lastSq1003 = 0;
+//    static uint32_t lastSt1003 = 0;
+//    static uint32_t lastSq1004 = 0;
+//    static uint32_t lastSt1004 = 0;
+//
+//    CheckSequence(&Ring1000, 0x1000, &lastSt1000, &lastSq1000);
+//    CheckSequence(&Ring1001, 0x1001, &lastSt1001, &lastSq1001);
+//    CheckSequence(&Ring1003, 0x1003, &lastSt1003, &lastSq1003);
+//    CheckSequence(&Ring1004, 0x1004, &lastSt1004, &lastSq1004);
     
-    CheckSequence(&Ring1000,0x1000, &lastSt1000, &lastSq1000);
-    CheckSequence(&Ring1001,0x1001, &lastSt1001, &lastSq1001);
-    CheckSequence(&Ring1003,0x1003, &lastSt1003, &lastSq1003);
-    CheckSequence(&Ring1004,0x1004, &lastSt1004, &lastSq1004);
     
-    
-    
+    if (g_ServerModelManager.dsSubscriber)
+    {
+    	DatasetSubscriber* daSb = g_ServerModelManager.dsSubscriber;
+    	DeviceIndicate* di;
+    	for (uint8_t i = 0; i < daSb->count; i++)
+		{
+			di = daSb->indicateCollect + i;
+
+			CheckSequence(&(di->ringCheck), di->appId, &di->lastSt, &di->lastSq);
+		}
+    }
 }
 
  
@@ -498,6 +539,7 @@ void FtuIdleHook(void)
 int
 subscriber_example(void)
 {
+    
     GooseReceiver receiver = GooseReceiver_create();
 
      
@@ -539,6 +581,73 @@ subscriber_example(void)
 	GooseReceiver_addSubscriber(receiver, subscriberIndicate);
 	GooseReceiver_addSubscriber(receiver, subscriberDeal);
 
+    GooseReceiver_start(receiver);
+
+    
+
+//    while (1) {
+//        Thread_sleep(100);
+//    }
+
+//    GooseReceiver_stop(receiver);
+
+//    GooseReceiver_destroy(receiver);
+    return 0;
+}
+
+
+typedef struct TagGooseCheckHandle
+{
+	RingQueue ringCheck;
+	uint32_t lastSq;
+	uint32_t lastSt;
+    uint16_t appId;
+}GooseCheckHandle;
+
+char SubRef[128];
+GooseCheckHandle  CheckHandle[20];
+/**
+  * @brief :任务空闲时检查数据
+  * @param :
+  * @return: 0--
+  * @update: [2018-09-12][创建]
+  */
+void TaskIdleHook(void)
+{
+	GooseCheckHandle* handle = CheckHandle;
+	for(uint8_t i = 0; i < 20; i++, handle++)
+	{
+
+		CheckSequence(&(handle->ringCheck), handle->appId, &handle->lastSt, &handle->lastSq);
+
+	}
+
+}
+
+
+int subscriber_test(void)
+{
+    
+    GooseReceiver receiver = GooseReceiver_create();
+
+     
+	printf("Using interface eth0\n");
+	GooseReceiver_setInterfaceId(receiver, "eth0");
+   
+
+    rt_memset(CheckHandle, 0, sizeof(GooseCheckHandle));
+    for(uint16_t i = 1; i < 20; i++)
+    {        
+         rt_memset(SubRef, 0, 128);
+         sprintf(SubRef,"STU%dLD0/LLN0$GO$gocb0", i );
+         GooseSubscriber subscriberRemote = GooseSubscriber_create(SubRef, NULL);
+         GooseSubscriber_setAppId(subscriberRemote, 0x0A00+i);
+         RingQueueInit(&(CheckHandle+i)->ringCheck, 1000);
+         GooseSubscriber_setListener(subscriberRemote, gooseListener, CheckHandle+i);
+         GooseReceiver_addSubscriber(receiver, subscriberRemote);
+    }
+   
+    rt_thread_idle_sethook(TaskIdleHook);
     GooseReceiver_start(receiver);
 
     

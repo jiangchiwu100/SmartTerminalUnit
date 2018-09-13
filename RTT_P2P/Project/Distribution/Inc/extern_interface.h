@@ -38,13 +38,26 @@
 
 #undef  perror
 
-#ifdef MSVC
+#if defined(MSVC) 
 #define perror(arg)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
+
+
+#else
+
+#if defined( CPU_MIMXRT1052DVL6A)
+
 #else
 extern void udp_debug_printf(const char *fmt, ...);
 #define  rt_kprintf  udp_debug_printf 
+
+
+#endif
+
+
 #define perror(arg...)  {rt_kprintf("error:%s, line: %d:\n", __func__ , __LINE__ );  rt_kprintf( arg);}
 #define printf(args...)  rt_kprintf(args)
+
+
 #endif
 
 
