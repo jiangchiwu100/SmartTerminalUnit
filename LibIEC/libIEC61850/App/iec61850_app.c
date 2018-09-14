@@ -76,14 +76,14 @@ void IEC61850AppInit(void)
         1024*10,     		
 		14,                            
 		20);                          
-     if (iec61850_thread)
-     {
-         rt_thread_startup(iec61850_thread);  
-     }         
-    else
-    {
-        perror(" rt_thread_startup(iec61850_thread) failure\n");
-    }
+	if (iec61850_thread)
+	{
+		rt_thread_startup(iec61850_thread);
+	}
+	else
+	{
+		perror(" rt_thread_startup(iec61850_thread) failure\n");
+	}
     
     return;
 
