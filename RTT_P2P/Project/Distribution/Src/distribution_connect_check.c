@@ -196,14 +196,15 @@ static bool JudgeConnectSwitch(SwitchProperty* sourceSwitch, ListDouble* listGlo
 {
     ErrorCode result = ERROR_OK_NULL;
     //PrintMemoryUsed();
-    
+    bool returnValue = false;
 
     //使用头作为计算节点
     if (sourceSwitch == NULL)
     {
-        perror("sourceSwitch is null: \n");
-        return false;
+	   perror("sourceSwitch is null: \n");
+	   return false;
     }
+
     //查找电源开关数量
     ListDouble listPower;
     ListDouble* powerList = &listPower;
@@ -213,22 +214,27 @@ static bool JudgeConnectSwitch(SwitchProperty* sourceSwitch, ListDouble* listGlo
     ListDouble* find = &findList;
     ListInit(find, NULL);
 
+    ListDouble bfsListInstance;
+	ListDouble* bfsList = &bfsListInstance;
+	ListInit(bfsList, DestoryBFSHelper);
+
+
 	result = SerachPowerConditionList(sourceSwitch, listGloabal, powerList, find);
 	if (result)
 	{
 		perror("SerachPowerConditionList Error: 0x%X: \n", result);
-        return false;
+		returnValue = false;
+		goto Exit_JudgeConnectSwitch;
 	}
 
-    ListDouble bfsListInstance;
-    ListDouble* bfsList = &bfsListInstance;
-    ListInit(bfsList, DestoryBFSHelper);
     
+
 	result = SerachPowerPath(sourceSwitch, powerList, find, bfsList);
 	if (result)
 	{
 		perror("SerachPowerPath Error: 0x%X: \n", result);
-        return false;
+		returnValue = false;
+		goto Exit_JudgeConnectSwitch;
 	}
 	
 
@@ -243,11 +249,18 @@ static bool JudgeConnectSwitch(SwitchProperty* sourceSwitch, ListDouble* listGlo
 	ListInit(connect->path + 1, NULL);
 	connect->count = 0;
    
+	if (list_size(bfsList) > 2)
+	{
+		 perror("ExtractSwitchPath biger than 2. \n", result);
+		 returnValue = false;
+		 goto Exit_JudgeConnectSwitch;
+	}
 	result = ExtractThroughPath(listGloabal, connect, sourceSwitch,   bfsList);
 	if (result)
 	{
         perror("ExtractSwitchPath Error: 0x%X: \n", result);
-		return false;
+        returnValue = false;
+        goto Exit_JudgeConnectSwitch;
 	}
 	//数量为2，且各个链表数量均不为0
 	if ((connect->count == 2) &&
@@ -261,12 +274,15 @@ static bool JudgeConnectSwitch(SwitchProperty* sourceSwitch, ListDouble* listGlo
 	{
 		connect->isConnect = false;
 	}
-   
+	returnValue  = true;
+
+Exit_JudgeConnectSwitch:
 
 	Listdestroy(&listPower); //没有泄露
 	Listdestroy(&findList);  //没有泄露
     Listdestroy(&bfsListInstance);
-    return true;
+
+    return returnValue;
     //PrintMemoryUsed();
 }
 

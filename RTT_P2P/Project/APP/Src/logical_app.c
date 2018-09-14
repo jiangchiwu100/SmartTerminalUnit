@@ -62,12 +62,14 @@ static void DistributionLogicalApp(StationManger* manager)
     {
         perror("DistributionLogicalApp ERROR :manager = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
+        return;
     }
     StationServer* server = &(manager->stationServer);
     if (server == NULL)
     {
 		perror("DistributionLogicalApp ERROR :server = NULL.\n");
         LogAddException(ERROR_NULL_PTR, 0);
+        return;
     }
     //FaultRemovalInit()
     list = &(server->stationPointList);
@@ -164,12 +166,14 @@ static void connected_thread_entry(void* parameter)
 	{
 		rt_kprintf("connect ERROR :manager = NULL.\n");
 		LogAddException(ERROR_NULL_PTR, 0);
+		return;
 	}
 	StationServer*   stationServer = &(manager->stationServer);
 	if (stationServer == NULL)
 	{
 		rt_kprintf("MutalCommunicationServer ERROR :router = NULL.\n");
 		LogAddException(ERROR_NULL_PTR, 0);
+		return;
 	}
 
 	ListDouble* list = &(stationServer->stationPointList);
