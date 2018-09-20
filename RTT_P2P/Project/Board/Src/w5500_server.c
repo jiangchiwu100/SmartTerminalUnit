@@ -9,7 +9,7 @@
   */
   
 #include "ll_driver.h"  
- #include "stm32f429xx.h" 
+#include "stm32f429xx.h" 
 #include "w5500_server.h"
 #include "drv_w5500_socket.h"
 #include "drv_w5500.h"
@@ -18,6 +18,7 @@
 #include "distribution_config.h"
 #include "distribution_app.h"
 
+#include "NetFinshApp.h"
 #include "extern_interface.h"
 
 
@@ -42,8 +43,8 @@ static uint16_t LocalMaintancePort;
 static uint16_t RemotePort;
 static struct rt_mutex udp_mutex;
 static struct rt_semaphore    w5500_int_sem;
- #define ON_LOCK()   {     result = rt_mutex_take(&udp_mutex, RT_WAITING_FOREVER); }
- #define OFF_LOCK()  {     if (result  == RT_EOK) {rt_mutex_release(&udp_mutex);}};
+#define ON_LOCK()   {     result = rt_mutex_take(&udp_mutex, RT_WAITING_FOREVER); }
+#define OFF_LOCK()  {     if (result  == RT_EOK) {rt_mutex_release(&udp_mutex);}};
 
 
 
@@ -54,7 +55,7 @@ static struct rt_semaphore    w5500_int_sem;
   * @update: [2018-07-21][张宇飞][创建]
   */  
 static inline void W5500Init(void)
-{    
+{
     MEMSET(UdpReciveBuffer, 0, sizeof(UdpReciveBuffer));
     MEMSET(UdpSendBuffer, 0, sizeof(UdpSendBuffer));
     DefautIp[0] = 192;
@@ -167,11 +168,11 @@ void EmmedNetInit(void)
     W5500Init();
      //TODO:加入初始化成功标识
     ON_LOCK();
-    if ((w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) == SocketMaintanceNum)
+    if((w5500_socket(SocketMaintanceNum, Sn_MR_UDP, LocalMaintancePort, 0)) == SocketMaintanceNum)
     {
         g_StationManger.isMaintanceRun = true;
         rt_kprintf("W5500 start init Sucess!\n");
-    } 
+    }
     result = rt_sem_init(&w5500_int_sem, "w5500_int", 0,  RT_IPC_FLAG_FIFO);
     if (result != RT_EOK)
     {
@@ -181,7 +182,7 @@ void EmmedNetInit(void)
    
 }    
 
-// ÖÐ¶ÏÅäÖÃ³ÌÐò
+
 void NVIC_Configuration(void)
 {
     LL_EXTI_InitTypeDef EXTI_InitStruct;
@@ -218,7 +219,7 @@ static void udpserver_thread_entry(void *param)
     uint8_t cn = 0;
     uint16_t destport;	
     rt_err_t result;
-   
+
 
 	NVIC_Configuration(); 
     setSIMR(0x01);//
@@ -229,7 +230,6 @@ static void udpserver_thread_entry(void *param)
    
     for (;;)
     {   	 
-       
        
         ON_LOCK()
 		get_result = getSn_SR(SocketNum);
@@ -378,16 +378,18 @@ static void udpserver_thread_entry(void *param)
   * @param void
   * @return: 0--正常
   * @update: [2018-07-23][张宇飞][创建]
+  *          [2018-09-14][李  磊][将之前使用W5500改为使用dp83848发送，此处放入消息队列，在任务中进行出队发送]
 */
 ErrorCode ExternSend(PointUint8* pPacket)
 {
     rt_err_t result;
+/* 
     uint8_t destId[4] = {0};
     destId[0] = 192;
     destId[1] = 168;
     destId[2] = pPacket->pData[FRAME_DEST_INDEX + 1];
     destId[3] = pPacket->pData[FRAME_DEST_INDEX];
-    ON_LOCK();   
+    ON_LOCK();
     int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
     OFF_LOCK();
     if(ret == pPacket->len)
@@ -398,12 +400,18 @@ ErrorCode ExternSend(PointUint8* pPacket)
     {
         return ERROR_UNKONOW;
     }
+ */
+
+	// FifoStringEnqueue(UDP_ServeFifoHandle, pPacket->pData, pPacket->len);
+    UDP_NetconnSendString(g_UDP_ServeNetconn, pPacket->pData);
+	return ERROR_OK_NULL;
 }
 /**
   * @brief :监控使用
   * @param void
   * @return: 0--正常
   * @update: [2018-07-23][张宇飞][创建]
+  *          [2018-09-17][李  磊][将之前使用W5500改为使用dp83848发送，此处放入消息队列，在任务中进行出队发送]
 */
 void Monitor(void)
 {    
@@ -411,19 +419,22 @@ void Monitor(void)
     rt_err_t result;
 	RingQueue* ring = &(g_VirtualNode.reciveRing);
 	DatagramFrame* frame;
-    DefautIp[0] = 192;
-    DefautIp[1] = 168;
-    DefautIp[2] = 10;
-    DefautIp[3] = 111;
+    // DefautIp[0] = 192;
+    // DefautIp[1] = 168;
+    // DefautIp[2] = 10;
+    // DefautIp[3] = 111;
 	do
 	{
 
 		bool state = ring->Read(ring, (void**)&frame);
 		if (state)
 		{
-            ON_LOCK();   
-			w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);	
-            OFF_LOCK();
+            // ON_LOCK();   
+			// w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);	
+            // OFF_LOCK();
+
+            // FifoStringEnqueue(UDP_ServeFifoHandle, frame->pData, frame->size);
+            UDP_NetconnSendString(g_UDP_ServeNetconn, frame->pData);
 			Datagram_Destory(frame);
 		}
 		else
@@ -440,12 +451,12 @@ void Monitor(void)
 * @return: 0--正常
 * @update: [2018-07-21][张宇飞][创建]
 */
-void udp_debug_printf(const char *fmt, ...)
+void rt_kprintf(const char *fmt, ...)
 {
-    if (!g_StationManger.isMaintanceRun)
-    {
-        return;
-    }
+//    if (!g_StationManger.isMaintanceRun)
+//    {
+//        return;
+//    }
     rt_err_t result;
     
     va_list args;
@@ -458,9 +469,28 @@ void udp_debug_printf(const char *fmt, ...)
     if (length > RT_CONSOLEBUF_SIZE - 1)
         length = RT_CONSOLEBUF_SIZE - 1;
     
-    ON_LOCK();  
-    w5500_sendto(SocketMaintanceNum, (uint8_t*)rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);	
-    OFF_LOCK();
+//    ON_LOCK();  
+    // w5500_sendto(SocketMaintanceNum, (uint8_t*)rt_log_buf, rt_strlen(rt_log_buf) + 1, DefautIp, 5533);
+
+    if(true == NetFinshFlag)		/*UDP_FinshFlag为1说明UDP打印已经初始化，可以使用了*/
+	{
+		FifoStringEnqueue(PrintfFifoHandle, (uint8_t*)rt_log_buf, length);
+	}
+	else
+	{
+		#if defined(RT_USING_DEVICE) && defined(RT_USING_CONSOLE)
+			static rt_device_t _console_device = RT_NULL;
+		#endif
+
+		_console_device = rt_console_get_device();			/*获取当前控制台输出的串口设备号*/
+		rt_uint16_t old_flag = _console_device->open_flag;
+
+        _console_device->open_flag |= RT_DEVICE_FLAG_STREAM;
+        rt_device_write(_console_device, 0, rt_log_buf, length);
+        _console_device->open_flag = old_flag;
+		
+	}
+//    OFF_LOCK();
    
     
     va_end(args);

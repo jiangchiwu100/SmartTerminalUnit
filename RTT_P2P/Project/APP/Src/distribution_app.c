@@ -53,8 +53,10 @@ void DistributionAppInit(void)
     
     rt_kprintf("\n\n\n DATA:%s, %s, %s, %d\n\n ", __DATE__, __TIME__, __FUNCTION__, __LINE__);
    
-    UdpServerAppInit();
+    // UdpServerAppInit();
 	// TestListPrevCase();
+    DP83848_MaintenanceServiceInit();
+
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      
 	if (error)
 	{

@@ -34,6 +34,7 @@
  * 2011-02-23     Bernard      fix variable section end issue of finsh shell
  *                             initialization when use GNU GCC compiler.
  * 2016-11-26     armink       add password authentication
+ * 2018-09-13     Lei          将串口获取finsh命令的函数getchar改为网口获取NetGetchar，并且添加相应的头文件,大约第91行
  */
 
 #include <rthw.h>
@@ -86,7 +87,8 @@ const char *finsh_get_prompt()
 static char finsh_getchar(void)
 {
 #ifdef RT_USING_POSIX
-    return getchar();
+    // return getchar();
+    return NetGetchar();
 #else
     char ch;
 

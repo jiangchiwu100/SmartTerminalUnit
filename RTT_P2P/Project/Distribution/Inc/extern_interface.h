@@ -47,8 +47,8 @@
 #if defined( CPU_MIMXRT1052DVL6A)
 
 #else
-extern void udp_debug_printf(const char *fmt, ...);
-#define  rt_kprintf  udp_debug_printf 
+extern void rt_kprintf(const char *fmt, ...);
+// #define  rt_kprintf  udp_debug_printf 
 
 
 #endif

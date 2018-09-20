@@ -1,7 +1,7 @@
 /**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      iec61850_app.c
-  * @brief:     61850娴犺濮?
+  * @brief:     61850应用
   * @version:   V0.0.0 
   * @author:    Zhang Yufei
   * @date:      2018-08-13
@@ -14,7 +14,7 @@
 #include "distribution_app.h"
 
 
-static rt_thread_t iec61850_thread;//缁捐法鈻奸幒褍鍩楅崸锟?
+static rt_thread_t iec61850_thread;//61850线程
 
 
 

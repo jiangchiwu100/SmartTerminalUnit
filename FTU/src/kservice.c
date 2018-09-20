@@ -31,6 +31,8 @@
  * 2013-06-24     Bernard      remove rt_kprintf if RT_USING_CONSOLE is not defined.
  * 2013-09-24     aozima       make sure the device is in STREAM mode when used by rt_kprintf.
  * 2015-07-06     Bernard      Add rt_assert_handler routine.
+ * 2018-09-13	  Lei		   将rt_kprintf改名为rt_kprintf_origin,外部重新定义了网络打印rt_kprintf函数,
+ *                             rtthread.h头文件也添加了修改,大约第1153行
  */
 
 #include <rtthread.h>
@@ -1148,7 +1150,7 @@ void rt_kputs(const char *str)
  *
  * @param fmt the format
  */
-void rt_kprintf(const char *fmt, ...)
+void rt_kprintf_origin(const char *fmt, ...)
 {
     va_list args;
     rt_size_t length;
