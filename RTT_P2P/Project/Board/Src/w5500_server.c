@@ -143,7 +143,7 @@ void w5500_config(void)
     {
         W5500_SetDefaultNetInfo(&wiz_netinfo);
     }
-			
+
 	  // Setting default network information
 		ctlnetwork(CN_SET_NETINFO, (void*)&wiz_netinfo);
 	
@@ -229,7 +229,7 @@ static void udpserver_thread_entry(void *param)
     rt_kprintf("udpserver start!\n");
    
     for (;;)
-    {   	 
+    {
        
         ON_LOCK()
 		get_result = getSn_SR(SocketNum);
@@ -262,7 +262,7 @@ static void udpserver_thread_entry(void *param)
                     if (length <= 0)
                     {
                         break;
-                    } 
+                    }
                     else
                     {
                         ON_LOCK();
@@ -378,7 +378,7 @@ static void udpserver_thread_entry(void *param)
   * @param void
   * @return: 0--正常
   * @update: [2018-07-23][张宇飞][创建]
-  *          [2018-09-14][李  磊][将之前使用W5500改为使用dp83848发送，此处放入消息队列，在任务中进行出队发送]
+  *          [2018-09-14][李  磊][将之前使用W5500改为使用dp83848发送]
 */
 ErrorCode ExternSend(PointUint8* pPacket)
 {
@@ -403,7 +403,7 @@ ErrorCode ExternSend(PointUint8* pPacket)
  */
 
 	// FifoStringEnqueue(UDP_ServeFifoHandle, pPacket->pData, pPacket->len);
-    UDP_NetconnSendString(g_UDP_ServeNetconn, pPacket->pData);
+//    UDP_NetconnSendString(g_UDP_ServeNetconn, pPacket->pData);
 	return ERROR_OK_NULL;
 }
 /**
@@ -433,8 +433,7 @@ void Monitor(void)
 			// w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);	
             // OFF_LOCK();
 
-            // FifoStringEnqueue(UDP_ServeFifoHandle, frame->pData, frame->size);
-            UDP_NetconnSendString(g_UDP_ServeNetconn, frame->pData);
+//            UDP_NetconnSendString(g_MaintenanceServeNetconn, frame->pData);
 			Datagram_Destory(frame);
 		}
 		else

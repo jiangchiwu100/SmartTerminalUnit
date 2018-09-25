@@ -19,10 +19,10 @@
 #include <sys/types.h>
 
 
-#define NET_FINSH_BUFSIZE			512		//finsh的FIFO接收缓冲区大小
-#define NET_PRINTF_BUFSIZE			2048	//打印的FIFO输出缓冲区大小
-#define UDP_SERVE_BUFSIZE			512   	//UDP通信服务的FIFO缓冲区大小
-#define MAINTENANCE_SERVE_BUFSIZE	512		//维护服务的FIFO缓冲区大小
+#define NET_FINSH_BUFSIZE		512			//finsh的FIFO接收缓冲区大小
+#define NET_PRINTF_BUFSIZE		2048		//打印的FIFO输出缓冲区大小
+#define UDP_SERVE_BUFSIZE		1024		//UDP通信服务的FIFO缓冲区大小
+#define MAINTENANCE_SERVE_BUFSIZE	1024	//维护服务的FIFO缓冲区大小
 
 extern struct netconn* g_NetFinshNetconn;
 extern bool NetFinshFlag;

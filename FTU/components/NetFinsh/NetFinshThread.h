@@ -25,7 +25,7 @@
 #define UDP_SERVE_THREAD_TIMESLICE                                      (20)
 
 #define MAINTENANCE_SERVE_THREAD_NAME                                   "maintenance_serve"
-#define MAINTENANCE_SERVE_THREAD_PRIORITY                               (20)
+#define MAINTENANCE_SERVE_THREAD_PRIORITY                               (13)
 #define MAINTENANCE_SERVE_THREAD_STACK_SIZE                             (4096)
 #define MAINTENANCE_SERVE_THREAD_TIMESLICE                              (20)
 
