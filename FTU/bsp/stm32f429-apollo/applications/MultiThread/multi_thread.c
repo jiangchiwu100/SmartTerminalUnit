@@ -1120,6 +1120,7 @@ int rt_multi_thread_start(void)
   
    // DistributionAppInit();
    // TestGooseBeat();
+	printfCurrent();
     IEC61850AppInit();
     return(RT_EOK);    
 }

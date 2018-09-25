@@ -34,6 +34,13 @@ static TIM_HandleTypeDef TIM3_Handler; // 输入捕获
 static TIM_HandleTypeDef TIM5_Handler; // 定时器5PWM句柄
 static TIM_OC_InitTypeDef TIM5_CH1Handler; // 定时器5通道1句柄
 
+static rt_timer_t tmr;
+static rt_timer_t tmr1;
+static rt_timer_t tmr2;
+static rt_uint8_t count1 = 0;
+static rt_uint8_t count2 = 0;
+static rt_uint8_t openingflag = 0;
+static rt_uint8_t closingflag = 0;
 
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
@@ -680,6 +687,47 @@ static void tmrout1ms_callbak(void* parameter)
 }
 
 /**
+  * @description: 定时器回调函数
+  * @param:  parameter-入口参数.
+  * @return: 无
+  * @updata: [2017-10-26] [更改人姓名][变更描述]
+  */
+static void tmrout50ms_open_callbak(void* parameter)
+{
+    if(count1 == 0)
+    {
+        rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN);
+        count1++;
+    }
+	else
+	{
+		count1 = 0;
+		rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN_RECOVERY);
+        rt_timer_stop(tmr1);
+	}
+}
+
+/**
+  * @description: 定时器回调函数
+  * @param:  parameter-入口参数.
+  * @return: 无
+  * @updata: [2017-10-26] [更改人姓名][变更描述]
+  */
+static void tmrout50ms_close_callbak(void* parameter)
+{
+    if(count2 == 0)
+    {
+        rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE);
+        count2++;
+    }
+	else
+	{
+		count2 = 0;
+		rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE_RECOVERY);
+		rt_timer_stop(tmr2);
+	}
+}
+/**
   * @description: 软件定时器初始化
   * @param:  timer-定时器量级.
   * @return: 无
@@ -687,11 +735,9 @@ static void tmrout1ms_callbak(void* parameter)
   */
 void rt_ostimer_init(rt_uint8_t timer)
 {
-    rt_timer_t tmr;
-    
     switch (timer)
     {
-        case TMR_1MS:   
+        case TMR_1MS:
             tmr = rt_timer_create(RT_SOFT_TIMER_1MS_NAME, 
                                   tmrout1ms_callbak, 
                                   RT_NULL, 
@@ -706,7 +752,38 @@ void rt_ostimer_init(rt_uint8_t timer)
             }         
             break;
 						
-        case TMR_2MS: 
+        case TMR_50MS_OPEN:
+			if (openingflag == 0)
+			{
+				tmr1 = rt_timer_create(RT_SOFT_TIMER_50MS_OPEN_NAME,  
+										tmrout50ms_open_callbak, 
+										RT_NULL, 
+										60, 
+										RT_TIMER_FLAG_PERIODIC); 
+				openingflag++;
+			}
+			if (tmr1 != RT_NULL)
+			{
+				rt_timer_start(tmr1);
+				TIMER_PRINTF("Timeout of timer1 is 50 ticks.\n");
+			}
+            break;
+			
+		case TMR_50MS_CLOSE:
+			if (closingflag == 0)
+			{
+				tmr2 = rt_timer_create(RT_SOFT_TIMER_50MS_CLOSE_NAME,  
+										tmrout50ms_close_callbak, 
+										RT_NULL, 
+										60, 
+										RT_TIMER_FLAG_PERIODIC);
+				closingflag++;
+			}
+			if (tmr2 != RT_NULL)
+			{
+				rt_timer_start(tmr2);
+				TIMER_PRINTF("Timeout of timer1 is 50 ticks.\n");
+			}
             break;
 
         default:             

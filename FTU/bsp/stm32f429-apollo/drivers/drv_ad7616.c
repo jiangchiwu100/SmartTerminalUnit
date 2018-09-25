@@ -24,7 +24,7 @@
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 static SRAM_HandleTypeDef hsram2;
-
+static uint8_t s_Mapping[16];
 
 /* PRIVATE FUNCTION PROTOTYPES -----------------------------------------------*/
 /**
@@ -103,101 +103,130 @@ static void AD7616_FSMC_Init(void)
   * @Description: Read the sampled data of AD7616
   * @param[in]  : none
   * @return     : none
-  * @updata     : [YYYY-MM-DD] [Change person name][change content]
+  * @updata     : [2018-9-18] [ÌïÏþÁÁ][¸Ä±äÍ¨µÀ]
   */
 static void read_ad7616_data(void)
 {
     static uint16_t s_ADC_Count;
-    static short temp;
+    static short temp[16];
  
 //0 
-    g_SampleQueueBuf->udc1[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
- 
+    temp[0] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[8] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
 //1 
-    g_SampleQueueBuf->udc2[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
-
-//2
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
-    else
-    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
- 
-//3
-    g_SampleQueueBuf->uc[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
-
-//4
-    g_SampleQueueBuf->ua[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-
-//5
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
-    else
-    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));}
-    g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-
-//6
-    g_SampleQueueBuf->ub[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
- 
-//7 
-    g_SampleQueueBuf->u0[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-    g_SampleQueueBuf->ia[g_SampleQueueIn][s_ADC_Count] = (*((volatile  short *)AD7616_DATA_ADDR));
-
-//6
-    g_SampleQueueBuf->ub[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ub[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-    g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-
-//5
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
-    else
-    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
-    g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2; 
-
-//4
-    g_SampleQueueBuf->ua[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->ua[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-    g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
- 
+    temp[1] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[9] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+//2 
+    temp[2] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[10] = (*((volatile  short *)AD7616_DATA_ADDR)); 
+    //AD7616_delay_ns(1);  
 //3 
-    g_SampleQueueBuf->uc[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uc[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
+    temp[3] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[11] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+//4 
+    temp[4] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[12] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+//5 
+    temp[5] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[13] = (*((volatile  short *)AD7616_DATA_ADDR)); 
+    //AD7616_delay_ns(1);
+//6 
+    temp[6] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[14] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+//7 
+    temp[7] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+    temp[15] = (*((volatile  short *)AD7616_DATA_ADDR));
+    //AD7616_delay_ns(1);
+//6 
+    temp[6] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[6])/2;
+    //AD7616_delay_ns(1);
+    temp[14] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[14])/2; 
+    //AD7616_delay_ns(1);     
     
-//2
-    if(g_Parameter[CFG_PRO_VOL_N] == 0)
-    {g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
-    else
-    {g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;}
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
- 
+//5 
+    temp[5] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[5])/2;
+    AD7616_delay_ns(1);
+    temp[13] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[13])/2;
+    AD7616_delay_ns(1); 
+    
+//4 
+    temp[4] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[4])/2;
+    //AD7616_delay_ns(1);
+    temp[12] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[12])/2;
+    //AD7616_delay_ns(1);
+    
+//3 
+    temp[3] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[3])/2;
+    //AD7616_delay_ns(1);
+    temp[11] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[11])/2;
+    //AD7616_delay_ns(1);
+    
+//2 
+    temp[2] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[2])/2;
+    //AD7616_delay_ns(1);
+    temp[10] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[10])/2;
+    //AD7616_delay_ns(1);
+    
 //1 
-    g_SampleQueueBuf->udc2[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->udc2[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);
- 
-//0 
-    g_SampleQueueBuf->udc1[g_SampleQueueIn][s_ADC_Count] = (g_SampleQueueBuf->udc1[g_SampleQueueIn][s_ADC_Count] + (*((volatile  short *)AD7616_DATA_ADDR)))/2;
-    temp = (*((volatile  short *)AD7616_DATA_ADDR));
-//    AD7616_delay_ns(1);  
+    temp[1] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[1])/2;
+    //AD7616_delay_ns(1);
+    temp[9] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[9])/2;
+    //AD7616_delay_ns(1);
     
+//0 
+    temp[0] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[0])/2;
+    //AD7616_delay_ns(1);
+    temp[8] = ((*((volatile  short *)AD7616_DATA_ADDR)) + temp[8])/2;
+    //AD7616_delay_ns(1);  
+    
+	g_SampleQueueBuf->ua[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[0]];
+    g_SampleQueueBuf->ub[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[1]];
+    g_SampleQueueBuf->uc[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[2]];
+	
+//    g_SampleQueueBuf->UA2[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[3]];		//¸üÐÂÓëD03C-603Ä£Äâ°å½Ó¿Ú¶ÔÓ¦
+//    g_SampleQueueBuf->UB2[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[4]];		//¸üÐÂÓëD03C-603Ä£Äâ°å½Ó¿Ú¶ÔÓ¦
+//    g_SampleQueueBuf->UC2[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[5]];		//¸üÐÂÓëD03C-603Ä£Äâ°å½Ó¿Ú¶ÔÓ¦
+	
+    g_SampleQueueBuf->u0[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[3]];
+    g_SampleQueueBuf->uA[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[4]];
+    g_SampleQueueBuf->uC[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[5]];
+    g_SampleQueueBuf->udc1[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[6]];
+    g_SampleQueueBuf->udc2[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[7]];
+    
+	g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[8]];		//¸ü¸ÄÐÂÍ¨µÀ	
+    g_SampleQueueBuf->ia[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[9]];
+    g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[10]];
+   	g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[11]];		//¸ü¸ÄÐÂÍ¨µÀ
+	
+//    g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[12]];		//ÓëÍâ²¿½Ó¿Ú²»·û
+//    g_SampleQueueBuf->i0[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[13]];		//ÓëÍâ²¿½Ó¿Ú²»·û
+
+//    g_SampleQueueBuf->ia[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[12]];
+//    g_SampleQueueBuf->ib[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[13]];
+//    g_SampleQueueBuf->ic[g_SampleQueueIn][s_ADC_Count] = temp[s_Mapping[14]];		//¸ü¸ÄÐÂÍ¨µÀ
+
     s_ADC_Count++;
 
     if (s_ADC_Count == 48)
     {  
         s_ADC_Count = 0;
-        
-        rt_event_send(&calculate_event, EVENT_RUN);// ²ÉÑùÍê³É
-                    
+                
+        if(temp[15] == 0x5555)
+        {rt_event_send(&calculate_event, EVENT_RUN);}// ²ÉÑùÍê³É
+		
         if (++g_SampleQueueIn >= (ADC_WAVE_SEMP_NUM * 2))
         {
             g_SampleQueueIn = 0;
@@ -208,7 +237,6 @@ static void read_ad7616_data(void)
     {
 		g_StartWave = 0;
         EnQueueRecord();
-        temp = temp;
     }
 	
     QueueRecordToSDRAM();
@@ -251,39 +279,55 @@ static void AD7616_GPIO_Init(void)
     }
 }
 
-
+/**
+  * @description: AD7616 GPIO Init.
+  * @param[in]  : none
+  * @return     : none
+  * @updata     : [2018-9-18] [ÌïÏþÁÁ][Ìí¼ÓÄ£ÄâÍ¨µÀË÷Òý]
+  */
+static void AD7616_Mapping_Init(void)
+{
+    uint8_t i;
+    
+    for(i=0;i<g_tagzkAnalogInputCfg_Len;i++)
+    {
+        s_Mapping[zkAnalogInputCfg[i].pin - 1] = i;
+    }
+    
+}
 /* PUBLIC FUNCTION PROTOTYPES ------------------------------------------------*/
 /**
   * @description: AD7616 Init.
   * @param[in]  : none
   * @return     : none
-  * @updata     : [YYYY-MM-DD] [Change person name][change content]
+  * @updata     : [2018-9-18] [ÌïÏþÁÁ][¸Ä±äÅäÖÃÐòÁÐ¶ÑÕ»¼Ä´æÆ÷]
   */
 int rt_hw_adc_init(void)
 {
     AD7616_FSMC_Init();    
     AD7616_GPIO_Init();
-    
+    AD7616_Mapping_Init();
+	
     *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0002&0x003f)<<9) | (0x0060&0x01ff);//Ð´ÅäÖÃ¼Ä´æÆ÷
     *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0004&0x003f)<<9) | (0x0000&0x01ff);//Ð´ÊäÈë·¶Î§¼Ä´æÆ÷A1
     *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0005&0x003f)<<9) | (0x0000&0x01ff);//Ð´ÊäÈë·¶Î§¼Ä´æÆ÷A2
     *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0006&0x003f)<<9) | (0x0000&0x01ff);//Ð´ÊäÈë·¶Î§¼Ä´æÆ÷B1
     *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0007&0x003f)<<9) | (0x0000&0x01ff);//Ð´ÊäÈë·¶Î§¼Ä´æÆ÷B2
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0020&0x003f)<<9) | (0x0000&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0021&0x003f)<<9) | (0x0011&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0022&0x003f)<<9) | (0x0022&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0023&0x003f)<<9) | (0x0033&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0024&0x003f)<<9) | (0x0044&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0025&0x003f)<<9) | (0x0055&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0026&0x003f)<<9) | (0x0066&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0027&0x003f)<<9) | (0x0077&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0028&0x003f)<<9) | (0x0066&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0029&0x003f)<<9) | (0x0055&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002A&0x003f)<<9) | (0x0044&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002B&0x003f)<<9) | (0x0033&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002C&0x003f)<<9) | (0x0022&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002D&0x003f)<<9) | (0x0011&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
-    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002E&0x003f)<<9) | (0x0100&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0020&0x003f)<<9) | (0x0070&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0021&0x003f)<<9) | (0x0061&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0022&0x003f)<<9) | (0x0052&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0023&0x003f)<<9) | (0x0043&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0024&0x003f)<<9) | (0x0034&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0025&0x003f)<<9) | (0x0025&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0026&0x003f)<<9) | (0x0016&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0027&0x003f)<<9) | (0x00B7&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0028&0x003f)<<9) | (0x0016&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x0029&0x003f)<<9) | (0x0025&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002A&0x003f)<<9) | (0x0034&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002B&0x003f)<<9) | (0x0043&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002C&0x003f)<<9) | (0x0052&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002D&0x003f)<<9) | (0x0061&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
+    *((volatile  short *)AD7616_DATA_ADDR) = 0x8000 | ((0x002E&0x003f)<<9) | (0x0170&0x01ff);//ÅäÖÃÐòÁÐÆ÷¶ÑÕ»¼Ä´æÆ÷
     
   #if RT_USING_HWTIMER
     TIM5_PWM_Init(6250-1, 3-1); // ¼ÆÊ±1875*10 / 180Mhz=20ms/96=208.3us  37500

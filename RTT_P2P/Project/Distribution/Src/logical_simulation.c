@@ -14,6 +14,9 @@
 #include "extern_interface.h"
 #include "distribution_config.h"
 #include "miscellaneous.h"
+#include "quick_break_protect.h"
+#include "drv_timer.h"
+#include "output.h"
 
 
 
@@ -67,6 +70,9 @@ static inline void SimulationOpenOperate(SimulationStation* station)
 		&& (!station->isRejectAction))
     {
         (*(station->pBindSwitch))->isOpening = true;
+		rt_ostimer_init(TMR_50MS_OPEN);
+//        rt_hw_output_operate(ADDR_HANDHELD_OPER,DO_OPEN);
+        rt_kprintf("-------------open----------\r\n");
         station->isStartOpen = 0xff;
     }
     
@@ -83,6 +89,10 @@ static inline void SimulationCloseOperate(SimulationStation* station)
     if (RUN_STATE_OPEN_POSITION_STORED == station->runState && (!station->isRejectAction))
     {
         (*(station->pBindSwitch))->isClosing = true;
+		rt_ostimer_init(TMR_50MS_CLOSE);
+//      rt_hw_output_operate(ADDR_HANDHELD_OPER,DO_CLOSE);
+
+        rt_kprintf("-------------close----------\r\n");
         station->isStartClose = 0xff;
     }    
 }
@@ -383,21 +393,31 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
         //rt_kprintf("ID: %X, SwitchState: %X. TICK:%d\n ", station->id, station->switchState, rt_tick_get());
         pswitch->isChanged = true;
     }
-    
+	
+    openingclosing();
+    if(((float)0.3 > g_TelemetryDB[g_TelemetryAddr.Ia]))
+    {
+        pswitch->fault.state = FAULT_YES;
+    }
+    else
+    {
+        pswitch->fault.state = FAULT_NO;
+    }
+	pswitch->state = curStation.state;
 
-    pswitch->fault.state = station->faultState;
-    pswitch->state = station->switchState;
+//    pswitch->fault.state = station->faultState;
+//    pswitch->state = station->switchState;
     //从switch 进行的分闸操作 TODO：这种意容易混乱，应该统一所有动作接口
-    if (pswitch->isOpening)
-    {
-        station->OpenOperate(station);
-        pswitch->isOpening = false;
-    }
-    if (pswitch->isClosing)
-    {
-        station->CloseOperate(station);
-        pswitch->isClosing = false;
-    }
+//    if (pswitch->isOpening)
+//    {
+//        station->OpenOperate(station);
+//        pswitch->isOpening = false;
+//    }
+//    if (pswitch->isClosing)
+//    {
+//        station->CloseOperate(station);
+//        pswitch->isClosing = false;
+//    }
 
 	ValidCheckStamp(pswitch->timeStamp);
 	

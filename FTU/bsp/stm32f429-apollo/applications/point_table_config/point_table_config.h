@@ -57,7 +57,39 @@ typedef struct tagConfigurationSetDatabaseToJson
     float value[200];   //存储数据的数组
 }ConfigurationSetDatabaseToJson;
 
+/**
+ * @brief 面板开入结构体
+ */
+struct taghmiDigitalInputCfg
+{
+	unsigned char enable;   // 使能
+    unsigned char hmiNum;   // 面板开入号
+    unsigned short *pAddr;  // 点号
+    unsigned char negate;   // 取反	
+};
 
+/**
+ * @brief 主控模入结构体
+ */
+struct tagzkDigitalInputCfg
+{
+	unsigned char enable;   // 使能
+    unsigned char pin;      // 引脚
+    unsigned short *pAddr;  // 点号
+    unsigned char lastVal;  // 上次值
+    unsigned char isNegated;   // 取反	
+    unsigned long count;    // 计数器
+};
+
+/**
+ * @brief 主控开入结构体
+ */
+struct tagzkAnalogInputCfg
+{
+	unsigned char enable;   // 使能
+    unsigned char pin;      // 引脚
+    unsigned short *pAddr;  // 点号
+};
 /**
  * @brief 遥信配置结构体
  */
@@ -134,6 +166,8 @@ struct tagInherentParaCfg
     char *pVal;            // 值	
 };
     
+extern struct tagzkAnalogInputCfg zkAnalogInputCfg[];
+extern struct tagzkDigitalInputCfg zkDigitalInputCfg[];
 extern struct tagTelesignalCfg TelesignalCfg[];
 extern struct tagTelemetryCfg TelemetryCfg[];
 extern struct tagCalibrateFactor CalibrateFactorCfg[];
@@ -148,6 +182,7 @@ extern unsigned int g_FixedValueCfg1_Len;
 extern unsigned int g_FixedValueCfg2_Len;
 extern unsigned int g_ParameterCfg_Len;
 extern unsigned int g_CalibrateFactorCfg_Len;
+extern unsigned int g_tagzkAnalogInputCfg_Len;
 extern unsigned int g_TelemetryCfg_Len;
 extern unsigned int g_TelesignalCfg_Len;
 extern unsigned int g_TelecontrolCfg_Len;

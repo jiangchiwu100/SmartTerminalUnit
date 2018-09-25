@@ -2054,6 +2054,26 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\ethernet_hook.c</FilePath>
             </File>
+            <File>
+              <FileName>input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\input.c</FilePath>
+            </File>
+            <File>
+              <FileName>output.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\output.c</FilePath>
+            </File>
+            <File>
+              <FileName>PrintfCurrent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\PrintfCurrent.c</FilePath>
+            </File>
+            <File>
+              <FileName>quick_break_protect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\quick_break_protect.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3200,7 +3220,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>0</BrowseInformation>
+          <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -5200,6 +5220,26 @@
               <FileName>ethernet_hook.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Board\Src\ethernet_hook.c</FilePath>
+            </File>
+            <File>
+              <FileName>input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\input.c</FilePath>
+            </File>
+            <File>
+              <FileName>output.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\output.c</FilePath>
+            </File>
+            <File>
+              <FileName>PrintfCurrent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\PrintfCurrent.c</FilePath>
+            </File>
+            <File>
+              <FileName>quick_break_protect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Board\Src\quick_break_protect.c</FilePath>
             </File>
           </Files>
         </Group>

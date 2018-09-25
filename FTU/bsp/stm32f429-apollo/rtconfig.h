@@ -41,6 +41,8 @@
 #define RT_USING_HOOK
 #define RT_USING_TIMER_SOFT
 #define RT_SOFT_TIMER_1MS_NAME                                         "timer1ms"
+#define RT_SOFT_TIMER_50MS_OPEN_NAME								   "Otimer50ms"
+#define RT_SOFT_TIMER_50MS_CLOSE_NAME								   "Ctimer50ms"
 
 /* Inter-Thread communication */
 #define RT_USING_SEMAPHORE
@@ -390,6 +392,10 @@
 #define MBSLAVE_THREAD_STACK_SIZE                                      (4096)
 #define MBSLAVE_THREAD_TIMESLICE                                       (20)
 
+#define PRINT_CUR_VAL_THREAD_NAME										"printcur"
+#define PRINT_CUR_VAL_THREAD_PRIORITY								   (6)
+#define PRINT_CUR_VAL_THREAD_STACK_SIZE								   (1024)
+#define PRINT_CUR_VAL_THREAD_TIMESLICE								   (20)
 
 /* INTERRUPT PRIORITIES CONFIGURATION ----------------------------------------*/
 /* !!![INT_SYSTICK_PRIO] systick priority cannot be modified!!! */ 

@@ -76,6 +76,8 @@ enum OS_TMR
     TMR_5MS,
     TMR_10MS,
     TMR_20MS,
+	TMR_50MS_OPEN,
+	TMR_50MS_CLOSE,
 };
 
 

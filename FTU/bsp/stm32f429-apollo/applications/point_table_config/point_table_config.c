@@ -13,7 +13,44 @@
 #include "common_data.h"
 #include "point_table_config.h"
 
+char *BeiJingSuangJie = "北京双杰";
 
+
+/* 主板硬遥测*/
+struct tagzkAnalogInputCfg zkAnalogInputCfg[] = 
+{
+//   使能    模入号	                点号            
+    { 1,       1,           &g_TelemetryAddr.Uab},
+    { 1,       2,           &g_TelemetryAddr.Uac},
+    { 1,       3,           &g_TelemetryAddr.Ucb},
+    { 1,       4,           &g_TelemetryAddr.U0},    
+    { 1,       5,           &g_TelemetryAddr.UAB},
+    { 1,       6,           &g_TelemetryAddr.UCB},
+    { 1,       7,           &g_TelemetryAddr.DC1},
+    { 1,       8,           &g_TelemetryAddr.DC2},
+	{ 0,       9,           NULL},
+	{ 1,       10,          &g_TelemetryAddr.Ia},
+    { 1,       11,          &g_TelemetryAddr.Ib},
+	{ 0,       12,          NULL}, 
+    { 1,       13,          &g_TelemetryAddr.Ic},
+    { 1,       14,          &g_TelemetryAddr.I0},  
+	{ 0,       15,          NULL},
+};
+
+/* 主板硬遥信 */
+struct tagzkDigitalInputCfg zkDigitalInputCfg[] = 
+{
+//   使能    开入号	                点号                              上次PIN   取反   计时器
+    { 1,       1,           &g_TelesignalAddr.switchOpen,                   0,      0,      0},
+    { 1,       2,           &g_TelesignalAddr.switchClose,                  0,      0,      0},
+    { 1,       3,           &g_TelesignalAddr.operatingMechanism,           0,      1,      0},
+    { 1,       4,           &g_TelesignalAddr.lowPressure,                  0,      0,      0},
+    { 1,       5,           &g_TelesignalAddr.spareDi1,                     0,      0,      0},
+    { 1,       6,           &g_TelesignalAddr.spareDi2,                     0,      0,      0},
+    { 1,       7,           &g_TelesignalAddr.spareDi3,                     0,      0,      0},
+    { 1,       8,           &g_TelesignalAddr.spareDi4,                     0,      0,      0},
+    { 1,       9,           &g_TelesignalAddr.spareDi5,                     0,      0,      0},
+};
 /* 遥信 */
 struct tagTelesignalCfg TelesignalCfg[] = 
 {
@@ -497,6 +534,7 @@ unsigned int g_FixedValueCfg1_Len = sizeof(FixedValueCfg1) / sizeof(FixedValueCf
 unsigned int g_FixedValueCfg2_Len = sizeof(FixedValueCfg2) / sizeof(FixedValueCfg2[0]);
 unsigned int g_ParameterCfg_Len = sizeof(ParameterCfg) / sizeof(ParameterCfg[0]);
 unsigned int g_CalibrateFactorCfg_Len = sizeof(CalibrateFactorCfg) / sizeof(CalibrateFactorCfg[0]);
+unsigned int g_tagzkAnalogInputCfg_Len = sizeof(zkAnalogInputCfg) / sizeof(zkAnalogInputCfg[0]);
 unsigned int g_TelemetryCfg_Len = sizeof(TelemetryCfg) / sizeof(TelemetryCfg[0]);
 unsigned int g_TelesignalCfg_Len = sizeof(TelesignalCfg) / sizeof(TelesignalCfg[0]);
 unsigned int g_TelecontrolCfg_Len = sizeof(TelecontrolCfg) / sizeof(TelecontrolCfg[0]);
