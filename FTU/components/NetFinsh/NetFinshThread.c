@@ -172,6 +172,7 @@ static void rt_udp_serve_thread_entry(void *param)
 					{
 						rt_kprintf("num = %d\r\n", receviceNum);
 					}
+					
 					memset(printBuffer, 0, PRINT_BUFFER_SIZE);
 					for(i=0; (i<PRINT_BUFFER_SIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
 					{
