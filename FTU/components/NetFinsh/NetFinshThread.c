@@ -140,7 +140,7 @@ static void rt_udp_serve_thread_entry(void *param)
 	uint32_t receviceNum = 0;
 	uint8_t printBuffer[UDP_SERVE_BUFSIZE] = {0};
 
-	NVIC_Configuration();
+	// NVIC_Configuration();
 	
 	ret = FifoMallocAndInit(&UDP_ServeFifoHandle, &UDP_ServeBuffer, UDP_SERVE_BUFSIZE, &UDP_ServeBufferPack);  /*初始化fifo*/
 	
@@ -156,7 +156,8 @@ static void rt_udp_serve_thread_entry(void *param)
 		if(g_UDP_ServeNetconn != NULL)  //创建UDP链接成功
 		{
 			g_UDP_ServeNetconn->recv_timeout = 100;
-			err = netconn_bind(g_UDP_ServeNetconn, IP_ADDR_ANY, UDP_SERVE_LOCAL_PORT); 
+			err = netconn_bind(g_UDP_ServeNetconn, IP_ADDR_ANY, UDP_SERVE_LOCAL_PORT);
+//			err = netconn_bind(g_UDP_ServeNetconn, IP_ADDR_BROADCAST, UDP_SERVE_LOCAL_PORT);
 			IP4_ADDR(&destipAddr, lwipDev.remoteip[0], lwipDev.remoteip[1], lwipDev.remoteip[2], lwipDev.remoteip[3]); //构造目的IP地址
 			netconn_connect(g_UDP_ServeNetconn, &destipAddr, UDP_SERVE_REMOTE_PORT); 	//连接到远端主机
 			if(err == ERR_OK)//绑定完成
@@ -170,30 +171,31 @@ static void rt_udp_serve_thread_entry(void *param)
 					receviceNum = UDP_NetconnReceiveString(g_UDP_ServeNetconn, UDP_ServeFifoHandle);
 					if(receviceNum > 0)
 					{
-						rt_kprintf("num = %d\r\n", receviceNum);
+//						rt_kprintf("num = %d\r\n", receviceNum);
 					}
 					
-					memset(printBuffer, 0, PRINT_BUFFER_SIZE);
-					for(i=0; (i<PRINT_BUFFER_SIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
-					{
-						printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
-					}
-					if(0 != i)
-					{
-						UDP_NetconnSendString(g_UDP_ServeNetconn, printBuffer);
-					}
-//					if(receviceNum > 0)
-//                    {
-//                        memset(printBuffer, 0, UDP_SERVE_BUFSIZE);
-//						for(i=0; (i<UDP_SERVE_BUFSIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
-//						{
-//							printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
-//						}
-//						if(0 != i)
-//						{
-//							StationPointFrameDeal(printBuffer, i);
-//						}
-//                    }
+//					memset(printBuffer, 0, PRINT_BUFFER_SIZE);
+//					for(i=0; (i<PRINT_BUFFER_SIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
+//					{
+//						printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
+//					}
+//					if(0 != i)
+//					{
+//						UDP_NetconnSendString(g_UDP_ServeNetconn, printBuffer);
+//					}
+					if(receviceNum > 0)
+                   {
+                       memset(printBuffer, 0, UDP_SERVE_BUFSIZE);
+						for(i=0; (i<UDP_SERVE_BUFSIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
+						{
+							printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
+						}
+						if(0 != i)
+						{
+							StationPointFrameDeal(printBuffer, i);
+							rt_kprintf("StationPointFrameDeal success!\r\n");
+						}
+                   }
 					
 				}
 			}

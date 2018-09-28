@@ -20,7 +20,7 @@
 #define NET_FINSH_THREAD_TIMESLICE                                      (20)
 
 #define UDP_SERVE_THREAD_NAME                                           "udp_serve"
-#define UDP_SERVE_THREAD_PRIORITY                                       (20)
+#define UDP_SERVE_THREAD_PRIORITY                                       (4)
 #define UDP_SERVE_THREAD_STACK_SIZE                                     (4096)
 #define UDP_SERVE_THREAD_TIMESLICE                                      (20)
 

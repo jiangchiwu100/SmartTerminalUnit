@@ -157,6 +157,10 @@ const char Ref4[][24] = {
 
 };
 
+#define TIMEOUT			1
+#define NO_TIMEOUT		!TIMEOUT
+static rt_timer_t TimeAllowedToLiveTimer = RT_NULL;
+static bool LiveTimeOutFlag = NO_TIMEOUT;		/* 报文允许生存时间标志位 */
 
 
 /**
@@ -422,13 +426,26 @@ gooseListener(GooseSubscriber subscriber, void* parameter)
     gooseParese(subscriber, NULL);
     
 }
+
 /**
-* @brief : goose检测追加
-* @param :
-* @param :
-* @return: DatasetSubscriber* 分配 好的空间
-* @update: [2018-08-22][张宇飞][创建]
-*/
+ * @brief : 报文允许存活时间超时的回调处理函数
+ * @param : parameter 参数的指针
+ * @return: void
+ * @update: [2018-09-28][李  磊][创建]
+ */
+static void LiveTimeOut(void* parameter)
+{
+	LiveTimeOutFlag = TIMEOUT;		/* 调用了这个函数，说明报文允许生存时间已经超时 */
+	rt_timer_delete(TimeAllowedToLiveTimer);	/* 删除定时器 */
+}
+
+/**
+ * @brief : goose检测追加
+ * @param :
+ * @param :
+ * @return: DatasetSubscriber* 分配 好的空间
+ * @update: [2018-08-22][张宇飞][创建]
+ */
 void GooseCheckAdd(GooseSubscriber subscriber, RingQueue* ring)
 {
 
@@ -439,8 +456,24 @@ void GooseCheckAdd(GooseSubscriber subscriber, RingQueue* ring)
         pInfo->sqNum = GooseSubscriber_getSqNum(subscriber);
         pInfo->time = rt_tick_get();
         ring->Write(ring, pInfo);
+
+		/* 如果定时器已经创建，则删除之后重新创建新的 */
+		if(RT_NULL != TimeAllowedToLiveTimer)
+		{
+			rt_timer_delete(TimeAllowedToLiveTimer);
+		}
+		/* 报文获取没有超时，则重新开始定时 */
+		TimeAllowedToLiveTimer = rt_timer_create(LIVE_TIME_NAME,
+												LiveTimeOut,
+												RT_NULL,
+												LIVE_TIME_TICK,
+												LIVE_TIME_FLAG);
+		rt_timer_start(TimeAllowedToLiveTimer);
+		LiveTimeOutFlag = NO_TIMEOUT;
+		
     }
 }
+
 //void
 //gooseListener(GooseSubscriber subscriber, void* parameter)
 //{
@@ -520,7 +553,7 @@ void FtuIdleHook(void)
 //    CheckSequence(&Ring1003, 0x1003, &lastSt1003, &lastSq1003);
 //    CheckSequence(&Ring1004, 0x1004, &lastSt1004, &lastSq1004);
     
-    
+
     if (g_ServerModelManager.dsSubscriber)
     {
     	DatasetSubscriber* daSb = g_ServerModelManager.dsSubscriber;
@@ -530,6 +563,14 @@ void FtuIdleHook(void)
 			di = daSb->indicateCollect + i;
 
 			CheckSequence(&(di->ringCheck), di->appId, &di->lastSt, &di->lastSq);
+		}
+
+		/* 当报文允许生存时间内没有收到下一帧报文，超时之后实际进行的处理 */
+		if(TIMEOUT == LiveTimeOutFlag)
+		{
+			/* TODO:通信中断之后的处理 */
+
+			
 		}
     }
 }

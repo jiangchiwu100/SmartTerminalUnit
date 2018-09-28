@@ -68,7 +68,7 @@ int Iec61850Server(void)
 {
     int tcpPort = 102;
     uint8_t id;
-          
+
     if (g_StationManger.pWorkPoint)
     {
         id = (uint8_t)(g_StationManger.pWorkPoint->id);
@@ -76,10 +76,10 @@ int Iec61850Server(void)
     }
     else
     {
-         perror("g_StationManger.pWorkPoint isNull\n");
-         return -1;
+        perror("g_StationManger.pWorkPoint is Null\n");
+        return -1;
     }
-    
+
     g_ServerModelManager.model = CreateIedModeFromConfig( (char*)System_getConfigFullName(id));
     if (!g_ServerModelManager.model)
     {

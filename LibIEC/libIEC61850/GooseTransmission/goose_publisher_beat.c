@@ -181,7 +181,7 @@ void GooseBeat_destory(GooseBeat* pbeat)
 //static GooseBeat Beat;
 
 //extern int server61850_test(void) ;
-/**
+/*
 * @brief  : goose 测试
 * @param  : void
 * @update: [2018-08-04][张宇飞][]
