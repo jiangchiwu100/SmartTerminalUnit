@@ -758,9 +758,9 @@ void rt_ostimer_init(rt_uint8_t timer)
 				tmr1 = rt_timer_create(RT_SOFT_TIMER_50MS_OPEN_NAME,  
 										tmrout50ms_open_callbak, 
 										RT_NULL, 
-										60, 
+										40, 
 										RT_TIMER_FLAG_PERIODIC); 
-				openingflag++;
+				openingflag = 1;
 			}
 			if (tmr1 != RT_NULL)
 			{
@@ -775,9 +775,9 @@ void rt_ostimer_init(rt_uint8_t timer)
 				tmr2 = rt_timer_create(RT_SOFT_TIMER_50MS_CLOSE_NAME,  
 										tmrout50ms_close_callbak, 
 										RT_NULL, 
-										60, 
+										70, 
 										RT_TIMER_FLAG_PERIODIC);
-				closingflag++;
+				closingflag = 1;
 			}
 			if (tmr2 != RT_NULL)
 			{
@@ -790,7 +790,6 @@ void rt_ostimer_init(rt_uint8_t timer)
             break;        
     }
 }
-
 
 #endif /* RT_USING_SFTIMER */
 

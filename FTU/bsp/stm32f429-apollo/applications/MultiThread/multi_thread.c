@@ -261,6 +261,8 @@ static void rt_protect_thread_entry(void *param)
 
 //            distributClock();			
         }
+//		CurProtectCtrlClock();
+		rt_thread_delay(1000);
     }  
 }
 #endif /* RT_USING_PROTECT */

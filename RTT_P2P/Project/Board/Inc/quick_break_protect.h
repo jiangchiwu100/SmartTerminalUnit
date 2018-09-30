@@ -9,7 +9,6 @@
 #include "breaker_interface.h"
 #include "distribution.h"
 
-extern SwitchProperty curStation;
 
 #define RESETFLAG  0x80000000 
 //ËÙ¶Ï±£»¤

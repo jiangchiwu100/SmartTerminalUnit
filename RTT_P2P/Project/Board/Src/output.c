@@ -1,5 +1,6 @@
 #include "output.h"
 #include "drv_gpio.h"
+#include "drv_timer.h"
 #include "common_data.h"
 #include <arm_math.h>
 
@@ -116,5 +117,8 @@ rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 }
 
 
-
+void OpeningclosingOperate(rt_uint8_t type)
+{
+	rt_ostimer_init(type);
+}
 

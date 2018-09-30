@@ -15,7 +15,7 @@
 
 
 rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type);
-
+void OpeningclosingOperate(rt_uint8_t type);
 
 #endif /*_OUTPUT_H*/
 

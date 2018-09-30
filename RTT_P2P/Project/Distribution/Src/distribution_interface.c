@@ -16,6 +16,10 @@
 #include "status_update.h"
 #include "snapshoot.h"
 
+#include "drv_timer.h"
+#include "output.h"
+#include "input.h"
+
 static inline bool SystemNowTime(FaultDealHandle* handle) ;
 static inline uint32_t DiffTime(uint32_t lastTime);
 static inline bool IsOverTime(FaultDealHandle* handle);
@@ -601,6 +605,7 @@ static inline bool IsRejectInsulate(FaultDealHandle* handle)
 static bool OpenOperate(FaultDealHandle* handle)
 {   
     handle->switchProperty->isOpening = true;
+	OpeningclosingOperate(TMR_50MS_OPEN);
 	return true;
 }
 /**
@@ -612,6 +617,7 @@ static bool OpenOperate(FaultDealHandle* handle)
 static bool CloseOperate(FaultDealHandle* handle)
 {	
 	handle->switchProperty->isClosing = true;
+	OpeningclosingOperate(TMR_50MS_CLOSE);
 	return true;
 }
 /**

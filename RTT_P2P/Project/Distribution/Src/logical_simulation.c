@@ -17,6 +17,7 @@
 #include "quick_break_protect.h"
 #include "drv_timer.h"
 #include "output.h"
+#include "input.h"
 
 
 
@@ -70,8 +71,8 @@ static inline void SimulationOpenOperate(SimulationStation* station)
 		&& (!station->isRejectAction))
     {
         (*(station->pBindSwitch))->isOpening = true;
-		rt_ostimer_init(TMR_50MS_OPEN);
-//        rt_hw_output_operate(ADDR_HANDHELD_OPER,DO_OPEN);
+		OpeningclosingOperate(TMR_50MS_OPEN);
+
         rt_kprintf("-------------open----------\r\n");
         station->isStartOpen = 0xff;
     }
@@ -89,8 +90,7 @@ static inline void SimulationCloseOperate(SimulationStation* station)
     if (RUN_STATE_OPEN_POSITION_STORED == station->runState && (!station->isRejectAction))
     {
         (*(station->pBindSwitch))->isClosing = true;
-		rt_ostimer_init(TMR_50MS_CLOSE);
-//      rt_hw_output_operate(ADDR_HANDHELD_OPER,DO_CLOSE);
+		OpeningclosingOperate(TMR_50MS_CLOSE);
 
         rt_kprintf("-------------close----------\r\n");
         station->isStartClose = 0xff;
@@ -374,6 +374,7 @@ ErrorCode SimulationStationServerAddMember(SimulationStationServer* server, uint
 * @update: [2018-06-11[张宇飞][]
 * [2018-06-20[张宇飞][删去开关操作]
 * [2018-06-31[张宇飞][设置检测时标]
+* [2018-09-20[田晓亮][添加开关状态]
 */
 ErrorCode UpdateBindSwitchState(SimulationStation* station)
 {    
@@ -395,12 +396,14 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
     }
 	
     openingclosing();
-    if(((float)0.3 > g_TelemetryDB[g_TelemetryAddr.Ia]))
+    if(((float)0.3 < g_TelemetryDB[g_TelemetryAddr.Ia]))
     {
+		station->faultState = FAULT_YES;
         pswitch->fault.state = FAULT_YES;
     }
     else
     {
+		station->faultState = FAULT_NO;
         pswitch->fault.state = FAULT_NO;
     }
 	pswitch->state = curStation.state;

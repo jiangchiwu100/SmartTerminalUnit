@@ -31,7 +31,7 @@ void openingclosing(void)
 	{
 		curStation.state = SWITCH_OPEN;
 	}
-	else if(g_TelesignalDB[*(zkDigitalInputCfg[0].pAddr)]==OFF && g_TelesignalDB[*(zkDigitalInputCfg[1].pAddr)]==ON)
+	else if(g_TelesignalDB[g_TelesignalAddr.switchOpen]==OFF && g_TelesignalDB[g_TelesignalAddr.switchClose]==ON)
 	{
 		curStation.state = SWITCH_CLOSE;
 	}

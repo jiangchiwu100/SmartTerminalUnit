@@ -16,6 +16,7 @@ static void rt_print_current_val_thread_entry(void *param)
 	{
 		rt_kprintf(" Ia  =  %d \r\n", (int32_t)g_TelemetryDB[g_TelemetryAddr.Ia]);
   
+		openingclosing();
         rt_kprintf("---------------%d\r\n", curStation.state);
 		rt_thread_delay(2000);
 	}

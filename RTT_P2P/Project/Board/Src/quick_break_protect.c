@@ -9,6 +9,8 @@
   */
 
 #include "quick_break_protect.h"
+#include "extern_interface.h"
+#include "drv_timer.h"
 #include "output.h"
 #include "input.h"
 
@@ -30,13 +32,13 @@ static float  g_num;
   * @return: Ikmax-线路末端最大短路电流
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
-void CurrentValue(CurQuickBreakSts *curquickbreakSts, float Ki, float Ikmax)
-{
-	float Krel = 1.3;             //保护装置的可靠系数
-	float Kw = 1;		      //接线系数		
-						  
-	*(curquickbreakSts->parastr.pValue) = ((Krel * Kw * Ikmax) / (2 * Ki));		//过流1段动作电流
-}
+//void CurrentValue(CurQuickBreakSts *curquickbreakSts, float Ki, float Ikmax)
+//{
+//	float Krel = 1.3;             //保护装置的可靠系数
+//	float Kw = 1;		      //接线系数		
+//						  
+//	*(curquickbreakSts->parastr.pValue) = ((Krel * Kw * Ikmax) / (2 * Ki));		//过流1段动作电流
+//}
 /**
   * @Description: 电流速断
   * @param:  
@@ -44,9 +46,7 @@ void CurrentValue(CurQuickBreakSts *curquickbreakSts, float Ki, float Ikmax)
   * @updata: [YYYY-MM-DD] [更改人姓名][变更描述]
   */
 void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
-{
-	float Ki = 0.9;
-	float Ikmax = 5;											
+{										
 	if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//合位
 	{
 		if(curQuickBreakSts->valstr.flag&OVERCURSTA2)
@@ -54,17 +54,11 @@ void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 			curQuickBreakSts->valstr.flag = 0;
 			*(curQuickBreakSts->valstr.gTime) = 0;					//1段定时器清零
 		}
-		CurrentValue(curQuickBreakSts, Ki, Ikmax);
+		*(curQuickBreakSts->parastr.pValue) = 0.3;
 		
-//		if((*(curquickbreakSts->parastr.pSwitch)==SWITCH_ON)&&\
-//		   (!(curquickbreakSts->valstr.flag&OVERCUR1))&&\
-//		   (!(*(curquickbreakSts->valstr.overcurI0flag)&JUDGRFLAG))&&\
-//           ((*(comProSts->yc.Ia)>*(curquickbreakSts->parastr.pValue))||\
-//           (*(comProSts->yc.Ib)>*(curquickbreakSts->parastr.pValue))||\
-//           (*(comProSts->yc.Ic)>*(curquickbreakSts->parastr.pValue))))      //检测过流
 		rt_kprintf("value             =              %d\r\n",    (int32_t)*(curQuickBreakSts->parastr.pValue));
 
-		if((*(comProSts->yc.Ia)>*(curQuickBreakSts->parastr.pValue))||(*(comProSts->yc.Ib)>*(curQuickBreakSts->parastr.pValue)))	
+		if((*(comProSts->yc.Ia)>*(curQuickBreakSts->parastr.pValue))||(*(comProSts->yc.Ib)>*(curQuickBreakSts->parastr.pValue)))	    //检测过流
 		{
 //			if(!(*(curQuickBreakSts->valstr.gTime)&MAINPRO_ENTIMERS))
 //            {
@@ -72,9 +66,9 @@ void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 //            }
 //			if((*(curQuickBreakSts->valstr.gTime)&MAINPRO_ENTIMERS)>=(uint32_t)(*(curQuickBreakSts->parastr.pTime)*1000))
 //			{
-				curStation.fault.state = FAULT_YES;
 				curQuickBreakSts->valstr.flag |= OVERCUR1|OVERCURSTA1;
-				rt_hw_output_operate(ADDR_LOGIC_ACT,DO_OPEN);					//分闸
+//				rt_hw_output_operate(ADDR_LOGIC_ACT,DO_OPEN);					//分闸
+				OpeningclosingOperate(TMR_50MS_OPEN);
                 curQuickBreakSts->valstr.flag |= RESETFLAG;
 //			}
 		}
