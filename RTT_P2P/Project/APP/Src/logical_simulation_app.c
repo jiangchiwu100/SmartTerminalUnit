@@ -16,6 +16,7 @@
 #include "extern_interface.h"
 #include "distribution_config.h"
 #include "distribution_app.h"
+#include "quick_break_protect.h"
 
 void  MonitorApp(StationManger* manager);
 
@@ -83,7 +84,7 @@ static void SimulationSwitchStationLogicalApp(StationManger* manager)
             SimulationStation* station = (SimulationStation*)(element->data);
             if (station != NULL)
             {
-                SwitchRunStateSimulation(station);
+                //SwitchRunStateSimulation(station);
             }
             else
             {
@@ -92,6 +93,7 @@ static void SimulationSwitchStationLogicalApp(StationManger* manager)
                 break;
             }
             UpdateBindSwitchState(station); 
+			//CurProtectCtrlClock();			//  过流保护
             element = element->next;
         }
         rt_thread_delay(1);

@@ -1,12 +1,30 @@
+/**
+  *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
+  * @file:      input.c
+  * @brief:     The driver of input.
+  * @version:   V03.001
+  * @author:    tianxiaoliang
+  * @date:      2018-09-17
+  * @updata:   
+  */
+
+  
 #include "input.h"
 #include "drv_gpio.h"
 #include "string.h"
 #include "common_data.h"
 #include "point_table_config.h"
 
+
 static rt_device_t rt_input_dev;
 SwitchProperty curStation;
 
+/**
+  * @brief : input 初始化
+  * @param : [none].
+  * @return: [0] 
+  * @updata: [2018-09-17][tianxiaoliang][创建]
+  */  
 int rt_hw_input_init(void)
 {
     rt_input_dev = rt_device_find(RT_PIN_NAME);	
@@ -24,8 +42,13 @@ int rt_hw_input_init(void)
 }
 INIT_DEVICE_EXPORT(rt_hw_input_init);
 
-
-void openingclosing(void)
+/**
+  * @brief : 分合位状态
+  * @param : [none].
+  * @return: [0] 
+  * @updata: [2018-09-17][tianxiaoliang][创建]
+  */ 
+void OpeningClosing(void)
 {
 	if(g_TelesignalDB[g_TelesignalAddr.switchOpen]==ON  &&  g_TelesignalDB[g_TelesignalAddr.switchClose]==OFF)
 	{
@@ -41,7 +64,12 @@ void openingclosing(void)
 	}
 }
 
-
+/**
+  * @brief : 开入信息读取
+  * @param : [none].
+  * @return: [0] 
+  * @updata: [2018-09-17][tianxiaoliang][创建]
+  */ 
 void rt_hw_input_check_task(rt_uint8_t clock)
 {
 	uint8_t i = 0;

@@ -19,7 +19,7 @@ extern SwitchProperty curStation;
 
 extern int rt_hw_input_init(void);
 extern void rt_hw_input_check_task(rt_uint8_t clock);
-extern void openingclosing(void);
+extern void OpeningClosing(void);
 
 
 

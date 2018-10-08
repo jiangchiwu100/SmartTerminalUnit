@@ -56,7 +56,7 @@ void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 		}
 		*(curQuickBreakSts->parastr.pValue) = 0.3;
 		
-		rt_kprintf("value             =              %d\r\n",    (int32_t)*(curQuickBreakSts->parastr.pValue));
+//		rt_kprintf("value             =              %d\r\n",    (int32_t)*(curQuickBreakSts->parastr.pValue));
 
 		if((*(comProSts->yc.Ia)>*(curQuickBreakSts->parastr.pValue))||(*(comProSts->yc.Ib)>*(curQuickBreakSts->parastr.pValue)))	    //¼ì²â¹ýÁ÷
 		{
@@ -110,7 +110,7 @@ void CurProtectCtrlClock(void)
 //	g_Overcur[pdrv].parastr.pTime = &g_FixedValueP[OVER_CURRENT_TIME1];
 	g_ComProSts[pdrv].yx.switchOpen.value = &g_TelesignalDB[g_TelesignalAddr.switchOpen];
     g_ComProSts[pdrv].yx.switchClose.value = &g_TelesignalDB[g_TelesignalAddr.switchClose];
-
+	
 	CurQuickBreak_ctrl(&g_ComProSts[pdrv], &g_Overcur[pdrv]);	
 }
 static uint8_t fac_us = 0;

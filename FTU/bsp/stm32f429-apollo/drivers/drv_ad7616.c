@@ -103,7 +103,7 @@ static void AD7616_FSMC_Init(void)
   * @Description: Read the sampled data of AD7616
   * @param[in]  : none
   * @return     : none
-  * @updata     : [2018-9-18] [田晓亮][改变通道]
+  * @updata     : [2018-9-18] [田晓亮][重新赋值]
   */
 static void read_ad7616_data(void)
 {

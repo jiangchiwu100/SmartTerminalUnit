@@ -59,7 +59,7 @@ static inline uint8_t SimulationIsOverTime(SimulationStation* handle)
 
 
 /**
-  * @brief : 合闸操作, 当前状态是分位储能方能有效
+  * @brief : 分闸操作, 当前状态是分位储能方能有效
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
@@ -79,7 +79,7 @@ static inline void SimulationOpenOperate(SimulationStation* station)
     
 }
 /**
-  * @brief : 分闸操作, 当前状态是合位储能方能有效
+  * @brief : 合闸操作, 当前状态是合位储能方能有效
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
   * @update: [2018-06-09][张宇飞][创建]
@@ -96,8 +96,32 @@ static inline void SimulationCloseOperate(SimulationStation* station)
         station->isStartClose = 0xff;
     }    
 }
-
-
+/**
+  * @brief : 分闸操作
+  * @param  SimulationStation* station 模拟的站点
+  * @return: 0--正常
+  * @update: [2018-10-08][田晓亮][创建]
+  */
+static inline void OpenOperate(SimulationStation* station)
+{
+	if (curStation.state == SWITCH_CLOSE)
+	{
+		OpeningclosingOperate(TMR_50MS_OPEN);		
+	}
+}
+/**
+  * @brief : 合闸操作
+  * @param  SimulationStation* station 模拟的站点
+  * @return: 0--正常
+  * @update: [2018-10-08][田晓亮][创建]
+  */
+static inline void CloseOperate(SimulationStation* station)
+{
+	if (curStation.state == SWITCH_OPEN)
+	{
+		OpeningclosingOperate(TMR_50MS_CLOSE);
+	}
+}
 /**
   * @brief :开关状态模拟，只考虑，合闸储能，分闸动作，分闸储能，合闸动作 4个状态，逐步完善
   * @param  SimulationStation* station 模拟的站点
@@ -303,8 +327,8 @@ static ErrorCode  AddSimulationStation(ListDouble* stationList, uint32_t id, Swi
     station->limitTime = 0;        
     station->pBindSwitch = switchProperty;
 	station->isRejectAction = false;
-    station->CloseOperate = SimulationCloseOperate;
-    station->OpenOperate = SimulationOpenOperate;
+    station->CloseOperate = CloseOperate;
+    station->OpenOperate = OpenOperate;
     station->GetNowTime = SimulationGetNowTime;
     station->IsOverTime = SimulationIsOverTime;
         
@@ -395,7 +419,7 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
         pswitch->isChanged = true;
     }
 	
-    openingclosing();
+    OpeningClosing();
     if(((float)0.3 < g_TelemetryDB[g_TelemetryAddr.Ia]))
     {
 		station->faultState = FAULT_YES;

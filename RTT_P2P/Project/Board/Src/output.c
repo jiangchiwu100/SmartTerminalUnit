@@ -1,3 +1,13 @@
+/**
+  *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
+  * @file:      output.c
+  * @brief:     The driver of output.
+  * @version:   V03.001
+  * @author:    Mr.Sun
+  * @date:      2018.09.17
+  * @updata: 
+  */
+  
 #include "output.h"
 #include "drv_gpio.h"
 #include "drv_timer.h"
@@ -6,7 +16,12 @@
 
 static rt_device_t rt_output_dev;
 
-
+/**
+  * @brief : 开出初始化
+  * @param : [none].
+  * @return: [0] 
+  * @updata: [2018-9-17][田晓亮][创建]
+  */ 
 static int rt_hw_output_init(void)
 {
     rt_output_dev = rt_device_find(RT_PIN_NAME);	
@@ -26,7 +41,12 @@ INIT_DEVICE_EXPORT(rt_hw_output_init);
 
 
 
-
+/**
+  * @brief : 合闸操作
+  * @param : [none].
+  * @return: [none] 
+  * @updata: [2018-09-17][田晓亮][创建]
+  */  
 static rt_uint8_t rt_hw_output_close_operate(rt_uint8_t type)
 {
 	switch (type)
@@ -42,7 +62,12 @@ static rt_uint8_t rt_hw_output_close_operate(rt_uint8_t type)
 	
 }
 
-
+/**
+  * @brief : 分闸操作
+  * @param : [none].
+  * @return: [none] 
+  * @updata: [2018-09-17][田晓亮][创建]
+  */  
 static rt_uint8_t rt_hw_output_open_operate(rt_uint8_t type)
 {
 	switch (type)
@@ -58,7 +83,12 @@ static rt_uint8_t rt_hw_output_open_operate(rt_uint8_t type)
 	return (0);
 	
 }
-
+/**
+  * @brief : 分合闸复位操作
+  * @param : [none].
+  * @return: [none] 
+  * @updata: [2018-09-17][田晓亮][创建]
+  */  
 static rt_uint8_t rt_hw_output_reset_operate(rt_uint8_t type)
 {
 	switch (type)
@@ -80,6 +110,13 @@ static rt_uint8_t rt_hw_output_reset_operate(rt_uint8_t type)
 	return (0);
 	
 }
+
+/**
+  * @brief : 分合闸操作
+  * @param : [none].
+  * @return: [none] 
+  * @updata: [2018-09-17][田晓亮][创建]
+  */  
 rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 {
 	rt_uint8_t rtl = 0;
@@ -116,7 +153,12 @@ rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
     return rtl;
 }
 
-
+/**
+  * @brief : 分合闸操作
+  * @param : [none].
+  * @return: [none] 
+  * @updata: [2018-09-17][田晓亮][创建]
+  */
 void OpeningclosingOperate(rt_uint8_t type)
 {
 	rt_ostimer_init(type);

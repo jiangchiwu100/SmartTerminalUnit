@@ -393,7 +393,7 @@
 #define MBSLAVE_THREAD_TIMESLICE                                       (20)
 
 #define PRINT_CUR_VAL_THREAD_NAME										"printcur"
-#define PRINT_CUR_VAL_THREAD_PRIORITY								   (6)
+#define PRINT_CUR_VAL_THREAD_PRIORITY								   (22)
 #define PRINT_CUR_VAL_THREAD_STACK_SIZE								   (1024)
 #define PRINT_CUR_VAL_THREAD_TIMESLICE								   (20)
 
