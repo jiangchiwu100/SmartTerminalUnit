@@ -15,6 +15,8 @@
 #include "board.h"
 #include "rtdef.h"
 #include "stm32f429xx.h"
+#include <lwip/sockets.h>
+#include <lwip/netdb.h>
 
 /****************************全局变量***********************************/
 struct netconn* g_NetFinshNetconn = NULL;			/* 用于finsh和输出调试打印信息的netconn接口句柄 */
@@ -338,8 +340,42 @@ void NetFinsh_kprintf(const char *fmt, ...)
 	va_end(args);
 }
 
+/**
+  * @brief : 使用UDP的发送函数
+  * @param : url 
+  * @param : port 远程端口号
+  * @param : sendData 发送的数据
+  * @return: none
+  * @update: [2018-10-09][李  磊][创建]
+  */
+void udpclient(const uint8_t* url, uint32_t port, uint8_t* sendData)
+{
+	uint32_t sock;
+	struct hostent* host;
+	struct sockaddr_in remoteAddress;
 
+	/* 通过函数入口参数url获得host地址（如果是域名，会做域名解析） */
+	host = (struct hostent*)gethostbyname(url);
 
+	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
+	if ((sock = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	{
+		rt_kprintf("Socket error\n");
+		return;
+	}
+
+	/* 初始化预连接的服务端地址 */
+	remoteAddress.sin_family = AF_INET;
+	remoteAddress.sin_port = htons(port);
+	remoteAddress.sin_addr = *((struct in_addr *) host->h_addr);
+	memset(&(remoteAddress.sin_zero), 0, sizeof(remoteAddress.sin_zero));
+
+	/* 发送数据到服务远端 */
+	lwip_sendto(sock, sendData, strlen(sendData), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
+
+	/* 关闭这个socket */
+//	lwip_close(sock);
+}
 
 /*****************************File End**********************************/
 

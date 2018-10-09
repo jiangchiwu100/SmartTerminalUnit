@@ -43,7 +43,7 @@
   * @update: [2018-09-10][李  磊][创建]
   * 
   */  
-#if 0
+#if RT_USING_NET_FINSH
 static void rt_net_finsh_thread_entry(void *param)
 {
 	err_t err = 0;
@@ -129,7 +129,7 @@ static void rt_net_finsh_thread_entry(void *param)
   * @update: [2018-10-09][李  磊][创建]
   * 
   */  
-#if RT_USING_NET_FINSH
+#if 0
 static void rt_net_finsh_thread_entry(void *param)
 {
 	uint32_t sock;
@@ -342,6 +342,7 @@ static void rt_udp_serve_thread_entry(void *param)
 	}
 	addr_len = sizeof(struct sockaddr);
 	rt_kprintf("UDPServer Waiting for client on port 5555...\n");
+//	udpclient("192.168.10.111", 5555, "123456\n");
 	while (1)
 	{
 		/* 从sock中收取最大1024字节数据 */
@@ -353,6 +354,7 @@ static void rt_udp_serve_thread_entry(void *param)
 		/* 输出接收的数据 */
 		rt_kprintf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 		rt_kprintf("%s", recv_data);
+		lwip_sendto(sock, recv_data, strlen(recv_data), 0, (struct sockaddr*)&client_addr, sizeof(struct sockaddr));
 
 		/* 如果接收数据是exit，退出 */
 		if (strcmp(recv_data, "exit") == 0)
@@ -376,6 +378,7 @@ static void rt_udp_serve_thread_entry(void *param)
   */
 static void rt_maintenance_serve_thread_entry(void *param)
 {
+	return;
 	err_t err = 0;
 	uint8_t ret = 0;
 	struct ip_addr destipAddr;

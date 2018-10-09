@@ -53,6 +53,7 @@ uint8_t FifoMallocAndInit(FifoHandle** fifoHandle, uint8_t** buffer, uint32_t bu
 void FifoStringEnqueue(FifoHandle *handle, uint8_t* indata, uint32_t size);    //字符串入队操作
 char FifoCharDequeue(FifoHandle *handle);    //字符出队操作
 char NetGetchar(void);    //获取一个字符,在finsh中使用,代替getchar函数
+void udpclient(const uint8_t* url, uint32_t port, uint8_t* sendData);	//udp使用socket接口进行发送数据的函数
 //void NetFinsh_kprintf(const char *fmt, ...);
 
 
