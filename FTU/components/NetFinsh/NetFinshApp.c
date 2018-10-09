@@ -46,6 +46,10 @@ FifoHandle* MaintenanceServeFifoHandle = NULL;
 uint8_t* MaintenanceServeBuffer = NULL;
 PointUint8* MaintenanceServeBufferPack = NULL;
 
+uint32_t g_NetFinshSocket = 0;
+uint32_t g_UDP_ServeSocket = 0;
+uint32_t g_MaintenanceServeSocket = 0;
+
 
 /*****************************Function**********************************/
 
@@ -342,20 +346,20 @@ void NetFinsh_kprintf(const char *fmt, ...)
 
 /**
   * @brief : 使用UDP的发送函数
-  * @param : url 
+  * @param : remoteAddressString 远程IP地址的字符串形式,例如“192.168.10.111”
   * @param : port 远程端口号
   * @param : sendData 发送的数据
   * @return: none
   * @update: [2018-10-09][李  磊][创建]
   */
-void udpclient(const uint8_t* url, uint32_t port, uint8_t* sendData)
+void UDP_SocketSendString(uint8_t* remoteAddressString, uint32_t port, uint8_t* sendData)
 {
 	uint32_t sock;
 	struct hostent* host;
 	struct sockaddr_in remoteAddress;
 
-	/* 通过函数入口参数url获得host地址（如果是域名，会做域名解析） */
-	host = (struct hostent*)gethostbyname(url);
+	/* 通过函数入口参数获得host地址（如果是域名，会做域名解析） */
+	host = (struct hostent*)gethostbyname(remoteAddressString);
 
 	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
 	if ((sock = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)

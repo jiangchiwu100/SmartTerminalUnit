@@ -21,6 +21,7 @@
 
 #include "lwip/sockets.h"
 #include "lwip/ip.h"
+#include <lwip/netdb.h>
 /*****************************宏定义************************************/
 #define FINSH_LOCAL_PORT			5533						//finsh和网口打印输出的本地端口
 #define FINSH_REMOTE_PORT			FINSH_LOCAL_PORT			//finsh接收命令的远端端口
@@ -43,7 +44,7 @@
   * @update: [2018-09-10][李  磊][创建]
   * 
   */  
-#if RT_USING_NET_FINSH
+#if 0
 static void rt_net_finsh_thread_entry(void *param)
 {
 	err_t err = 0;
@@ -129,71 +130,101 @@ static void rt_net_finsh_thread_entry(void *param)
   * @update: [2018-10-09][李  磊][创建]
   * 
   */  
-#if 0
+#if RT_USING_NET_FINSH
 static void rt_net_finsh_thread_entry(void *param)
 {
-	uint32_t sock;
-	uint32_t bytes_read;
-	uint8_t* recv_data;
-	uint32_t addr_len;
-	struct sockaddr_in server_addr, client_addr;
+	volatile uint32_t receiveNum;
+	uint8_t buffer[PRINT_BUFFER_SIZE] = {0};
+	uint32_t addressLenth;
+	struct sockaddr_in localAddress, remoteAddress;
+	uint8_t ret = 0;
+	uint32_t i = 0;
+	struct hostent* host;
 
-	/* 分配接收用的数据缓冲 */
-	recv_data = rt_malloc(1024);
-	if (recv_data == RT_NULL)
+	/* 接收FIFO和发送FIFO申请动态内存以及初始化 */
+	ret = FifoMallocAndInit(&FinshReceiveFifoHandle, &FinshBuffer, NET_FINSH_BUFSIZE, &FinshBufferPack);
+	if(!ret)
 	{
-		/* 分配内存失败，返回 */
-		rt_kprintf("No memory\n");
+		ret = FifoMallocAndInit(&PrintfFifoHandle, &PrintfBuffer, NET_PRINTF_BUFSIZE, &PrintfBufferPack);
+		if(ret)
+		{
+			FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/* fifo创建失败,则进行释放 */
+			FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
+			rt_kprintf("Net Finsh Thread: Printf Fifo Malloc And Init Faliure\r\n");
+			return;
+		}
+	}
+	else
+	{
+		FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/* fifo创建失败,则进行释放 */
+		rt_kprintf("Net Finsh Thread: Receive Fifo Malloc And Init Faliure\r\n");
 		return;
 	}
 
 	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
-	if ((sock = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	if ((g_NetFinshSocket = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 	{
-		rt_kprintf("Socket error\n");
-		/* 释放接收用的数据缓冲 */
-		rt_free(recv_data);
+		rt_kprintf("g_NetFinshSocket lwip_socket error\n");
 		return;
 	}
 	
 	/* 初始化服务端地址 */
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(FINSH_LOCAL_PORT);
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
+	localAddress.sin_family = AF_INET;
+	localAddress.sin_port = htons(FINSH_LOCAL_PORT);
+	localAddress.sin_addr.s_addr = INADDR_ANY;
+	memset(&(localAddress.sin_zero), 0, sizeof(localAddress.sin_zero));
+	
+	host = (struct hostent*)gethostbyname("192.168.10.111");
+	remoteAddress.sin_family = AF_INET;
+	remoteAddress.sin_port = htons(FINSH_REMOTE_PORT);
+	remoteAddress.sin_addr = *((struct in_addr *) host->h_addr);
+	memset(&(remoteAddress.sin_zero), 0, sizeof(remoteAddress.sin_zero));
 
 	/* 绑定socket到服务端地址 */
-	if (lwip_bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr))== -1)
+	if (lwip_bind(g_NetFinshSocket, (struct sockaddr*)&localAddress, sizeof(struct sockaddr))== -1)
 	{
 		/* 绑定地址失败 */
 		rt_kprintf("Bind error\n");
 		/* 释放接收用的数据缓冲 */
-		rt_free(recv_data);
+		rt_free(buffer);
 		return;
 	}
-	addr_len = sizeof(struct sockaddr);
-	rt_kprintf("UDPServer Waiting for client on port 5555...\n");
+	addressLenth = sizeof(struct sockaddr);
+	
+	/*UDP链接已经创建，之后可以使用网口的打印函数了*/
+	NetFinshFlag = true;
+	rt_kprintf("Net finsh Init Success\r\n");			
+	
 	while (1)
 	{
-		/* 从sock中收取最大1024字节数据 */
-		bytes_read = lwip_recvfrom(sock, recv_data, 1024, 0, (struct sockaddr*)&client_addr, &addr_len);
-
-		/* UDP不同于TCP，它基本不会出现收取的数据失败的情况，除非设置了超时等待 */
-		recv_data[bytes_read] = '\0'; /* 把末端清零 */
-
-		/* 输出接收的数据 */
-		rt_kprintf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-		rt_kprintf("%s", recv_data);
-
-		/* 如果接收数据是exit，退出 */
-		if (strcmp(recv_data, "exit") == 0)
+		
+		/* 发送数据 */
+		memset(buffer, 0, PRINT_BUFFER_SIZE);
+		for(i=0; (i<PRINT_BUFFER_SIZE) && (PrintfFifoHandle->fifo.count); i++)
 		{
-			lwip_close(sock);
-			/* 释放接收用的数据缓冲 */
-			rt_free(recv_data);
-			break;
+			buffer[i] = FifoCharDequeue(PrintfFifoHandle);
 		}
+		if(0 != i)
+		{
+			lwip_sendto(g_NetFinshSocket, buffer, i, 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
+		}
+		
+		
+		/* 接收数据 */
+		memset(buffer, 0, PRINT_BUFFER_SIZE);
+		lwip_recvfrom(g_NetFinshSocket, buffer, PRINT_BUFFER_SIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+		receiveNum = strlen(buffer);
+		if((receiveNum > 0) && (receiveNum < PRINT_BUFFER_SIZE))
+		{
+			/* UDP不同于TCP，它基本不会出现收取的数据失败的情况，除非设置了超时等待 */
+			FifoStringEnqueue(FinshReceiveFifoHandle, buffer, receiveNum);
+			
+		}
+		rt_thread_delay(10);
+					
+
 	}
+	lwip_close(g_NetFinshSocket);
 	return;
 }
 #endif
@@ -302,10 +333,10 @@ static void rt_udp_serve_thread_entry(void *param)
 static void rt_udp_serve_thread_entry(void *param)
 {
 	uint32_t sock;
-	int bytes_read;
+	int receiveNum;
 	char *recv_data;
-	rt_uint32_t addr_len;
-	struct sockaddr_in server_addr, client_addr;
+	rt_uint32_t addressLenth;
+	struct sockaddr_in localAddress, remoteAddress;
 
 	/* 分配接收用的数据缓冲 */
 	recv_data = rt_malloc(1024);
@@ -326,13 +357,13 @@ static void rt_udp_serve_thread_entry(void *param)
 	}
 	
 	/* 初始化服务端地址 */
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(5555);
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
+	localAddress.sin_family = AF_INET;
+	localAddress.sin_port = htons(5555);
+	localAddress.sin_addr.s_addr = INADDR_ANY;
+	rt_memset(&(localAddress.sin_zero), 0, sizeof(localAddress.sin_zero));
 
 	/* 绑定socket到服务端地址 */
-	if (lwip_bind(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr))== -1)
+	if (lwip_bind(sock, (struct sockaddr*) &localAddress, sizeof(struct sockaddr))== -1)
 	{
 		/* 绑定地址失败 */
 		rt_kprintf("Bind error\n");
@@ -340,21 +371,21 @@ static void rt_udp_serve_thread_entry(void *param)
 		rt_free(recv_data);
 		return;
 	}
-	addr_len = sizeof(struct sockaddr);
+	addressLenth = sizeof(struct sockaddr);
 	rt_kprintf("UDPServer Waiting for client on port 5555...\n");
 //	udpclient("192.168.10.111", 5555, "123456\n");
 	while (1)
 	{
 		/* 从sock中收取最大1024字节数据 */
-		bytes_read = lwip_recvfrom(sock, recv_data, 1024, 0, (struct sockaddr*)&client_addr, &addr_len);
+		receiveNum = lwip_recvfrom(sock, recv_data, 1024, 0, (struct sockaddr*)&remoteAddress, &addressLenth);
 
 		/* UDP不同于TCP，它基本不会出现收取的数据失败的情况，除非设置了超时等待 */
-		recv_data[bytes_read] = '\0'; /* 把末端清零 */
+		recv_data[receiveNum] = '\0'; /* 把末端清零 */
 
 		/* 输出接收的数据 */
-		rt_kprintf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+		rt_kprintf("\n(%s , %d) said : ", inet_ntoa(remoteAddress.sin_addr), ntohs(remoteAddress.sin_port));
 		rt_kprintf("%s", recv_data);
-		lwip_sendto(sock, recv_data, strlen(recv_data), 0, (struct sockaddr*)&client_addr, sizeof(struct sockaddr));
+		lwip_sendto(sock, recv_data, strlen(recv_data), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
 
 		/* 如果接收数据是exit，退出 */
 		if (strcmp(recv_data, "exit") == 0)
