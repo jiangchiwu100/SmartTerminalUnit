@@ -17,6 +17,7 @@
 #include "buffer.h"
 #include <stdbool.h>
 #include <sys/types.h>
+#include <lwip/netdb.h>
 
 
 #define NET_FINSH_BUFSIZE		512			//finsh的FIFO接收缓冲区大小
@@ -58,6 +59,10 @@ void FifoStringEnqueue(FifoHandle *handle, uint8_t* indata, uint32_t size);    /
 char FifoCharDequeue(FifoHandle *handle);    //字符出队操作
 char NetGetchar(void);    //获取一个字符,在finsh中使用,代替getchar函数
 void UDP_SocketSendString(uint8_t* remoteAddressString, uint32_t port, uint8_t* sendData);	//udp使用socket接口进行发送数据的函数
+void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
+	struct sockaddr_in* remoteAddress, uint32_t remotePort, uint8_t* remoteAddressString);	//IP地址设置
+uint32_t UdpSocketInit(uint32_t* socketNum, struct sockaddr* socketAddress);	//使用UDP的socket建立和绑定
+
 //void NetFinsh_kprintf(const char *fmt, ...);
 
 

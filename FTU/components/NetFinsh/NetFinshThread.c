@@ -23,6 +23,7 @@
 #include "lwip/ip.h"
 #include <lwip/netdb.h>
 /*****************************宏定义************************************/
+#define REMOTE_ADDRESS 				"192.168.10.111"			/*远程IP的地址*/
 #define FINSH_LOCAL_PORT			5533						//finsh和网口打印输出的本地端口
 #define FINSH_REMOTE_PORT			FINSH_LOCAL_PORT			//finsh接收命令的远端端口
 #define UDP_SERVE_LOCAL_PORT		5555						//UDP通信服务本地端口号
@@ -139,57 +140,22 @@ static void rt_net_finsh_thread_entry(void *param)
 	struct sockaddr_in localAddress, remoteAddress;
 	uint8_t ret = 0;
 	uint32_t i = 0;
-	struct hostent* host;
 
+	/* 本地和远程IP、端口的设置,socket的建立和绑定 */
+	IpAddressInit(&localAddress, FINSH_LOCAL_PORT, &remoteAddress, FINSH_REMOTE_PORT, REMOTE_ADDRESS);
+	ret += UdpSocketInit(&g_NetFinshSocket, (struct sockaddr*)&localAddress);
+	addressLenth = sizeof(struct sockaddr);
+	
 	/* 接收FIFO和发送FIFO申请动态内存以及初始化 */
-	ret = FifoMallocAndInit(&FinshReceiveFifoHandle, &FinshBuffer, NET_FINSH_BUFSIZE, &FinshBufferPack);
-	if(!ret)
-	{
-		ret = FifoMallocAndInit(&PrintfFifoHandle, &PrintfBuffer, NET_PRINTF_BUFSIZE, &PrintfBufferPack);
-		if(ret)
-		{
-			FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/* fifo创建失败,则进行释放 */
-			FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
-			rt_kprintf("Net Finsh Thread: Printf Fifo Malloc And Init Faliure\r\n");
-			return;
-		}
-	}
-	else
+	ret += FifoMallocAndInit(&FinshReceiveFifoHandle, &FinshBuffer, NET_FINSH_BUFSIZE, &FinshBufferPack);
+	ret += FifoMallocAndInit(&PrintfFifoHandle, &PrintfBuffer, NET_PRINTF_BUFSIZE, &PrintfBufferPack);
+	if(ret)
 	{
 		FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/* fifo创建失败,则进行释放 */
-		rt_kprintf("Net Finsh Thread: Receive Fifo Malloc And Init Faliure\r\n");
+		FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
+		rt_kprintf("Net Finsh Thread: Fifo Malloc And Init Faliure\r\n");
 		return;
 	}
-
-	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
-	if ((g_NetFinshSocket = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		rt_kprintf("g_NetFinshSocket lwip_socket error\n");
-		return;
-	}
-	
-	/* 初始化服务端地址 */
-	localAddress.sin_family = AF_INET;
-	localAddress.sin_port = htons(FINSH_LOCAL_PORT);
-	localAddress.sin_addr.s_addr = INADDR_ANY;
-	memset(&(localAddress.sin_zero), 0, sizeof(localAddress.sin_zero));
-	
-	host = (struct hostent*)gethostbyname("192.168.10.111");
-	remoteAddress.sin_family = AF_INET;
-	remoteAddress.sin_port = htons(FINSH_REMOTE_PORT);
-	remoteAddress.sin_addr = *((struct in_addr *) host->h_addr);
-	memset(&(remoteAddress.sin_zero), 0, sizeof(remoteAddress.sin_zero));
-
-	/* 绑定socket到服务端地址 */
-	if (lwip_bind(g_NetFinshSocket, (struct sockaddr*)&localAddress, sizeof(struct sockaddr))== -1)
-	{
-		/* 绑定地址失败 */
-		rt_kprintf("Bind error\n");
-		/* 释放接收用的数据缓冲 */
-		rt_free(buffer);
-		return;
-	}
-	addressLenth = sizeof(struct sockaddr);
 	
 	/*UDP链接已经创建，之后可以使用网口的打印函数了*/
 	NetFinshFlag = true;
@@ -197,7 +163,6 @@ static void rt_net_finsh_thread_entry(void *param)
 	
 	while (1)
 	{
-		
 		/* 发送数据 */
 		memset(buffer, 0, PRINT_BUFFER_SIZE);
 		for(i=0; (i<PRINT_BUFFER_SIZE) && (PrintfFifoHandle->fifo.count); i++)
@@ -206,25 +171,24 @@ static void rt_net_finsh_thread_entry(void *param)
 		}
 		if(0 != i)
 		{
+			/* 将rt_kprintf的内容实际发送出去 */
 			lwip_sendto(g_NetFinshSocket, buffer, i, 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
 		}
-		
 		
 		/* 接收数据 */
 		memset(buffer, 0, PRINT_BUFFER_SIZE);
 		lwip_recvfrom(g_NetFinshSocket, buffer, PRINT_BUFFER_SIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-		receiveNum = strlen(buffer);
+		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < PRINT_BUFFER_SIZE))
 		{
-			/* UDP不同于TCP，它基本不会出现收取的数据失败的情况，除非设置了超时等待 */
+			/* 将接收到的数据入队，等待finsh读取 */
 			FifoStringEnqueue(FinshReceiveFifoHandle, buffer, receiveNum);
-			
 		}
 		rt_thread_delay(10);
-					
-
 	}
+	
 	lwip_close(g_NetFinshSocket);
+	NetFinshFlag = false;
 	return;
 }
 #endif

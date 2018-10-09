@@ -16,7 +16,7 @@
 #include "rtdef.h"
 #include "stm32f429xx.h"
 #include <lwip/sockets.h>
-#include <lwip/netdb.h>
+
 
 /****************************全局变量***********************************/
 struct netconn* g_NetFinshNetconn = NULL;			/* 用于finsh和输出调试打印信息的netconn接口句柄 */
@@ -375,10 +375,68 @@ void UDP_SocketSendString(uint8_t* remoteAddressString, uint32_t port, uint8_t* 
 	memset(&(remoteAddress.sin_zero), 0, sizeof(remoteAddress.sin_zero));
 
 	/* 发送数据到服务远端 */
-	lwip_sendto(sock, sendData, strlen(sendData), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
+	lwip_sendto(sock, sendData, strlen((char*)sendData), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
 
 	/* 关闭这个socket */
-//	lwip_close(sock);
+	lwip_close(sock);
+}
+
+
+/**
+  * @brief : 使用UDP的IP地址设置
+  * @param : localAddress 本地IP地址的socket结构体指针
+  * @param : localPort 本地端口
+  * @param : remoteAddress 远程IP地址的socket结构体指针
+  * @param : remotePort 远程端口
+  * @param : remoteAddressString 远程IP地址的字符串形式,例如“192.168.10.111”
+  * @return: none
+  * @update: [2018-10-09][李  磊][创建]
+  */
+void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
+	struct sockaddr_in* remoteAddress, uint32_t remotePort, uint8_t* remoteAddressString)
+{
+	struct hostent* host;
+	
+	/* 初始化本地地址 */
+	localAddress->sin_family = AF_INET;
+	localAddress->sin_port = htons(localPort);
+	localAddress->sin_addr.s_addr = INADDR_ANY;
+	memset(&(localAddress->sin_zero), 0, sizeof(localAddress->sin_zero));
+	/* 初始化远程地址 */
+	host = (struct hostent*)gethostbyname(remoteAddressString);
+	remoteAddress->sin_family = AF_INET;
+	remoteAddress->sin_port = htons(remotePort);
+	remoteAddress->sin_addr = *((struct in_addr *) host->h_addr);
+	memset(&(remoteAddress->sin_zero), 0, sizeof(remoteAddress->sin_zero));
+	
+}
+
+
+/**
+  * @brief : 使用UDP的socket建立和绑定
+  * @param : socketNum socket号的指针,作为输出参数
+  * @param : socketAddress 本地地址的指针
+  * @return: 0：成功	1：socket创建失败	2：绑定失败
+  * @update: [2018-10-09][李  磊][创建]
+  */
+uint32_t UdpSocketInit(uint32_t* socketNum, struct sockaddr* socketAddress)
+{
+	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
+	if ((*socketNum = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	{
+		rt_kprintf("g_NetFinshSocket lwip_socket error\n");
+		return 1;
+	}
+	
+	/* 绑定socket到服务端地址 */
+	if (lwip_bind(*socketNum, socketAddress, sizeof(struct sockaddr))== -1)
+	{
+		/* 绑定地址失败 */
+		rt_kprintf("Bind error\n");
+		return 2;
+	}
+	
+	return 0;
 }
 
 /*****************************File End**********************************/
