@@ -16,7 +16,7 @@
 
 #define LIVE_TIME_NAME				"timeAllowToLive"
 #define LIVE_TIME_TICK 				2*5000						/* 报文允许生存时间,需要2*5000ms */
-#define LIVE_TIME_FLAG				RT_TIMER_FLAG_ONE_SHOT
+#define LIVE_TIME_FLAG				RT_TIMER_FLAG_ONE_SHOT | RT_TIMER_FLAG_SOFT_TIMER	/* 单次定时，软件定时 */
 
 void UpdateLocalPublicRef(ServerModelManager* manager);
 

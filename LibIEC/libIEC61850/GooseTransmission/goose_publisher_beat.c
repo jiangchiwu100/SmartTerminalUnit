@@ -78,7 +78,7 @@ GooseBeat* GooseBeat_create(char* name, uint32_t min, uint32_t max,
 		perror("rt_calloc\n");
 		return NULL;
 	}
-	pBeat->beat[index++] = min;// min;
+	pBeat->beat[index++] = min;//min
 	pBeat->beat[index++] = min;//min
     time = min << 1;
     if (time > max)
@@ -92,13 +92,13 @@ GooseBeat* GooseBeat_create(char* name, uint32_t min, uint32_t max,
         time = max;
     }
 	pBeat->beat[index++] = time;//time
-    pBeat->beat[index++] = max;		
+    pBeat->beat[index++] = max;
 	pBeat->count = index;
 	pBeat->next = 0;
 	pBeat->Execute = Execute;
 	pBeat->FirstExecute = FirstExecute;
 	rt_timer_init(&(pBeat->timer), name, BeatExecuteTask, pBeat, pBeat->beat[pBeat->next],
-		RT_TIMER_FLAG_ONE_SHOT| RT_TIMER_FLAG_SOFT_TIMER);
+		RT_TIMER_FLAG_ONE_SHOT | RT_TIMER_FLAG_SOFT_TIMER);
 
     return pBeat;
 }

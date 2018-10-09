@@ -445,6 +445,7 @@ static void LiveTimeOut(void* parameter)
  * @param :
  * @return: DatasetSubscriber* 分配 好的空间
  * @update: [2018-08-22][张宇飞][创建]
+ * 			[2018-09-28][李  磊][增加判断报文生存时间的定时功能]
  */
 void GooseCheckAdd(GooseSubscriber subscriber, RingQueue* ring)
 {
@@ -531,11 +532,12 @@ static void CheckSequence(RingQueue* pRing, uint32_t appId,  uint32_t* lastStNum
 
 
 /**
-  * @brief :任务空闲时检查数据
-  * @param :
-  * @return: 0--
-  * @update: [2018-09-12][创建]
-  */
+ * @brief :任务空闲时检查数据
+ * @param :
+ * @return: 0--
+ * @update: [2018-09-12][张宇飞][创建]
+ *			[2018-09-28][李  磊][增加判断报文生存时间的功能，但未添加具体的处理函数]
+ */
 void FtuIdleHook(void)
 {
     extern ServerModelManager g_ServerModelManager;
@@ -552,7 +554,7 @@ void FtuIdleHook(void)
 //    CheckSequence(&Ring1001, 0x1001, &lastSt1001, &lastSq1001);
 //    CheckSequence(&Ring1003, 0x1003, &lastSt1003, &lastSq1003);
 //    CheckSequence(&Ring1004, 0x1004, &lastSt1004, &lastSq1004);
-    
+
 
     if (g_ServerModelManager.dsSubscriber)
     {
