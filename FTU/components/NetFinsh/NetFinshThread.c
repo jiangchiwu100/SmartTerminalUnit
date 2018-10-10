@@ -120,7 +120,7 @@ static void rt_net_finsh_thread_entry(void *param)
 #elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_net_finsh_thread_entry(void *param)
 {
-	uint32_t receiveNum;		//接收到的字节数
+	int32_t receiveNum;		//接收到的字节数
 	uint8_t buffer[PRINT_BUFFER_SIZE] = {0};		//接收和发送缓冲区
 	uint32_t addressLenth;		//地址长度
 	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
@@ -163,8 +163,8 @@ static void rt_net_finsh_thread_entry(void *param)
 		
 		/* 接收数据 */
 		memset(buffer, 0, PRINT_BUFFER_SIZE);
-		lwip_recvfrom(g_NetFinshSocket, buffer, PRINT_BUFFER_SIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-		receiveNum = strlen((char*)buffer);
+		receiveNum = lwip_recvfrom(g_NetFinshSocket, buffer, PRINT_BUFFER_SIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < PRINT_BUFFER_SIZE))
 		{
 			/* 将接收到的数据入队，等待finsh读取 */
@@ -270,7 +270,7 @@ static void rt_udp_serve_thread_entry(void *param)
 #elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_udp_serve_thread_entry(void *param)
 {
-	uint32_t receiveNum;		//接收到的字节数
+	int32_t receiveNum;		//接收到的字节数
 	uint8_t buffer[UDP_SERVE_BUFSIZE] = {0};		//接收和发送缓冲区
 	uint32_t addressLenth;		//地址长度
 	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
@@ -299,8 +299,8 @@ static void rt_udp_serve_thread_entry(void *param)
 	{
 		/* 接收数据 */
 		memset(buffer, 0, UDP_SERVE_BUFSIZE);
-		lwip_recvfrom(g_UDP_ServeSocket, buffer, UDP_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-		receiveNum = strlen((char*)buffer);
+		receiveNum = lwip_recvfrom(g_UDP_ServeSocket, buffer, UDP_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < UDP_SERVE_BUFSIZE))
 		{
 			StationPointFrameDeal(buffer, receiveNum);
@@ -401,7 +401,7 @@ static void rt_maintenance_serve_thread_entry(void *param)
 #elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_maintenance_serve_thread_entry(void *param)
 {
-	uint32_t receiveNum;		//接收到的字节数
+	int32_t receiveNum;		//接收到的字节数
 	uint8_t buffer[MAINTENANCE_SERVE_BUFSIZE] = {0};		//接收和发送缓冲区
 	uint32_t addressLenth;		//地址长度
 	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
@@ -432,8 +432,8 @@ static void rt_maintenance_serve_thread_entry(void *param)
 	{
 		/* 接收数据 */
 		memset(buffer, 0, MAINTENANCE_SERVE_BUFSIZE);
-		lwip_recvfrom(g_MaintenanceServeSocket, buffer, MAINTENANCE_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-		receiveNum = strlen((char*)buffer);
+		receiveNum = lwip_recvfrom(g_MaintenanceServeSocket, buffer, MAINTENANCE_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < MAINTENANCE_SERVE_BUFSIZE))
 		{
 			MantaiceFrameDeal(buffer, receiveNum);

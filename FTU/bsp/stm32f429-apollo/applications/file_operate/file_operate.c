@@ -18,7 +18,7 @@
 
 #include "point_table_config.h"
 #include "drv_wdg.h"
-	
+#include <finsh.h>
 	
 #include "JsonFileOperation.h"
 
@@ -847,7 +847,7 @@ void file_operate_Format(void)
 //    if(dfs_mkfs("elm","W25Q256FV") != -1) 
     if (dfs_mkfs("elm", RT_SPI_FLASH_NAME) != -1) 
     {
-        rt_kprintf("spi flash mk to /spi !\n");
+        rt_kprintf("spi flash mk to /spi success!\n");
     }
     else
     {
@@ -885,8 +885,10 @@ void file_operate_Format(void)
 //		CreatDIR_EXV();
 //		//创建FIXPT目录
 //		CreatDIR_FIXPT();
-
+	
+	rt_kprintf("\nDisk formatted successfully!\n");
 }
+FINSH_FUNCTION_EXPORT_ALIAS(file_operate_Format, format, flash format)
 
 /**
   * @brief : AddDoc_FEVNET.
@@ -1453,7 +1455,7 @@ void file_operate_Init(void)
         ((g_FlagDB.fatfs_fevent.currentnum > FEVENT_FILE_MAXNUM)||(g_FlagDB.fatfs_fevent.fullnum > FEVENT_FILE_MAXNUM))||\
         ((g_FlagDB.fatfs_ulog.currentnum > ULOG_FILE_MAXNUM)||(g_FlagDB.fatfs_ulog.fullnum > ULOG_FILE_MAXNUM)))
         {
-            //file_operate_Format(); 
+//            file_operate_Format(); 
             FILE_PRINTF("spi flash mount to /spi restart!\n");  
         }
     }

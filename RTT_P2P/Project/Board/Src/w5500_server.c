@@ -391,7 +391,10 @@ ErrorCode ExternSend(PointUint8* pPacket)
     destId[3] = pPacket->pData[FRAME_DEST_INDEX];
     ON_LOCK();
     // ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
-//    ret = UDP_SocketSendString(g_UDP_ServeSocket, pPacket->pData, pPacket->len, REMOTE_ADDRESS, UDP_SERVE_REMOTE_PORT);
+	if(true == UDP_ServeFlag)
+	{
+//		ret = UDP_SocketSendString(g_UDP_ServeSocket, pPacket->pData, pPacket->len, REMOTE_ADDRESS, UDP_SERVE_REMOTE_PORT);
+	}  
     OFF_LOCK();
     if(ret == pPacket->len)
     {

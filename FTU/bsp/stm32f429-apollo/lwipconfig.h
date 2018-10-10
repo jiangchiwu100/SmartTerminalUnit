@@ -30,7 +30,7 @@
 /* RT_LWIP_PPPOS is not set */
 #define RT_LWIP_PBUF_NUM                                               8
 #define RT_LWIP_RAW_PCB_NUM                                            4
-#define RT_LWIP_UDP_PCB_NUM                                            4
+#define RT_LWIP_UDP_PCB_NUM                                            8
 #define RT_LWIP_TCP_PCB_NUM                                            4
 #define RT_LWIP_TCP_SEG_NUM                                            40
 #define RT_LWIP_TCP_SND_BUF                                            8196

@@ -375,15 +375,8 @@ int32_t UDP_SocketSendString(uint32_t socket, uint8_t* data, uint32_t lenth, uin
 	remoteAddress.sin_addr = *((struct in_addr *) host->h_addr);
 	memset(&(remoteAddress.sin_zero), 0, sizeof(remoteAddress.sin_zero));
 
-	if(lenth <= strlen(data))
-	{
-		/* 发送数据到服务远端 */
-		sendNum = lwip_sendto(socket, data, lenth, 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
-	}
-	else
-	{
-		sendNum = lwip_sendto(socket, data, strlen(data), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
-	}
+	/* 发送数据到服务远端 */
+	sendNum = lwip_sendto(socket, data, lenth, 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
 	
 	return sendNum;
 }
