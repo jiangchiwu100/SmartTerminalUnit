@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <lwip/netdb.h>
 
-
+#define PRINT_BUFFER_SIZE		512			//打印输出的缓冲区大小
 #define NET_FINSH_BUFSIZE		512			//finsh的FIFO接收缓冲区大小
 #define NET_PRINTF_BUFSIZE		2048		//打印的FIFO输出缓冲区大小
 #define UDP_SERVE_BUFSIZE		1024		//UDP通信服务的FIFO缓冲区大小

@@ -384,11 +384,11 @@ void UDP_SocketSendString(uint8_t* remoteAddressString, uint32_t port, uint8_t* 
 
 /**
   * @brief : 使用UDP的IP地址设置
-  * @param : localAddress 本地IP地址的socket结构体指针
-  * @param : localPort 本地端口
-  * @param : remoteAddress 远程IP地址的socket结构体指针
-  * @param : remotePort 远程端口
-  * @param : remoteAddressString 远程IP地址的字符串形式,例如“192.168.10.111”
+  * @param : localAddress 本地IP地址的socket结构体指针,可以赋值为NULL
+  * @param : localPort 本地端口,当localAddress为NULL，则此值不起作用
+  * @param : remoteAddress 远程IP地址的socket结构体指针,可以赋值为NULL
+  * @param : remotePort 远程端口,当remoteAddress为NULL，则此值不起作用
+  * @param : remoteAddressString 远程IP地址的字符串形式,例如“192.168.10.111”,当remoteAddress为NULL，则此值不起作用
   * @return: none
   * @update: [2018-10-09][李  磊][创建]
   */
@@ -397,17 +397,24 @@ void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
 {
 	struct hostent* host;
 	
-	/* 初始化本地地址 */
-	localAddress->sin_family = AF_INET;
-	localAddress->sin_port = htons(localPort);
-	localAddress->sin_addr.s_addr = INADDR_ANY;
-	memset(&(localAddress->sin_zero), 0, sizeof(localAddress->sin_zero));
-	/* 初始化远程地址 */
-	host = (struct hostent*)gethostbyname(remoteAddressString);
-	remoteAddress->sin_family = AF_INET;
-	remoteAddress->sin_port = htons(remotePort);
-	remoteAddress->sin_addr = *((struct in_addr *) host->h_addr);
-	memset(&(remoteAddress->sin_zero), 0, sizeof(remoteAddress->sin_zero));
+	if(NULL != localAddress)
+	{
+		/* 初始化本地地址 */
+		localAddress->sin_family = AF_INET;
+		localAddress->sin_port = htons(localPort);
+		localAddress->sin_addr.s_addr = INADDR_ANY;
+		memset(&(localAddress->sin_zero), 0, sizeof(localAddress->sin_zero));
+	}
+	
+	if(NULL != remoteAddress)
+	{
+		/* 初始化远程地址 */
+		host = (struct hostent*)gethostbyname(remoteAddressString);
+		remoteAddress->sin_family = AF_INET;
+		remoteAddress->sin_port = htons(remotePort);
+		remoteAddress->sin_addr = *((struct in_addr *) host->h_addr);
+		memset(&(remoteAddress->sin_zero), 0, sizeof(remoteAddress->sin_zero));
+	}
 	
 }
 

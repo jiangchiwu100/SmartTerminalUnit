@@ -30,7 +30,7 @@
 #define UDP_SERVE_REMOTE_PORT		UDP_SERVE_LOCAL_PORT		//UDP通信服务远端端口号
 #define MAINTACE_SERVE_LOCAL_PORT	5500						//维护服务本地端口号
 #define MAINTACE_SERVE_REMOTE_PORT	5555						//维护服务远端端口号
-#define PRINT_BUFFER_SIZE			512		//打印输出的缓冲区大小
+
 
 
 
@@ -39,13 +39,15 @@
 /*******************************Function********************************/
 
 /**
-  * @brief : net finsh thread entry
+  * @brief : 使用dp83848和UDP协议完成finsh远程登录和打印输出的功能
   * @param : none
   * @return: none
   * @update: [2018-09-10][李  磊][创建]
+  * 		 [2018-10-09][李  磊][改为socket接口实现]
   * 
   */  
-#if 0
+#if RT_USING_NET_FINSH
+#if RT_USING_NETCONN
 static void rt_net_finsh_thread_entry(void *param)
 {
 	err_t err = 0;
@@ -122,23 +124,15 @@ static void rt_net_finsh_thread_entry(void *param)
 	FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/*释放接收和发送的队列所用到的动态分配的内存*/
 	FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
 }
-#endif
 
-/**
-  * @brief : net finsh thread entry
-  * @param : none
-  * @return: none
-  * @update: [2018-10-09][李  磊][创建]
-  * 
-  */  
-#if RT_USING_NET_FINSH
+#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_net_finsh_thread_entry(void *param)
 {
-	volatile uint32_t receiveNum;
-	uint8_t buffer[PRINT_BUFFER_SIZE] = {0};
-	uint32_t addressLenth;
-	struct sockaddr_in localAddress, remoteAddress;
-	uint8_t ret = 0;
+	uint32_t receiveNum;		//接收到的字节数
+	uint8_t buffer[PRINT_BUFFER_SIZE] = {0};		//接收和发送缓冲区
+	uint32_t addressLenth;		//地址长度
+	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
+	uint8_t ret = 0;			//函数执行的返回值,用于判断是否执行成功
 	uint32_t i = 0;
 
 	/* 本地和远程IP、端口的设置,socket的建立和绑定 */
@@ -149,7 +143,7 @@ static void rt_net_finsh_thread_entry(void *param)
 	/* 接收FIFO和发送FIFO申请动态内存以及初始化 */
 	ret += FifoMallocAndInit(&FinshReceiveFifoHandle, &FinshBuffer, NET_FINSH_BUFSIZE, &FinshBufferPack);
 	ret += FifoMallocAndInit(&PrintfFifoHandle, &PrintfBuffer, NET_PRINTF_BUFSIZE, &PrintfBufferPack);
-	if(ret)
+	if(ret)		//上边三个函数执行成功返回0,执行失败返回值大于0,只要有一个失败,则表示失败
 	{
 		FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/* fifo创建失败,则进行释放 */
 		FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
@@ -188,19 +182,25 @@ static void rt_net_finsh_thread_entry(void *param)
 	}
 	
 	lwip_close(g_NetFinshSocket);
+	FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/*释放接收和发送的队列所用到的动态分配的内存*/
+	FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
 	NetFinshFlag = false;
 	return;
 }
-#endif
+#endif	/* RT_USING_SOCKET */
+#endif	/* RT_USING_NET_FINSH */
+
 
 /**
-  * @brief : udp serve thread entry
+  * @brief : 使用dp83848和UDP协议完成上位机下发配置的功能
   * @param : none
   * @return: none
   * @update: [2018-09-12][李  磊][创建]
+  * 		 [2018-10-09][李  磊][改为socket接口实现]
   * 
   */
-#if 0
+#if RT_USING_UDP_SERVE
+#if RT_USING_NETCONN
 static void rt_udp_serve_thread_entry(void *param)
 {
 	err_t err = 0;
@@ -233,27 +233,17 @@ static void rt_udp_serve_thread_entry(void *param)
 		//	err = netconn_bind(g_UDP_ServeNetconn, &iplocal, UDP_SERVE_LOCAL_PORT);
 			IP4_ADDR(&destipAddr, lwipDev.remoteip[0], lwipDev.remoteip[1], lwipDev.remoteip[2], lwipDev.remoteip[3]); //构造目的IP地址
 			netconn_connect(g_UDP_ServeNetconn, &destipAddr, UDP_SERVE_REMOTE_PORT); 	//连接到远端主机
-			ip_set_option(g_UDP_ServeNetconn->pcb.ip, SO_BROADCAST);
+			ip_set_option(g_UDP_ServeNetconn->pcb.ip, SO_BROADCAST);		//设置接口为接收广播
 			if(err == ERR_OK)//绑定完成
 			{
-				/*UDP链接已经创建，之后可以使用网口的打印函数了*/
+				/*上位机下发配置的端口已经创建*/
 				UDP_ServeFlag = true;
 				rt_kprintf("UDP Communbicate Serve Init Success\r\n");
 				
 				while(1)
 				{
 					receviceNum = UDP_NetconnReceiveString(g_UDP_ServeNetconn, UDP_ServeFifoHandle);
-					
-//					memset(printBuffer, 0, PRINT_BUFFER_SIZE);
-//					for(i=0; (i<PRINT_BUFFER_SIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
-//					{
-//						printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
-//					}
-//					if(0 != i)
-//					{
-//						UDP_NetconnSendString(g_UDP_ServeNetconn, printBuffer);
-//					}
-
+				
 					if(receviceNum > 0)
                    {
                        memset(printBuffer, 0, UDP_SERVE_BUFSIZE);
@@ -284,85 +274,55 @@ static void rt_udp_serve_thread_entry(void *param)
 	/*释放接收和发送的队列所用到的动态分配的内存*/
 	FifoFree(&UDP_ServeFifoHandle, &UDP_ServeBuffer, &UDP_ServeBufferPack);
 }
-#endif
 
-/**
-  * @brief : udp serve thread entry
-  * @param : none
-  * @return: none
-  * @update: [2018-10-08][李  磊][创建]
-  * 
-  */
-#if RT_USING_UDP_SERVE
+#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_udp_serve_thread_entry(void *param)
 {
-	uint32_t sock;
-	int receiveNum;
-	char *recv_data;
-	rt_uint32_t addressLenth;
-	struct sockaddr_in localAddress, remoteAddress;
+	uint32_t receiveNum;		//接收到的字节数
+	uint8_t buffer[UDP_SERVE_BUFSIZE] = {0};		//接收和发送缓冲区
+	uint32_t addressLenth;		//地址长度
+	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
+	uint8_t ret = 0;			//函数执行的返回值,用于判断是否执行成功
+	uint32_t i = 0;
 
-	/* 分配接收用的数据缓冲 */
-	recv_data = rt_malloc(1024);
-	if (recv_data == RT_NULL)
-	{
-		/* 分配内存失败，返回 */
-		rt_kprintf("No memory\n");
-		return;
-	}
-
-	/* 创建一个socket，类型是SOCK_DGRAM，UDP类型 */
-	if ((sock = lwip_socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		rt_kprintf("Socket error\n");
-		/* 释放接收用的数据缓冲 */
-		rt_free(recv_data);
-		return;
-	}
-	
-	/* 初始化服务端地址 */
-	localAddress.sin_family = AF_INET;
-	localAddress.sin_port = htons(5555);
-	localAddress.sin_addr.s_addr = INADDR_ANY;
-	rt_memset(&(localAddress.sin_zero), 0, sizeof(localAddress.sin_zero));
-
-	/* 绑定socket到服务端地址 */
-	if (lwip_bind(sock, (struct sockaddr*) &localAddress, sizeof(struct sockaddr))== -1)
-	{
-		/* 绑定地址失败 */
-		rt_kprintf("Bind error\n");
-		/* 释放接收用的数据缓冲 */
-		rt_free(recv_data);
-		return;
-	}
+	/* 本地和远程IP、端口的设置,socket的建立和绑定 */
+	IpAddressInit(&localAddress, UDP_SERVE_LOCAL_PORT, &remoteAddress, UDP_SERVE_REMOTE_PORT, REMOTE_ADDRESS);
+	ret += UdpSocketInit(&g_UDP_ServeSocket, (struct sockaddr*)&localAddress);
 	addressLenth = sizeof(struct sockaddr);
-	rt_kprintf("UDPServer Waiting for client on port 5555...\n");
-//	udpclient("192.168.10.111", 5555, "123456\n");
+
+	/* 上位机下发配置的FIFO申请动态内存以及初始化 */
+	ret += FifoMallocAndInit(&UDP_ServeFifoHandle, &UDP_ServeBuffer, UDP_SERVE_BUFSIZE, &UDP_ServeBufferPack);
+	if(ret)		//上边三个函数执行成功返回0,执行失败返回值大于0,只要有一个失败,则表示失败
+	{
+		FifoFree(&UDP_ServeFifoHandle, &UDP_ServeBuffer, &UDP_ServeBufferPack);		/* fifo创建失败,则进行释放 */
+		rt_kprintf("Udp Serve Thread: Fifo Malloc And Init Faliure\r\n");
+		return;
+	}
+
+	/*上位机下发配置的端口已经创建*/
+	UDP_ServeFlag = true;
+	rt_kprintf("UDP Communbicate Serve Init Success\r\n");
+
 	while (1)
 	{
-		/* 从sock中收取最大1024字节数据 */
-		receiveNum = lwip_recvfrom(sock, recv_data, 1024, 0, (struct sockaddr*)&remoteAddress, &addressLenth);
-
-		/* UDP不同于TCP，它基本不会出现收取的数据失败的情况，除非设置了超时等待 */
-		recv_data[receiveNum] = '\0'; /* 把末端清零 */
-
-		/* 输出接收的数据 */
-		rt_kprintf("\n(%s , %d) said : ", inet_ntoa(remoteAddress.sin_addr), ntohs(remoteAddress.sin_port));
-		rt_kprintf("%s", recv_data);
-		lwip_sendto(sock, recv_data, strlen(recv_data), 0, (struct sockaddr*)&remoteAddress, sizeof(struct sockaddr));
-
-		/* 如果接收数据是exit，退出 */
-		if (strcmp(recv_data, "exit") == 0)
+		/* 接收数据 */
+		memset(buffer, 0, UDP_SERVE_BUFSIZE);
+		lwip_recvfrom(g_UDP_ServeSocket, buffer, UDP_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+		receiveNum = strlen((char*)buffer);
+		if((receiveNum > 0) && (receiveNum < UDP_SERVE_BUFSIZE))
 		{
-			lwip_close(sock);
-			/* 释放接收用的数据缓冲 */
-			rt_free(recv_data);
-			break;
+			StationPointFrameDeal(buffer, receiveNum);
 		}
+		rt_thread_delay(10);
 	}
+
+	lwip_close(g_UDP_ServeSocket);
+	FifoFree(&UDP_ServeFifoHandle, &UDP_ServeBuffer, &UDP_ServeBufferPack);	/*释放接收和发送的队列所用到的动态分配的内存*/
+	UDP_ServeFlag = false;
 	return;
 }
-#endif
+#endif	/* RT_USING_SOCKET */
+#endif	/* RT_USING_NET_FINSH */
 
 /**
   * @brief : dp82848实现的维护服务的任务入口
@@ -371,9 +331,9 @@ static void rt_udp_serve_thread_entry(void *param)
   * @update: [2018-09-17][李  磊][创建]
   * 
   */
+ #if RT_USING_NETCONN
 static void rt_maintenance_serve_thread_entry(void *param)
 {
-	return;
 	err_t err = 0;
 	uint8_t ret = 0;
 	struct ip_addr destipAddr;
@@ -447,6 +407,12 @@ static void rt_maintenance_serve_thread_entry(void *param)
 	FifoFree(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer, &MaintenanceServeBufferPack);
 }
 
+#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
+static void rt_maintenance_serve_thread_entry(void *param)
+{
+
+}
+#endif	/* RT_USING_SOCKET */
 
 /**
   * @brief : Start udp finsh thread
@@ -534,7 +500,7 @@ void DP83848_MaintenanceServiceInit(void* param)
 
 
 /**
-  * @brief : 使用dp83848和UDP协议完成finsh远程登录的功能
+  * @brief : 使用dp83848和UDP协议完成finsh远程登录和打印输出的功能
   * @param : none
   * @return: 0:成功; 1:失败
   * @update: [2018-09-10][李  磊][创建]
@@ -552,7 +518,7 @@ INIT_APP_EXPORT(rt_NetFinsh_thread_start);
 
 
 /**
-  * @brief : 使用dp83848和UDP协议完成与电脑端通信的功能
+  * @brief : 使用dp83848和UDP协议完成上位机下发配置的功能
   * @param : none
   * @return: 0:成功; 1:失败
   * @update: [2018-09-12][李  磊][创建]
