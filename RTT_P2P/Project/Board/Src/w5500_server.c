@@ -131,15 +131,15 @@ void w5500_config(void)
 {
     wiz_NetInfo wiz_netinfo;
 	uint8_t tmpstr[6];
-//    if (g_EthW5500.ip[0] != 0)
-//    {
-//    memcpy(wiz_netinfo.mac, g_EthW5500.mac, 6);
-//    memcpy(wiz_netinfo.ip, g_EthW5500.ip, 4);
-//    memcpy(wiz_netinfo.sn , g_EthW5500.netmask, 4);
-//    memcpy(wiz_netinfo.gw , g_EthW5500.gateway, 4);
-//    memcpy(wiz_netinfo.dns, g_EthW5500.dns, 4);
-//    }
-//    else
+    if (g_EthW5500.ip[0] != 0)
+    {
+    memcpy(wiz_netinfo.mac, g_EthW5500.mac, 6);
+    memcpy(wiz_netinfo.ip, g_EthW5500.ip, 4);
+    memcpy(wiz_netinfo.sn , g_EthW5500.netmask, 4);
+    memcpy(wiz_netinfo.gw , g_EthW5500.gateway, 4);
+    memcpy(wiz_netinfo.dns, g_EthW5500.dns, 4);
+    }
+    else
     {
         W5500_SetDefaultNetInfo(&wiz_netinfo);
     }
@@ -378,19 +378,20 @@ static void udpserver_thread_entry(void *param)
   * @param void
   * @return: 0--正常
   * @update: [2018-07-23][张宇飞][创建]
-  *          [2018-09-14][李  磊][将之前使用W5500改为使用dp83848发送]
+  *          [2018-10-10][李  磊][将之前使用W5500改为使用dp83848发送]
 */
 ErrorCode ExternSend(PointUint8* pPacket)
 {
     rt_err_t result;
-/* 
+	int ret = 0;
     uint8_t destId[4] = {0};
     destId[0] = 192;
     destId[1] = 168;
     destId[2] = pPacket->pData[FRAME_DEST_INDEX + 1];
     destId[3] = pPacket->pData[FRAME_DEST_INDEX];
     ON_LOCK();
-    int ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
+    // ret = w5500_sendto(SocketNum, pPacket->pData, pPacket->len, destId, RemotePort);
+//    ret = UDP_SocketSendString(g_UDP_ServeSocket, pPacket->pData, pPacket->len, REMOTE_ADDRESS, UDP_SERVE_REMOTE_PORT);
     OFF_LOCK();
     if(ret == pPacket->len)
     {
@@ -400,10 +401,8 @@ ErrorCode ExternSend(PointUint8* pPacket)
     {
         return ERROR_UNKONOW;
     }
- */
+ 
 
-	// FifoStringEnqueue(UDP_ServeFifoHandle, pPacket->pData, pPacket->len);
-//    UDP_NetconnSendString(g_UDP_ServeNetconn, pPacket->pData);
 	return ERROR_OK_NULL;
 }
 /**
@@ -411,29 +410,29 @@ ErrorCode ExternSend(PointUint8* pPacket)
   * @param void
   * @return: 0--正常
   * @update: [2018-07-23][张宇飞][创建]
-  *          [2018-09-17][李  磊][将之前使用W5500改为使用dp83848发送，此处放入消息队列，在任务中进行出队发送]
+  *          [2018-10-10][李  磊][将之前使用W5500改为使用dp83848发送]
 */
 void Monitor(void)
-{    
+{
     extern DatagramTransferNode g_VirtualNode;
     rt_err_t result;
 	RingQueue* ring = &(g_VirtualNode.reciveRing);
 	DatagramFrame* frame;
-    // DefautIp[0] = 192;
-    // DefautIp[1] = 168;
-    // DefautIp[2] = 10;
-    // DefautIp[3] = 111;
+    DefautIp[0] = 192;
+    DefautIp[1] = 168;
+    DefautIp[2] = 10;
+    DefautIp[3] = 111;
 	do
 	{
 
 		bool state = ring->Read(ring, (void**)&frame);
 		if (state)
 		{
-            // ON_LOCK();   
-			// w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);	
-            // OFF_LOCK();
+            ON_LOCK();   
+			// w5500_sendto(SocketMaintanceNum, frame->pData, frame->size, DefautIp, RemotePort);
+            UDP_SocketSendString(g_MaintenanceServeSocket, frame->pData, frame->size, REMOTE_ADDRESS, MAINTACE_SERVE_REMOTE_PORT);
+            OFF_LOCK();
 
-//            UDP_NetconnSendString(g_MaintenanceServeNetconn, frame->pData);
 			Datagram_Destory(frame);
 		}
 		else
@@ -445,11 +444,12 @@ void Monitor(void)
 }
 
 /**
-* @brief :UDP任务初始化
-* @param  void
-* @return: 0--正常
-* @update: [2018-07-21][张宇飞][创建]
-*/
+ * @brief :UDP任务初始化
+ * @param  void
+ * @return: 0--正常
+ * @update: [2018-07-21][张宇飞][创建]
+ *          [2018-10-10][李  磊][修改为使用dp83848进行打印输出]
+ */
 void rt_kprintf(const char *fmt, ...)
 {
 //    if (!g_StationManger.isMaintanceRun)

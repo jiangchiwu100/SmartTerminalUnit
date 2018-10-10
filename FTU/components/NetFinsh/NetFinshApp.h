@@ -19,6 +19,15 @@
 #include <sys/types.h>
 #include <lwip/netdb.h>
 
+/*****************************宏定义************************************/
+#define REMOTE_ADDRESS 				"192.168.10.111"			/*远程IP的地址*/
+#define FINSH_LOCAL_PORT			5533						//finsh和网口打印输出的本地端口
+#define FINSH_REMOTE_PORT			FINSH_LOCAL_PORT			//finsh接收命令的远端端口
+#define UDP_SERVE_LOCAL_PORT		5555						//UDP通信服务本地端口号
+#define UDP_SERVE_REMOTE_PORT		UDP_SERVE_LOCAL_PORT		//UDP通信服务远端端口号
+#define MAINTACE_SERVE_LOCAL_PORT	5500						//维护服务本地端口号
+#define MAINTACE_SERVE_REMOTE_PORT	5555						//维护服务远端端口号
+
 #define PRINT_BUFFER_SIZE		512			//打印输出的缓冲区大小
 #define NET_FINSH_BUFSIZE		512			//finsh的FIFO接收缓冲区大小
 #define NET_PRINTF_BUFSIZE		2048		//打印的FIFO输出缓冲区大小
@@ -58,7 +67,8 @@ uint8_t FifoMallocAndInit(FifoHandle** fifoHandle, uint8_t** buffer, uint32_t bu
 void FifoStringEnqueue(FifoHandle *handle, uint8_t* indata, uint32_t size);    //字符串入队操作
 char FifoCharDequeue(FifoHandle *handle);    //字符出队操作
 char NetGetchar(void);    //获取一个字符,在finsh中使用,代替getchar函数
-void UDP_SocketSendString(uint8_t* remoteAddressString, uint32_t port, uint8_t* sendData);	//udp使用socket接口进行发送数据的函数
+int32_t UDP_SocketSendString(uint32_t socket, uint8_t* data, uint32_t lenth,
+	uint8_t* remoteAddressString, uint32_t remotePort);		//udp使用socket接口进行发送数据的函数
 void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
 	struct sockaddr_in* remoteAddress, uint32_t remotePort, uint8_t* remoteAddressString);	//IP地址设置
 uint32_t UdpSocketInit(uint32_t* socketNum, struct sockaddr* socketAddress);	//使用UDP的socket建立和绑定

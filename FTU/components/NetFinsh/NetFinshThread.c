@@ -22,14 +22,6 @@
 #include "lwip/sockets.h"
 #include "lwip/ip.h"
 #include <lwip/netdb.h>
-/*****************************宏定义************************************/
-#define REMOTE_ADDRESS 				"192.168.10.111"			/*远程IP的地址*/
-#define FINSH_LOCAL_PORT			5533						//finsh和网口打印输出的本地端口
-#define FINSH_REMOTE_PORT			FINSH_LOCAL_PORT			//finsh接收命令的远端端口
-#define UDP_SERVE_LOCAL_PORT		5555						//UDP通信服务本地端口号
-#define UDP_SERVE_REMOTE_PORT		UDP_SERVE_LOCAL_PORT		//UDP通信服务远端端口号
-#define MAINTACE_SERVE_LOCAL_PORT	5500						//维护服务本地端口号
-#define MAINTACE_SERVE_REMOTE_PORT	5555						//维护服务远端端口号
 
 
 
@@ -444,8 +436,7 @@ static void rt_maintenance_serve_thread_entry(void *param)
 		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < MAINTENANCE_SERVE_BUFSIZE))
 		{
-//			MantaiceFrameDeal(buffer, receiveNum);
-			rt_kprintf("Success!!!\r\n");
+			MantaiceFrameDeal(buffer, receiveNum);
 		}
 		rt_thread_delay(10);
 	}
