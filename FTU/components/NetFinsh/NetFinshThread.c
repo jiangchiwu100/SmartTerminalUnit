@@ -331,7 +331,7 @@ static void rt_udp_serve_thread_entry(void *param)
   * @update: [2018-09-17][李  磊][创建]
   * 
   */
- #if RT_USING_NETCONN
+#if RT_USING_NETCONN
 static void rt_maintenance_serve_thread_entry(void *param)
 {
 	err_t err = 0;
@@ -368,7 +368,7 @@ static void rt_maintenance_serve_thread_entry(void *param)
 				MaintenanceServe = true;
 				g_StationManger.isMaintanceRun = true;
 
-				/*UDP链接已经创建，之后可以使用网口的打印函数了*/
+				/*上位机下发配置文件的维护端口已经创建*/
 				rt_kprintf("UDP Maintenance Serve Init Success\r\n");
 				
 				while(1)
@@ -387,7 +387,6 @@ static void rt_maintenance_serve_thread_entry(void *param)
 						{
 							MantaiceFrameDeal(printBuffer, i);
 						}
-						
                     }
 				}
 			}
@@ -410,7 +409,52 @@ static void rt_maintenance_serve_thread_entry(void *param)
 #elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_maintenance_serve_thread_entry(void *param)
 {
+	uint32_t receiveNum;		//接收到的字节数
+	uint8_t buffer[MAINTENANCE_SERVE_BUFSIZE] = {0};		//接收和发送缓冲区
+	uint32_t addressLenth;		//地址长度
+	struct sockaddr_in localAddress, remoteAddress;		//本地IP地址和远程IP地址
+	uint8_t ret = 0;			//函数执行的返回值,用于判断是否执行成功
+	uint32_t i = 0;
 
+	/* 本地和远程IP、端口的设置,socket的建立和绑定 */
+	IpAddressInit(&localAddress, MAINTACE_SERVE_LOCAL_PORT, &remoteAddress, MAINTACE_SERVE_REMOTE_PORT, REMOTE_ADDRESS);
+	ret += UdpSocketInit(&g_MaintenanceServeSocket, (struct sockaddr*)&localAddress);
+	addressLenth = sizeof(struct sockaddr);
+
+	/* 上位机下发配置的FIFO申请动态内存以及初始化 */
+	ret += FifoMallocAndInit(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer,
+							MAINTENANCE_SERVE_BUFSIZE, &MaintenanceServeBufferPack);	/*初始化fifo*/
+	if(ret)		//上边三个函数执行成功返回0,执行失败返回值大于0,只要有一个失败,则表示失败
+	{
+		FifoFree(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer, &MaintenanceServeBufferPack);//fifo创建失败,则进行释放
+		rt_kprintf("Maintenance Serve Thread: Fifo Malloc And Init Faliure\r\n");
+		return;
+	}
+
+	/*上位机下发配置文件的维护端口已经创建*/
+	MaintenanceServe = true;
+	g_StationManger.isMaintanceRun = true;
+	rt_kprintf("UDP Maintenance Serve Init Success\r\n");
+
+	while (1)
+	{
+		/* 接收数据 */
+		memset(buffer, 0, MAINTENANCE_SERVE_BUFSIZE);
+		lwip_recvfrom(g_MaintenanceServeSocket, buffer, MAINTENANCE_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
+		receiveNum = strlen((char*)buffer);
+		if((receiveNum > 0) && (receiveNum < MAINTENANCE_SERVE_BUFSIZE))
+		{
+//			MantaiceFrameDeal(buffer, receiveNum);
+			rt_kprintf("Success!!!\r\n");
+		}
+		rt_thread_delay(10);
+	}
+
+	lwip_close(g_MaintenanceServeSocket);
+	FifoFree(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer, &MaintenanceServeBufferPack);//fifo创建失败,则进行释放
+	MaintenanceServe = false;
+	g_StationManger.isMaintanceRun = false;
+	return;
 }
 #endif	/* RT_USING_SOCKET */
 
