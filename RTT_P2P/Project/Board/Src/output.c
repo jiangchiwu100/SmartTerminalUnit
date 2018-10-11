@@ -17,10 +17,10 @@
 static rt_device_t rt_output_dev;
 
 /**
-  * @brief : ¿ª³ö³õÊ¼»¯
+  * @brief : å¼€å‡ºåˆå§‹åŒ–
   * @param : [none].
   * @return: [0] 
-  * @updata: [2018-9-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-9-17][ç”°æ™“äº®][åˆ›å»º]
   */ 
 static int rt_hw_output_init(void)
 {
@@ -42,10 +42,10 @@ INIT_DEVICE_EXPORT(rt_hw_output_init);
 
 
 /**
-  * @brief : ºÏÕ¢²Ù×÷
+  * @brief : åˆé—¸æ“ä½œ
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 static rt_uint8_t rt_hw_output_close_operate(rt_uint8_t type)
 {
@@ -63,10 +63,10 @@ static rt_uint8_t rt_hw_output_close_operate(rt_uint8_t type)
 }
 
 /**
-  * @brief : ·ÖÕ¢²Ù×÷
+  * @brief : åˆ†é—¸æ“ä½œ
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 static rt_uint8_t rt_hw_output_open_operate(rt_uint8_t type)
 {
@@ -84,10 +84,10 @@ static rt_uint8_t rt_hw_output_open_operate(rt_uint8_t type)
 	
 }
 /**
-  * @brief : ·ÖºÏÕ¢¸´Î»²Ù×÷
+  * @brief : åˆ†åˆé—¸å¤ä½æ“ä½œ
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 static rt_uint8_t rt_hw_output_reset_operate(rt_uint8_t type)
 {
@@ -112,10 +112,10 @@ static rt_uint8_t rt_hw_output_reset_operate(rt_uint8_t type)
 }
 
 /**
-  * @brief : ·ÖºÏÕ¢²Ù×÷
+  * @brief : åˆ†åˆé—¸æ“ä½œ
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 {
@@ -129,11 +129,11 @@ rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
 		case ADDR_HANDHELD_OPER:	
             switch (operate_type)	
 			{
-				case DO_CLOSE: // ÊÖ¶¯ºÏÕ¢
+				case DO_CLOSE: // æ‰‹åŠ¨åˆé—¸
 					rtl = rt_hw_output_close_operate(DO_CLOSE);					
 					break;
 							
-				case DO_OPEN:  // ÊÖ¶¯·ÖÕ¢
+				case DO_OPEN:  // æ‰‹åŠ¨åˆ†é—¸
 					rtl = rt_hw_output_open_operate(DO_OPEN);					
 					break;
 				
@@ -153,14 +153,27 @@ rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type)
     return rtl;
 }
 
-/**
-  * @brief : ·ÖºÏÕ¢²Ù×÷
-  * @param : [none].
-  * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
-  */
-void OpeningclosingOperate(rt_uint8_t type)
-{
-	rt_ostimer_init(type);
-}
 
+
+/**
+  * @brief : åˆé—¸
+  * @param : [none].
+  * @return: [none]
+  * @updata: [2018-10-11][å¼ å®‡é£][åˆ›å»º]
+  */
+void SwitchOperate_StartOpen(uint8_t id)
+{
+	rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN);
+	rt_ostimer_init(TMR_50MS_OPEN);
+}
+/**
+  * @brief : åˆ†é—¸
+  * @param : [none].
+  * @return: [none]
+  * @updata: [2018-10-11][å¼ å®‡é£][åˆ›å»º]
+  */
+void SwitchOperate_StartClose(uint8_t id)
+{
+	rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE);
+	rt_ostimer_init(TMR_50MS_CLOSE);
+}

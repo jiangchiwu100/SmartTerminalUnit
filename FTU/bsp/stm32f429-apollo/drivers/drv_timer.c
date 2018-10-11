@@ -364,7 +364,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 		rt_hw_di_check_task(1);
 		
-		/* 线圈储能操作 */ 
+		/* 线圈储能操作 */
 //		rt_hw_do_operate(ADDR_LOGIC_ACT, DO_COIL_ENERGY_STORAGE);
 		
 		/* 分闸收回 */
@@ -691,42 +691,26 @@ static void tmrout1ms_callbak(void* parameter)
   * @description: 定时器回调函数
   * @param:  parameter-入口参数.
   * @return: 无
-  * @updata: [2017-10-26] [更改人姓名][变更描述]
+  * @updata: [2018-10-11] [张宇飞][创建]
   */
-static void tmrout50ms_open_callbak(void* parameter)
+static void timer_open_callbak(void* parameter)
 {
-    if(g_count1 == 0)
-    {
-        rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN);
-        g_count1++;
-    }
-	else
-	{
-		g_count1 = 0;
-		rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN_RECOVERY);
-        rt_timer_stop(g_tmr1);
-	}
+	rt_timer_stop(g_tmr1);
+	rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_OPEN_RECOVERY);
+
 }
 
 /**
   * @description: 定时器回调函数
   * @param:  parameter-入口参数.
   * @return: 无
-  * @updata: [2017-10-26] [更改人姓名][变更描述]
+  * @updata: [2018-10-11] [张宇飞][创建]
   */
-static void tmrout50ms_close_callbak(void* parameter)
+static void timer_close_callbak(void* parameter)
 {
-    if(g_count2 == 0)
-    {
-        rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE);
-        g_count2++;
-    }
-	else
-	{
-		g_count2 = 0;
-		rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE_RECOVERY);
-		rt_timer_stop(g_tmr2);
-	}
+	rt_timer_stop(g_tmr2);
+	rt_hw_output_operate(ADDR_HANDHELD_OPER, DO_CLOSE_RECOVERY);
+
 }
 /**
   * @description: 软件定时器初始化
@@ -757,7 +741,7 @@ void rt_ostimer_init(rt_uint8_t timer)
 			if (openingflag == RT_FALSE)
 			{
 				g_tmr1 = rt_timer_create(RT_SOFT_TIMER_50MS_OPEN_NAME,  
-										tmrout50ms_open_callbak, 
+										timer_open_callbak,
 										RT_NULL, 
 										40, 
 										RT_TIMER_FLAG_PERIODIC); 
@@ -774,7 +758,7 @@ void rt_ostimer_init(rt_uint8_t timer)
 			if (closingflag == RT_FALSE)
 			{
 				g_tmr2 = rt_timer_create(RT_SOFT_TIMER_50MS_CLOSE_NAME,  
-										tmrout50ms_close_callbak, 
+										timer_close_callbak,
 										RT_NULL, 
 										70, 
 										RT_TIMER_FLAG_PERIODIC);

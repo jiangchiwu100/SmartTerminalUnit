@@ -5,7 +5,7 @@
   * @version:   V1.0.0
   * @author:    tianxiaoliang
   * @date:      2018.08.03
-  * @update:    [YYYY-MM-DD][¸ü¸ÄÈËĞÕÃû][±ä¸üÃèÊö]
+  * @update:    [YYYY-MM-DD][æ›´æ”¹äººå§“å][å˜æ›´æè¿°]
   */
 
 #include "quick_break_protect.h"
@@ -16,49 +16,49 @@
 
 
 extern volatile rt_uint8_t rt_interrupt_nest;
-//ÔÚboard.cÎÄ¼şµÄrt_hw_board_init()ÀïÃæ½«ÆäÖÃÎª1
+//åœ¨board.cæ–‡ä»¶çš„rt_hw_board_init()é‡Œé¢å°†å…¶ç½®ä¸º1
 uint8_t OSRunning=0;
 
-#define delay_osrunning		  OSRunning			       //OSÊÇ·ñÔËĞĞ±ê¼Ç,0,²»ÔËĞĞ;1,ÔÚÔËĞĞ
-#define delay_ostickspersec	RT_TICK_PER_SECOND	//OSÊ±ÖÓ½ÚÅÄ,¼´Ã¿Ãëµ÷¶È´ÎÊı
-#define delay_osintnesting 	rt_interrupt_nest		//ÖĞ¶ÏÇ¶Ì×¼¶±ğ,¼´ÖĞ¶ÏÇ¶Ì×´ÎÊı
+#define delay_osrunning		  OSRunning			       //OSæ˜¯å¦è¿è¡Œæ ‡è®°,0,ä¸è¿è¡Œ;1,åœ¨è¿è¡Œ
+#define delay_ostickspersec	RT_TICK_PER_SECOND	//OSæ—¶é’ŸèŠ‚æ‹,å³æ¯ç§’è°ƒåº¦æ¬¡æ•°
+#define delay_osintnesting 	rt_interrupt_nest		//ä¸­æ–­åµŒå¥—çº§åˆ«,å³ä¸­æ–­åµŒå¥—æ¬¡æ•°
 
 static ComProSts g_ComProSts[BRE_DEVMAXNUM];
 static CurQuickBreakSts g_Overcur[BRE_DEVMAXNUM];
 static float  g_num;
 /**
-  * @Description: µçÁ÷ËÙ¶Ï
-  * @param:  Ki-µçÁ÷»¥¸ĞÆ÷±ä±È
-  * @return: Ikmax-ÏßÂ·Ä©¶Ë×î´ó¶ÌÂ·µçÁ÷
-  * @updata: [YYYY-MM-DD] [¸ü¸ÄÈËĞÕÃû][±ä¸üÃèÊö]
+  * @Description: ç”µæµé€Ÿæ–­
+  * @param:  Ki-ç”µæµäº’æ„Ÿå™¨å˜æ¯”
+  * @return: Ikmax-çº¿è·¯æœ«ç«¯æœ€å¤§çŸ­è·¯ç”µæµ
+  * @updata: [YYYY-MM-DD] [æ›´æ”¹äººå§“å][å˜æ›´æè¿°]
   */
 //void CurrentValue(CurQuickBreakSts *curquickbreakSts, float Ki, float Ikmax)
 //{
-//	float Krel = 1.3;             //±£»¤×°ÖÃµÄ¿É¿¿ÏµÊı
-//	float Kw = 1;		      //½ÓÏßÏµÊı		
+//	float Krel = 1.3;             //ä¿æŠ¤è£…ç½®çš„å¯é ç³»æ•°
+//	float Kw = 1;		      //æ¥çº¿ç³»æ•°		
 //						  
-//	*(curquickbreakSts->parastr.pValue) = ((Krel * Kw * Ikmax) / (2 * Ki));		//¹ıÁ÷1¶Î¶¯×÷µçÁ÷
+//	*(curquickbreakSts->parastr.pValue) = ((Krel * Kw * Ikmax) / (2 * Ki));		//è¿‡æµ1æ®µåŠ¨ä½œç”µæµ
 //}
 /**
-  * @Description: µçÁ÷ËÙ¶Ï
+  * @Description: ç”µæµé€Ÿæ–­
   * @param:  
   * @return: 
-  * @updata: [YYYY-MM-DD] [¸ü¸ÄÈËĞÕÃû][±ä¸üÃèÊö]
+  * @updata: [YYYY-MM-DD] [æ›´æ”¹äººå§“å][å˜æ›´æè¿°]
   */
 void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 {										
-	if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//ºÏÎ»
+	if((*(comProSts->yx.switchClose.value) == ON)&&(*(comProSts->yx.switchOpen.value) == OFF))//åˆä½
 	{
 		if(curQuickBreakSts->valstr.flag&OVERCURSTA2)
 		{
 			curQuickBreakSts->valstr.flag = 0;
-			*(curQuickBreakSts->valstr.gTime) = 0;					//1¶Î¶¨Ê±Æ÷ÇåÁã
+			*(curQuickBreakSts->valstr.gTime) = 0;					//1æ®µå®šæ—¶å™¨æ¸…é›¶
 		}
 		*(curQuickBreakSts->parastr.pValue) = 0.3;
 		
 //		rt_kprintf("value             =              %d\r\n",    (int32_t)*(curQuickBreakSts->parastr.pValue));
 
-		if((*(comProSts->yc.Ia)>*(curQuickBreakSts->parastr.pValue))||(*(comProSts->yc.Ib)>*(curQuickBreakSts->parastr.pValue)))	    //¼ì²â¹ıÁ÷
+		if((*(comProSts->yc.Ia)>*(curQuickBreakSts->parastr.pValue))||(*(comProSts->yc.Ib)>*(curQuickBreakSts->parastr.pValue)))	    //æ£€æµ‹è¿‡æµ
 		{
 //			if(!(*(curQuickBreakSts->valstr.gTime)&MAINPRO_ENTIMERS))
 //            {
@@ -67,8 +67,8 @@ void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 //			if((*(curQuickBreakSts->valstr.gTime)&MAINPRO_ENTIMERS)>=(uint32_t)(*(curQuickBreakSts->parastr.pTime)*1000))
 //			{
 				curQuickBreakSts->valstr.flag |= OVERCUR1|OVERCURSTA1;
-//				rt_hw_output_operate(ADDR_LOGIC_ACT,DO_OPEN);					//·ÖÕ¢
-				OpeningclosingOperate(TMR_50MS_OPEN);
+//				rt_hw_output_operate(ADDR_LOGIC_ACT,DO_OPEN);					//åˆ†é—¸
+				SwitchOperate_StartOpen(0);
                 curQuickBreakSts->valstr.flag |= RESETFLAG;
 //			}
 		}
@@ -85,10 +85,10 @@ void CurQuickBreak_ctrl(ComProSts *comProSts,CurQuickBreakSts *curQuickBreakSts)
 }
 
 /**
-  * @Description: ÁãĞò¹ıÁ÷
+  * @Description: é›¶åºè¿‡æµ
   * @param:  
   * @return: 
-  * @updata: [YYYY-MM-DD] [¸ü¸ÄÈËĞÕÃû][±ä¸üÃèÊö]
+  * @updata: [YYYY-MM-DD] [æ›´æ”¹äººå§“å][å˜æ›´æè¿°]
   */
 
 void CurQuickBreakI0_ctrl(ComProSts *comProSts,CurQuickBreakI0Sts *curquickbreakSts)
@@ -122,16 +122,16 @@ void delay_init(uint8_t SYSCLK)
 {
 	uint32_t reload;
 
-    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);//SysTickÆµÂÊÎªHCLK
-	fac_us=SYSCLK;						//²»ÂÛÊÇ·ñÊ¹ÓÃOS,fac_us¶¼ĞèÒªÊ¹ÓÃ
-						//Èç¹ûĞèÒªÖ§³ÖOS.
-	reload=SYSCLK;						//Ã¿ÃëÖÓµÄ¼ÆÊı´ÎÊı µ¥Î»ÎªM	   
-	reload*=1000000/delay_ostickspersec;	//¸ù¾İdelay_ostickspersecÉè¶¨Òç³öÊ±¼ä
-											//reloadÎª24Î»¼Ä´æÆ÷,×î´óÖµ:16777216,ÔÚ168MÏÂ,Ô¼ºÏ0.7989s×óÓÒ	
-	fac_ms=1000/delay_ostickspersec;		//´ú±íOS¿ÉÒÔÑÓÊ±µÄ×îÉÙµ¥Î»	   
-	SysTick->CTRL|=SysTick_CTRL_TICKINT_Msk;   	//¿ªÆôSYSTICKÖĞ¶Ï
-	SysTick->LOAD=reload; 					//Ã¿1/delay_ostickspersecÃëÖĞ¶ÏÒ»´Î	
-	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk; 	//¿ªÆôSYSTICK      
+    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);//SysTické¢‘ç‡ä¸ºHCLK
+	fac_us=SYSCLK;						//ä¸è®ºæ˜¯å¦ä½¿ç”¨OS,fac_uséƒ½éœ€è¦ä½¿ç”¨
+						//å¦‚æœéœ€è¦æ”¯æŒOS.
+	reload=SYSCLK;						//æ¯ç§’é’Ÿçš„è®¡æ•°æ¬¡æ•° å•ä½ä¸ºM	   
+	reload*=1000000/delay_ostickspersec;	//æ ¹æ®delay_ostickspersecè®¾å®šæº¢å‡ºæ—¶é—´
+											//reloadä¸º24ä½å¯„å­˜å™¨,æœ€å¤§å€¼:16777216,åœ¨168Mä¸‹,çº¦åˆ0.7989så·¦å³	
+	fac_ms=1000/delay_ostickspersec;		//ä»£è¡¨OSå¯ä»¥å»¶æ—¶çš„æœ€å°‘å•ä½	   
+	SysTick->CTRL|=SysTick_CTRL_TICKINT_Msk;   	//å¼€å¯SYSTICKä¸­æ–­
+	SysTick->LOAD=reload; 					//æ¯1/delay_ostickspersecç§’ä¸­æ–­ä¸€æ¬¡	
+	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk; 	//å¼€å¯SYSTICK      
 }	
 
 void delay_us(uint32_t nus)
@@ -173,13 +173,13 @@ void delay_ostimedly(uint32_t ticks)
 
 void delay_ms(uint16_t nms)
 {	
-	if(delay_osrunning && delay_osintnesting==0)//Èç¹ûOSÒÑ¾­ÔÚÅÜÁË,²¢ÇÒ²»ÊÇÔÚÖĞ¶ÏÀïÃæ(ÖĞ¶ÏÀïÃæ²»ÄÜÈÎÎñµ÷¶È)	    
+	if(delay_osrunning && delay_osintnesting==0)//å¦‚æœOSå·²ç»åœ¨è·‘äº†,å¹¶ä¸”ä¸æ˜¯åœ¨ä¸­æ–­é‡Œé¢(ä¸­æ–­é‡Œé¢ä¸èƒ½ä»»åŠ¡è°ƒåº¦)	    
 	{		 
-		if(nms>=fac_ms)						//ÑÓÊ±µÄÊ±¼ä´óÓÚOSµÄ×îÉÙÊ±¼äÖÜÆÚ 
+		if(nms>=fac_ms)						//å»¶æ—¶çš„æ—¶é—´å¤§äºOSçš„æœ€å°‘æ—¶é—´å‘¨æœŸ 
 		{ 
-   			delay_ostimedly(nms/fac_ms);	//OSÑÓÊ±
+   			delay_ostimedly(nms/fac_ms);	//OSå»¶æ—¶
 		}
-		nms%=fac_ms;						//OSÒÑ¾­ÎŞ·¨Ìá¹©ÕâÃ´Ğ¡µÄÑÓÊ±ÁË,²ÉÓÃÆÕÍ¨·½Ê½ÑÓÊ±    
+		nms%=fac_ms;						//OSå·²ç»æ— æ³•æä¾›è¿™ä¹ˆå°çš„å»¶æ—¶äº†,é‡‡ç”¨æ™®é€šæ–¹å¼å»¶æ—¶    
 	}
-	delay_us((uint32_t)(nms*1000));				//ÆÕÍ¨·½Ê½ÑÓÊ±
+	delay_us((uint32_t)(nms*1000));				//æ™®é€šæ–¹å¼å»¶æ—¶
 }

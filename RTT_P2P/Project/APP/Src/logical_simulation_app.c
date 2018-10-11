@@ -102,40 +102,6 @@ static void SimulationSwitchStationLogicalApp(StationManger* manager)
     
 }
 
-///**
-//* @brief :单个 开关站点模拟
-//* @param  SimulationStationServer*  simulationServer
-//* @return: 0--正常
-//* @update: [2018-07-24][张宇飞][创建]
-//*/
-//static void SingleSimulationSwitchStationLogicalApp(StationManger* manager)
-//{
-//	if (manager == NULL)
-//	{
-//		perror("SingleSimulationSwitchStationLogicalApp ERROR :manager = NULL.\n");
-//		LogAddException(ERROR_NULL_PTR, 0);
-//		return;
-//	}
-//	SimulationStation* station = manager->pWorkSimulation;
-//	if (station == NULL)
-//	{
-//		perror("manager->pWorkSimulation = NULL.\n");
-//		LogAddException(ERROR_NULL_PTR, 0);
-//		return;
-//	}
-
-
-//	//循环更新模拟开关状态
-//	do
-//	{			
-//		SwitchRunStateSimulation(station);
-//		UpdateBindSwitchState(station);					
-//		rt_thread_delay(5);
-//	} while (true);
-
-
-//}
-
 
 
 

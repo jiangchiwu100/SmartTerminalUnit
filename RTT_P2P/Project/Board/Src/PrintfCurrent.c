@@ -1,11 +1,11 @@
-/**
+ï»¿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      quick_break_protest.h
   * @brief:     The protect control logic.
   * @version:   V1.0.0
   * @author:    tianxiaoliang
   * @date:      2018.09.17
-  * @update:    [YYYY-MM-DD][¸ü¸ÄÈËĞÕÃû][±ä¸üÃèÊö]
+  * @update:    [YYYY-MM-DD][æ›´æ”¹äººå§“å][å˜æ›´æè¿°]
   */
   
 #include "PrintfCurrent.h"
@@ -20,28 +20,41 @@ static struct rt_thread rt_thread_print_cur_val;
 static rt_uint8_t *rt_thread_print_cur_val_stack;
 
 /**
-  * @brief : ´òÓ¡µçÁ÷ÖµÈÎÎñ»Øµ÷º¯Êı
+  * @brief : æ‰“å°ç”µæµå€¼ä»»åŠ¡å›è°ƒå‡½æ•°
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 static void rt_print_current_val_thread_entry(void *param)
 {
 	for(;;)
 	{
-		rt_kprintf(" Ia  =  %d \r\n", (int32_t)g_TelemetryDB[g_TelemetryAddr.Ia]);
+		rt_kprintf(" Ia  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Ia]));
   
 		OpeningClosing();
-        rt_kprintf("---------------%d\r\n", curStation.state);
-		rt_thread_delay(2000);
+        if (curStation.state == SWITCH_OPEN)
+        {
+             rt_kprintf("pos:%s\r\n", "open");
+        }
+        else if (curStation.state == SWITCH_CLOSE)
+        {
+            rt_kprintf("pos:%s\r\n", "close");
+        }
+        else
+        {
+            rt_kprintf("pos:Uknow\r\n");
+        }
+        
+       
+		rt_thread_delay(3000);
 	}
 }
 
 /**
-  * @brief : ´òÓ¡µçÁ÷ÖµÈÎÎñ
+  * @brief : æ‰“å°ç”µæµå€¼ä»»åŠ¡
   * @param : [none].
   * @return: [none] 
-  * @updata: [2018-09-17][ÌïÏşÁÁ][´´½¨]
+  * @updata: [2018-09-17][ç”°æ™“äº®][åˆ›å»º]
   */  
 void printfCurrent(void)
 {

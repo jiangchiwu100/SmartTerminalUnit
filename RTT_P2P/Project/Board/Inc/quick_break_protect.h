@@ -1,4 +1,4 @@
-#ifndef _QUICK_BREAK_PROTECT_H
+ï»¿#ifndef _QUICK_BREAK_PROTECT_H
 #define _QUICK_BREAK_PROTECT_H
 
 #include "drv_do.h"
@@ -11,45 +11,45 @@
 
 
 #define RESETFLAG  0x80000000 
-//ËÙ¶Ï±£»¤
-#define OVERCUR1 0x00000001			//´Ë±êÖ¾Î»µ±·¢Éú¹ıÁ÷Ê±ÖÃÎ»£¬ÆäËü±£»¤Âß¼­ÈôÅĞ¶ÏÖÃÎ»£¬½«²»ÄÜ½øÈë±£»¤Âß¼­
-#define OVERCURSTA1  0x00010000    	//·¢Éú¹ıÁ÷
-#define OVERCURSTA2  0x00020000    	//¹ıÁ÷µ¼ÖÂ·ÖÕ¢
+//é€Ÿæ–­ä¿æŠ¤
+#define OVERCUR1 0x00000001			//æ­¤æ ‡å¿—ä½å½“å‘ç”Ÿè¿‡æµæ—¶ç½®ä½ï¼Œå…¶å®ƒä¿æŠ¤é€»è¾‘è‹¥åˆ¤æ–­ç½®ä½ï¼Œå°†ä¸èƒ½è¿›å…¥ä¿æŠ¤é€»è¾‘
+#define OVERCURSTA1  0x00010000    	//å‘ç”Ÿè¿‡æµ
+#define OVERCURSTA2  0x00020000    	//è¿‡æµå¯¼è‡´åˆ†é—¸
 typedef struct
 {
 	struct
     {
         uint32_t *overcurI0flag;
         uint32_t flag;
-        uint32_t *gTime;                 //¶¨Ê±Æ÷ 
+        uint32_t *gTime;                 //å®šæ—¶å™¨ 
     }valstr;							
     struct
     {
-        float *pSwitch;        			//¹ıÁ÷Ò»¶ÎÍ¶ÍË ¡°1Í¶Èë¡±¡¢¡°0ÍË³ö¡±    
-        float *pValue;                  //¹ıÁ÷Ò»¶ÎµçÁ÷ Á÷¶¨Öµ 0.00A~99.99A
-        float *pTime;              		//¹ıÁ÷Ò»¶ÎÊ±¼ä Ê±¼ä¶¨Öµ£¬Õû¶¨·¶Î§£º0.00S~99.99S
-    }parastr;							//Éè¶¨²ÎÊı½á¹¹Ìå
+        float *pSwitch;        			//è¿‡æµä¸€æ®µæŠ•é€€ â€œ1æŠ•å…¥â€ã€â€œ0é€€å‡ºâ€    
+        float *pValue;                  //è¿‡æµä¸€æ®µç”µæµ æµå®šå€¼ 0.00A~99.99A
+        float *pTime;              		//è¿‡æµä¸€æ®µæ—¶é—´ æ—¶é—´å®šå€¼ï¼Œæ•´å®šèŒƒå›´ï¼š0.00S~99.99S
+    }parastr;							//è®¾å®šå‚æ•°ç»“æ„ä½“
 	
 }CurQuickBreakSts;
 
-//ÁãĞò¹ıÁ÷±£»¤
+//é›¶åºè¿‡æµä¿æŠ¤
 #define OVERCURI01 0x00000001
 #define OVERCURI02 0x00000002
-#define OVERCURI0STA1  0x00010000          //ºÏÕ¢Î»ÖÃ·¢Éú¹ıÁ÷
-#define OVERCURI0STA2  0x00020000    	   //·ÖÕ¢Î»ÖÃÔÊĞí¸´Î»
+#define OVERCURI0STA1  0x00010000          //åˆé—¸ä½ç½®å‘ç”Ÿè¿‡æµ
+#define OVERCURI0STA2  0x00020000    	   //åˆ†é—¸ä½ç½®å…è®¸å¤ä½
 typedef struct
 {
     struct
     {
         uint32_t *overcurflag;
         uint32_t flag;
-        uint32_t *gTime[2];                //¶¨Ê±Æ÷ 
+        uint32_t *gTime[2];                //å®šæ—¶å™¨ 
     }valstr;
     struct
     {
-        float *pSwitch[2];        			//¹ıÁ÷Ò»¶ÎÍ¶ÍË ¡°1Í¶Èë¡±¡¢¡°0ÍË³ö¡±    
-        float *pValue[2];                   //¹ıÁ÷Ò»¶ÎµçÁ÷ Á÷¶¨Öµ 0.00A~99.99A
-        float *pTime[2];              		//¹ıÁ÷Ò»¶ÎÊ±¼ä Ê±¼ä¶¨Öµ£¬Õû¶¨·¶Î§£º0.00S~99.99S
+        float *pSwitch[2];        			//è¿‡æµä¸€æ®µæŠ•é€€ â€œ1æŠ•å…¥â€ã€â€œ0é€€å‡ºâ€    
+        float *pValue[2];                   //è¿‡æµä¸€æ®µç”µæµ æµå®šå€¼ 0.00A~99.99A
+        float *pTime[2];              		//è¿‡æµä¸€æ®µæ—¶é—´ æ—¶é—´å®šå€¼ï¼Œæ•´å®šèŒƒå›´ï¼š0.00S~99.99S
     }parastr;
 }CurQuickBreakI0Sts;
 

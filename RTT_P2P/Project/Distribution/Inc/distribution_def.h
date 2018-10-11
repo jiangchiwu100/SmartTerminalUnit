@@ -308,6 +308,8 @@ typedef struct TagFaultDealHandle
 
     bool isCheckPass; //自检检测通过
 
+    bool isFirstReadySend;//是否为首次触发
+
     //函数合集
     bool (*IsFault)(struct TagFaultDealHandle* handle);
 	bool (*IsPowerIncomeLossFault)(struct TagFaultDealHandle* handle);

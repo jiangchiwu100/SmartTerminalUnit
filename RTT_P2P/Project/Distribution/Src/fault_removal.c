@@ -62,8 +62,9 @@
         PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
 		handle->limitTime = handle->t1;
 		handle->GetNowTime(handle);
-        handle->step = 0;
 
+		handle->isFirstReadySend = true;
+        handle->step = 0;
 		handle->nextState =  REMOVAL_DELAY_GATHER;
 	}
 	//是否为隔离期间拒绝接收故障
@@ -151,7 +152,8 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
   * @update: [2018-05-25][张宇飞][BRIEF]
   *  [2018-06-04][张宇飞][首次]
   *[2018-07-07][张宇飞][添加进入隔离状态的判别条件]
-  *[2018-09-05][张宇飞][]
+  *[2018-09-05][张宇飞][修改时间判断]
+  *[2018-10-11][张宇飞][添加首次触发后发送故障信息，TODO:应该提取故障信息]
   */
 StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 {
@@ -172,6 +174,7 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
         	if(handle->IsFault(handle))
 			{
         		handle->nextState = REMOVAL_TREATMENT;
+
 			}
         	else
         	{
@@ -182,7 +185,14 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
             //handle->GetNowTime(handle);
 
         }
-        
+        else if ( handle->IsFault(handle) && handle->isFirstReadySend)
+		{
+        	handle->isFirstReadySend = false;
+        	switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
+			//发送故障信息
+			handle->TransmitMessage(handle, STATUS_MESSAGE);
+			PrintIDTipsTick(switchProperty->id, "Fault TransmitMessage");
+		}
 
         break;
         }

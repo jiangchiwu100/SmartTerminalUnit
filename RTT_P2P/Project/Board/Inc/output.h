@@ -1,4 +1,4 @@
-#ifndef _OUTPUT_H
+﻿#ifndef _OUTPUT_H
 #define _OUTPUT_H
 
 
@@ -15,8 +15,8 @@
 
 
 rt_uint8_t rt_hw_output_operate(rt_uint16_t addr, rt_uint8_t operate_type);
-void OpeningclosingOperate(rt_uint8_t type);
-
+void SwitchOperate_StartClose(uint8_t id);
+void SwitchOperate_StartOpen(uint8_t id);
 #endif /*_OUTPUT_H*/
 
 

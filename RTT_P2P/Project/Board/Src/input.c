@@ -1,4 +1,4 @@
-/**
+ï»¿/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      input.c
   * @brief:     The driver of input.
@@ -20,10 +20,10 @@ static rt_device_t rt_input_dev;
 SwitchProperty curStation;
 
 /**
-  * @brief : input ³õÊ¼»¯
+  * @brief : input åˆå§‹åŒ–
   * @param : [none].
   * @return: [0] 
-  * @updata: [2018-09-17][tianxiaoliang][´´½¨]
+  * @updata: [2018-09-17][tianxiaoliang][åˆ›å»º]
   */  
 int rt_hw_input_init(void)
 {
@@ -43,10 +43,10 @@ int rt_hw_input_init(void)
 INIT_DEVICE_EXPORT(rt_hw_input_init);
 
 /**
-  * @brief : ·ÖºÏÎ»×´Ì¬
+  * @brief : åˆ†åˆä½çŠ¶æ€
   * @param : [none].
   * @return: [0] 
-  * @updata: [2018-09-17][tianxiaoliang][´´½¨]
+  * @updata: [2018-09-17][tianxiaoliang][åˆ›å»º]
   */ 
 void OpeningClosing(void)
 {
@@ -65,10 +65,10 @@ void OpeningClosing(void)
 }
 
 /**
-  * @brief : ¿ªÈëĞÅÏ¢¶ÁÈ¡
+  * @brief : å¼€å…¥ä¿¡æ¯è¯»å–
   * @param : [none].
   * @return: [0] 
-  * @updata: [2018-09-17][tianxiaoliang][´´½¨]
+  * @updata: [2018-09-17][tianxiaoliang][åˆ›å»º]
   */ 
 void rt_hw_input_check_task(rt_uint8_t clock)
 {
@@ -79,7 +79,7 @@ void rt_hw_input_check_task(rt_uint8_t clock)
 	s_shaking_time = (uint32_t)g_Parameter[DI_SHAKING_TIME] / clock;
 
 	pin_status[INDEX_KI_CS1].status = GPIO_PIN_RESET;
-	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));//Ê¹ÄÜÆ¬Ñ¡1
+	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));//ä½¿èƒ½ç‰‡é€‰1
 	
 	for (i = 0; i < INPUT_NUM; i++)
     {
@@ -91,11 +91,11 @@ void rt_hw_input_check_task(rt_uint8_t clock)
     }
 	
 	pin_status[INDEX_KI_CS1].status = GPIO_PIN_SET;			
-	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));//Ê§ÄÜÆ¬Ñ¡1
+	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS1], sizeof(struct rt_device_pin_status));//å¤±èƒ½ç‰‡é€‰1
 	
 	for (i = 0; i < INPUT_NUM; i++)
     {
-//        if (pin_status[INDEX_DI1 + i].status == zkDigitalInputCfg[i].lastVal)//ÅĞ¶Ï×îºóÒ»´Î¸³Öµ
+//        if (pin_status[INDEX_DI1 + i].status == zkDigitalInputCfg[i].lastVal)//åˆ¤æ–­æœ€åä¸€æ¬¡èµ‹å€¼
 //        {
 //            zkDigitalInputCfg[i].count = 0;
 //        }
@@ -103,20 +103,20 @@ void rt_hw_input_check_task(rt_uint8_t clock)
 //        {
             zkDigitalInputCfg[i].count++;
 
-            if (zkDigitalInputCfg[i].count >= s_shaking_time)				//¿ªÈë·À¶¶Ê±¼ä
+            if (zkDigitalInputCfg[i].count >= s_shaking_time)				//å¼€å…¥é˜²æŠ–æ—¶é—´
             {
                 zkDigitalInputCfg[i].count = 0;			
 				
-                g_TelesignalDB[*(zkDigitalInputCfg[i].pAddr)]=(pin_status[INDEX_DI1 + i].status ? OFF : ON);//¸³Öµ¿ªÈë×´Ì¬
+                g_TelesignalDB[*(zkDigitalInputCfg[i].pAddr)]=(pin_status[INDEX_DI1 + i].status ? OFF : ON);//èµ‹å€¼å¼€å…¥çŠ¶æ€
                 
                 zkDigitalInputCfg[i].lastVal = pin_status[INDEX_DI1 + i].status;
             }
 //        }
     }
 
-/*---------------------------------------µÚ2Æ¬---------------------------------------------*/
+/*---------------------------------------ç¬¬2ç‰‡---------------------------------------------*/
 	pin_status[INDEX_KI_CS2].status = GPIO_PIN_RESET;			
-	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));//Ê¹ÄÜÆ¬Ñ¡2		
+	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));//ä½¿èƒ½ç‰‡é€‰2		
 
     for (i = 0; i < INPUT_NUM; i++)
     {
@@ -128,7 +128,7 @@ void rt_hw_input_check_task(rt_uint8_t clock)
     }
 
 	pin_status[INDEX_KI_CS2].status = GPIO_PIN_SET;			
-	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));//Ê§ÄÜÆ¬Ñ¡2	
+	rt_device_write(rt_input_dev, 0, &pin_status[INDEX_KI_CS2], sizeof(struct rt_device_pin_status));//å¤±èƒ½ç‰‡é€‰2	
 
     for (i = 0; i < INPUT_NUM; i++)
     {

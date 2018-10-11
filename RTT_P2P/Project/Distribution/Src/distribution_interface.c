@@ -629,7 +629,7 @@ static bool CloseOperate(FaultDealHandle* handle)
 */
 static bool OpeningOperate(FaultDealHandle* handle)
 {   
-	OpeningclosingOperate(TMR_50MS_OPEN);
+	SwitchOperate_StartOpen(0);
 	return true;
 }
 /**
@@ -640,7 +640,7 @@ static bool OpeningOperate(FaultDealHandle* handle)
 */
 static bool CloseingOperate(FaultDealHandle* handle)
 {	
-	OpeningclosingOperate(TMR_50MS_CLOSE);
+	SwitchOperate_StartClose(0);
 	return true;
 }
 /**
