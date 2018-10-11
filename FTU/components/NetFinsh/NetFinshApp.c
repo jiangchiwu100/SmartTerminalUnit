@@ -46,9 +46,9 @@ FifoHandle* MaintenanceServeFifoHandle = NULL;
 uint8_t* MaintenanceServeBuffer = NULL;
 PointUint8* MaintenanceServeBufferPack = NULL;
 
-uint32_t g_NetFinshSocket = 0;
-uint32_t g_UDP_ServeSocket = 0;
-uint32_t g_MaintenanceServeSocket = 0;
+int32_t g_NetFinshSocket = 0;
+int32_t g_UDP_ServeSocket = 0;
+int32_t g_MaintenanceServeSocket = 0;
 
 
 /*****************************Function**********************************/
@@ -354,13 +354,13 @@ void NetFinsh_kprintf(const char *fmt, ...)
   * @return: -1：发送错误	其他：发送完成的字节数
   * @update: [2018-10-09][李  磊][创建]
   */
-int32_t UDP_SocketSendString(uint32_t socket, uint8_t* data, uint32_t lenth, uint8_t* remoteAddressString, uint32_t remotePort)
+int32_t UDP_SocketSendString(int32_t socket, uint8_t* data, uint32_t lenth, uint8_t* remoteAddressString, uint32_t remotePort)
 {
 	int32_t sendNum = 0;
 	struct hostent* host;
 	struct sockaddr_in remoteAddress;
 
-	if(socket > 0)
+	if(socket <= 0)
 	{
 		rt_kprintf("UDP Send Error: Socket is Invalid\r\n");
 		return -1;

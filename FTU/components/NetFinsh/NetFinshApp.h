@@ -54,9 +54,9 @@ extern FifoHandle* MaintenanceServeFifoHandle;
 extern uint8_t* MaintenanceServeBuffer;
 extern PointUint8* MaintenanceServeBufferPack;
 
-extern uint32_t g_NetFinshSocket;
-extern uint32_t g_UDP_ServeSocket;
-extern uint32_t g_MaintenanceServeSocket;
+extern int32_t g_NetFinshSocket;
+extern int32_t g_UDP_ServeSocket;
+extern int32_t g_MaintenanceServeSocket;
 
 
 void DP83848_ServeIpSet(struct lwip_dev* lwip);  //dp83848相关服务IP地址设置
@@ -67,7 +67,7 @@ uint8_t FifoMallocAndInit(FifoHandle** fifoHandle, uint8_t** buffer, uint32_t bu
 void FifoStringEnqueue(FifoHandle *handle, uint8_t* indata, uint32_t size);    //字符串入队操作
 char FifoCharDequeue(FifoHandle *handle);    //字符出队操作
 char NetGetchar(void);    //获取一个字符,在finsh中使用,代替getchar函数
-int32_t UDP_SocketSendString(uint32_t socket, uint8_t* data, uint32_t lenth,
+int32_t UDP_SocketSendString(int32_t socket, uint8_t* data, uint32_t lenth,
 	uint8_t* remoteAddressString, uint32_t remotePort);		//udp使用socket接口进行发送数据的函数
 void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
 	struct sockaddr_in* remoteAddress, uint32_t remotePort, uint8_t* remoteAddressString);	//IP地址设置
