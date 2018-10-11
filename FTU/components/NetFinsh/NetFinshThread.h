@@ -1,7 +1,7 @@
 /**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      UDP_FinshThread.h
-  * @brief:     使用网络接口，UDP协议实现远程登录开发板finsh的相关任务
+  * @brief:     使用网络接口，UDP实现finsh，上位机下发操作命令，下载配置文件的相关任务
   * @version:   V1.0.0 
   * @author:    Lei
   * @date:      2018-09-06
@@ -20,7 +20,7 @@
 #define NET_FINSH_THREAD_TIMESLICE                                      (20)
 
 #define UDP_SERVE_THREAD_NAME                                           "udp_serve"
-#define UDP_SERVE_THREAD_PRIORITY                                       (4)
+#define UDP_SERVE_THREAD_PRIORITY                                       (13)
 #define UDP_SERVE_THREAD_STACK_SIZE                                     (4096)
 #define UDP_SERVE_THREAD_TIMESLICE                                      (20)
 

@@ -1,7 +1,7 @@
 /**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      UDP_FinshThread.c
-  * @brief:     使用网络接口，UDP协议实现远程登录开发板finsh的相关任务
+  * @brief:     使用网络接口，UDP实现finsh，上位机下发操作命令，下载配置文件的相关任务
   * @version:   V1.0.0 
   * @author:    Lei
   * @date:      2018-09-06
@@ -39,85 +39,6 @@
   * 
   */  
 #if RT_USING_NET_FINSH
-#if RT_USING_NETCONN
-static void rt_net_finsh_thread_entry(void *param)
-{
-	err_t err = 0;
-	uint8_t ret = 0;
-	struct ip_addr destipAddr;
-	rt_base_t level;
-	struct lwip_dev lwipDev;
-	uint32_t i = 0;
-	uint8_t printBuffer[PRINT_BUFFER_SIZE] = {0};
-	uint32_t receviceNum = 0;
-	
-	/* 接收FIFO和发送FIFO申请动态内存以及初始化 */
-	ret = FifoMallocAndInit(&FinshReceiveFifoHandle, &FinshBuffer, NET_FINSH_BUFSIZE, &FinshBufferPack);
-	if(!ret)
-	{
-		ret = FifoMallocAndInit(&PrintfFifoHandle, &PrintfBuffer, NET_PRINTF_BUFSIZE, &PrintfBufferPack);
-	}
-	
-	while(!ret)
-	{
-		rt_thread_delay(1000);
-		DP83848_ServeIpSet(&lwipDev);
-		
-		LWIP_UNUSED_ARG(param);	
-
-		g_NetFinshNetconn = netconn_new(NETCONN_UDP);  //创建一个UDP链接
-		
-		
-		if(g_NetFinshNetconn != NULL)  //创建UDP链接成功
-		{
-			g_NetFinshNetconn->recv_timeout = 100;
-			err = netconn_bind(g_NetFinshNetconn, IP_ADDR_ANY, FINSH_LOCAL_PORT); 
-			IP4_ADDR(&destipAddr, lwipDev.remoteip[0], lwipDev.remoteip[1], lwipDev.remoteip[2], lwipDev.remoteip[3]); //构造目的IP地址
-			netconn_connect(g_NetFinshNetconn, &destipAddr, FINSH_REMOTE_PORT); 	//连接到远端主机
-			if(err == ERR_OK)//绑定完成
-			{
-				/*UDP链接已经创建，之后可以使用网口的打印函数了*/
-				NetFinshFlag = true;
-				rt_kprintf("Net finsh Init Success\r\n");
-				
-				while(1)
-				{
-					/*等待接收，将接收到的字符入队*/
-					receviceNum = UDP_NetconnReceiveString(g_NetFinshNetconn, FinshReceiveFifoHandle);
-					
-					/*将队列中的内容发送出去*/
-					if(true == NetFinshFlag)
-					{
-						memset(printBuffer, 0, PRINT_BUFFER_SIZE);
-						for(i=0; (i<PRINT_BUFFER_SIZE) && (PrintfFifoHandle->fifo.count); i++)
-						{
-							printBuffer[i] = FifoCharDequeue(PrintfFifoHandle);
-						}
-						if(0 != i)
-						{
-							UDP_NetconnSendString(g_NetFinshNetconn, printBuffer);
-						}
-						
-					}
-				}
-			}
-			else
-			{
-				rt_kprintf("UDP bind faliure\r\n");
-			}
-		}
-		else
-		{
-			rt_kprintf("UDP connect failure\r\n");
-		}
-		NetFinshFlag = false;
-	}
-	
-	FifoFree(&FinshReceiveFifoHandle, &FinshBuffer, &FinshBufferPack);		/*释放接收和发送的队列所用到的动态分配的内存*/
-	FifoFree(&PrintfFifoHandle, &PrintfBuffer, &PrintfBufferPack);
-}
-
-#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_net_finsh_thread_entry(void *param)
 {
 	int32_t receiveNum;		//接收到的字节数
@@ -164,13 +85,12 @@ static void rt_net_finsh_thread_entry(void *param)
 		/* 接收数据 */
 		memset(buffer, 0, PRINT_BUFFER_SIZE);
 		receiveNum = lwip_recvfrom(g_NetFinshSocket, buffer, PRINT_BUFFER_SIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < PRINT_BUFFER_SIZE))
 		{
 			/* 将接收到的数据入队，等待finsh读取 */
 			FifoStringEnqueue(FinshReceiveFifoHandle, buffer, receiveNum);
 		}
-		rt_thread_delay(10);
+		rt_thread_delay(10);		/* 释放cpu资源，让低优先级任务得以运行 */
 	}
 	
 	lwip_close(g_NetFinshSocket);
@@ -179,7 +99,6 @@ static void rt_net_finsh_thread_entry(void *param)
 	NetFinshFlag = false;
 	return;
 }
-#endif	/* RT_USING_SOCKET */
 #endif	/* RT_USING_NET_FINSH */
 
 
@@ -192,82 +111,6 @@ static void rt_net_finsh_thread_entry(void *param)
   * 
   */
 #if RT_USING_UDP_SERVE
-#if RT_USING_NETCONN
-static void rt_udp_serve_thread_entry(void *param)
-{
-	err_t err = 0;
-	uint8_t ret = 0;
-	struct ip_addr destipAddr;
-	rt_base_t level;
-	struct lwip_dev lwipDev;
-	uint32_t i = 0;
-	uint32_t receviceNum = 0;
-	uint8_t printBuffer[UDP_SERVE_BUFSIZE] = {0};
-
-	// NVIC_Configuration();
-	
-	ret = FifoMallocAndInit(&UDP_ServeFifoHandle, &UDP_ServeBuffer, UDP_SERVE_BUFSIZE, &UDP_ServeBufferPack);  /*初始化fifo*/
-	ip_addr_t iplocal;
-	IP4_ADDR(&iplocal, 192, 168, 10, 129);
-	while(!ret)
-	{
-		rt_thread_delay(1000);
-		DP83848_ServeIpSet(&lwipDev);
-		
-		LWIP_UNUSED_ARG(param);
-
-		g_UDP_ServeNetconn = netconn_new(NETCONN_UDP);  //创建一个UDP链接
-		
-		if(g_UDP_ServeNetconn != NULL)  //创建UDP链接成功
-		{
-			g_UDP_ServeNetconn->recv_timeout = 100;
-			err = netconn_bind(g_UDP_ServeNetconn, IP_ADDR_ANY, UDP_SERVE_LOCAL_PORT);
-		//	err = netconn_bind(g_UDP_ServeNetconn, &iplocal, UDP_SERVE_LOCAL_PORT);
-			IP4_ADDR(&destipAddr, lwipDev.remoteip[0], lwipDev.remoteip[1], lwipDev.remoteip[2], lwipDev.remoteip[3]); //构造目的IP地址
-			netconn_connect(g_UDP_ServeNetconn, &destipAddr, UDP_SERVE_REMOTE_PORT); 	//连接到远端主机
-			ip_set_option(g_UDP_ServeNetconn->pcb.ip, SO_BROADCAST);		//设置接口为接收广播
-			if(err == ERR_OK)//绑定完成
-			{
-				/*上位机下发配置的端口已经创建*/
-				UDP_ServeFlag = true;
-				rt_kprintf("UDP Communbicate Serve Init Success\r\n");
-				
-				while(1)
-				{
-					receviceNum = UDP_NetconnReceiveString(g_UDP_ServeNetconn, UDP_ServeFifoHandle);
-				
-					if(receviceNum > 0)
-                   {
-                       memset(printBuffer, 0, UDP_SERVE_BUFSIZE);
-						for(i=0; (i<UDP_SERVE_BUFSIZE) && (UDP_ServeFifoHandle->fifo.count); i++)
-						{
-							printBuffer[i] = FifoCharDequeue(UDP_ServeFifoHandle);
-						}
-						if(0 != i)
-						{
-							StationPointFrameDeal(printBuffer, i);
-							rt_kprintf("StationPointFrameDeal success!\r\n");
-						}
-                   }
-					
-				}
-			}
-			else
-			{
-				rt_kprintf("UDP bind faliure\r\n");
-			}
-		}
-		else
-		{
-			rt_kprintf("UDP connect failure\r\n");
-		}
-		UDP_ServeFlag = false;
-	}
-	/*释放接收和发送的队列所用到的动态分配的内存*/
-	FifoFree(&UDP_ServeFifoHandle, &UDP_ServeBuffer, &UDP_ServeBufferPack);
-}
-
-#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_udp_serve_thread_entry(void *param)
 {
 	int32_t receiveNum;		//接收到的字节数
@@ -300,12 +143,11 @@ static void rt_udp_serve_thread_entry(void *param)
 		/* 接收数据 */
 		memset(buffer, 0, UDP_SERVE_BUFSIZE);
 		receiveNum = lwip_recvfrom(g_UDP_ServeSocket, buffer, UDP_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < UDP_SERVE_BUFSIZE))
 		{
 			StationPointFrameDeal(buffer, receiveNum);
 		}
-		rt_thread_delay(10);
+		rt_thread_delay(10);		/* 释放cpu资源，让低优先级任务得以运行 */
 	}
 
 	lwip_close(g_UDP_ServeSocket);
@@ -313,92 +155,16 @@ static void rt_udp_serve_thread_entry(void *param)
 	UDP_ServeFlag = false;
 	return;
 }
-#endif	/* RT_USING_SOCKET */
-#endif	/* RT_USING_NET_FINSH */
+#endif	/* RT_USING_UDP_SERVE */
 
 /**
   * @brief : dp82848实现的维护服务的任务入口
   * @param : none
   * @return: none
   * @update: [2018-09-17][李  磊][创建]
+  * 		 [2018-10-09][李  磊][改为socket接口实现]
   * 
   */
-#if RT_USING_NETCONN
-static void rt_maintenance_serve_thread_entry(void *param)
-{
-	err_t err = 0;
-	uint8_t ret = 0;
-	struct ip_addr destipAddr;
-	rt_base_t level;
-	struct lwip_dev lwipDev;
-	uint32_t i = 0;
-	uint32_t receviceNum = 0;
-	uint8_t printBuffer[MAINTENANCE_SERVE_BUFSIZE] = {0};
-	
-	ret = FifoMallocAndInit(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer, \
-							MAINTENANCE_SERVE_BUFSIZE, &MaintenanceServeBufferPack);/*初始化fifo*/
-
-	g_StationManger.isMaintanceRun = false;
-
-	while(!ret)
-	{
-		rt_thread_delay(1000);
-		DP83848_ServeIpSet(&lwipDev);
-		
-		LWIP_UNUSED_ARG(param);
-
-		g_MaintenanceServeNetconn = netconn_new(NETCONN_UDP);  //创建一个UDP链接
-		
-		if(g_MaintenanceServeNetconn != NULL)  //创建UDP链接成功
-		{
-			g_MaintenanceServeNetconn->recv_timeout = 100;
-			err = netconn_bind(g_MaintenanceServeNetconn, IP_ADDR_ANY, MAINTACE_SERVE_LOCAL_PORT); 
-			IP4_ADDR(&destipAddr, lwipDev.remoteip[0], lwipDev.remoteip[1], lwipDev.remoteip[2], lwipDev.remoteip[3]); //构造目的IP地址
-			netconn_connect(g_MaintenanceServeNetconn, &destipAddr, MAINTACE_SERVE_REMOTE_PORT); 	//连接到远端主机
-			if(err == ERR_OK)//绑定完成
-			{
-				MaintenanceServe = true;
-				g_StationManger.isMaintanceRun = true;
-
-				/*上位机下发配置文件的维护端口已经创建*/
-				rt_kprintf("UDP Maintenance Serve Init Success\r\n");
-				
-				while(1)
-				{
-					/*等待接收，将接收到的字符入队*/
-					receviceNum = UDP_NetconnReceiveString(g_MaintenanceServeNetconn, MaintenanceServeFifoHandle);
-					
-					if(receviceNum > 0)
-                    {
-                        memset(printBuffer, 0, MAINTENANCE_SERVE_BUFSIZE);
-						for(i=0; (i<MAINTENANCE_SERVE_BUFSIZE) && (MaintenanceServeFifoHandle->fifo.count); i++)
-						{
-							printBuffer[i] = FifoCharDequeue(MaintenanceServeFifoHandle);
-						}
-						if(0 != i)
-						{
-							MantaiceFrameDeal(printBuffer, i);
-						}
-                    }
-				}
-			}
-			else
-			{
-				rt_kprintf("UDP bind faliure\r\n");
-			}
-		}
-		else
-		{
-			rt_kprintf("UDP connect failure\r\n");
-		}
-		MaintenanceServe = false;
-		g_StationManger.isMaintanceRun = false;
-	}
-	/*释放接收和发送的队列所用到的动态分配的内存*/
-	FifoFree(&MaintenanceServeFifoHandle, &MaintenanceServeBuffer, &MaintenanceServeBufferPack);
-}
-
-#elif RT_USING_SOCKET	/* RT_USING_NETCONN */
 static void rt_maintenance_serve_thread_entry(void *param)
 {
 	int32_t receiveNum;		//接收到的字节数
@@ -433,12 +199,11 @@ static void rt_maintenance_serve_thread_entry(void *param)
 		/* 接收数据 */
 		memset(buffer, 0, MAINTENANCE_SERVE_BUFSIZE);
 		receiveNum = lwip_recvfrom(g_MaintenanceServeSocket, buffer, MAINTENANCE_SERVE_BUFSIZE, MSG_DONTWAIT, (struct sockaddr*)&remoteAddress, &addressLenth);
-//		receiveNum = strlen((char*)buffer);
 		if((receiveNum > 0) && (receiveNum < MAINTENANCE_SERVE_BUFSIZE))
 		{
 			MantaiceFrameDeal(buffer, receiveNum);
 		}
-		rt_thread_delay(10);
+		rt_thread_delay(10);		/* 释放cpu资源，让低优先级任务得以运行 */
 	}
 
 	lwip_close(g_MaintenanceServeSocket);
@@ -447,7 +212,6 @@ static void rt_maintenance_serve_thread_entry(void *param)
 	g_StationManger.isMaintanceRun = false;
 	return;
 }
-#endif	/* RT_USING_SOCKET */
 
 /**
   * @brief : Start udp finsh thread
