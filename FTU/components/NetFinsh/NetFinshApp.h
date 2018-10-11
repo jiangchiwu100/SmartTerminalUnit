@@ -67,7 +67,7 @@ int32_t UDP_SocketSendString(int32_t socket, uint8_t* data, uint32_t lenth,
 void IpAddressInit(struct sockaddr_in* localAddress, uint32_t localPort,
 	struct sockaddr_in* remoteAddress, uint32_t remotePort, uint8_t* remoteAddressString);	//IP地址设置
 uint32_t UdpSocketInit(uint32_t* socketNum, struct sockaddr* socketAddress);	//使用UDP的socket建立和绑定
-
+void ifconfig(void);	//打印ip地址等信息的finsh命令
 
 
 #endif

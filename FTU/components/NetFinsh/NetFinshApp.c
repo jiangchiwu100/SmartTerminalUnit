@@ -284,11 +284,11 @@ uint32_t UdpSocketInit(uint32_t* socketNum, struct sockaddr* socketAddress)
 
 
 /**
-  * @brief : 打印ip地址等信息
+  * @brief : 打印ip地址等信息的finsh命令
   * @return: none
-  * @update: [2018-10-09][李  磊][创建]
+  * @update: [2018-10-11][李  磊][创建]
   */
-void ifconfig()
+void ifconfig(void)
 {
 	rt_kprintf("DP83848:\r\n");
 	rt_kprintf("  IPv4 Address: %d.%d.%d.%d\r\n", g_EthDP83848.ip[0], g_EthDP83848.ip[1],
@@ -318,6 +318,52 @@ void ifconfig()
 }
 FINSH_FUNCTION_EXPORT(ifconfig, net massage)
 
+
+/**
+  * @brief : 修改打印输出为网口或串口
+  * @return: none
+  * @update: [2018-10-11][李  磊][创建]
+  */
+void printfset(uint8_t* argv)
+{
+	if(argv == NULL)
+	{
+		if(true == NetFinshFlag)
+		{
+			rt_kprintf("The rt_kprintf function of the current device is network output\r\n");
+			rt_kprintf("You can use the command 'printfset(\"-s\")' to set device to serial output\r\n");
+		}
+		else
+		{
+			rt_kprintf("The rt_kprintf function of the current device is serial output\r\n");
+			rt_kprintf("You can use the command 'printfset(\"-n\")' to set device to network output\r\n");
+		}
+	}
+	else
+	{
+		if(!strcmp(argv, "-s"))
+		{
+			rt_kprintf("SET OK!\r\n");
+			NetFinshFlag = false;
+			rt_kprintf("\r\nThe rt_kprintf function of the current device is serial output\r\n");
+		}
+		else if(!strcmp(argv, "-n"))
+		{
+			rt_kprintf("SET OK!\r\n");
+			NetFinshFlag = true;
+			rt_kprintf("\r\nThe rt_kprintf function of the current device is network output\r\n");
+		}
+		else
+		{
+			rt_kprintf("usage:\r\n");
+			rt_kprintf("\tprintfset(\"-s\") : set serial output\r\n");
+			rt_kprintf("\tprintfset(\"-n\") : set network output\r\n");
+		}
+	}
+
+	return;
+}
+FINSH_FUNCTION_EXPORT(printfset, printf output set)
 
 /*****************************File End**********************************/
 
