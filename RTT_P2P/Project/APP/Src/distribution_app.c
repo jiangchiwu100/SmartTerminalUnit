@@ -91,7 +91,7 @@ void DistributionAppInit(void)
 */
 void StartSinglePointNormalThread(void)
 {
-    LogicalSimulationAppInit();
+   // LogicalSimulationAppInit();
 	
 	DistributionLogicalAppInit();
 }

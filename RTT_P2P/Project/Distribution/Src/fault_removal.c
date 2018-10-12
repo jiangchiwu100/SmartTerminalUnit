@@ -57,7 +57,7 @@
 	{
 		//发送非故障信息
         handle->isRun = true;
-		switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
+        //switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
 		handle->TransmitMessage(handle, STATUS_MESSAGE);
         PrintIDTipsTick(switchProperty->id, "Trigger TransmitMessage");
 		handle->limitTime = handle->t1;
@@ -158,6 +158,7 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
 StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 {
     SwitchProperty* switchProperty = handle->switchProperty;
+    DistributionStation* distribution= switchProperty->distributionArea;
     if (handle->nextState != REMOVAL_DELAY_GATHER)
     {
         return RESULT_ERROR_MATCH;
@@ -173,6 +174,10 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
         {
         	if(handle->IsFault(handle))
 			{
+        		//重新进行一次：完整性判断
+        		distribution->GatherCompletedAndJudgeFaultArea(distribution, switchProperty);
+        		distribution->isAlreayExitedFault = distribution->IsAlreayExitedFault(distribution);
+
         		handle->nextState = REMOVAL_TREATMENT;
 
 			}
@@ -185,11 +190,11 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
             //handle->GetNowTime(handle);
 
         }
-        else if ( handle->IsFault(handle) && handle->isFirstReadySend)
+        else if (handle->isFirstReadySend  && handle->IsFault(handle) )
 		{
         	handle->isFirstReadySend = false;
-        	switchProperty->distributionArea->SignExitFaultMessage(switchProperty);
-			//发送故障信息
+        	//distribution->SignExitFaultMessage(switchProperty);
+        	//发送故障信息
 			handle->TransmitMessage(handle, STATUS_MESSAGE);
 			PrintIDTipsTick(switchProperty->id, "Fault TransmitMessage");
 		}
@@ -248,6 +253,7 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
 	handle->state = REMOVAL_TREATMENT;
 
 
+
     if (handle->IsFaultArea(handle))
     {
         if (handle->IsPermitOpen(handle))
@@ -265,6 +271,11 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
             handle->limitTime = handle->checkBackupTime;
             handle->GetNowTime(handle);    
             handle->nextState =  REMOVAL_BACKUP;               
+    }
+
+    if (!handle->switchProperty->distributionArea->isGatherCompleted)
+    {
+    	rt_kprintf("isGatherCompleted:false\r\n");
     }
 
 	handle->lastState = handle->state;

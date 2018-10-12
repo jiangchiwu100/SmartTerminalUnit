@@ -270,6 +270,11 @@ void rt_hw_di_check_task(rt_uint8_t clock)
     
     rt_device_read(rt_di_dev, 0, &pin_status[INDEX_MCU_POWER_ALARM_DI], sizeof(struct rt_device_pin_status));
     DBWriteSOE(g_TelesignalAddr.devicePowerDown, (pin_status[INDEX_MCU_POWER_ALARM_DI].status) ? ON : OFF);
+    
+    
+    //添加绑定开关状态
+    extern void StationSwtichCheck(void);
+    StationSwtichCheck();
 }
 
 /* END OF FILE ---------------------------------------------------------------*/

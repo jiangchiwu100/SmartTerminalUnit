@@ -100,11 +100,11 @@ static inline void SimulationCloseOperate(SimulationStation* station)
   * @brief : 分闸操作
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
-  * @update: [2018-10-08][田晓亮][创建]
+  * @update: [2018-10-12][张宇飞][创建]
   */
 static inline void OpenOperate(SimulationStation* station)
 {
-	if (curStation.state == SWITCH_CLOSE)
+	if ((*(station->pBindSwitch))->state  == SWITCH_CLOSE)
 	{
 		SwitchOperate_StartOpen(0);
 	}
@@ -113,11 +113,11 @@ static inline void OpenOperate(SimulationStation* station)
   * @brief : 合闸操作
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
-  * @update: [2018-10-08][田晓亮][创建]
+  * @update: [2018-10-12][张宇飞][创建]
   */
 static inline void CloseOperate(SimulationStation* station)
 {
-	if (curStation.state == SWITCH_OPEN)
+	if ((*(station->pBindSwitch))->state == SWITCH_OPEN)
 	{
 		SwitchOperate_StartClose(0);
 	}
@@ -411,20 +411,7 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
     //输出状态变化
   
 	
-    OpeningClosing();
-    if (pswitch->state != curStation.state)
-    {
-    	pswitch->isChanged = true;
-    }
-    pswitch->state = curStation.state;
-    if(((float)0.3 < g_TelemetryDB[g_TelemetryAddr.Ia]))
-    {
-        pswitch->fault.state = FAULT_YES;
-    }
-    else
-    {
-        pswitch->fault.state = FAULT_NO;
-    }
+
 
 
 

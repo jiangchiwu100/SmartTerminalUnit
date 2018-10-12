@@ -48,7 +48,7 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 	ErrorCode code = FindSwitchNodeByID(&(pPoint->topology.globalSwitchList), di->id, &sw);
 	if(code == ERROR_OK_NULL)
 	{
-		if (pPoint->isAllowUpdate)
+		//if (pPoint->isAllowUpdate)
 		{
 			DataArributeToLocalProperty(sw, di);
 		}
@@ -164,7 +164,8 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
 	{
 		sw->operateType = OPERATE_NULL;
 	}
-    
+    sw->isResetDistribution = DeviceIndicate_getBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RESET);
+    sw->isRunDistribution = DeviceIndicate_getBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RUN);
     
     StationTopology* station = &(g_StationManger.pWorkPoint->topology);
     Station_updateFaultStatus(sw, g_StationManger.pWorkPoint);
@@ -254,6 +255,11 @@ void LocalPropertyToDataArribute(const SwitchProperty*  const sw, DeviceIndicate
    	{
    		DeviceIndicate_setBooleanStatus(di, DEVICE_IED_REJECT_ACTION, false);
    	}
+
+    //投入，退出信息
+    DeviceIndicate_setBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RESET, sw->isResetDistribution);
+    DeviceIndicate_setBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RUN, sw->isRunDistribution);
+
   
 }
 

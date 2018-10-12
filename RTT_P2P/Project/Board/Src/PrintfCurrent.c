@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      quick_break_protest.h
   * @brief:     The protect control logic.
@@ -14,7 +14,7 @@
 #include "common_data.h"
 #include "extern_interface.h"
 #include "input.h"
-
+#include "distribution.h"
 
 static struct rt_thread rt_thread_print_cur_val;
 static rt_uint8_t *rt_thread_print_cur_val_stack;
@@ -27,22 +27,30 @@ static rt_uint8_t *rt_thread_print_cur_val_stack;
   */  
 static void rt_print_current_val_thread_entry(void *param)
 {
+	extern StationManger g_StationManger;
+	while (!g_StationManger.pWorkPoint)
+	{
+		rt_kprintf("g_StationManger.pWorkPoint is NULL \r\n");
+		rt_thread_delay(5000);
+	}
+
+	SwitchProperty* pswitch = g_StationManger.pWorkPoint->topology.localSwitch;
+
 	for(;;)
 	{
 		rt_kprintf(" Ia  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Ia]));
-  
-		OpeningClosing();
-        if (curStation.state == SWITCH_OPEN)
+  		
+        if (pswitch->state == SWITCH_OPEN)
         {
-             rt_kprintf("pos:%s\r\n", "open");
+             rt_kprintf("pos : %s\r\n", "open");
         }
-        else if (curStation.state == SWITCH_CLOSE)
+        else if (pswitch->state == SWITCH_CLOSE)
         {
-            rt_kprintf("pos:%s\r\n", "close");
+            rt_kprintf("pos : %s\r\n", "close");
         }
         else
         {
-            rt_kprintf("pos:Uknow\r\n");
+            rt_kprintf("pos : Unknow\r\n");
         }
         
        

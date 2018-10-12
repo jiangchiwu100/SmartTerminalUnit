@@ -75,6 +75,9 @@ typedef struct TagSwitchProperty
 	CheckTimeStamp onlineStamp; //在线时间戳——用于指示所有在线
 
 	void* pDeviceIndicate; // 绑定的设备指示
+
+	bool isResetDistribution;
+	bool isRunDistribution;
 }SwitchProperty;
 
 
@@ -234,7 +237,10 @@ typedef struct TagStationTopology
 
     AreaID areaID;// 区域ID合集
 
-    bool isRunDistribution;  //是否允许允许分布式保护
+
+
+
+
     struct TagSwitchSnapshoot* snapshoot;//开关信息快照
 
 }StationTopology;

@@ -600,34 +600,9 @@ static inline bool IsRejectInsulate(FaultDealHandle* handle)
 * @brief :分闸操作
 * @param  RemovalHandle* handle 控制句柄
 * @return: true bool
-* @update: [2018-06-16][张宇飞][BRIEF]
+* @update: [2018-10-12][张宇飞][BRIEF]
 */
 static bool OpenOperate(FaultDealHandle* handle)
-{   
-    handle->switchProperty->isOpening = true;
-	OpeningclosingOperate(TMR_50MS_OPEN);
-	return true;
-}
-/**
-* @brief : 合闸操作
-* @param  FaultDealHandle* handle
-* @return: true bool
-* @update: [2018-07-12][张宇飞][BRIEF]
-*/
-static bool CloseOperate(FaultDealHandle* handle)
-{	
-	handle->switchProperty->isClosing = true;
-	OpeningclosingOperate(TMR_50MS_CLOSE);
-	return true;
-}
-
-/**
-* @brief :分闸操作
-* @param  RemovalHandle* handle 控制句柄
-* @return: true bool
-* @update: [2018-10-8][田晓亮][BRIEF]
-*/
-static bool OpeningOperate(FaultDealHandle* handle)
 {   
 	SwitchOperate_StartOpen(0);
 	return true;
@@ -636,13 +611,15 @@ static bool OpeningOperate(FaultDealHandle* handle)
 * @brief : 合闸操作
 * @param  FaultDealHandle* handle
 * @return: true bool
-* @update: [2018-07-12][张宇飞][BRIEF]
+* @update: [2018-10-12][张宇飞][BRIEF]
 */
-static bool CloseingOperate(FaultDealHandle* handle)
+static bool CloseOperate(FaultDealHandle* handle)
 {	
 	SwitchOperate_StartClose(0);
 	return true;
 }
+
+
 /**
 * @brief :发送数据
 * @param
@@ -730,7 +707,7 @@ bool RemovalHandleInit(FaultDealHandle* handle, SwitchProperty* switchProperty, 
     handle->startTime = 0;
     handle->limitTime = 0;
     
-    handle->t1 = 50;
+    handle->t1 = 70;
     handle->t2 = 150;
     handle->t3 = 200;
     handle->t4 = 400;
@@ -757,8 +734,8 @@ bool RemovalHandleInit(FaultDealHandle* handle, SwitchProperty* switchProperty, 
 	handle->IsRejectArea = IsRejectArea;
 	handle->IsRejectInsulate = IsRejectInsulate;
     handle->IsPermitOpen = IsPermitOpen;
-    handle->OpenOperate = OpeningOperate;
-	handle->CloseOperate = CloseingOperate;
+    handle->OpenOperate = OpenOperate;
+	handle->CloseOperate = CloseOperate;
 	handle->IsRemovalSuccessInsulate = IsRemovalSuccessInsulate;
 	handle->IsRemovalSuccessBackup = IsRemovalSuccessBackup;
 	handle->IsRemovalSuccessInsulateBackup = IsRemovalSuccessInsulateBackup;

@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      input.c
   * @brief:     The driver of input.
@@ -10,14 +10,16 @@
 
   
 #include "input.h"
+#include "stm32f4xx_hal.h"
 #include "drv_gpio.h"
 #include "string.h"
 #include "common_data.h"
 #include "point_table_config.h"
-
+#include "distribution.h"
+#include "extern_interface.h"
 
 static rt_device_t rt_input_dev;
-SwitchProperty curStation;
+
 
 /**
   * @brief : input 初始化
@@ -43,24 +45,52 @@ int rt_hw_input_init(void)
 INIT_DEVICE_EXPORT(rt_hw_input_init);
 
 /**
-  * @brief : 分合位状态
+  * @brief : 站点开关检测赋值
   * @param : [none].
   * @return: [0] 
-  * @updata: [2018-09-17][tianxiaoliang][创建]
+  * @updata: [2018-10-12][张宇飞][创建]
   */ 
-void OpeningClosing(void)
+void StationSwtichCheck(void)
 {
-	if(g_TelesignalDB[g_TelesignalAddr.switchOpen]==ON  &&  g_TelesignalDB[g_TelesignalAddr.switchClose]==OFF)
+	extern StationManger g_StationManger;
+	if (!g_StationManger.pWorkPoint)
 	{
-		curStation.state = SWITCH_OPEN;
+		return;
 	}
-	else if(g_TelesignalDB[g_TelesignalAddr.switchOpen]==OFF && g_TelesignalDB[g_TelesignalAddr.switchClose]==ON)
+
+	SwitchProperty* pswitch = g_StationManger.pWorkPoint->topology.localSwitch;
+
+	if(g_TelesignalDB[g_TelesignalAddr.switchOpen]== ON
+			&& g_TelesignalDB[g_TelesignalAddr.switchClose]==OFF)
 	{
-		curStation.state = SWITCH_CLOSE;
+		if(pswitch->state != SWITCH_OPEN)
+		{
+			pswitch->state = SWITCH_OPEN;
+			pswitch->isChanged = true;
+		}
+	}
+	else if(g_TelesignalDB[g_TelesignalAddr.switchOpen]==OFF
+			&& g_TelesignalDB[g_TelesignalAddr.switchClose]==ON)
+	{
+		if(pswitch->state != SWITCH_CLOSE)
+		{
+			pswitch->state = SWITCH_CLOSE;
+			pswitch->isChanged = true;
+		}
 	}
 	else
 	{
-        curStation.state = 0;
+		pswitch->state = 0;
+	}
+
+	//临时过流检测
+	if(((float)0.3 < g_TelemetryDB[g_TelemetryAddr.Ia]))
+	{
+		pswitch->fault.state = FAULT_YES;
+	}
+	else
+	{
+		pswitch->fault.state = FAULT_NO;
 	}
 }
 
