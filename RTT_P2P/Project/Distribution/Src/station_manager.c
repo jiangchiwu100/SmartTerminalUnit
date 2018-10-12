@@ -395,8 +395,8 @@ ErrorCode StationServerAddPoint(StationServer* server,   TopologyMessage*  topol
     stationTopology->localTopology = topologyMessage;    
     stationTopology->localSwitch = topologyMessage->switchCollect;
 	stationTopology->localSwitch->parent = stationTopology;
-	stationTopology->isRunDistribution = false;
-    stationTopology->isResetDistribution = false;
+	stationTopology->localSwitch->isRunDistribution = false;
+    stationTopology->localSwitch->isResetDistribution = false;
     ListInit(&(stationTopology->connectPath), FREE);
 
 

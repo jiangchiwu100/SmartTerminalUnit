@@ -62,7 +62,7 @@ static uint8_t GetStateCode( bool isRest, bool isRun)
 static void CheckIsReady(SwitchProperty* local, StationPoint* point)
 {
 	bool isEnterAll = false;
-	FOR_EARCH_LIST_START(point->topology.globalSwitchList)
+	FOR_EARCH_LIST_START(&point->topology.globalSwitchList)
 	{
 		SwitchProperty* find = GET_SWITCH_ELEMENT(m_foreach);
 		if(find->isResetDistribution)
@@ -94,7 +94,7 @@ static void CheckIsReady(SwitchProperty* local, StationPoint* point)
 static void CheckIsEnterRun(SwitchProperty* local, StationPoint* point)
 {
 	bool isEnterAll = false;
-	FOR_EARCH_LIST_START(point->topology.globalSwitchList)
+	FOR_EARCH_LIST_START(&point->topology.globalSwitchList)
 	{
 		SwitchProperty* find = GET_SWITCH_ELEMENT(m_foreach);
 		if( find->isRunDistribution)
@@ -126,7 +126,7 @@ static void CheckIsEnterRun(SwitchProperty* local, StationPoint* point)
 static void CheckIsExit(SwitchProperty* local, StationPoint* point)
 {
 	bool isExit = false;
-	FOR_EARCH_LIST_START(point->topology.globalSwitchList)
+	FOR_EARCH_LIST_START(&point->topology.globalSwitchList)
 	{
 		SwitchProperty* find = GET_SWITCH_ELEMENT(m_foreach);
 		if(!find->isRunDistribution)
@@ -217,7 +217,7 @@ void  Station_ResetDistribution(SwitchProperty* switchProperty, StationPoint* po
 		{
 			EnterExitAndUpdate(local, point);
 		}
-		CheckIsExit();
+		CheckIsExit(local, point);
 		break;
 	}
 	default:

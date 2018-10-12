@@ -519,7 +519,7 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
 		if (point)
 		{
-			point->topology.isRunDistribution = true;
+			point->topology.localSwitch->isRunDistribution = true;
 			PrintIDTipsTick(station->id, "distribution into.\n");
 		}
 		else
@@ -534,7 +534,7 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
 		if (point)
 		{
-			point->topology.isRunDistribution = false;
+			point->topology.localSwitch->isRunDistribution = false;
 			PrintIDTipsTick(station->id, "distribution exit.\n");
 		}
 		else
