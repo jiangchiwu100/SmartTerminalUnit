@@ -321,6 +321,7 @@ FINSH_FUNCTION_EXPORT(ifconfig, net massage)
 
 /**
   * @brief : 修改打印输出为网口或串口
+  * @param : argv "-s"表示设置为串口打印;"-n"表示设置为网口打印
   * @return: none
   * @update: [2018-10-11][李  磊][创建]
   */

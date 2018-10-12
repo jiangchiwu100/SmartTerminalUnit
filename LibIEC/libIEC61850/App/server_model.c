@@ -224,7 +224,6 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 
 	MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
 
-
 	MmsDatasetToDataAtrributeSet(values, di);
     GooseCheckAdd(subscriber, &(di->ringCheck));
 }
