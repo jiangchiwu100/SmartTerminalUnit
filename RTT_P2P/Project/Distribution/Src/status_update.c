@@ -19,7 +19,7 @@
 #include "status_update.h"
 #include "extern_interface.h"
 #include "snapshoot.h"
-
+#include "distribution_control.h"
 
 static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di);
 
@@ -167,10 +167,17 @@ static void DataArributeToLocalProperty(SwitchProperty* sw, DeviceIndicate* di)
     sw->isResetDistribution = DeviceIndicate_getBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RESET);
     sw->isRunDistribution = DeviceIndicate_getBooleanStatus(di, DEVICE_IED_DISTRIBUTION_RUN);
     
+    
+    
     StationTopology* station = &(g_StationManger.pWorkPoint->topology);
-    Station_updateFaultStatus(sw, g_StationManger.pWorkPoint);
-    Station_updateRemovalStatus(sw, station);
-    Station_updateInsulateStatus(sw, station);
+
+    Station_ControlDistribution(sw, g_StationManger.pWorkPoint);
+    if (station->localSwitch->isRunDistribution && (!station->localSwitch->isResetDistribution))
+    {
+		Station_updateFaultStatus(sw, g_StationManger.pWorkPoint);
+		Station_updateRemovalStatus(sw, station);
+		Station_updateInsulateStatus(sw, station);
+    }
 }
 
 

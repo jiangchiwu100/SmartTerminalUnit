@@ -19,9 +19,10 @@ extern "C"
 #endif
 
  
-void  Station_ResetDistribution(SwitchProperty* switchProperty, StationPoint* point);
-
-
+extern void  Station_ControlDistribution(SwitchProperty* switchProperty, StationPoint* point);
+extern void EnterExitAndUpdate(SwitchProperty* local, StationPoint* point);
+extern void EnterResetAndUpdate(SwitchProperty* local, StationPoint* point);
+    
 #ifdef	__cplusplus
 }
 #endif

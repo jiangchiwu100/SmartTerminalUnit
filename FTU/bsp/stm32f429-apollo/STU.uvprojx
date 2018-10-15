@@ -1899,6 +1899,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\snapshoot.c</FilePath>
             </File>
+            <File>
+              <FileName>distribution_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_control.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5065,6 +5070,11 @@
               <FileName>snapshoot.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\snapshoot.c</FilePath>
+            </File>
+            <File>
+              <FileName>distribution_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_control.c</FilePath>
             </File>
           </Files>
         </Group>
