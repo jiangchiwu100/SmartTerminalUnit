@@ -306,11 +306,11 @@ void  Station_updateFaultStatus(SwitchProperty* switchProperty, StationPoint* po
 	   if (point->removalHandle.isRun || distribution->JudgeIsExitFault(distribution->switchRef))
 	   {
 		   distribution->UpdatePowerArea(switchProperty);
-		   if (! distribution->isGatherCalculateCompleted)
-		   {
-			   distribution->GatherCompletedAndJudgeFaultArea(distribution, switchProperty);
-			   distribution->isAlreayExitedFault = distribution->IsAlreayExitedFault(distribution);
-		   }
+//		   if (! distribution->isGatherCalculateCompleted)
+//		   {
+//			   distribution->GatherCompletedAndJudgeFaultArea(distribution, switchProperty);
+//			   distribution->isAlreayExitedFault = distribution->IsAlreayExitedFault(distribution);
+//		   }
 	   }
 	}
 }

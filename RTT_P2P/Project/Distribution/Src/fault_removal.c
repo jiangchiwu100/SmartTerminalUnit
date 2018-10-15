@@ -112,7 +112,8 @@
 StateResult RemovalState_Gather(FaultDealHandle* handle)
 {
     //StateResult result = RESULT_NULL;
-    
+	SwitchProperty* switchProperty = handle->switchProperty;
+	DistributionStation* distribution= switchProperty->distributionArea;
     if (handle->nextState != REMOVAL_GATHER)
     {
         return RESULT_ERROR_MATCH;
@@ -125,6 +126,10 @@ StateResult RemovalState_Gather(FaultDealHandle* handle)
 	{       
         //handle->switchProperty->overTimeType = OVER_TIME_GATHER;
 		//handle->nextState =  REMOVAL_OVERTIME;
+
+		//重新进行一次判断
+		distribution->GatherCompletedAndJudgeFaultArea(distribution, switchProperty);
+        distribution->isAlreayExitedFault = distribution->IsAlreayExitedFault(distribution);
 		handle->nextState = REMOVAL_TREATMENT;
 
 	}
@@ -193,7 +198,7 @@ StateResult RemovalState_DelayGather(FaultDealHandle* handle)
         else if (handle->isFirstReadySend  && handle->IsFault(handle) )
 		{
         	handle->isFirstReadySend = false;
-        	//distribution->SignExitFaultMessage(switchProperty);
+        	distribution->SignExitFaultMessage(switchProperty);
         	//发送故障信息
 			handle->TransmitMessage(handle, STATUS_MESSAGE);
 			PrintIDTipsTick(switchProperty->id, "Fault TransmitMessage");

@@ -376,6 +376,8 @@ static ErrorCode SignExitFaultMessage(SwitchProperty* switchProperty)
               area->isExitFaultMessage = true;
               switchProperty->isGather[i] = true; //标记收集与否
               distributionArea->switchRef->isGather[i] = true;
+
+
 			 
         } 
 		//SET_N_BIT(area->upadetedFlag, switchProperty->indexArea[i]);
@@ -645,6 +647,7 @@ static bool IsExitFaultMessage( SwitchProperty* switchProperty)
 	}
 	return false;
 }
+
 /**
 * @brief : 启动更新配电区域
 * @param  :SwitchProperty* switchProperty 开关
