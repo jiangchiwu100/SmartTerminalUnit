@@ -253,7 +253,8 @@ void  Station_ControlDistribution(SwitchProperty* switchProperty, StationPoint* 
 	case DISTRIBUTION_RUN:
 	{
 		//触发进入复归状态
-		if (DISTRIBUTION_EXIT == outRunState)
+		if ((DISTRIBUTION_EXIT == outRunState  ) 
+            || (DISTRIBUTION_RESET == outRunState  ))
 		{
 			EnterExitAndUpdate(local, point);
 		}
