@@ -66,7 +66,7 @@ static void rt_net_finsh_thread_entry(void *param)
 	
 	/*UDP链接已经创建，之后可以使用网口的打印函数了*/
 	NetFinshFlag = true;
-	rt_kprintf("Net finsh Init Success\r\n");			
+	rt_kprintf("Net finsh Init Success");			
 	
 	while (1)
 	{
@@ -136,7 +136,7 @@ static void rt_udp_serve_thread_entry(void *param)
 
 	/*上位机下发配置的端口已经创建*/
 	UDP_ServeFlag = true;
-	rt_kprintf("UDP Communbicate Serve Init Success\r\n");
+//	rt_kprintf("\nUDP Communbicate Serve Init Success");
 
 	while (1)
 	{
@@ -265,7 +265,7 @@ static void UDP_CommunicateServe_thread_start(void* param)
     {
         rt_thread_startup(tid);
         
-        THREAD_PRINTF("UDP serve thread start \r\n"); 
+        THREAD_PRINTF("UDP Communicate serve thread start"); 
     }   
 }
 #endif

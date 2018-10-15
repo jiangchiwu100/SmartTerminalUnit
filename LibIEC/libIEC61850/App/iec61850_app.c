@@ -12,6 +12,7 @@
 #include "server_model.h"
 
 #include "distribution_app.h"
+#include "file_operate.h"
 
 
 static rt_thread_t iec61850_thread;//61850线程
@@ -28,7 +29,8 @@ static void iec61850App(void);
 
 static void iec61850_thread_entry(void* parameter)
 {    
-	rt_kprintf("thread iec61850App start.\r\n");
+//	rt_kprintf("(thread iec61850App start)");
+	file_operate_Init();
 	rt_thread_delay(1000);
 	DistributionAppInit();
 	rt_thread_delay(1000);
