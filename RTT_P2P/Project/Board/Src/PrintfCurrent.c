@@ -38,8 +38,13 @@ static void rt_print_current_val_thread_entry(void *param)
 
 	for(;;)
 	{
-		rt_kprintf(" Ia  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Ia]));
-  		
+		rt_kprintf(" Ia  =   %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Ia]));
+		rt_kprintf(" Uab  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Uab]));//A
+		rt_kprintf(" Ucb  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Ucb]));
+		rt_kprintf(" Uac  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.Uac]));
+		rt_kprintf(" UAB  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.UAB]));
+		rt_kprintf(" UCB  =  %d \r\n", (uint32_t)(1000*g_TelemetryDB[g_TelemetryAddr.UCB]));
+
         if (pswitch->state == SWITCH_OPEN)
         {
              rt_kprintf("pos : %s\r\n", "open");
