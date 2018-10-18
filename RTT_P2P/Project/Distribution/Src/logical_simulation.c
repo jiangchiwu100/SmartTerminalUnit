@@ -70,7 +70,7 @@ static inline void SimulationOpenOperate(SimulationStation* station)
     if ((RUN_STATE_CLOSE_POSITION_STORED == station->runState)
 		&& (!station->isRejectAction))
     {
-        (*(station->pBindSwitch))->isOpening = true;
+       
 		OpeningclosingOperate(TMR_50MS_OPEN);
 
         rt_kprintf("-------------open----------\r\n");
@@ -87,9 +87,10 @@ static inline void SimulationOpenOperate(SimulationStation* station)
   */
 static inline void SimulationCloseOperate(SimulationStation* station)
 {
+
     if (RUN_STATE_OPEN_POSITION_STORED == station->runState && (!station->isRejectAction))
     {
-        (*(station->pBindSwitch))->isClosing = true;
+        
 		OpeningclosingOperate(TMR_50MS_CLOSE);
 
         rt_kprintf("-------------close----------\r\n");
@@ -101,10 +102,12 @@ static inline void SimulationCloseOperate(SimulationStation* station)
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
   * @update: [2018-10-12][张宇飞][创建]
+  * [2018-10-18][张宇飞][添加拒动检测]
   */
 static inline void OpenOperate(SimulationStation* station)
 {
-	if ((*(station->pBindSwitch))->state  == SWITCH_CLOSE)
+	SwitchProperty* sw =  *(station->pBindSwitch);
+	if ((sw->state  == SWITCH_CLOSE) && (!sw->isRejectAction))
 	{
 		SwitchOperate_StartOpen(0);
 	}
@@ -114,10 +117,12 @@ static inline void OpenOperate(SimulationStation* station)
   * @param  SimulationStation* station 模拟的站点
   * @return: 0--正常
   * @update: [2018-10-12][张宇飞][创建]
+  * [2018-10-18][张宇飞][添加拒动检测]
   */
 static inline void CloseOperate(SimulationStation* station)
 {
-	if ((*(station->pBindSwitch))->state == SWITCH_OPEN)
+	SwitchProperty* sw =  *(station->pBindSwitch);
+	if ((sw->state == SWITCH_OPEN) && (!sw->isRejectAction))
 	{
 		SwitchOperate_StartClose(0);
 	}
@@ -408,14 +413,6 @@ ErrorCode UpdateBindSwitchState(SimulationStation* station)
     SwitchProperty* pswitch = *(station->pBindSwitch);
     CHECK_POINT_RETURN(pswitch, NULL, ERROR_NULL_PTR);
     
-    //输出状态变化
-  
-	
-
-
-
-
-	ValidCheckStamp(pswitch->timeStamp);
 	
     return ERROR_OK_NULL;
 }
@@ -465,14 +462,17 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
     }
 	case CONTROL_SET_REJECT_ACTION:
 	{
-		station->isRejectAction = true;
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		point->topology.localSwitch->isRejectAction = true;
         PrintIDTipsTick(station->id, "set reject action.");
 		
 		break;
 	}
 	case CONTROL_CANCER_REJECT_ACTION:
 	{
-		station->isRejectAction = false;
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		point->topology.localSwitch->isRejectAction = false;
+
         PrintIDTipsTick(station->id, "cancer reject action.");
 		
 		break;

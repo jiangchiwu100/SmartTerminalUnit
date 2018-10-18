@@ -209,10 +209,10 @@ void  Station_ControlDistribution(SwitchProperty* switchProperty, StationPoint* 
 {
 	SwitchProperty* local = point->topology.localSwitch;
 	DistributionRunState localRunState =
-			GetStateCode(local->isResetDistribution, local->isRunDistribution);
+			(DistributionRunState)GetStateCode(local->isResetDistribution, local->isRunDistribution);
 
 	DistributionRunState outRunState =
-				GetStateCode(switchProperty->isResetDistribution, switchProperty->isRunDistribution);
+				(DistributionRunState)GetStateCode(switchProperty->isResetDistribution, switchProperty->isRunDistribution);
 	switch (localRunState)
 	{
 	case DISTRIBUTION_EXIT://当前状态位退出，才允许进入复归状态

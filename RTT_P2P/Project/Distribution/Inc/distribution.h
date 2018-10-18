@@ -1,4 +1,4 @@
-﻿/**
+/**
 *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
 * @file:      distribution.h
 * @brief:     汇总相关头文件
@@ -33,7 +33,5 @@
 #include "datagram.h"
 #include "extern_interface.h"
 #include "station.h"
-#include "distribution_monitor.h"
-#include "distribution_online.h"
 #include "snapshoot.h"
 #endif

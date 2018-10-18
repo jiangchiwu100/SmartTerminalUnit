@@ -1840,16 +1840,6 @@
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
             </File>
             <File>
-              <FileName>distribution_online.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_online.c</FilePath>
-            </File>
-            <File>
-              <FileName>distribution_monitor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
-            </File>
-            <File>
               <FileName>fault_deal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\fault_deal.c</FilePath>
@@ -5010,16 +5000,6 @@
               <FileName>distribution_transfer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_transfer.c</FilePath>
-            </File>
-            <File>
-              <FileName>distribution_online.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_online.c</FilePath>
-            </File>
-            <File>
-              <FileName>distribution_monitor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\RTT_P2P\Project\Distribution\Src\distribution_monitor.c</FilePath>
             </File>
             <File>
               <FileName>fault_deal.c</FileName>

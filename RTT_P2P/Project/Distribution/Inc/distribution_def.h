@@ -65,16 +65,9 @@ typedef struct TagSwitchProperty
     bool             isGather[2];                          //是否收集，如果为true则判定对应配电区域
 
     bool            isPermitOpen;                   //是否允许分闸
-    bool            isOpening;                    //是否正在分闸
-    bool            isClosing;                 //是否正在合闸
-    	
     bool            isChanged;   //是否更新 TODO：完善变换使用 ，注意同步互斥
-	
+    bool 			isRejectAction; //是否拒动
 	struct TagStationTopology* parent;
-
-	CheckTimeStamp timeStamp; //有效时间戳——用于指示更新时间
-	CheckTimeStamp onlineStamp; //在线时间戳——用于指示所有在线
-
 	void* pDeviceIndicate; // 绑定的设备指示
 
 	bool isResetDistribution;

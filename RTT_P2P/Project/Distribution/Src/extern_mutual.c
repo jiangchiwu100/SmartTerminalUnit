@@ -233,21 +233,7 @@ void StationExecuteFunctioncode(StationPoint* point)
             StationSetAimMessage(pRtu->pValidData, pRtu->datalen, station);
             break;
         }
-//        case DELETE_ONE:
-//        {
-//            StationDeleteTopologyNode(pRtu->pValidData, pRtu->datalen, station);
-//            break;
-//        }
-        case STATUS_MESSAGE:
-        {
-            StationUpdateStatusMessage(pRtu->pValidData, pRtu->datalen, point);
-            break;
-        }
-		case LOOP_STATUS:
-		{
-			StationUpdateLoopStatusMessage(pRtu->pValidData, pRtu->datalen, point);
-		    break;
-		}
+
         case REPLY_MESSAGE:
         {
             StationReciveReplyMessage(pRtu->pValidData, pRtu->datalen, &(point->topology));
@@ -258,16 +244,7 @@ void StationExecuteFunctioncode(StationPoint* point)
             StationReciveGetMessage( pRtu, point);
             break;
         }
-//        case REMOVAL_MESSAGE:
-//        {
-//			StationReciveRemovalMessage(pRtu->pValidData, pRtu->datalen, &(point->topology));
-//            break;
-//        }
-//		case INSULATE_MESSAGE:
-//		{
-//			StationReciveInsulateMessage(pRtu->pValidData, pRtu->datalen, &(point->topology));
-//			break;
-//		}		
+
         case  GET_ALL:
         {
 			error = GetAllTopologyRunState(point);
@@ -281,16 +258,16 @@ void StationExecuteFunctioncode(StationPoint* point)
 			error = ParseNanopb(point, pRtu->address, pRtu->pValidData, pRtu->datalen);
             break;
         }
-        case CONNECTED_MESSAGE:
-        {
-			//故障正在运行时禁止进行路径判别
-			if (!point->removalHandle.isRun)
-			{
-				StationSetConnectPath(pRtu->pValidData, pRtu->datalen, station);
-			}
-            
-            break;
-        }
+//        case CONNECTED_MESSAGE:
+//        {
+//			//故障正在运行时禁止进行路径判别
+//			if (!point->removalHandle.isRun)
+//			{
+//				StationSetConnectPath(pRtu->pValidData, pRtu->datalen, station);
+//			}
+//
+//            break;
+//        }
 		case TRANSFER_MESSAGE:
 		{
 			error = Transfer_ParseDeal(pRtu->pValidData, pRtu->datalen, station);
@@ -301,11 +278,6 @@ void StationExecuteFunctioncode(StationPoint* point)
 			StationOperateSwitch(pRtu->pValidData, pRtu->datalen, &(g_StationManger.simulationServer));
 			break;
 		}
-//		case ONLINE_STATUS:
-//		{
-//			StationUpdateOnlineStatusMessage(pRtu->pValidData, pRtu->datalen, point);
-//			break;
-//		}
         default:
         {            
             PrintIDTipsTick(point->id, "Unknown Funcode.");

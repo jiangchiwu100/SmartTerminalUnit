@@ -601,10 +601,14 @@ static inline bool IsRejectInsulate(FaultDealHandle* handle)
 * @param  RemovalHandle* handle 控制句柄
 * @return: true bool
 * @update: [2018-10-12][张宇飞][BRIEF]
+* [2018-10-18][张宇飞][添加拒动检测]
 */
 static bool OpenOperate(FaultDealHandle* handle)
 {   
-	SwitchOperate_StartOpen(0);
+	if (!handle->switchProperty->isRejectAction)
+	{
+			SwitchOperate_StartOpen(0);
+	}
 	return true;
 }
 /**
@@ -612,10 +616,14 @@ static bool OpenOperate(FaultDealHandle* handle)
 * @param  FaultDealHandle* handle
 * @return: true bool
 * @update: [2018-10-12][张宇飞][BRIEF]
+* [2018-10-18][张宇飞][添加拒动检测]
 */
 static bool CloseOperate(FaultDealHandle* handle)
 {	
-	SwitchOperate_StartClose(0);
+	if (!handle->switchProperty->isRejectAction)
+	{
+		SwitchOperate_StartClose(0);
+	}
 	return true;
 }
 
