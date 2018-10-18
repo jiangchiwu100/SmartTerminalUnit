@@ -15,7 +15,7 @@
 
 static struct rt_thread distribution_thread;
 static struct rt_thread connected_thread;
-static struct rt_thread monitor_thread;
+
 
 
 static void DistributionLogicalApp(StationManger* manager);
@@ -26,8 +26,6 @@ ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_distribution_thread_stack[THREAD_DISTRIBUTION_STACK_SIZE];//线程栈
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t rt_connected_thread_stack[THREAD_CONNECT_STACK_SIZE];//线程栈
-ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t rt_monitor_thread_stack[1024];//线程栈
 
 
 
@@ -55,7 +53,7 @@ static void DistributionLogicalApp(StationManger* manager)
     StationPoint* station;
     FaultDealHandle* handle;
     ErrorCode code;
-    static uint32_t currentTime = 0;
+    
 
 
     if (manager == NULL)
@@ -84,12 +82,6 @@ static void DistributionLogicalApp(StationManger* manager)
             station = (StationPoint*)(element->data);
             if (station != NULL)
             {
-//            	if (SystemIsOverTime(currentTime, MONITOR_CHECK_TIME))
-//				{
-//					SationMonitorGainCheck(station);
-//					currentTime = rt_tick_get();
-//				}
-
 
                 handle = &(((StationPoint*)(element->data))->removalHandle);
                 code = RemovalHandleCheckself(handle);
@@ -97,17 +89,21 @@ static void DistributionLogicalApp(StationManger* manager)
                 {
                     FaultDealStateCenter(handle); 
 
-					if ( (!handle->isRun) && handle->switchProperty->isChanged)
-					{
-						handle->switchProperty->isChanged = false;
-						handle->TransmitMessage(handle, STATUS_MESSAGE);
-						//handle->TransmitMessage(handle, REMOVAL_MESSAGE);
-						//handle->TransmitMessage(handle, INSULATE_MESSAGE);
-					}
+//					if ((!handle->isRun) && handle->switchProperty->isChanged)
+//					{
+//						handle->switchProperty->isChanged = false;
+//						handle->TransmitMessage(handle, STATUS_MESSAGE);
+//					}
                 }  
 				else
 				{		
 					handle->isCheckPass = false;				
+				}
+                //状态变化时更新状态
+                if (handle->switchProperty->isChanged)
+				{
+					handle->switchProperty->isChanged = false;
+					handle->TransmitMessage(handle, STATUS_MESSAGE);
 				}
 
             }
@@ -137,18 +133,11 @@ static void DistributionLogicalApp(StationManger* manager)
 static void SationMonitorGainCheck(StationPoint* station)
 {
     extern void MaintaceServer(void);
-
-	//ConnectedSwitchJuadgeAPP(station);//获取所有开关
 	ConnectedSwitch_SelfCheck_APP(station);
 	if (station->topology.areaID.isGainComplted)
 	{
         UpdateDistributionPowerArea(&(station->topology));
-		//GetNeighboorRunState(station); //获取邻居
 	}
-	//周期性发送状态信息
-	//StationSendStatusMessage(station);
-	//CheckMessageValid(station);
-
 }
 /**
 * @brief :联络功能判别
@@ -197,7 +186,6 @@ static void connected_thread_entry(void* parameter)
 
 		}
 		FOR_EARCH_LIST_END();
-      //  MaintaceServer();
 		rt_thread_delay(MONITOR_CHECK_TIME);
 	} while (1);
 
@@ -206,67 +194,7 @@ static void connected_thread_entry(void* parameter)
 
 
 
-/**
-* @brief : 状态变化更新任务
-* @param  :StationManger* manager
-* @return:
-* @update: [2018-07-13][张宇飞][]
-*/
-void  MonitorApp(StationManger* manager)
-{
-	ListElment* element;
-	ListDouble* list;
-	uint8_t size;
-	StationPoint* station;
 
-	if (manager == NULL)
-	{
-		rt_kprintf("MonitorApp ERROR :manager = NULL.\n");
-	}
-	StationServer* server = &(manager->stationServer);
-	if (server == NULL)
-	{
-		rt_kprintf("MonitorApp ERROR :server = NULL.\n");
-	}
-	list = &(server->stationPointList);
-
-	uint8_t cn = 0;
-	const uint8_t total = 30;
-	do
-	{
-		element = list_head(list);
-		size = list_size(list);
-		for (uint8_t i = 0; i < size; i++)
-		{
-			station = (StationPoint*)(element->data);
-			if (station != NULL)
-			{
-				SwitchProperty* switchNode = station->topology.localSwitch;
-				if ((!station->removalHandle.isRun) && (switchNode->isChanged || (cn == total)))
-				{
-					switchNode->isChanged = false;
-					DatagramTransferNode* pTransferNode = &(station->transferNode);
-					TransmitMessageExtern(switchNode, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);
-					TransmitMessageExtern(switchNode, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
-					TransmitMessageExtern(switchNode, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
-				}
-			}
-			else
-			{
-				rt_kprintf("StationPoint* station = NULL.\n");
-				break;
-			}
-			element = element->next;
-		}
-
-		if (cn++ > total)
-		{
-			cn = 0;
-		}
-		rt_thread_delay(10);
-	} while (1);
-
-}
 /**
 * @brief :挂起 判断线程，并置闭锁位
 * @param

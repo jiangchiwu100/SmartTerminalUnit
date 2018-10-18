@@ -461,24 +461,6 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
         StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
         EnterResetAndUpdate(point->topology.localSwitch, point);
         PrintIDTipsTick(station->id, "CONTROL_REMOVAL_RESET");
-        //        if (point != NULL)
-//        {
-//            DatagramTransferNode* pTransferNode = &(point->transferNode);
-//            //仅在此处修改更新标志
-//            point->isAllowUpdate = false;
-//            point->removalHandle.Reset(&(point->removalHandle));
-//            TransmitMessageExtern(point->topology.localSwitch, pTransferNode, STATUS_MESSAGE, BROADCAST_ADDRESS);           
-//            point->isAllowUpdate = true;
-//			//发送复归后的信息
-//			
-//			
-//			//TransmitMessageExtern(point->topology.localSwitch, pTransferNode, REMOVAL_MESSAGE, BROADCAST_ADDRESS);
-//			//TransmitMessageExtern(point->topology.localSwitch, pTransferNode, INSULATE_MESSAGE, BROADCAST_ADDRESS);
-//            PrintIDTipsTick(station->id, "CONTROL_REMOVAL_RESET");
-//            
-//            
-//            
-//        }
         break;
     }
 	case CONTROL_SET_REJECT_ACTION:
@@ -497,13 +479,16 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
 	}
 	case CONTROL_CANCER_OVERCURRENT:
 	{
-		station->faultState = FAULT_NO;
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		point->topology.localSwitch->fault.loss = FAULT_NO;
+		point->topology.localSwitch->fault.state = FAULT_NO;
         PrintIDTipsTick(station->id, "cancer fault.");		
 		break;
 	}
 	case  CONTROL_POWER_INCOME_LOSS:
 	{
-		station->faultState = FAULT_INCOME_LOSS;
+		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
+		point->topology.localSwitch->fault.loss = FAULT_INCOME_LOSS;
         PrintIDTipsTick(station->id, "set power income loss fault.");	
 		
 		break;
@@ -523,35 +508,15 @@ ErrorCode SimulationSwitchControlOperate(SimulationStation* station, SwitchContr
         EnterResetAndUpdate(point->topology.localSwitch, point);
         PrintIDTipsTick(station->id, "distribution into.");
         
-//        if (point)
-//		{
-//			point->topology.localSwitch->isRunDistribution = true;
-//			PrintIDTipsTick(station->id, "distribution into.\n");
-//		}
-//		else
-//		{
-//			PrintIDTipsTick(station->id, "point is null.\n");
-//		}
 		break;
 	}
 	case CONTROL_DSITRIBUTION_EXIT:
 	{
 
-        
         StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
         EnterExitAndUpdate(point->topology.localSwitch, point);
         PrintIDTipsTick(station->id, "distribution exit.");
         
-//		StationPoint* point = g_StationManger.stationServer.FindMemberById(&g_StationManger.stationServer.stationPointList, station->id);
-//		if (point)
-//		{
-//			point->topology.localSwitch->isRunDistribution = false;
-//			PrintIDTipsTick(station->id, "distribution exit.\n");
-//		}
-//		else
-//		{
-//			PrintIDTipsTick(station->id, "point is null.\n");
-//		}
 		break;
 	}
     default:

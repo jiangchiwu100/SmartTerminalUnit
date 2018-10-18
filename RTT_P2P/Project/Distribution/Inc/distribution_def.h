@@ -24,6 +24,7 @@
 typedef struct TagFaultInformation
 {
     FaultState state; //是否有故障
+    FaultState loss; //是否有故障
     bool isFaultEdgeConnected;           //故障区域边缘，且为联络开关路径上
 }FaultInformation;
 /**

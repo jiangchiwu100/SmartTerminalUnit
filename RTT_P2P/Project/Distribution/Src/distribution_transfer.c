@@ -42,7 +42,6 @@ StateResult TransferPowerSupply_Master(FaultDealHandle* handle)
 			snap = stationTopology->snapshoot;
 			Listcp = &snap->connectPath;
 		}
-
 	}
 	ErrorCode error;
 	if (handle->nextState != TRANSFER_MASTER)

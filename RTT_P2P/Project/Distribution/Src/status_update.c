@@ -67,11 +67,16 @@ void GooseSubscriberUpdateSwitchStatus(DeviceIndicate* di)
 * @param : DeviceIndicate* di
 * @return: void
 * @update:[2018-08-23][张宇飞][创建]
+*[2018-08-23][张宇飞][添加null判断]
 */
 void GoosePublishSwitchStatus(const SwitchProperty* const sw, DeviceIndicate* di)
 {
     
 	//针对单独绑定
+    if (!sw || !di || !g_ServerModelManager.server)
+    {
+        return;
+    }
     LocalPropertyToDataArribute(sw, di);
     IedServer_lockDataModel(g_ServerModelManager.server );   
     IedServer_forceUpdatePublish_Ex(g_ServerModelManager.server, IED_LD0_GGIO17_Ind8_stVal);

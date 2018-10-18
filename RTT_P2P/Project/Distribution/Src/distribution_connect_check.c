@@ -118,19 +118,21 @@ static bool StationJudgeConnectSwitch(StationTopology* station)
 	MEMSET(pNode, 0, sizeof(ConnectSwitch));
 
 	FOR_EARCH_LIST_START(listGloabal)
-	sourceSwitch = GET_SWITCH_ELEMENT(m_foreach);
+	{
+		sourceSwitch = GET_SWITCH_ELEMENT(m_foreach);
 
-	if (sourceSwitch == station->localSwitch)
-	{
-		continue;
-	}
-	result = JudgeConnectSwitch(sourceSwitch, listGloabal, pNode);
-	if (result)
-	{
-		//若为联络开关则直接跳出，则判断本开关是否在路径上
-		if(pNode->isConnect)
+		if (sourceSwitch == station->localSwitch)
 		{
-			CheckSetConnectPath(sourceSwitch->id,  pNode, station);
+			continue;
+		}
+		result = JudgeConnectSwitch(sourceSwitch, listGloabal, pNode);
+		if (result)
+		{
+			//若为联络开关则直接跳出，则判断本开关是否在路径上
+			if(pNode->isConnect)
+			{
+				CheckSetConnectPath(sourceSwitch->id,  pNode, station);
+			}
 		}
 	}
 	FOR_EARCH_LIST_END();

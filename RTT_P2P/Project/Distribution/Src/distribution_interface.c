@@ -684,7 +684,7 @@ static bool IsPermitInTransferPowerMode(FaultDealHandle* handle)
 static inline bool IsPowerIncomeLossFault(FaultDealHandle* handle)
 {
 	return (handle->switchProperty->type == SWITCH_TYPE_BREAKER_POWER) 
-		&& (handle->switchProperty->fault.state == FAULT_INCOME_LOSS);
+		&& (handle->switchProperty->fault.loss == FAULT_INCOME_LOSS);
 }
 
 /**
