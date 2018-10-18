@@ -162,7 +162,7 @@ bool System_getConfigFile(uint8_t id)
     sprintf(name, "%s.bk", pFull);
     unlink(name);
     rename(pFull, name);    
-    printf("tftp_get %s\n", pName);       
+    printf("tftp_get %s\n", pName);
     tftp_get("192.168.10.111", "//sojo", pName); 
     
     int re = stat(pFull, &st);
@@ -170,8 +170,7 @@ bool System_getConfigFile(uint8_t id)
     {
         printf("tftp_get failure.%s\n", pName);
         unlink(pFull);
-        rename(name, pFull);  //恢复  
-        
+        rename(name, pFull);  //恢复
     }
     else
     {

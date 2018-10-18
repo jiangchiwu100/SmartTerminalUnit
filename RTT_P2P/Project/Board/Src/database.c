@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      databse.c
   * @brief:     
@@ -447,11 +447,12 @@ static bool CheckIp(uint8_t ip)
 }
 
 /**
-* @brief :配置网络信息的默认值
-* @param : StationMessage* pMessage
-* @return: bool
-* @update: [2018-08-29][张宇飞][创建]
-*/
+ * @brief :配置网络信息的默认值
+ * @param : StationMessage* pMessage
+ * @return: bool
+ * @update: [2018-08-29][张宇飞][创建]
+ *			[2018-10-10][李  磊][改为w5500的ip地址增加0x80,dp83848的从1开始]
+ */
 static bool ConfigNetMessage(StationMessage* pMessage)
 {
 
@@ -466,28 +467,28 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
 	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node.id, 1) ;
 	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node.id, 0) ;
-    if (g_EthDP83848.ip[3] < 0x80)
-    {
-        g_EthDP83848.ip[3] += 0x80;
-    }
-    else
-    {
-        perror("Error:g_EthDP83848.ip[3] < 0x80, ip:0x%x\n", g_EthDP83848.ip[3]);
-        return false;
-    }
-	for (uint8_t i = 0; i < 4; i++)
-	{
-		if(!CheckIp(g_EthDP83848.ip[i]))
-		{
-			perror("Error:g_EthDP83848.ip, ip:0x%x\n", g_EthDP83848.ip[i]);
-			return false;
-		}
-	}
+    
 	g_EthW5500.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
 	g_EthW5500.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
 	g_EthW5500.ip[2] =  GET_N_BYTE( pMessage->node.id, 1);
 	g_EthW5500.ip[3] =  GET_N_BYTE( pMessage->node.id, 0);
-
+	if (g_EthW5500.ip[3] < 0x80)
+    {
+        g_EthW5500.ip[3] += 0x80;
+    }
+    else
+    {
+        perror("Error:g_EthW5500.ip[3] < 0x80, ip:0x%x\n", g_EthW5500.ip[3]);
+        return false;
+    }
+	for (uint8_t i = 0; i < 4; i++)
+	{
+		if(!CheckIp(g_EthW5500.ip[i]))
+		{
+			perror("Error:g_EthW5500.ip, ip:0x%x\n", g_EthW5500.ip[i]);
+			return false;
+		}
+	}
 
 	g_EthDP83848.mac[0] = 0x01;
 	g_EthDP83848.mac[1] = 0x80;
@@ -508,10 +509,10 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 	g_EthDP83848.netmask[1] = 255;
 	g_EthDP83848.netmask[2] = 255;
 	g_EthDP83848.netmask[3] = 0;
-	g_EthDP83848.gateway[0] = 192;
-	g_EthDP83848.gateway[1] = 168;
-	g_EthDP83848.gateway[2] = 11;
-	g_EthDP83848.gateway[3] = 254;
+	g_EthDP83848.gateway[0] = 0;
+	g_EthDP83848.gateway[1] = 0;
+	g_EthDP83848.gateway[2] = 0;
+	g_EthDP83848.gateway[3] = 0;
 
 
 	g_EthDP83848.dns[0] = 114;
@@ -528,10 +529,10 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 	g_EthW5500.netmask[1] = 255;
 	g_EthW5500.netmask[2] = 255;
 	g_EthW5500.netmask[3] = 0;
-	g_EthW5500.gateway[0] = 192;
-	g_EthW5500.gateway[1] = 168;
-	g_EthW5500.gateway[2] = 10;
-	g_EthW5500.gateway[3] = 254;
+	g_EthW5500.gateway[0] = 0;
+	g_EthW5500.gateway[1] = 0;
+	g_EthW5500.gateway[2] = 0;
+	g_EthW5500.gateway[3] = 0;
 	g_EthW5500.dns[0] = 114;
 	g_EthW5500.dns[1] = 114;
 	g_EthW5500.dns[2] = 114;

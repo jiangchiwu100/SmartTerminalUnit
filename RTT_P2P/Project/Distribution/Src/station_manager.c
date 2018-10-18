@@ -54,7 +54,7 @@ static void MaintaceInit(void)
 * @update: [2018-07-24][张宇飞][创建]
 */
 void MantaiceFrameDeal(uint8_t* pData, uint8_t len)
-{
+      {
 
     PointUint8 packet;
     ErrorCode error;

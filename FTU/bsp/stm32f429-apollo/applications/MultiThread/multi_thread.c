@@ -393,13 +393,14 @@ static void rt_watch_thread_entry(void *param)
   * @param : none
   * @return: none
   * @updata: [2017-12-07][Lexun][make the code cleanup]
+  *			 [2018-10-15][李磊][将file_operate_Init函数转移到iec61850_thread_entry函数中]
   */  
 #if RT_USING_FTUIDLE
 static void rt_ftuidle_thread_entry(void *param)
 {   
 	static uint8_t s_run_state = 0;
 
-    file_operate_Init();//转移到原始初始化
+//    file_operate_Init();//转移到原始初始化
     
     for (;;)
     {      

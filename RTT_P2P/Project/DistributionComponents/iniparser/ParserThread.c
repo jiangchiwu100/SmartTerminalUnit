@@ -5,7 +5,7 @@
  * @company SOJO
  * @date 2018.08.27
  *
- * @author Lee
+ * @author Lei
  * @version ver 1.0
  **/
 
@@ -17,7 +17,7 @@
 #include "rtdef.h"
 #include "gooseparser.h"
 #include "ParserThread.h"
-//#include ".\MultiThread\multi_thread.h"
+
 
 
 /*--------------------------------------------------------------------------*/
@@ -32,14 +32,14 @@ static uint8_t *rt_thread_iniparser_stack;
 #endif /* RT_USING_STATIC_THREAD */
 
 const char* g_GoosePathName = "//sojo//stu-goose.txt";
-//extern void list_mem(void);
+
 
 
 /**
   * @brief : iniparser thread entry
   * @param : [param] the parameter.
   * @return: none
-  * @updata: [2018-08-25][Lee][newly]
+  * @updata: [2018-08-25][Lei][newly]
   */
 #if RT_USING_INIPARSER
 static void rt_iniparser_thread_entry(void *param)
@@ -50,19 +50,17 @@ static void rt_iniparser_thread_entry(void *param)
     GooseRxMessage gooseRxMessage;
 
 	printf("rt_iniparser_thread_entry start\r\n");
-	//list_mem();
+
 	rt_thread_delay(5000);
-	//for(uint8_t i=0; i<3; i++)
-	{
-		printf("%d:\r\n", 0);
-		//list_mem();
-		GooseIniParser((uint8_t*)g_GoosePathName, &gooseTxMessage, &gooseRxMessage);
-		PrintGooseTxRxMessage(&gooseTxMessage, &gooseRxMessage);
-		FreeGooseMessageMem(&gooseTxMessage, &gooseRxMessage);
-		//list_mem();
-		printf("\r\n");
-		//rt_thread_delay(2000);
-	}
+	
+	printf("%d:\r\n", 0);
+
+	GooseIniParser((uint8_t*)g_GoosePathName, &gooseTxMessage, &gooseRxMessage);
+	PrintGooseTxRxMessage(&gooseTxMessage, &gooseRxMessage);
+	FreeGooseMessageMem(&gooseTxMessage, &gooseRxMessage);
+
+	printf("\r\n");
+	
 
 	
 }
@@ -107,19 +105,6 @@ static void iniparser_thread_start(void *param)
 uint8_t rt_goose_parser_thread_start(void *param)
 {
 	#if RT_USING_INIPARSER
-//		rt_thread_iniparser = rt_malloc(RT_THREAD_PER_STRUCT_SIZE);
-
-//		if (rt_thread_iniparser == NULL)
-//		{
-//			THREAD_PRINTF("rt_thread_iniparser malloc failed"); 
-//		}
-
-//		rt_thread_iniparser_stack = rt_malloc(INIPARSER_THREAD_STACK_SIZE);
-
-//		if (rt_thread_iniparser_stack == NULL)
-//		{
-//			THREAD_PRINTF("rt_thread_iniparser_stack malloc failed");
-//		}
 		iniparser_thread_start(RT_NULL);
 	#endif /* RT_USING_INIPARSER */
 

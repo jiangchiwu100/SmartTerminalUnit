@@ -48,7 +48,7 @@ void tftp_get(const char* host, const char* dir, const char* filename)
     tftp_addr.sin_family = AF_INET;
     tftp_addr.sin_port = htons(TFTP_PORT);
     
-    sock_fd = lwip_socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    sock_fd = lwip_socket(AF_INET,SOCK_DGRAM, IPPROTO_UDP);
     if (sock_fd < 0)
 	{
 	    close(fd);

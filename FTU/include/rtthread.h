@@ -27,6 +27,7 @@
  * 2010-04-11     yi.qiu       add module feature
  * 2013-06-24     Bernard      add rt_kprintf re-define when not use RT_USING_CONSOLE.
  * 2016-08-09     ArdaFu       add new thread and interrupt hook.
+ * 2018-09-14	  Lei		   将之前的rt_kprintf函数改名为rt_kprintf_origin,大约第511行和514行
  */
 
 #ifndef __RT_THREAD_H__
@@ -507,10 +508,10 @@ void rt_components_board_init(void);
  * general kernel service
  */
 #ifndef RT_USING_CONSOLE
-#define rt_kprintf(...)
+#define rt_kprintf_origin(...)
 #define rt_kputs(str)
 #else
-void rt_kprintf(const char *fmt, ...);
+void rt_kprintf_origin(const char *fmt, ...);
 void rt_kputs(const char *str);
 #endif
 rt_int32_t rt_vsprintf(char *dest, const char *format, va_list arg_ptr);

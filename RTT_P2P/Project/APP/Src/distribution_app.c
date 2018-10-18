@@ -19,7 +19,7 @@
 extern  void DistributionLogicalAppInit(void);
 extern  void DistributionMutalAppInit(void);
 extern  void LogicalSimulationAppInit(void);
-extern  void UdpServerAppInit(void);
+
 
 /**
 * @brief  : 分布式数据部分初始化
@@ -47,14 +47,16 @@ void DistributionAppInit(void)
 
 	 
     DistributionDatabaseInit();
-   
+
     EmmedNetInit();
     
     
     rt_kprintf("\n\n\n DATA:%s, %s, %s, %d\n\n ", __DATE__, __TIME__, __FUNCTION__, __LINE__);
    
-    UdpServerAppInit();
+    // UdpServerAppInit();
 	// TestListPrevCase();
+    DP83848_MaintenanceServiceInit();
+
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      
 	if (error)
 	{

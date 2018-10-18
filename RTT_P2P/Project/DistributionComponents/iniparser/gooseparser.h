@@ -5,7 +5,7 @@
  * @company SOJO
  * @date 2018.08.24
  *
- * @author Lee
+ * @author Lei
  * @version ver 1.0
  **/
 

@@ -31,6 +31,10 @@
 #include "status_update.h"
 //#define MODEL_CONFIG_PATH "H:\\CodeResourceLib\\Net\\IEC61850\\libIEC61850\\libiec61850-1.2.2-V2\\vs-2015\\examples\\server_example_config_file\\Debug\\stu_v0.01.cfg"
 
+/*测完发布订阅，下面的两个头文件包含以及TestIO_Init函数和Iec61850Server函数中给PF10，PH3的操作就可以删去了*/
+#include "drv_gpio.h"
+#include "stm32f429xx.h"
+
 
 extern void UpdateLocalPublicRef(ServerModelManager* manager);
 
@@ -44,8 +48,26 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscrib
 ServerModelManager g_ServerModelManager;
 
 
+/**
+ * 用于测试发布订阅时间的IO口的初始化，之后测完就可以删除了
+ */
+static void TestIO_Init(void)
+{
+	GPIO_InitTypeDef GPIO_Initure;
+	__HAL_RCC_GPIOF_CLK_ENABLE(); 					//开启 GPIOF 时钟
+	GPIO_Initure.Pin = GPIO_PIN_10; 				//PF10
+	GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP; 		//推挽输出
+	GPIO_Initure.Pull = GPIO_PULLUP; 				//上拉
+	GPIO_Initure.Speed = GPIO_SPEED_HIGH; 			//高速
+	HAL_GPIO_Init(GPIOF, &GPIO_Initure);
 
-
+	__HAL_RCC_GPIOH_CLK_ENABLE(); 					//开启 GPIOH 时钟
+	GPIO_Initure.Pin = GPIO_PIN_3; 					//PH3
+	GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP; 		//推挽输出
+	GPIO_Initure.Pull = GPIO_PULLUP; 				//上拉
+	GPIO_Initure.Speed = GPIO_SPEED_HIGH; 			//高速
+	HAL_GPIO_Init(GPIOH, &GPIO_Initure);
+}
 
 
 
@@ -68,7 +90,12 @@ int Iec61850Server(void)
 {
     int tcpPort = 102;
     uint8_t id;
-          
+	// TestIO_Init();
+	// HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_SET);
+	// HAL_GPIO_WritePin(GPIOF, GPIO_PIN_10, GPIO_PIN_RESET);
+	// HAL_GPIO_WritePin(GPIOH, GPIO_PIN_3, GPIO_PIN_SET);
+	// HAL_GPIO_WritePin(GPIOH, GPIO_PIN_3, GPIO_PIN_RESET);
+
     if (g_StationManger.pWorkPoint)
     {
         id = (uint8_t)(g_StationManger.pWorkPoint->id);
@@ -76,11 +103,11 @@ int Iec61850Server(void)
     }
     else
     {
-         perror("g_StationManger.pWorkPoint isNull\n");
-         return -1;
+        perror("g_StationManger.pWorkPoint is Null\n");
+        return -1;
     }
-    
-    g_ServerModelManager.model = CreateIedModeFromConfig( (char*)System_getConfigFullName(id));
+
+	g_ServerModelManager.model = CreateIedModeFromConfig( (char*)System_getConfigFullName(id));
     if (!g_ServerModelManager.model)
     {
         printf("CreateIedModeFromConfig is null\n");
@@ -121,9 +148,9 @@ int Iec61850Server(void)
 	//DataSet* dsGoose = IedModel_lookupDataSet(g_ServerModelManager.model, "STU1LD0/LLN0$dsGoose");
 
     //首先进行绑定更新
-    LocalPropertyToDataArribute(g_StationManger.pWorkPoint->topology.localSwitch, 
-    g_StationManger.pWorkPoint->topology.localSwitch->pDeviceIndicate);
-  
+    LocalPropertyToDataArribute(g_StationManger.pWorkPoint->topology.localSwitch,
+				g_StationManger.pWorkPoint->topology.localSwitch->pDeviceIndicate);
+
 	/* Start GOOSE publishing */
 	IedServer_enableGoosePublishing(g_ServerModelManager.server );
     
@@ -197,8 +224,7 @@ gooseListenerRemote(GooseSubscriber subscriber, void* parameter)
 
 	MmsValue* values = GooseSubscriber_getDataSetValues(subscriber);
 
-
-	MmsDatasetToDataAtrributeSet(values, di);
+	//MmsDatasetToDataAtrributeSet(values, di);
     GooseCheckAdd(subscriber, &(di->ringCheck));
 }
 
@@ -219,9 +245,9 @@ void GooseSubscriberInstanceStart_remote(GooseReceiver receiver, DatasetSubscrib
 		subscriber = GooseSubscriber_create(daSb->indicateCollect[i].goCbRef, NULL);        
 		GooseSubscriber_setAppId(subscriber, daSb->indicateCollect[i].appId);
 		GooseSubscriber_setListener(subscriber, gooseListenerRemote, (void*)(&(daSb->indicateCollect[i])));
-        GooseReceiver_addSubscriber(receiver, subscriber);
-        RingQueueInit(&(daSb->indicateCollect[i].ringCheck), 1000);
-        printf("goCbRef:%s, appId, id:0x%x.\n", daSb->indicateCollect[i].goCbRef, daSb->indicateCollect[i].appId);
+		GooseReceiver_addSubscriber(receiver, subscriber);
+		RingQueueInit(&(daSb->indicateCollect[i].ringCheck), 1000);
+		printf("goCbRef:%s, appId, id:0x%x.\n", daSb->indicateCollect[i].goCbRef, daSb->indicateCollect[i].appId);
 	}
 
 	GooseReceiver_start(receiver);

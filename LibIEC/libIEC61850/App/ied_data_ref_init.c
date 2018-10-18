@@ -46,8 +46,7 @@ bool LogicalDeviceDataRefInit(IedModel* model)
     return true;
 }
 /**
-
-  *@brief :初始化引用参数
+  * @brief :初始化引用参数
   * @param  void
   * @return: 初始化成功是否成功
   * @update: [2018-08-15][创建]

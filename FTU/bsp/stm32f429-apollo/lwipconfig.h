@@ -14,8 +14,8 @@
 
 #define RT_LWIP_ETH_NAME                                               "e0"
 //#define RT_LWIP_DHCP
-#define IP_SOF_BROADCAST                                               1
-#define IP_SOF_BROADCAST_RECV                                          1
+#define IP_SOF_BROADCAST                                               0
+#define IP_SOF_BROADCAST_RECV                                          0
 
 /* LWIP_USING_DHCPD is not set */
 /* Static IPv4 Address */
@@ -30,7 +30,7 @@
 /* RT_LWIP_PPPOS is not set */
 #define RT_LWIP_PBUF_NUM                                               8
 #define RT_LWIP_RAW_PCB_NUM                                            4
-#define RT_LWIP_UDP_PCB_NUM                                            4
+#define RT_LWIP_UDP_PCB_NUM                                            8
 #define RT_LWIP_TCP_PCB_NUM                                            4
 #define RT_LWIP_TCP_SEG_NUM                                            40
 #define RT_LWIP_TCP_SND_BUF                                            8196
