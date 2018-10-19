@@ -1,4 +1,4 @@
-﻿#include "ethernet_hook.h"
+#include "ethernet_hook.h"
 
 #include "distribution_enum.h"
 #include "common_def.h"
@@ -28,8 +28,7 @@
 
 
 #define MAX_RECIVE_COUNT 1518
-//static uint8_t EthernetReciveBuffer[MAX_RECIVE_COUNT]; 
-//static uint16_t EthernetReciveCount;
+
 
 /**
 *以太网发送使用的互斥信号量
@@ -53,6 +52,7 @@ static  rt_mailbox_t MacRawReciveMb;
 
 static PointUint8*  MakePacketMacRawMessage(uint8_t *pData, uint16_t len);
 
+static bool IsEnableHook; //使能hook
 
 
 /**
@@ -173,6 +173,11 @@ bool EthernetInputPbuf(struct pbuf *p, uint16_t len)
 bool EthernetInputPool(uint8_t* pData, uint16_t len)
 {
     uint16_t bufPos = 0;
+    if (!IsEnableHook)
+    {
+        return false;
+    }
+
     if (pData == NULL)
     {
         return false;
@@ -367,11 +372,6 @@ void EhernetOuputMutex_OffLock(void)
 *[2018-08-06][张宇飞][添加接收邮箱]
 *[2018-08-16][张宇飞][修改邮箱容量100->500]
 */
-
-PointUint8 point;
-uint8_t tx[64];
-uint8_t rx[64];
-
 void EthernetHookInit(void)
 {
 
@@ -401,25 +401,23 @@ void EthernetHookInit(void)
 	}
     RingPool = RingQueuePool_Create(500, 1524);
     
-//    for(uint8_t i = 0; i < 64; i++)
-//    {
-//        tx[i] = i;
-//        rx[i] = 0;
-//    }
-//    for(uint8_t i = 0; i < 64; i++)
-//    {
-//        tx[0] = 0;
-//        MEMSET(rx, 0, 64);
-//        point.len =64;
-//        point.pData =rx;
-//        bool reslut = RingQueuePool_Write(RingPool, tx, 64);
-//        reslut = RingQueuePool_Read(RingPool, &point);
-//    }
-    
     
     if (!RingPool)
     {
 
     	perror("RingQueuePool_Init failure\n");
     }
+    
+    IsEnableHook = false;
 }
+/**
+* @brief :  EthernetHook使能
+* @param : void
+* @return: void
+* @update: [2018-10-19][张宇飞][]
+*/
+void EthernetHookEnable(void)
+{
+    IsEnableHook = true;
+}
+

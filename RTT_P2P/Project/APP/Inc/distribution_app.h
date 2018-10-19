@@ -18,8 +18,9 @@ extern "C" {
 
     
 extern void StartSinglePointNormalThread(void);
-extern  void DistributionAppInit(void);
+extern void DistributionAppInit(void);
 extern void DistributionDatabaseInit(void);
+extern void WaitEnterCodition(void);
 #ifdef	__cplusplus
 }
 #endif

@@ -14,7 +14,7 @@
 #include "distribution_config.h"
 #include "database.h"
 #include "w5500_server.h"
-
+#include "NetFinshThread.h"
 
 extern  void DistributionLogicalAppInit(void);
 extern  void DistributionMutalAppInit(void);
@@ -38,6 +38,56 @@ void DistributionDatabaseInit(void)
 }
 
 /**
+  * @brief :等待进入条件满足
+  * @param : void
+  * @return: 0--
+  * @update: [2018-08-15][张宇飞][创建]
+  */
+void WaitEnterCodition(void)
+{
+	//等待工作点初始化
+    extern StationManger g_StationManger;
+	do
+	{
+		if (g_StationManger.pWorkPoint)
+		{
+			break;
+		}
+		rt_thread_delay(5000);
+		printf("61850 waitting: g_StationManger.pWorkPoint is null\r\n");
+	}
+	while(true);
+
+	do
+	{
+		if (g_StationManger.pWorkPoint->topology.areaID.isGainComplted)
+		{
+			break;
+		}
+		rt_thread_delay(3000);
+		printf("61850 waitting: isGainComplted false\r\n");
+	}
+	while(true);
+}
+
+/**
+* @brief  : 开始其它任务
+* @param  : 队列句柄
+* @param  ：RingQueue* ring 环形队列
+* @param  ：PointUint8* pPacket
+* @return: ErrorCode
+* @update: [2018-07-23][张宇飞][]
+*/
+void StartSinglePointNormalThread(void)
+{
+   // LogicalSimulationAppInit();
+	
+	DistributionLogicalAppInit();
+}
+
+
+
+/**
 * @brief  : 分布式初始化
 * @param  : void
 * @update: [2018-07-][张宇飞][]
@@ -47,7 +97,6 @@ void DistributionAppInit(void)
 
 	 
     DistributionDatabaseInit();
-
     EmmedNetInit();
     
     
@@ -55,8 +104,8 @@ void DistributionAppInit(void)
    
     // UdpServerAppInit();
 	// TestListPrevCase();
-    DP83848_MaintenanceServiceInit();
-
+    DP83848_MaintenanceServiceInit(NULL);
+    rt_UDP_CommunicateServe_thread_start();
 	ErrorCode error = RouterDatagram_NewTransferNode(LOCAL_ADDRESS, 100, &g_VirtualNode);      
 	if (error)
 	{
@@ -83,17 +132,3 @@ void DistributionAppInit(void)
    
 }
 
-/**
-* @brief  : 开始其它任务
-* @param  : 队列句柄
-* @param  ：RingQueue* ring 环形队列
-* @param  ：PointUint8* pPacket
-* @return: ErrorCode
-* @update: [2018-07-23][张宇飞][]
-*/
-void StartSinglePointNormalThread(void)
-{
-   // LogicalSimulationAppInit();
-	
-	DistributionLogicalAppInit();
-}

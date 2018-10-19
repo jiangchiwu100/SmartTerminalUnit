@@ -1977,6 +1977,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Protocol/NetFinsh</GroupName>
+          <Files>
+            <File>
+              <FileName>NetFinshApp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\NetFinsh\NetFinshApp.c</FilePath>
+            </File>
+            <File>
+              <FileName>NetFinshThread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\NetFinsh\NetFinshThread.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Distribution/Board</GroupName>
           <Files>
             <File>
@@ -3123,21 +3138,6 @@
               <FileName>ParserThread.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\iniparser\ParserThread.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>NetFinsh</GroupName>
-          <Files>
-            <File>
-              <FileName>NetFinshApp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\NetFinsh\NetFinshApp.c</FilePath>
-            </File>
-            <File>
-              <FileName>NetFinshThread.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\NetFinsh\NetFinshThread.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5114,6 +5114,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Protocol/NetFinsh</GroupName>
+          <Files>
+            <File>
+              <FileName>NetFinshApp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\NetFinsh\NetFinshApp.c</FilePath>
+            </File>
+            <File>
+              <FileName>NetFinshThread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\components\NetFinsh\NetFinshThread.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Distribution/Board</GroupName>
           <Files>
             <File>
@@ -6260,21 +6275,6 @@
               <FileName>ParserThread.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\RTT_P2P\Project\DistributionComponents\iniparser\ParserThread.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>NetFinsh</GroupName>
-          <Files>
-            <File>
-              <FileName>NetFinshApp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\NetFinsh\NetFinshApp.c</FilePath>
-            </File>
-            <File>
-              <FileName>NetFinshThread.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\components\NetFinsh\NetFinshThread.c</FilePath>
             </File>
           </Files>
         </Group>

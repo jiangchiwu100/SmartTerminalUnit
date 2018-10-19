@@ -1,4 +1,4 @@
-﻿/**
+/**
   *             Copyright (C) SOJO Electric CO., Ltd. 2017-2018. All right reserved.
   * @file:      UDP_FinshApp.h
   * @brief:     使用网络接口，UDP实现finsh，上位机下发操作命令，下载配置文件的相关应用函数

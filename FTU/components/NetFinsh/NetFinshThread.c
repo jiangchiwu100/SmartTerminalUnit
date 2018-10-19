@@ -23,8 +23,8 @@
 #include "lwip/ip.h"
 #include <lwip/netdb.h>
 
-
-
+#include "rtthread.h"
+#include "extern_interface.h"
 
 
 
@@ -332,7 +332,7 @@ uint8_t rt_UDP_CommunicateServe_thread_start(void)
 
 	return RT_EOK;
 }
-INIT_APP_EXPORT(rt_UDP_CommunicateServe_thread_start);
+//INIT_APP_EXPORT(rt_UDP_CommunicateServe_thread_start);
 #endif
 
 

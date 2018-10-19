@@ -511,6 +511,7 @@ void rt_components_board_init(void);
 #define rt_kprintf_origin(...)
 #define rt_kputs(str)
 #else
+void rt_kprintf(const char *fmt, ...);
 void rt_kprintf_origin(const char *fmt, ...);
 void rt_kputs(const char *str);
 #endif

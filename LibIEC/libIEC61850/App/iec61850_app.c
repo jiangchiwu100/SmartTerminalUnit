@@ -13,49 +13,35 @@
 
 #include "distribution_app.h"
 #include "file_operate.h"
-
+#include "distribution_config.h"
+#include "rthw.h"
 
 static rt_thread_t iec61850_thread;//61850线程
+static struct exception_stack_frame *exception_stack;
 
-
-
-
-
-
-
-
-static void iec61850App(void);
+rt_err_t exception_handle(void *context)
+{
+    exception_stack = (struct exception_stack_frame *)context;
+    while(true);
+    return RT_EOK;
+}
 
 
 static void iec61850_thread_entry(void* parameter)
 {    
 //	rt_kprintf("(thread iec61850App start)");
+    
+    rt_hw_exception_install(exception_handle);
+    
+	rt_thread_delay(1000);
 	file_operate_Init();
 	rt_thread_delay(1000);
 	DistributionAppInit();
-	rt_thread_delay(1000);
-//    subscriber_example();
+	WaitEnterCodition();
 	Iec61850Server();
-    //TestGooseBeat();
-   
 }
   
 
-
-
-
-/**
-  * @brief :iec61850App
-  * @param  Svoid
-  * @return: 0--
-  * @update: [2018-08-13][创建]
-  */
-static void iec61850App(void)
-{    
-
-        
-    
-}
 
 
 
@@ -69,15 +55,14 @@ static void iec61850App(void)
   */
 void IEC61850AppInit(void)
 {
-
     iec61850_thread = NULL;
     iec61850_thread = rt_thread_create(              
-		"61850",                       
+		THREAD_61850_NAME,                       
         iec61850_thread_entry,           
         RT_NULL,                      
-        1024*10,     		
-		14,                            
-		20);                          
+        THREAD_61850_STACK_SIZE,     		
+		THREAD_61850_PRIORITY,                            
+		THREAD_61850_TIMESLICE);                          
 	if (iec61850_thread)
 	{
 		rt_thread_startup(iec61850_thread);
