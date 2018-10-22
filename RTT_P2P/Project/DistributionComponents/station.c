@@ -463,12 +463,12 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 
 	if (pTopology->localSwitch != NULL)
 	{
-		error = AssignmentStationMessage_SwitchProperty(&(message.node), pTopology->localSwitch);
+		error = AssignmentStationMessage_SwitchProperty(message.node, pTopology->localSwitch);
 		if (error)
 		{
 			return error;
 		}
-		message.has_node = true;
+//		message.has_node = true;
 
 
 		DistributionStation* pDistribution = pTopology->localSwitch->distributionArea;
@@ -496,7 +496,7 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 	}
 	else
 	{
-		message.has_node = false;
+//		message.has_node = false;
 	}
 	
 	error = AssignmentStationMessage_ConnectSwitch(&(message.connect), &(pTopology->connect));
@@ -610,13 +610,14 @@ ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data
 }
 
 /**
-* @brief : 根据已知信息
-* @param  sourceArray    元字节数组
-* @param  startIndex     开始索引
-* @param  topology       拓扑属性
-* @return: 0-正常返回
-* @update: [2018-07-25][张宇飞][BRIEF]
-*/
+ * @brief : 根据已知信息
+ * @param : sourceArray    元字节数组
+ * @param : startIndex     开始索引
+ * @param : topology       拓扑属性
+ * @return: 0-正常返回
+ * @update: [2018-07-25][张宇飞][BRIEF]
+ *			[2018-10-22][李    磊][将之前通过fram中信息只获取自身的拓扑改为获取全部设备的信息]
+ */
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology)
 {
 	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_NULL_PTR, 0);
@@ -625,52 +626,57 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 
 	CHECK_POINT_RETURN_LOG(*topology, NULL, ERROR_MALLOC, 0);
 
-	CHECK_UNEQUAL_RETURN_LOG(pMessage->has_node, true, ERROR_UNFIND, 0);
-	CHECK_UNEQUAL_RETURN_LOG(pMessage->node.has_id, true, ERROR_UNFIND, 0);
+//	CHECK_UNEQUAL_RETURN_LOG(pMessage->has_node, true, ERROR_UNFIND, 0);
+	CHECK_UNEQUAL_RETURN_LOG(pMessage->node->has_id, true, ERROR_UNFIND, 0);
 
-	node_property* pNode = &(pMessage->node);
-	(*topology)->id = pNode->id;
-	CHECK_UNEQUAL_RETURN_LOG(pNode->has_type, true, ERROR_UNFIND, 0);
-	(*topology)->type = (TopologyType)pNode->type;
-	
+	node_property* pNode = pMessage->node;
 
-	(*topology)->switchNum = 1; //TODO： 默认按1个 
-
-	uint8_t switchNum = (*topology)->switchNum;//开关数量
-
-
-	SwitchProperty* switchCollect = (SwitchProperty*)CALLOC(1, sizeof(SwitchProperty) * switchNum);
-
-	if (switchCollect == NULL) //简单的指针检测
+	for( ; pNode != NULL; pNode++)
 	{
-		SafeFree(*topology); //释放内存		
-		return ERROR_MALLOC;
-	}		
+		CHECK_UNEQUAL_RETURN_LOG(pNode->has_id, true, ERROR_UNFIND, 0);
+		(*topology)->id = pNode->id;
+		CHECK_UNEQUAL_RETURN_LOG(pNode->has_type, true, ERROR_UNFIND, 0);
+		(*topology)->type = (TopologyType)pNode->type;
 
-	for (uint8_t i = 0; i < switchNum; i++)
-	{		
-		switchCollect[i].id =  pNode->id;
-		switchCollect[i].type = (SwitchType)pNode->type;
-		CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
-		switchCollect[i].state = (SwitchState)pNode->state;
-		
-		switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
-		switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
-		if (switchCollect[i].neighbourCollect == NULL) //简单的指针检测
+
+		(*topology)->switchNum = 1; //TODO： 默认按1个
+
+		uint8_t switchNum = (*topology)->switchNum;//开关数量
+
+
+		SwitchProperty* switchCollect = (SwitchProperty*)CALLOC(1, sizeof(SwitchProperty) * switchNum);
+
+		if (switchCollect == NULL) //简单的指针检测
 		{
-			//释放内存
-			SafeFree((*topology)->switchCollect);			
-			SafeFree(*topology);			
+			SafeFree(*topology); //释放内存
 			return ERROR_MALLOC;
 		}
-		
-		for (uint8_t k = 0; k < switchCollect[i].neighbourNum; k++)
-		{
-			switchCollect[i].neighbourCollect[k] = pNode->neighbourCollect[k];
-		}
-	}
-	(*topology)->switchCollect = switchCollect;
 
+		for (uint8_t i = 0; i < switchNum; i++)
+		{
+			switchCollect[i].id =  pNode->id;
+			switchCollect[i].type = (SwitchType)pNode->type;
+			CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
+			switchCollect[i].state = (SwitchState)pNode->state;
+
+			switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
+			switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
+			if (switchCollect[i].neighbourCollect == NULL) //简单的指针检测
+			{
+				//释放内存
+				SafeFree((*topology)->switchCollect);
+				SafeFree(*topology);
+				return ERROR_MALLOC;
+			}
+
+			for (uint8_t k = 0; k < switchCollect[i].neighbourNum; k++)
+			{
+				switchCollect[i].neighbourCollect[k] = pNode->neighbourCollect[k];
+			}
+		}
+		(*topology)->switchCollect = switchCollect;
+
+	}
 
 	return ERROR_OK_NULL;
 }

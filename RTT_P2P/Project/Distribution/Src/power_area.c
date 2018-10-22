@@ -564,7 +564,7 @@ ErrorCode SendGetTopologyMessage(uint32_t dest, DatagramTransferNode* pTransferN
 
 /**
 * @brief : 判断邻居是否收集完整，若完整则更新配电区域
-* @param  :StationTopology* topology 拓扑节点
+* @param : StationTopology* topology 拓扑节点
 * @return:
 * @update: [2018-06-22][张宇飞][创建]
 */

@@ -209,22 +209,23 @@ bool StationMessageRead(void)
 
 #include "config.h"
 /**
-* @brief :w5500 配置默认值
-* @param ： const TopologyMessage* topology 拓扑信息
-* @return: bool
-* @update: [2018-07-30][张宇飞][创建]
-*/
+ * @brief :w5500 配置默认值
+ * @param ： const TopologyMessage* topology 拓扑信息
+ * @return: bool
+ * @update: [2018-07-30][张宇飞][创建]
+ *			[2018-10-22][李  磊][由于station.proto文件的修改导致node变为数组，所以之前相应的node.id改为node->id]
+ */
 static void W5500_SetDefaultNetInfo(StationMessage* message,  CONFIG_MSG*  config)
 {
 
     
     
-    if (message->node.id != 0)
+    if (message->node->id != 0)
     {
-        config->lip[0] =  GET_N_BYTE( message->node.id , 3);
-        config->lip[1] =  GET_N_BYTE( message->node.id , 2);
-        config->lip[2] =  GET_N_BYTE( message->node.id , 1);
-        config->lip[3] =  GET_N_BYTE( message->node.id , 0);
+        config->lip[0] =  GET_N_BYTE( message->node->id , 3);
+        config->lip[1] =  GET_N_BYTE( message->node->id , 2);
+        config->lip[2] =  GET_N_BYTE( message->node->id , 1);
+        config->lip[3] =  GET_N_BYTE( message->node->id , 0);
     
     }
     else

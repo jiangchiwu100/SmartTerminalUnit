@@ -251,8 +251,7 @@ void StationExecuteFunctioncode(StationPoint* point)
             break;
         }
         case  NANOPB_TYPE:
-        {		
-            
+        {
 			rt_kprintf("STATION:%X, Code: %X. Tick: %6d\n", station->id, pRtu->funcode, rt_tick_get());
             PrintMemoryUsed();
 			error = ParseNanopb(point, pRtu->address, pRtu->pValidData, pRtu->datalen);

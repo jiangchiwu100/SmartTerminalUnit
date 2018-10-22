@@ -463,15 +463,15 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 		return false;
 	}
 
-	g_EthDP83848.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
-	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
-	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node.id, 1) ;
-	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node.id, 0) ;
+	g_EthDP83848.ip[0] =  GET_N_BYTE( pMessage->node->id, 3);
+	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node->id, 2);
+	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node->id, 1) ;
+	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node->id, 0) ;
     
-	g_EthW5500.ip[0] =  GET_N_BYTE( pMessage->node.id, 3);
-	g_EthW5500.ip[1] =  GET_N_BYTE( pMessage->node.id, 2);
-	g_EthW5500.ip[2] =  GET_N_BYTE( pMessage->node.id, 1);
-	g_EthW5500.ip[3] =  GET_N_BYTE( pMessage->node.id, 0);
+	g_EthW5500.ip[0] =  GET_N_BYTE( pMessage->node->id, 3);
+	g_EthW5500.ip[1] =  GET_N_BYTE( pMessage->node->id, 2);
+	g_EthW5500.ip[2] =  GET_N_BYTE( pMessage->node->id, 1);
+	g_EthW5500.ip[3] =  GET_N_BYTE( pMessage->node->id, 0);
 	if (g_EthW5500.ip[3] < 0x80)
     {
         g_EthW5500.ip[3] += 0x80;

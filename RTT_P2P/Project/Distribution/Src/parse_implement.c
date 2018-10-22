@@ -70,7 +70,7 @@ void StationSetLocalMessage(uint8_t data[], uint8_t len, StationPoint* point)
             }
             else
             {
-                rt_kprintf("Local Topology EOOR: %X:\n", result);
+                rt_kprintf("Local Topology ERROR: %X:\n", result);
             }
         }
         else

@@ -110,7 +110,7 @@ message faultdeal_handle
 message StationMessage {
 	repeated uint32 idCollect = 1;                //异常
 	required bool isGainComplted = 2;
-	optional node_property   node = 3;
+	repeated node_property   node = 3;
 	optional connect_switch  connect = 4;
 	repeated connect_path  con_path = 5;
 	repeated distribution_power_area power_area = 6;

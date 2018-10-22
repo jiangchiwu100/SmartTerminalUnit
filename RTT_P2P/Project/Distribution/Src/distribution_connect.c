@@ -258,8 +258,8 @@ static ErrorCode ExtractSwitchPath(StationTopology* station,   ListDouble* bfsLi
 	return ERROR_OK_NULL;
 }
 /**
-* @brief :  根据表格获取拓扑信息
-* @param  ：StationTopology* station 站点
+* @brief : 根据表格获取拓扑信息
+* @param : StationTopology* station 站点
 * @return: void
 * @update: [2018-07-05][张宇飞][创建]
 */

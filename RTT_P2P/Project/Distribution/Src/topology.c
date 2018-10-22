@@ -34,7 +34,7 @@ static ErrorCode CalTopologyMessageLength(const TopologyMessage* topology, uint1
   * @return: 0-正常返回
   * @update: [2018-05-25][张宇飞][BRIEF]
   *  [2018-05-31][张宇飞][增加状态量转换]
-  * [2018-06-19][张宇飞][修改判定]
+  *  [2018-06-19][张宇飞][修改判定]
   */
 ErrorCode  ReserializeCollectTopology(const uint8_t* sourceArray, uint16_t startIndex, TopologyMessage** topology)
 {
@@ -359,29 +359,29 @@ void DeleteTopologyListNodeById(ListDouble* topologyList, uint32_t id)
     } 
 }
 /**
- * @brief : 添加邻居列表判断ID号，若不存在则添加。
+ * @brief  : 添加邻居列表判断ID号，若不存在则添加。
  * @param  : uint8_t data[] 数据
- * @param  ：uitn8_t len  数据长度
+ * @param  : uitn8_t len  数据长度
  * @param  : TopologyMessage* topolog
- * @return: ErrorCode
- * @update: [2018-05-29][张宇飞][]
- *          [2018-06-07][张宇飞][修改接口，增加为]
- *          [2018-06-21][张宇飞][改返回值为ErrorCode,添加形参检测]
-*           [2018-09-11][张宇飞][若已经存在，则不再添加]
+ * @return : ErrorCode
+ * @update : [2018-05-29][张宇飞][创建]
+ *           [2018-06-07][张宇飞][修改接口，增加为]
+ *           [2018-06-21][张宇飞][改返回值为ErrorCode,添加形参检测]
+ *           [2018-09-11][张宇飞][若已经存在，则不再添加]
  */
 
 ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* topologyList)
 {
     CHECK_POINT_RETURN(topologyList, NULL, ERROR_NULL_PTR);
     CHECK_POINT_RETURN(data, NULL, ERROR_NULL_PTR);
-    TopologyMessage*  topologyMessage;
+    TopologyMessage* topologyMessage;
     uint8_t size = 0;
-    ErrorCode error = ReserializeCollectTopology(data, 0,  &topologyMessage);
+    ErrorCode error = ReserializeCollectTopology(data, 0, &topologyMessage);
     if (error == ERROR_OK_NULL)
     {       
         
-        size =list_size(topologyList);
-    //直接插入
+        size = list_size(topologyList);
+        //直接插入
         if (size == 0)
         {
             ListInsertNext(topologyList, NULL, topologyMessage);            

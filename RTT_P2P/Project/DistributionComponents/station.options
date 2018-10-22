@@ -20,5 +20,6 @@ connect_switch.path2 max_count:16
 distribution_power_area.areaSwitch max_count:16
 
 StationMessage.idCollect  max_count:64
+StationMessage.node  max_count:64
 StationMessage.power_area max_count:2
 StationMessage.con_path max_count:8
