@@ -116,4 +116,5 @@ message StationMessage {
 	repeated distribution_power_area power_area = 6;
 	optional distribution_station distribution = 7;
 	optional faultdeal_handle   fault_handle = 8;
+	optional uint32 id = 9;
 }
