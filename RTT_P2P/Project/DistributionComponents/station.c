@@ -44,6 +44,7 @@ static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdes
 	const FaultDealHandle* const psrc);
 static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology);
+static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, TopologyMessage* topology);
 
 /**
 * @brief :区域ID单独设置
@@ -611,73 +612,87 @@ ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data
 
 /**
  * @brief : 根据已知信息
+ * @param : pNode    节点属性
+ * @param : topology 拓扑信息
+ * @return: 0-正常返回
+ * @update: [2018-10-23][李  磊][创建]
+ */
+static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, TopologyMessage* topology)
+{
+
+	CHECK_POINT_RETURN_LOG(pNode, NULL, ERROR_NULL_PTR, 0);
+	CHECK_POINT_RETURN_LOG(topology, NULL, ERROR_NULL_PTR, 0);
+
+	CHECK_UNEQUAL_RETURN_LOG(pNode->has_id, true, ERROR_UNFIND, 0);
+	topology->id = pNode->id;
+	CHECK_UNEQUAL_RETURN_LOG(pNode->has_type, true, ERROR_UNFIND, 0);
+	topology->type = (TopologyType)pNode->type;
+
+
+	topology->switchNum = 1; //TODO： 默认按1个
+
+	uint8_t switchNum = topology->switchNum;//开关数量
+
+
+	SwitchProperty* switchCollect = (SwitchProperty*)CALLOC(1, sizeof(SwitchProperty) * switchNum);
+
+	if (switchCollect == NULL) //简单的指针检测
+	{
+		SafeFree(topology); //释放内存
+		return ERROR_MALLOC;
+	}
+
+	for (uint8_t i = 0; i < switchNum; i++)
+	{
+		switchCollect[i].id =  pNode->id;
+		switchCollect[i].type = (SwitchType)pNode->type;
+		CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
+		switchCollect[i].state = (SwitchState)pNode->state;
+
+		switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
+		switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
+		if (switchCollect[i].neighbourCollect == NULL) //简单的指针检测
+		{
+			//释放内存
+			SafeFree(topology->switchCollect);
+			SafeFree(topology);
+			return ERROR_MALLOC;
+		}
+
+		for (uint8_t k = 0; k < switchCollect[i].neighbourNum; k++)
+		{
+			switchCollect[i].neighbourCollect[k] = pNode->neighbourCollect[k];
+		}
+	}
+	topology->switchCollect = switchCollect;
+
+	return ERROR_OK_NULL;
+}
+
+/**
+ * @brief : 根据已知信息
  * @param : sourceArray    元字节数组
  * @param : startIndex     开始索引
  * @param : topology       拓扑属性
  * @return: 0-正常返回
  * @update: [2018-07-25][张宇飞][BRIEF]
- *			[2018-10-22][李    磊][将之前通过fram中信息只获取自身的拓扑改为获取全部设备的信息]
+ *			[2018-10-22][李  磊][将之前通过fram中信息只获取自身的拓扑改为获取全部设备的信息]
  */
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessage** topology)
 {
+
 	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_NULL_PTR, 0);
 	
-	*topology = (TopologyMessage*)CALLOC(1, sizeof(TopologyMessage));
+	*topology = (TopologyMessage*)CALLOC(19, sizeof(TopologyMessage));
 
 	CHECK_POINT_RETURN_LOG(*topology, NULL, ERROR_MALLOC, 0);
 
-//	CHECK_UNEQUAL_RETURN_LOG(pMessage->has_node, true, ERROR_UNFIND, 0);
-	CHECK_UNEQUAL_RETURN_LOG(pMessage->node->has_id, true, ERROR_UNFIND, 0);
-
 	node_property* pNode = pMessage->node;
-
-	for( ; pNode != NULL; pNode++)
+	for(uint8_t i = 0; i < 19; i++)
 	{
-		CHECK_UNEQUAL_RETURN_LOG(pNode->has_id, true, ERROR_UNFIND, 0);
-		(*topology)->id = pNode->id;
-		CHECK_UNEQUAL_RETURN_LOG(pNode->has_type, true, ERROR_UNFIND, 0);
-		(*topology)->type = (TopologyType)pNode->type;
-
-
-		(*topology)->switchNum = 1; //TODO： 默认按1个
-
-		uint8_t switchNum = (*topology)->switchNum;//开关数量
-
-
-		SwitchProperty* switchCollect = (SwitchProperty*)CALLOC(1, sizeof(SwitchProperty) * switchNum);
-
-		if (switchCollect == NULL) //简单的指针检测
-		{
-			SafeFree(*topology); //释放内存
-			return ERROR_MALLOC;
-		}
-
-		for (uint8_t i = 0; i < switchNum; i++)
-		{
-			switchCollect[i].id =  pNode->id;
-			switchCollect[i].type = (SwitchType)pNode->type;
-			CHECK_UNEQUAL_RETURN_LOG(pNode->has_state, true, ERROR_UNFIND, 0);
-			switchCollect[i].state = (SwitchState)pNode->state;
-
-			switchCollect[i].neighbourNum = pNode->neighbourCollect_count;
-			switchCollect[i].neighbourCollect = (uint32_t*)CALLOC(sizeof(uint32_t) ,  switchCollect[i].neighbourNum);
-			if (switchCollect[i].neighbourCollect == NULL) //简单的指针检测
-			{
-				//释放内存
-				SafeFree((*topology)->switchCollect);
-				SafeFree(*topology);
-				return ERROR_MALLOC;
-			}
-
-			for (uint8_t k = 0; k < switchCollect[i].neighbourNum; k++)
-			{
-				switchCollect[i].neighbourCollect[k] = pNode->neighbourCollect[k];
-			}
-		}
-		(*topology)->switchCollect = switchCollect;
-
+		ReserializeTopologyByNodeMessage(&pNode[i], topology[i]);
 	}
-
+	
 	return ERROR_OK_NULL;
 }
 /**
@@ -688,7 +703,7 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 * @return: void
 * @update: [2018-07-25][张宇飞][]
 */
-#ifndef MSVC  
+#ifndef MSVC
 void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger)
 {
 //	uint32_t id;

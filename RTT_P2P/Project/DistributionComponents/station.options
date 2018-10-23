@@ -23,4 +23,4 @@ StationMessage.idCollect  max_count:64
 StationMessage.power_area max_count:2
 StationMessage.con_path max_count:8
 StationMessage.node  max_count:64
-StationMessage.id  max_count:64
+StationMessage.id_own  max_count:64

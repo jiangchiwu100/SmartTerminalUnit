@@ -65,7 +65,7 @@ static void rt_net_finsh_thread_entry(void *param)
 	}
 	
 	/*UDP链接已经创建，之后可以使用网口的打印函数了*/
-	NetFinshFlag = true;
+	NetFinshFlag = false;
 	rt_kprintf("Net finsh Init Success");			
 	
 	while (1)
