@@ -692,7 +692,7 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 	{
 		ReserializeTopologyByNodeMessage(&pNode[i], topology[i]);
 	}
-	
+
 	return ERROR_OK_NULL;
 }
 /**
