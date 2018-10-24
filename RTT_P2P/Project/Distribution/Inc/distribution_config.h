@@ -51,7 +51,7 @@
 //61850
 #define THREAD_61850_NAME                                              "61850"
 #define THREAD_61850_PRIORITY                                          (14)
-#define THREAD_61850_STACK_SIZE                                        (1024*10)
+#define THREAD_61850_STACK_SIZE                                        (1024*16)
 #define THREAD_61850_TIMESLICE                                         (20)
 
 
@@ -70,7 +70,7 @@
 
 #define MAINTENANCE_SERVE_THREAD_NAME                                   "m_ser"
 #define MAINTENANCE_SERVE_THREAD_PRIORITY                               (22)
-#define MAINTENANCE_SERVE_THREAD_STACK_SIZE                             (1024*8)
+#define MAINTENANCE_SERVE_THREAD_STACK_SIZE                             (4096)
 #define MAINTENANCE_SERVE_THREAD_TIMESLICE                              (20)
 
 

@@ -333,7 +333,7 @@
 #define FINSH_THREAD_PRIORITY                                          20
  * -------------------------------------------------------------------------*/ 
 #define INIT_THREAD_NAME                                               "init"
-#define INIT_THREAD_STACK_SIZE                                         (4096)
+#define INIT_THREAD_STACK_SIZE                                         (1024*16)
 //#define INIT_THREAD_PRIORITY                                           (RT_THREAD_PRIORITY_MAX / 3)
 #define INIT_THREAD_PRIORITY                                           (RT_THREAD_PRIORITY_MAX / 2)
 #define INIT_THREAD_TIMESLICE                                          (20)
