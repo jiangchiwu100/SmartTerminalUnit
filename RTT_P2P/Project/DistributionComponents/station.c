@@ -45,7 +45,8 @@ static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdes
 static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, TopologyMessageList* topologyList);
 static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, TopologyMessage* topology);
-static ErrorCode StationManagerAddMemberByTopologyList(TopologyMessageList*  topologyList, StationManger* manger);
+static ErrorCode  AddTopologyMemberByList(TopologyMessageList* topologyMessageList, ListDouble* topologyList);
+
 
 /**
 * @brief :区域ID单独设置
@@ -742,35 +743,55 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 }
 
 /**
-* @brief : 站点服务器增加服务成员 通过拓扑信息
-* @param : TopologyMessageList*  topologyMessageList
-* @param : StationManger* manger
-* @return: ErrorCode
-* @update: [2018-10-25[李  磊][创建]
-*/
-static ErrorCode StationManagerAddMemberByTopologyList(TopologyMessageList*  topologyList, StationManger* manger)
+ * @brief  : 添加邻居列表判断ID号，若不存在则添加。
+ * @param  : TopologyMessageList*  topologyMessageList
+ * @param  : ListDouble* topologyList
+ * @return : ErrorCode
+ * @update : [2018-10-25][李  磊][创建]
+ */
+static ErrorCode  AddTopologyMemberByList(TopologyMessageList* topologyMessageList, ListDouble* topologyList)
 {
-	ErrorCode error = ERROR_OK_NULL;
-	TopologyMessageList*  tempPoint;
+	uint8_t size = 0;
+	ErrorCode error;
+	TopologyMessageList* temp;
 	
-	CHECK_POINT_RETURN_LOG(topologyList, NULL, ERROR_NULL_PTR, 0);
-	CHECK_POINT_RETURN_LOG(manger, NULL, ERROR_NULL_PTR, 0);
+	size = list_size(topologyList);
 	
-	for(tempPoint = topologyList; tempPoint->topology != NULL; tempPoint = tempPoint->nextPoint)
+	for(temp = topologyMessageList; temp != NULL; temp = temp->nextPoint)
 	{
-		error = StationManagerAddMemberByTopology(tempPoint->topology, manger);
-		if (error != ERROR_OK_NULL)
-		{      
-			perror("StationManagerAddMemberByTopology ERROR : 0x%X\n", error);
-			break;
-		}
-		if(tempPoint->nextPoint == NULL)
-		{
-			break;
+		CHECK_POINT_RETURN_LOG(temp->topology, NULL, ERROR_MALLOC, 0);
+		
+		//AddMemberByTopology(temp->topology, topologyList);
+        //直接插入
+        if (size == 0)
+        {
+            ListInsertNext(topologyList, NULL, temp->topology);            
+        }
+        else
+        {
+        	TopologyMessage* find;
+        	error = FindTopologyNodeByID(topologyList, temp->topology->id, &find);
+        	//不存在则插入
+        	if (error == ERROR_UNFIND)
+        	{
+        		ListInsertNext(topologyList, NULL, temp->topology);
+                error = ERROR_OK_NULL;
+        	}
+        	else
+        	{
+        		if (error)
+        		{
+        			perror("FindTopologyNodeByID. error:0x%x.\n", error);
+        		}
+
+//        		FreeTopologyMemory(&topologyMessage);
+        	}
 		}
 	}
 	return error;
+	
 }
+
 /**
 * @brief : 管理器增加站点，通过StationPoint* station
 * @param :uint8_t data[]
@@ -805,13 +826,19 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationMang
 		return;
 	}
 
-	error = StationManagerAddMemberByTopologyList(&topologyMessageList, manger);
+	error = StationManagerAddMemberByTopology(topologyMessageList.topology, manger);
 	if (error != ERROR_OK_NULL)
 	{      
-		perror("StationManagerAddMemberByTopologyList ERROR : 0x%X\n", error);
+		perror("StationManagerAddMemberByTopology ERROR : 0x%X\n", error);
 		return;
 	}
 
+	error = AddTopologyMemberByList(&topologyMessageList, &(manger->pWorkPoint->topology.globalTopologyList));
+	if (error != ERROR_OK_NULL)
+	{      
+		perror("AddTopologyMemberByList ERROR : 0x%X\n", error);
+		return;
+	}
 	
 	StationPoint* point = manger->stationServer.FindMemberById(&(manger->stationServer.stationPointList), topologyMessageList.topology->id);
 
