@@ -431,6 +431,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 	pdest->indexArea_count = count;
 	pdest->isExitArea_count = count;
 	pdest->isExitArea_count = count;
+
 	return ERROR_OK_NULL;
 }
 
@@ -442,6 +443,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 */
 ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointUint8* packet, uint16_t addLen, uint16_t offset)
 {
+	uint8_t i = 0;
 	uint16_t defaultLen = 1024;
 	ErrorCode  error = ERROR_OK_NULL; 
 	CHECK_POINT_RETURN(point, NULL, ERROR_NULL_PTR);
@@ -463,14 +465,20 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 	{
 		return error;
 	}
-
+	
+	
 	if (pTopology->localSwitch != NULL)
 	{
-		error = AssignmentStationMessage_SwitchProperty(message.node, pTopology->localSwitch);
+		FOR_EARCH_LIST_START(&pTopology->globalTopologyList);
+		PrintSwitchMessage(GET_TOPOLOGY_ELEMENT(m_foreach)->switchCollect);
+		error = AssignmentStationMessage_SwitchProperty(&(message.node[i++]), GET_TOPOLOGY_ELEMENT(m_foreach)->switchCollect);
 		if (error)
 		{
 			return error;
 		}
+		FOR_EARCH_LIST_END();
+		message.node_count = i;
+		
 //		message.has_node = true;
 
 
@@ -695,7 +703,7 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 
 	for(i = 0; i < pMessage->node_count; i++)
 	{
-		if(i == pMessage->id_own - 1)		/* 如果是自身的节点信息就保存在链表头一个 */
+		if(pNode[i].id == pMessage->id_own)		/* 如果是自身的节点信息就保存在链表头一个 */
 		{
 			topology = (TopologyMessage*)CALLOC(1, sizeof(TopologyMessage));
 			CHECK_POINT_RETURN_LOG(topology, NULL, ERROR_MALLOC, 0);
@@ -760,7 +768,7 @@ static ErrorCode  AddTopologyMemberByList(TopologyMessageList* topologyMessageLi
 	for(temp = topologyMessageList; temp != NULL; temp = temp->nextPoint)
 	{
 		CHECK_POINT_RETURN_LOG(temp->topology, NULL, ERROR_MALLOC, 0);
-		
+		PrintTopologyMessage(temp->topology);
 		//AddMemberByTopology(temp->topology, topologyList);
         //直接插入
         if (size == 0)
@@ -828,7 +836,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationMang
 
 	error = StationManagerAddMemberByTopology(topologyMessageList.topology, manger);
 	if (error != ERROR_OK_NULL)
-	{      
+	{
 		perror("StationManagerAddMemberByTopology ERROR : 0x%X\n", error);
 		return;
 	}
