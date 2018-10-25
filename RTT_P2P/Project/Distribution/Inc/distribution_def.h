@@ -91,6 +91,14 @@ typedef struct TagTopologyMessage
 
 }TopologyMessage;
 
+/**
+* 拓扑片信息链表结构体
+*/
+typedef struct TagTopologyMessageList
+{
+	TopologyMessage* topology;		//拓扑信息结构体
+	struct TagTopologyMessageList* nextPoint;			//下一个点的结构体指针
+}TopologyMessageList;
 
 /**
 * 广度优先搜索辅助类
