@@ -44,7 +44,7 @@ static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdes
 	const FaultDealHandle* const psrc);
 static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
 static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, TopologyMessage* topology);
-static ErrorCode ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage* localTopology);
+static ErrorCode ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage** localTopology);
 static ErrorCode AddTopologyMemberByList(ListDouble* topologyListSrc, ListDouble* topologyListDest);
 
 
@@ -688,7 +688,7 @@ static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, Topology
  * @update: [2018-07-25][张宇飞][BRIEF]
  *			[2018-10-22][李  磊][将之前通过fram中信息只获取自身的拓扑改为获取全部设备的信息]
  */
-static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage* localTopology)
+static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage** localTopology)
 {
 	uint8_t i = 0;
 	ErrorCode error = ERROR_OK_NULL;
@@ -696,6 +696,8 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 
 	CHECK_POINT_RETURN_LOG(pMessage, NULL, ERROR_NULL_PTR, 0);
 	CHECK_POINT_RETURN_LOG(topologyList, NULL, ERROR_NULL_PTR, 0);
+	
+	*localTopology = (TopologyMessage*)CALLOC(1, sizeof(TopologyMessage));
 	CHECK_POINT_RETURN_LOG(localTopology, NULL, ERROR_NULL_PTR, 0);
 
 	node_property* pNode = pMessage->node;
@@ -711,7 +713,7 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 		}
 		if(pNode[i].id == pMessage->id_own)
 		{
-			error = ReserializeTopologyByNodeMessage(&(pNode[i]), localTopology);	/* 由node信息得到本地的拓扑信息 */
+			error = ReserializeTopologyByNodeMessage(&(pNode[i]), *localTopology);	/* 由node信息得到本地的拓扑信息 */
 			if(error != ERROR_OK_NULL)
 			{
 				perror("ReserializeTopologyByNodeMessage ERROR : 0x%X\n", error);
@@ -782,7 +784,7 @@ static ErrorCode  AddTopologyMemberByList(ListDouble* topologyListSrc, ListDoubl
 #ifndef MSVC
 void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger)
 {
-	TopologyMessage localTopology;		/* 本地的拓扑 */
+	TopologyMessage* localTopology;		/* 本地的拓扑 */
 	ListDouble topologyMessageList;		/* 拓扑信息链表 */
 	ListInit(&topologyMessageList, NULL);
 
@@ -802,7 +804,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationMang
 		return;
 	}
 
-	error = StationManagerAddMemberByTopology(&localTopology, manger);
+	error = StationManagerAddMemberByTopology(localTopology, manger);
 	if (error != ERROR_OK_NULL)
 	{
 		perror("StationManagerAddMemberByTopology ERROR : 0x%X\n", error);
@@ -816,7 +818,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationMang
 		return;
 	}
 	
-	StationPoint* point = manger->stationServer.FindMemberById(&(manger->stationServer.stationPointList), localTopology.id);
+	StationPoint* point = manger->stationServer.FindMemberById(&(manger->stationServer.stationPointList), localTopology->id);
 	
 	if (point != NULL)
 	{
