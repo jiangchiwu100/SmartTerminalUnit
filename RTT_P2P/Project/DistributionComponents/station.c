@@ -45,7 +45,7 @@ static ErrorCode AssignmentStationMessage_FaultDealHandle(faultdeal_handle* pdes
 static ErrorCode StationMessageToAreaID(AreaID* area, const StationMessage* pMessage);
 static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, TopologyMessage* topology);
 static ErrorCode ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage** localTopology);
-static ErrorCode AddTopologyMemberByList(ListDouble* topologyListSrc, ListDouble* topologyListDest);
+
 
 
 /**
@@ -469,6 +469,8 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 	
 	if (pTopology->localSwitch != NULL)
 	{
+		message.has_id_own = true;
+		message.id_own = point->topology.localTopology->id;
 		FOR_EARCH_LIST_START(&pTopology->globalTopologyList);
 		PrintSwitchMessage(GET_TOPOLOGY_ELEMENT(m_foreach)->switchCollect);
 		error = AssignmentStationMessage_SwitchProperty(&(message.node[i++]), GET_TOPOLOGY_ELEMENT(m_foreach)->switchCollect);
@@ -478,9 +480,6 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 		}
 		FOR_EARCH_LIST_END();
 		message.node_count = i;
-		message.id_own = pTopology->localTopology->id;
-		
-//		message.has_node = true;
 
 
 		DistributionStation* pDistribution = pTopology->localSwitch->distributionArea;
@@ -605,7 +604,7 @@ ErrorCode PacketDecodeStationMessage_ALL(StationMessage* pMessage, uint8_t* data
 	CHECK_POINT_RETURN_LOG(data, NULL, ERROR_OK_NULL, 0);
 
 	uint16_t nanolen = COMBINE_UINT16(data[2], data[1]);
-	if (nanolen + 2 > len)
+	if ((nanolen + 2) > len)
 	{
 		return ERROR_OVER_LIMIT;
 	}
@@ -727,62 +726,18 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 	return error;
 }
 
+
 /**
- * @brief  : 添加邻居列表判断ID号，若不存在则添加。
- * @param  : ListDouble* topologyListSrc
- * @param  : ListDouble* topologyListDest
- * @return : ErrorCode
- * @update : [2018-10-25][李  磊][创建]
+ * @brief : 管理器增加站点，通过StationPoint* station
+ * @param :uint8_t data[]
+ * @param :uint8_t len
+ * @param :StationManger* manger
+ * @return: void
+ * @update: [2018-07-25][张宇飞][]
+ *			[2018-10-26][李  磊][将输入参数len的类型由uint8_t改为uint16_t]
  */
-static ErrorCode  AddTopologyMemberByList(ListDouble* topologyListSrc, ListDouble* topologyListDest)
-{
-	uint8_t size = 0;
-	ErrorCode error;
-	TopologyMessage* find = NULL;
-	
-	size = list_size(topologyListDest);
-	
-	FOR_EARCH_LIST_START(topologyListSrc);
-	 //直接插入
-	if (size == 0)
-	{
-		ListInsertNext(topologyListDest, NULL, GET_TOPOLOGY_ELEMENT(m_foreach));
-	}
-	else
-	{
-		
-		error = FindTopologyNodeByID(topologyListDest, GET_TOPOLOGY_ELEMENT(m_foreach)->id, &find);
-		//不存在则插入
-		if (error == ERROR_UNFIND)
-		{
-			ListInsertNext(topologyListDest, NULL, GET_TOPOLOGY_ELEMENT(m_foreach));
-			error = ERROR_OK_NULL;
-		}
-		else
-		{
-			if (error)
-			{
-				perror("FindTopologyNodeByID. error:0x%x.\n", error);
-			}
-		}
-		find = NULL;
-	}
-	FOR_EARCH_LIST_END();
-
-	return error;
-	
-}
-
-/**
-* @brief : 管理器增加站点，通过StationPoint* station
-* @param :uint8_t data[]
-* @param :uint8_t len
-* @param :StationManger* manger
-* @return: void
-* @update: [2018-07-25][张宇飞][]
-*/
 #ifndef MSVC
-void  ManagerAddStationByStationMessage(uint8_t data[], uint8_t len, StationManger* manger)
+void  ManagerAddStationByStationMessage(uint8_t data[], uint16_t len, StationManger* manger)
 {
 	TopologyMessage* localTopology;		/* 本地的拓扑 */
 	ListDouble topologyMessageList;		/* 拓扑信息链表 */

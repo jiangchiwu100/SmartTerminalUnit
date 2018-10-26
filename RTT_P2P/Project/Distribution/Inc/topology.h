@@ -42,6 +42,7 @@ extern ErrorCode UpdatePowerAreaFaultState(SwitchProperty* switchProperty);
 //增添
 extern ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* topologyList);
 extern ErrorCode  AddMemberByTopology(TopologyMessage*  topologyMessage, ListDouble* topologyList);
+extern ErrorCode  AddTopologyMemberByList(ListDouble* topologyListSrc, ListDouble* topologyListDest);
 extern void DeleteTopologyListNodeById(ListDouble* topologyList, uint32_t id);
 
 

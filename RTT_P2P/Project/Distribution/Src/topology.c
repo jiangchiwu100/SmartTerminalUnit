@@ -415,6 +415,53 @@ ErrorCode  AddTopologyMember(const uint8_t data[], uint8_t len,  ListDouble* top
     }
     return error;
 }
+
+/**
+ * @brief  : 添加邻居列表判断ID号，若不存在则添加。
+ * @param  : ListDouble* topologyListSrc
+ * @param  : ListDouble* topologyListDest
+ * @return : ErrorCode
+ * @update : [2018-10-25][李  磊][创建]
+ */
+ErrorCode  AddTopologyMemberByList(ListDouble* topologyListSrc, ListDouble* topologyListDest)
+{
+	uint8_t size = 0;
+	ErrorCode error;
+	TopologyMessage* find = NULL;
+	
+	size = list_size(topologyListDest);
+	
+	FOR_EARCH_LIST_START(topologyListSrc);
+	 //直接插入
+	if (size == 0)
+	{
+		ListInsertNext(topologyListDest, NULL, GET_TOPOLOGY_ELEMENT(m_foreach));
+	}
+	else
+	{
+		
+		error = FindTopologyNodeByID(topologyListDest, GET_TOPOLOGY_ELEMENT(m_foreach)->id, &find);
+		//不存在则插入
+		if (error == ERROR_UNFIND)
+		{
+			ListInsertNext(topologyListDest, NULL, GET_TOPOLOGY_ELEMENT(m_foreach));
+			error = ERROR_OK_NULL;
+		}
+		else
+		{
+			if (error)
+			{
+				perror("FindTopologyNodeByID. error:0x%x.\n", error);
+			}
+		}
+		find = NULL;
+	}
+	FOR_EARCH_LIST_END();
+
+	return error;
+	
+}
+
 /**
 * @brief : 将拓扑节点元素增加到列表
 * @param  : TopologyMessage* topolog
