@@ -65,7 +65,7 @@
 
 #define UDP_SERVE_THREAD_NAME                                           "udp_ser"
 #define UDP_SERVE_THREAD_PRIORITY                                       (25)
-#define UDP_SERVE_THREAD_STACK_SIZE                                     (4096)
+#define UDP_SERVE_THREAD_STACK_SIZE                                     (1024*16)
 #define UDP_SERVE_THREAD_TIMESLICE                                      (20)
 
 #define MAINTENANCE_SERVE_THREAD_NAME                                   "m_ser"

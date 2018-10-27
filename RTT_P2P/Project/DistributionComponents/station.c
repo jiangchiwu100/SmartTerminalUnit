@@ -401,7 +401,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
     {
         pdest->neighbourCollect[k] = psrc->neighbourCollect[k];
     }
-	
+
 	pdest->operateType = psrc->operateType;
 	pdest->has_operateType = true;
 	pdest->overTimeType = psrc->overTimeType;
@@ -745,7 +745,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint16_t len, StationMan
 
 	StationMessage message = StationMessage_init_zero;
 	//反序列化生成拓扑信息
-	ErrorCode error = PacketDecodeStationMessage_ALL(&message, data, len);
+	ErrorCode error = PacketDecodeStat1ionMessage_ALL(&message, data, len);
 	if (error != ERROR_OK_NULL)
 	{
 		perror("PacketDecodeStationMessage_ALL ERROR : 0x%X\n", error);
