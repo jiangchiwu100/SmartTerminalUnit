@@ -726,6 +726,26 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 	return error;
 }
 
+/**
+ * @brief : 释放topologyMessage链表的内存
+ * @param :	TopologyMessage* topology 链表的指针
+ * @return: void
+ * @update: [2018-10-27][李  磊][创建]
+ */
+void FreeTopologyMessage(TopologyMessage* topology)
+{
+	for(uint8_t i = 0; i < topology->switchNum; i++)
+	{
+		if(topology->switchCollect[i].neighbourCollect != NULL)
+		{
+			SafeFree(topology->switchCollect[i].neighbourCollect);
+		}
+	}
+	if(topology->switchCollect != NULL)
+	{
+		SafeFree(topology->switchCollect);
+	}
+}
 
 /**
  * @brief : 管理器增加站点，通过StationPoint* station
@@ -745,7 +765,7 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint16_t len, StationMan
 
 	StationMessage message = StationMessage_init_zero;
 	//反序列化生成拓扑信息
-	ErrorCode error = PacketDecodeStat1ionMessage_ALL(&message, data, len);
+	ErrorCode error = PacketDecodeStationMessage_ALL(&message, data, len);
 	if (error != ERROR_OK_NULL)
 	{
 		perror("PacketDecodeStationMessage_ALL ERROR : 0x%X\n", error);
@@ -788,6 +808,8 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint16_t len, StationMan
 	{
 		perror("FindMemberById UnFind\n");
 	}
+
+	return;
 }
 #endif
 /**

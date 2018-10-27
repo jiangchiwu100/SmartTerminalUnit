@@ -1,4 +1,4 @@
-﻿/*
+/*
 ** ------------------------------- Copyright (c) -------------------------------                                     
 **
 **                           http://www.sojoline.com
@@ -53,7 +53,7 @@ void Listdestroy(ListDouble *list)
     while(list_size(list)>0)  
     {  
         if(ListRemoveNext(list,NULL,(void **)&data)==0 && list->destroy!=NULL)  
-        {  
+        {
             /*Call a user-defined function to FREE dynamically allocated data.*/  
             list->destroy(data);  
         }  
