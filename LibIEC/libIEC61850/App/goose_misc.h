@@ -19,6 +19,6 @@
 #define LIVE_TIME_FLAG				RT_TIMER_FLAG_ONE_SHOT | RT_TIMER_FLAG_SOFT_TIMER	/* 单次定时，软件定时 */
 
 void UpdateLocalPublicRef(ServerModelManager* manager);
-
+void FtuIdleHook(void);
 void GooseCheckAdd(GooseSubscriber subscriber, RingQueue* ring);
 #endif 

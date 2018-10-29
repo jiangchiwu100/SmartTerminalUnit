@@ -115,7 +115,7 @@ void PrintSwitchMessage(const SwitchProperty*  switchNode)
 	uint32_t id = switchNode->id;
 
 	id = switchNode->id;
-	rt_kprintf("switch id:0x%x", id);
+	rt_kprintf("switch id:0x%x ", id);
 	rt_kprintf("neighrbour count: %d ,", switchNode->neighbourNum);
 	for (uint8_t k = 0; k < switchNode->neighbourNum; k++)
 	{

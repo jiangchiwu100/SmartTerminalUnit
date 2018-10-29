@@ -446,7 +446,7 @@ void rt_dp83848_tcpserver_thread_entry_test(void *param)
 void rt_dp83848_tcpserver_thread_entry(void *param)
 {
     return;
-	err_t result;
+	uint32_t result;
     int sockfd;	
     int bytes_read;	
     int bytes_write;	

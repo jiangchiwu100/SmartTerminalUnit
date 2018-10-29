@@ -366,7 +366,7 @@ ErrorCode ConnectedSwitch_SelfCheck_APP(StationPoint* point)
     uint8_t try_count = 0;
     StationTopology* topology = &(point->topology);
     bool *result = &(topology->areaID.isGainComplted);
-    ErrorCode error;
+
     CHECK_POINT_RETURN_LOG(point, NULL, ERROR_NULL_PTR, 0);
 	bool before = topology->connect.isConnect;
     bool isPassed;

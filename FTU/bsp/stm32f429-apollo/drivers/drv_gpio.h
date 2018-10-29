@@ -133,7 +133,7 @@ extern struct rt_device_pin_status pin_status[];
 
 /* PUBLIC FUNCTIONS ----------------------------------------------------------*/
 int rt_hw_pin_init(void);
-void do_test();
+void do_test(void);
 
 #endif /* __DRV_GPIO_H__ */
 

@@ -325,7 +325,7 @@ bool StationMessageSave(const StationPoint* const point)
         perror("point == NULL\n");
         return false;
     }
-    ErrorCode error = PacketEncodeStationMessage_All( point, &packet,0 , 0);
+    ErrorCode error = PacketEncodeStationMessage_All(point, &packet, 1, 0);
     if (error)
     {
         perror("PacketEncodeStationMessage_All:0x%x\n", error);
@@ -463,15 +463,16 @@ static bool ConfigNetMessage(StationMessage* pMessage)
 		return false;
 	}
 
-	g_EthDP83848.ip[0] =  GET_N_BYTE( pMessage->node->id, 3);
-	g_EthDP83848.ip[1] =  GET_N_BYTE( pMessage->node->id, 2);
-	g_EthDP83848.ip[2] =  GET_N_BYTE( pMessage->node->id, 1) ;
-	g_EthDP83848.ip[3] =  GET_N_BYTE( pMessage->node->id, 0) ;
+	uint32_t ipAddress = pMessage->id_own;
+	g_EthDP83848.ip[0] =  GET_N_BYTE( ipAddress, 3);
+	g_EthDP83848.ip[1] =  GET_N_BYTE( ipAddress, 2);
+	g_EthDP83848.ip[2] =  GET_N_BYTE( ipAddress, 1) ;
+	g_EthDP83848.ip[3] =  GET_N_BYTE( ipAddress, 0) ;
     
-	g_EthW5500.ip[0] =  GET_N_BYTE( pMessage->node->id, 3);
-	g_EthW5500.ip[1] =  GET_N_BYTE( pMessage->node->id, 2);
-	g_EthW5500.ip[2] =  GET_N_BYTE( pMessage->node->id, 1);
-	g_EthW5500.ip[3] =  GET_N_BYTE( pMessage->node->id, 0);
+	g_EthW5500.ip[0] =  GET_N_BYTE( ipAddress, 3);
+	g_EthW5500.ip[1] =  GET_N_BYTE( ipAddress, 2);
+	g_EthW5500.ip[2] =  GET_N_BYTE( ipAddress, 1);
+	g_EthW5500.ip[3] =  GET_N_BYTE( ipAddress, 0);
 	if (g_EthW5500.ip[3] < 0x80)
     {
         g_EthW5500.ip[3] += 0x80;

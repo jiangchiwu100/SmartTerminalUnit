@@ -32,7 +32,7 @@ static void SwitchSnapshootPrint(SwitchSnapshoot* snap);
 */
 static void SwitchSnapshootPrint(SwitchSnapshoot* snap)
 {
-	uint8_t data[64];
+//	uint8_t data[64];
 	//rt_kpritnf("", snap->);
 
 

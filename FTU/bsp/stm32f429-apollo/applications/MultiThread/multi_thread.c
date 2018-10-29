@@ -37,8 +37,9 @@
 #include "hmi_101_disk.h"
 #include "GUIdisplay.h"
 #include "distribution_app.h"
-
+#include "goose_misc.h"
 #include "goose_publisher_beat.h"
+#include "PrintfCurrent.h"
 
 /* PRIVATE VARIABLES ---------------------------------------------------------*/
 //static struct rt_thread rt_thread_system;

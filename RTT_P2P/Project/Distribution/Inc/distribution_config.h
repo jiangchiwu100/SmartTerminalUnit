@@ -70,7 +70,7 @@
 
 #define MAINTENANCE_SERVE_THREAD_NAME                                   "m_ser"
 #define MAINTENANCE_SERVE_THREAD_PRIORITY                               (22)
-#define MAINTENANCE_SERVE_THREAD_STACK_SIZE                             (1024*16)
+#define MAINTENANCE_SERVE_THREAD_STACK_SIZE                             (1024*32)
 #define MAINTENANCE_SERVE_THREAD_TIMESLICE                              (20)
 
 

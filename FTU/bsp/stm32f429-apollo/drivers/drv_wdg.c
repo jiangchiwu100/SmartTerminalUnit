@@ -93,7 +93,7 @@ int rt_hw_wdg_deal_task(void)
 //    pin_status[INDEX_WDG_FEED].status = !pin_status[INDEX_WDG_FEED].status;    
 //    rt_device_write(&wdg_deal_pin->parent, 0, &pin_status[INDEX_WDG_FEED], sizeof(struct rt_device_pin_status));       
 //  #endif /* USING_SOFTWARE_IWDG */	
-//    return(RT_EOK);
+    return(RT_EOK);
 }
 
 

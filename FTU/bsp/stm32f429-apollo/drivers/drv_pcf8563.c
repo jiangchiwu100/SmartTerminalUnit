@@ -151,7 +151,6 @@ static rt_size_t rt_hw_pcf8563_write(rt_device_t dev, rt_off_t pos, const void* 
   */
 static void rt_hw_pcf8563_calender_test(void)
 {
-    rt_uint8_t flag = 0;
     rt_uint8_t rx_data[17] = {0x02};
     rt_uint8_t calendar[8] = {0x02,0x00,0x08,0x08,0x01,0x01,0x01,0x18}; /* sec, min, hour, week, day, mon, year */
 
@@ -248,7 +247,7 @@ static rt_err_t rt_hw_pcf8563_control(rt_device_t dev, int cmd, void *args)
 int rt_hw_pcf8563_init(void)
 {    
     static rt_device_t device;
-    static struct rt_device_pin *pcf8563_irq_pin;
+//    static struct rt_device_pin *pcf8563_irq_pin;
 
 //    pcf8563_irq_pin = (struct rt_device_pin *)rt_device_find(RT_PIN_NAME);
 //	

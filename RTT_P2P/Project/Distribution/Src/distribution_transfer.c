@@ -130,7 +130,7 @@ StateResult TransferPowerSupply_Connect(FaultDealHandle* handle)
 	handle->state = TRANSFER_CONNECT;
 	StateResult returnState = RESULT_NULL;
 	SwitchSnapshoot* snap;
-	ConnectPath* cp;
+
 	bool stateSnap = false;
 
 	if (stationTopology->snapshoot)

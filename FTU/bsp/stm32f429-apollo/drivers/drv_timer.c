@@ -18,6 +18,7 @@
 #include "drv_wdg.h"
 #include ".\MultiThread\multi_thread.h"
 #include "tcp_server.h"
+#include "output.h"
 
 
 #if RT_USING_HWTIMER

@@ -401,7 +401,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
     {
         pdest->neighbourCollect[k] = psrc->neighbourCollect[k];
     }
-
+/*
 	pdest->operateType = psrc->operateType;
 	pdest->has_operateType = true;
 	pdest->overTimeType = psrc->overTimeType;
@@ -431,7 +431,7 @@ static ErrorCode AssignmentStationMessage_SwitchProperty(node_property* pdest,
 	pdest->indexArea_count = count;
 	pdest->isExitArea_count = count;
 	pdest->isExitArea_count = count;
-
+*/
 	return ERROR_OK_NULL;
 }
 
@@ -480,6 +480,7 @@ ErrorCode PacketEncodeStationMessage_All(const StationPoint* const point, PointU
 		}
 		FOR_EARCH_LIST_END();
 		message.node_count = i;
+		
 
 
 		DistributionStation* pDistribution = pTopology->localSwitch->distributionArea;
@@ -689,7 +690,7 @@ static ErrorCode ReserializeTopologyByNodeMessage(node_property* pNode, Topology
  */
 static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, ListDouble* topologyList, TopologyMessage** localTopology)
 {
-	uint8_t i = 0;
+
 	ErrorCode error = ERROR_OK_NULL;
 	TopologyMessage* topology = NULL;
 
@@ -724,27 +725,6 @@ static ErrorCode  ReserializeTopologyByStationMessage(StationMessage* pMessage, 
 	}
 	
 	return error;
-}
-
-/**
- * @brief : 释放topologyMessage链表的内存
- * @param :	TopologyMessage* topology 链表的指针
- * @return: void
- * @update: [2018-10-27][李  磊][创建]
- */
-void FreeTopologyMessage(TopologyMessage* topology)
-{
-	for(uint8_t i = 0; i < topology->switchNum; i++)
-	{
-		if(topology->switchCollect[i].neighbourCollect != NULL)
-		{
-			SafeFree(topology->switchCollect[i].neighbourCollect);
-		}
-	}
-	if(topology->switchCollect != NULL)
-	{
-		SafeFree(topology->switchCollect);
-	}
 }
 
 /**
@@ -792,6 +772,8 @@ void  ManagerAddStationByStationMessage(uint8_t data[], uint16_t len, StationMan
 		perror("AddTopologyMemberByList ERROR : 0x%X\n", error);
 		return;
 	}
+	
+	Listdestroy(&topologyMessageList);
 	
 	StationPoint* point = manger->stationServer.FindMemberById(&(manger->stationServer.stationPointList), localTopology->id);
 	
